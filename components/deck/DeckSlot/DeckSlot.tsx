@@ -7,15 +7,26 @@ import { Card } from '@/models/Card';
 interface DeckSlotProps {
   slot: DeckSlotType;
   onSlotClick: (slotId: number) => void;
+  isMain?: boolean; // メインカードかサブカードかを判定
 }
 
-export const DeckSlot: React.FC<DeckSlotProps> = ({ slot, onSlotClick }) => {
+export const DeckSlot: React.FC<DeckSlotProps> = ({ 
+  slot, 
+  onSlotClick,
+  isMain = false 
+}) => {
   const [imageError, setImageError] = useState(false);
+
+  // 横長のアスペクト比に変更
+  const aspectRatio = isMain ? 'aspect-[16/10]' : 'aspect-[16/10]';
+  const containerClass = isMain 
+    ? `relative w-full ${aspectRatio} border-2 border-gray-300 rounded-lg overflow-hidden hover:border-blue-500 transition-colors bg-gray-50`
+    : `relative w-full ${aspectRatio} border border-gray-300 rounded overflow-hidden hover:border-blue-500 transition-colors bg-gray-50`;
 
   return (
     <button
       onClick={() => onSlotClick(slot.slotId)}
-      className="relative w-full aspect-[3/4] border-2 border-gray-300 rounded-lg overflow-hidden hover:border-blue-500 transition-colors bg-gray-50"
+      className={containerClass}
     >
       {slot.card ? (
         <div className="w-full h-full">
@@ -30,7 +41,7 @@ export const DeckSlot: React.FC<DeckSlotProps> = ({ slot, onSlotClick }) => {
             <div className="flex items-center justify-center h-full bg-gray-200">
               <div className="text-center text-gray-500">
                 <svg
-                  className="w-12 h-12 mx-auto mb-2"
+                  className={`${isMain ? 'w-12 h-12' : 'w-6 h-6'} mx-auto mb-1`}
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -42,12 +53,12 @@ export const DeckSlot: React.FC<DeckSlotProps> = ({ slot, onSlotClick }) => {
                     d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
                   />
                 </svg>
-                <p className="text-xs">画像なし</p>
+                <p className={`${isMain ? 'text-xs' : 'text-[10px]'}`}>画像なし</p>
               </div>
             </div>
           )}
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-2">
-            <p className="text-white text-xs font-medium truncate">
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-1">
+            <p className={`text-white ${isMain ? 'text-xs' : 'text-[10px]'} font-medium truncate`}>
               {slot.card.cardName}
             </p>
           </div>
@@ -55,7 +66,7 @@ export const DeckSlot: React.FC<DeckSlotProps> = ({ slot, onSlotClick }) => {
       ) : (
         <div className="flex flex-col items-center justify-center h-full text-gray-400">
           <svg
-            className="w-8 h-8 mb-2"
+            className={`${isMain ? 'w-8 h-8' : 'w-4 h-4'} mb-1`}
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -67,7 +78,9 @@ export const DeckSlot: React.FC<DeckSlotProps> = ({ slot, onSlotClick }) => {
               d="M12 4v16m8-8H4"
             />
           </svg>
-          <p className="text-xs font-medium">{slot.characterName}</p>
+          <p className={`${isMain ? 'text-xs' : 'text-[10px]'} font-medium`}>
+            {isMain ? slot.characterName : 'SIDE'}
+          </p>
         </div>
       )}
     </button>

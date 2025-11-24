@@ -14,7 +14,7 @@ export const CardItem: React.FC<CardItemProps> = ({ card, onSelect }) => {
   return (
     <button
       onClick={() => onSelect(card)}
-      className="relative w-full aspect-[3/4] border-2 border-gray-200 rounded-lg overflow-hidden hover:border-blue-500 hover:shadow-lg transition-all bg-white"
+      className="relative w-full aspect-[16/10] border-2 border-gray-200 rounded-lg overflow-hidden hover:border-blue-500 hover:shadow-lg transition-all bg-white"
     >
       {!imageError && card.detail?.awakeAfterStorageUrl ? (
         <img
