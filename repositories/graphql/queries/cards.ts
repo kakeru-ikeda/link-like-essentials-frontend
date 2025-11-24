@@ -15,6 +15,11 @@ export const GET_CARDS = gql`
           isLocked
           createdAt
           updatedAt
+          detail {
+            id
+            cardId
+            awakeAfterStorageUrl
+          }
         }
       }
       pageInfo {
@@ -44,6 +49,7 @@ export const GET_CARD_DETAIL = gql`
         cardId
         favoriteMode
         acquisitionMethod
+        awakeAfterStorageUrl
         stats {
           smile
           pure
