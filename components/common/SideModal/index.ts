@@ -1,1 +1,0 @@
-export { SideModal } from './SideModal';

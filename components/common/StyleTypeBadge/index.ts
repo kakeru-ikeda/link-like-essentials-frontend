@@ -1,1 +1,0 @@
-export { StyleTypeBadge } from './StyleTypeBadge';

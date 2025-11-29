@@ -69,11 +69,16 @@
    - Atomic Design パターンの適用
    - Presentational / Container Component の分離
 
-2. **ビジネスロジックの分離**
+2. **フラット構造によるシンプル化**
+   - コンポーネントは各ディレクトリ直下に `.tsx` ファイルとして配置
+   - `index.ts` の乱立を避け、ファイル管理を簡素化
+   - 単一ファイルで完結（Tailwind によるインラインスタイル）
+
+3. **ビジネスロジックの分離**
    - カスタムフック（Composables）でロジックを抽出
    - コンポーネントは UI 表示に専念
 
-3. **依存関係の方向**
+4. **依存関係の方向**
    - components → services → repositories
    - 上位層は下位層に依存、逆は NG
 
@@ -90,24 +95,25 @@ src/
 │   └── page.tsx                  # ホームページ
 │
 ├── components/                   # UIコンポーネント
-│   ├── common/                   # 共通コンポーネント
-│   │   ├── Button/
-│   │   ├── Loading/
-│   │   ├── Modal/
-│   │   └── ErrorBoundary/
+│   ├── common/                   # 共通コンポーネント（フラット構造）
+│   │   ├── AceBadge.tsx
+│   │   ├── ApBadge.tsx
+│   │   ├── Button.tsx
+│   │   ├── FavoriteModeBadge.tsx
+│   │   ├── Loading.tsx
+│   │   ├── Modal.tsx
+│   │   ├── RarityBadge.tsx
+│   │   ├── Sidebar.tsx
+│   │   ├── SideModal.tsx
+│   │   └── StyleTypeBadge.tsx
 │   │
-│   ├── deck/                     # デッキビルダー関連
-│   │   ├── DeckBuilder/          # デッキビルダーメインコンポーネント
-│   │   ├── DeckSlot/             # カードスロット（キャラ枠）
-│   │   ├── CardList/             # カード一覧
-│   │   ├── CardItem/             # カードアイテム
-│   │   ├── CardDetail/           # カード詳細モーダル
-│   │   └── DeckStats/            # デッキ統計情報
-│   │
-│   └── layout/                   # レイアウトコンポーネント
-│       ├── Header/
-│       ├── Footer/
-│       └── Navigation/
+│   └── deck/                     # デッキビルダー関連（フラット構造）
+│       ├── CardItem.tsx          # カードアイテム
+│       ├── CardList.tsx          # カード一覧
+│       ├── CardListItem.tsx      # カード一覧アイテム
+│       ├── CurrentCardDisplay.tsx # 現在選択中カード表示
+│       ├── DeckBuilder.tsx       # デッキビルダーメインコンポーネント
+│       └── DeckSlot.tsx          # カードスロット（キャラ枠）
 │
 ├── services/                     # ビジネスロジック層
 │   ├── deck/

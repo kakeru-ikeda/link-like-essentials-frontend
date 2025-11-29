@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Card } from '@/models/Card';
-import { CardListItem } from '../CardListItem';
+import { CardListItem } from '@/components/deck/CardListItem';
 import { Loading } from '@/components/common/Loading';
 
 interface CardListProps {
