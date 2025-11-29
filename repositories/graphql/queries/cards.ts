@@ -20,10 +20,29 @@ export const GET_CARDS = gql`
             cardId
             awakeAfterStorageUrl
             favoriteMode
+            specialAppeal {
+              name
+              ap
+              effect
+            }
             skill {
               name
               ap
               effect
+            }
+            trait {
+              name
+              effect
+            }
+            accessories {
+              id
+              cardId
+              parentType
+              name
+              ap
+              effect
+              traitName
+              traitEffect
             }
           }
         }

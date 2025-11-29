@@ -2,19 +2,21 @@
 
 import React from 'react';
 import { Card } from '@/models/Card';
-import { CardItem } from '../CardItem';
+import { CardListItem } from '../CardListItem';
 import { Loading } from '@/components/common/Loading';
 
 interface CardListProps {
   cards: Card[];
   loading: boolean;
   onSelectCard: (card: Card) => void;
+  assignedCardIds?: string[];
 }
 
 export const CardList: React.FC<CardListProps> = ({
   cards,
   loading,
   onSelectCard,
+  assignedCardIds = [],
 }) => {
   if (loading) {
     return <Loading />;
@@ -29,9 +31,14 @@ export const CardList: React.FC<CardListProps> = ({
   }
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+    <div className="flex flex-col px-2">
       {cards.map((card) => (
-        <CardItem key={card.id} card={card} onSelect={onSelectCard} />
+        <CardListItem
+          key={card.id}
+          card={card}
+          onSelect={onSelectCard}
+          isAssigned={assignedCardIds.includes(card.id)}
+        />
       ))}
     </div>
   );
