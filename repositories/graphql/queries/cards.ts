@@ -74,6 +74,7 @@ export const GET_CARD_DETAIL = gql`
         cardId
         favoriteMode
         acquisitionMethod
+        awakeBeforeStorageUrl
         awakeAfterStorageUrl
         stats {
           smile

@@ -13,6 +13,7 @@ interface DeckSlotProps {
   onSlotClick: (slotId: number) => void;
   onRemoveCard?: (slotId: number) => void;
   onToggleAce?: (slotId: number) => void;
+  onShowDetail?: (card: Card) => void;
   isAce?: boolean;
   isMain?: boolean; // メインカードかサブカードかを判定
 }
@@ -22,6 +23,7 @@ export const DeckSlot: React.FC<DeckSlotProps> = ({
   onSlotClick,
   onRemoveCard,
   onToggleAce,
+  onShowDetail,
   isAce = false,
   isMain = false 
 }) => {
@@ -40,6 +42,13 @@ export const DeckSlot: React.FC<DeckSlotProps> = ({
     e.stopPropagation(); // スロットのクリックイベントを防ぐ
     if (onRemoveCard && slot.card) {
       onRemoveCard(slot.slotId);
+    }
+  };
+
+  const handleDetailClick = (e: React.MouseEvent): void => {
+    e.stopPropagation(); // スロットのクリックイベントを防ぐ
+    if (onShowDetail && slot.card) {
+      onShowDetail(slot.card);
     }
   };
 
@@ -81,27 +90,54 @@ export const DeckSlot: React.FC<DeckSlotProps> = ({
             />
           )}
           
-          {/* 削除ボタン（ホバー時のみ表示） */}
-          {isHovered && onRemoveCard && (
-            <button
-              onClick={handleRemoveClick}
-              className="absolute top-1 right-1 z-10 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 transition-colors shadow-lg"
-              aria-label="カードを削除"
-            >
-              <svg
-                className="w-3 h-3 sm:w-4 sm:h-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
+          {/* ホバー時のボタングループ */}
+          {isHovered && (
+            <div className="absolute top-1 right-1 z-10 flex gap-1">
+              {/* 詳細ボタン */}
+              {onShowDetail && (
+                <button
+                  onClick={handleDetailClick}
+                  className="bg-blue-500 hover:bg-blue-600 text-white rounded-full p-1 transition-colors shadow-lg"
+                  aria-label="カード詳細を表示"
+                >
+                  <svg
+                    className="w-3 h-3 sm:w-4 sm:h-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </button>
+              )}
+              {/* 削除ボタン */}
+              {onRemoveCard && (
+                <button
+                  onClick={handleRemoveClick}
+                  className="bg-red-500 hover:bg-red-600 text-white rounded-full p-1 transition-colors shadow-lg"
+                  aria-label="カードを削除"
+                >
+                  <svg
+                    className="w-3 h-3 sm:w-4 sm:h-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              )}
+            </div>
           )}
           
           {!imageError && slot.card.detail?.awakeAfterStorageUrl ? (
