@@ -18,6 +18,8 @@ interface CardDetailViewProps {
 export const CardDetailView: React.FC<CardDetailViewProps> = ({ cardId }) => {
   const { card, loading, error } = useCardDetail(cardId);
   const [imageError, setImageError] = React.useState(false);
+  const [isAwakeAfter, setIsAwakeAfter] = React.useState(true);
+  const [imageLoading, setImageLoading] = React.useState(false);
 
   if (loading) {
     return (
@@ -49,17 +51,57 @@ export const CardDetailView: React.FC<CardDetailViewProps> = ({ cardId }) => {
   }
 
   const characterColor = getCharacterColor(card.characterName);
+  const currentImageUrl = isAwakeAfter 
+    ? card.detail?.awakeAfterStorageUrl 
+    : card.detail?.awakeBeforeStorageUrl;
 
   return (
     <div className="p-6 space-y-6">
       {/* カード画像 */}
       <div className="relative w-full aspect-[16/9] rounded-lg overflow-hidden border-2" style={{ borderColor: characterColor }}>
-        {!imageError && card.detail?.awakeAfterStorageUrl ? (
+        {/* 覚醒切り替えボタン */}
+        {card.detail?.awakeBeforeStorageUrl && card.detail?.awakeAfterStorageUrl && (
+          <div className="absolute top-2 right-2 z-10 flex gap-1 bg-black/50 rounded-lg p-1">
+            <button
+              onClick={() => {
+                setImageLoading(true);
+                setIsAwakeAfter(false);
+                setImageError(false);
+              }}
+              className={`px-3 py-1 text-xs font-medium rounded transition-colors ${
+                !isAwakeAfter
+                  ? 'bg-white text-gray-900'
+                  : 'text-white hover:bg-white/20'
+              }`}
+            >
+              覚醒前
+            </button>
+            <button
+              onClick={() => {
+                setImageLoading(true);
+                setIsAwakeAfter(true);
+                setImageError(false);
+              }}
+              className={`px-3 py-1 text-xs font-medium rounded transition-colors ${
+                isAwakeAfter
+                  ? 'bg-white text-gray-900'
+                  : 'text-white hover:bg-white/20'
+              }`}
+            >
+              覚醒後
+            </button>
+          </div>
+        )}
+        {!imageError && currentImageUrl ? (
           <img
-            src={card.detail.awakeAfterStorageUrl}
+            src={currentImageUrl}
             alt={card.cardName}
             className="w-full h-full object-cover"
-            onError={() => setImageError(true)}
+            onLoad={() => setImageLoading(false)}
+            onError={() => {
+              setImageError(true);
+              setImageLoading(false);
+            }}
           />
         ) : (
           <div className="flex items-center justify-center h-full bg-gray-200">
@@ -69,6 +111,12 @@ export const CardDetailView: React.FC<CardDetailViewProps> = ({ cardId }) => {
               </svg>
               <p className="text-sm">画像なし</p>
             </div>
+          </div>
+        )}
+        {/* ローディングオーバーレイ */}
+        {imageLoading && (
+          <div className="absolute inset-0 flex items-center justify-center z-20">
+            <Loading />
           </div>
         )}
       </div>

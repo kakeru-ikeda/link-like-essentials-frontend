@@ -34,6 +34,7 @@ export interface CardDetail {
   cardId: number;
   favoriteMode: string;
   acquisitionMethod: string;
+  awakeBeforeStorageUrl?: string;
   awakeAfterStorageUrl?: string;
   stats: Stats;
   specialAppeal?: Skill;
