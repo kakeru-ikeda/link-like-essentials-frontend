@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useDeck } from '@/hooks/useDeck';
-import { DeckSlot } from '../DeckSlot';
+import { DeckSlot } from '@/components/deck/DeckSlot';
 import { DECK_SLOT_MAPPING } from '@/constants/deckConfig';
 import { CHARACTERS } from '@/constants/characters';
 import {

@@ -1,1 +1,0 @@
-export { RarityBadge } from './RarityBadge';

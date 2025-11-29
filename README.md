@@ -76,10 +76,25 @@ npm run dev
 ```
 src/
 ├── app/                    # Next.js App Router
-├── components/             # UIコンポーネント
+├── components/             # UIコンポーネント（フラット構造）
 │   ├── common/            # 共通コンポーネント
-│   ├── deck/              # デッキビルダー関連
-│   └── layout/            # レイアウトコンポーネント
+│   │   ├── AceBadge.tsx
+│   │   ├── ApBadge.tsx
+│   │   ├── Button.tsx
+│   │   ├── FavoriteModeBadge.tsx
+│   │   ├── Loading.tsx
+│   │   ├── Modal.tsx
+│   │   ├── RarityBadge.tsx
+│   │   ├── Sidebar.tsx
+│   │   ├── SideModal.tsx
+│   │   └── StyleTypeBadge.tsx
+│   └── deck/              # デッキビルダー関連
+│       ├── CardItem.tsx
+│       ├── CardList.tsx
+│       ├── CardListItem.tsx
+│       ├── CurrentCardDisplay.tsx
+│       ├── DeckBuilder.tsx
+│       └── DeckSlot.tsx
 ├── hooks/                  # カスタムフック
 ├── services/               # ビジネスロジック
 ├── repositories/           # データアクセス層
@@ -88,6 +103,12 @@ src/
 ├── constants/              # 定数
 └── utils/                  # ユーティリティ関数
 ```
+
+**設計のポイント:**
+
+- フラット構造により `index.ts` の乱立を防止
+- 単一ファイルで完結するシンプルな構成
+- Tailwind CSS によるインラインスタイル
 
 詳細は [設計書](./docs/DESIGN.md) を参照してください。
 
@@ -147,8 +168,9 @@ npm start
 ### 設計原則
 
 1. **徹底したコンポーネント化**: Atomic Design パターンの適用
-2. **ビジネスロジックの分離**: カスタムフックでロジックを抽出
-3. **依存関係の方向**: components → services → repositories
+2. **フラット構造**: `index.ts` の乱立を避け、シンプルな構成を維持
+3. **ビジネスロジックの分離**: カスタムフックでロジックを抽出
+4. **依存関係の方向**: components → services → repositories
 
 詳細は [Copilot インストラクション](./.github/copilot-instructions.md) を参照してください。
 

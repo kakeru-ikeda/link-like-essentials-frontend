@@ -1,1 +1,0 @@
-export { ApBadge } from './ApBadge';

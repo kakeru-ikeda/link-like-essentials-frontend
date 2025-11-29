@@ -152,3 +152,38 @@ export const DECK_SLOT_MAPPING = [
 - Tailwind CSS のインラインクラス使用
 - モバイルファースト: `sm:`, `md:`, `lg:`, `xl:`
 - 絶対パス: `@/`エイリアス使用
+
+## コンポーネント構造
+
+**フラット構造を採用** - `index.ts` の乱立を避けるため、各ディレクトリ直下に `.tsx` ファイルを配置
+
+```
+components/
+  common/
+    AceBadge.tsx
+    ApBadge.tsx
+    Button.tsx
+    ...
+  deck/
+    CardItem.tsx
+    CardList.tsx
+    DeckBuilder.tsx
+    ...
+```
+
+### import ルール
+
+```typescript
+// 正しい import（拡張子は省略可能）
+import { RarityBadge } from '@/components/common/RarityBadge';
+import { CardList } from '@/components/deck/CardList';
+
+// 誤った import（index.ts は不要）
+import { RarityBadge } from '@/components/common/RarityBadge/';
+```
+
+### 新規コンポーネント作成時
+
+- ディレクトリを作らず、直接 `.tsx` ファイルを作成
+- 単一ファイルで完結させる（スタイルは Tailwind でインライン）
+- 複数ファイルが必要な場合のみディレクトリ化を検討
