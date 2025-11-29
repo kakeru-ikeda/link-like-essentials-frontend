@@ -1,0 +1,1 @@
+export { FavoriteModeBadge } from './FavoriteModeBadge';
