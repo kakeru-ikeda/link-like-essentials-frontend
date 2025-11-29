@@ -40,8 +40,11 @@ export default function Home() {
   }, [deck, currentSlotId]);
 
   // カード一覧を取得（キャラクターでフィルタリング）
+  // 「フリー」枠の場合は全カードを対象とするため、フィルターを適用しない
   const { cards, loading } = useCards(
-    currentCharacterName ? { characterName: currentCharacterName } : undefined
+    currentCharacterName && currentCharacterName !== 'フリー'
+      ? { characterName: currentCharacterName }
+      : undefined
   );
 
   // 現在のカードを除外したカードリスト
