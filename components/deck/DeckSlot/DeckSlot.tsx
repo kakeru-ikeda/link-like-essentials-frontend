@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { DeckSlot as DeckSlotType } from '@/models/Deck';
 import { Card } from '@/models/Card';
+import { getCharacterColor } from '@/constants/characterColors';
 
 interface DeckSlotProps {
   slot: DeckSlotType;
@@ -17,11 +18,13 @@ export const DeckSlot: React.FC<DeckSlotProps> = ({
 }) => {
   const [imageError, setImageError] = useState(false);
 
-  // 横長のアスペクト比に変更
-  const aspectRatio = isMain ? 'aspect-[16/10]' : 'aspect-[16/10]';
+  // キャラクターカラーを取得（画像枠線用）
+  const characterColor = getCharacterColor(slot.characterName);
+
+  const aspectRatio = 'aspect-[16/9]';
   const containerClass = isMain 
-    ? `relative w-full ${aspectRatio} border-2 border-gray-300 rounded-lg overflow-hidden hover:border-blue-500 transition-colors bg-gray-50`
-    : `relative w-full ${aspectRatio} border border-gray-300 rounded overflow-hidden hover:border-blue-500 transition-colors bg-gray-50`;
+    ? `relative w-full ${aspectRatio} border-2 border-gray-300 rounded-lg overflow-hidden hover:border-blue-500 transition-colors bg-white`
+    : `relative w-full ${aspectRatio} border border-gray-300 rounded overflow-hidden hover:border-blue-500 transition-colors bg-white`;
 
   return (
     <button
@@ -31,12 +34,17 @@ export const DeckSlot: React.FC<DeckSlotProps> = ({
       {slot.card ? (
         <div className="w-full h-full">
           {!imageError && slot.card.detail?.awakeAfterStorageUrl ? (
-            <img
-              src={slot.card.detail.awakeAfterStorageUrl}
-              alt={slot.card.cardName}
-              className="w-full h-full object-cover"
-              onError={() => setImageError(true)}
-            />
+            <div 
+              className="w-full h-full border-2"
+              style={{ borderColor: characterColor }}
+            >
+              <img
+                src={slot.card.detail.awakeAfterStorageUrl}
+                alt={slot.card.cardName}
+                className="w-full h-full object-cover"
+                onError={() => setImageError(true)}
+              />
+            </div>
           ) : (
             <div className="flex items-center justify-center h-full bg-gray-200">
               <div className="text-center text-gray-500">
