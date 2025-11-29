@@ -3,9 +3,9 @@
 import React, { useState } from 'react';
 import { Card } from '@/models/Card';
 import { RarityBadge } from '@/components/common/RarityBadge';
-import { ApBadge } from '@/components/common/ApBadge';
 import { StyleTypeBadge } from '@/components/common/StyleTypeBadge';
 import { FavoriteModeBadge } from '@/components/common/FavoriteModeBadge';
+import { CardDetailSections } from '@/components/deck/CardDetailSections';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 
 interface CardListItemProps {
@@ -118,86 +118,12 @@ export const CardListItem: React.FC<CardListItemProps> = ({ card, onSelect, isAs
       {/* 展開エリア（詳細情報） */}
       {isExpanded && card.detail && (
         <div className="px-4 pb-4 bg-gray-50">
-          <div className="space-y-3">
-            {/* スペシャルアピール */}
-            {card.detail.specialAppeal && (
-              <div className="bg-white rounded-lg p-3">
-                <h4 className="text-sm font-bold text-gray-700 mb-2">スペシャルアピール</h4>
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-green-600">{card.detail.specialAppeal.name}</span>
-                    {card.detail.specialAppeal.ap && (
-                      <ApBadge ap={card.detail.specialAppeal.ap} position="inline" size="small" />
-                    )}
-                  </div>
-                  {card.detail.specialAppeal.effect && (
-                    <p className="text-xs text-gray-600 whitespace-pre-line">{card.detail.specialAppeal.effect}</p>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* スキル */}
-            {card.detail.skill && (
-              <div className="bg-white rounded-lg p-3">
-                <h4 className="text-sm font-bold text-gray-700 mb-2">スキル</h4>
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-blue-600">{card.detail.skill.name}</span>
-                    {card.detail.skill.ap && (
-                      <ApBadge ap={card.detail.skill.ap} position="inline" size="small" />
-                    )}
-                  </div>
-                  {card.detail.skill.effect && (
-                    <p className="text-xs text-gray-600 whitespace-pre-line">{card.detail.skill.effect}</p>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* 特性 */}
-            {card.detail.trait && (
-              <div className="bg-white rounded-lg p-3">
-                <h4 className="text-sm font-bold text-gray-700 mb-2">特性</h4>
-                <div className="space-y-1">
-                  <span className="text-xs font-bold text-purple-600">{card.detail.trait.name}</span>
-                  {card.detail.trait.effect && (
-                    <p className="text-xs text-gray-600 whitespace-pre-line">{card.detail.trait.effect}</p>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* アクセサリー */}
-            {card.detail.accessories && card.detail.accessories.length > 0 && (
-              <div className="bg-white rounded-lg p-3">
-                <h4 className="text-sm font-bold text-gray-700 mb-2">アクセサリー</h4>
-                <div className="space-y-2">
-                  {card.detail.accessories.map((accessory) => (
-                    <div key={accessory.id} className="border-l-2 border-blue-500 pl-2">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xs font-bold text-blue-600">{accessory.name}</span>
-                        {accessory.ap && (
-                          <ApBadge ap={accessory.ap} position="inline" size="small" />
-                        )}
-                      </div>
-                      {accessory.effect && (
-                        <p className="text-xs text-gray-600 whitespace-pre-line mb-1">{accessory.effect}</p>
-                      )}
-                      {accessory.traitName && (
-                        <div className="text-xs">
-                          <span className="font-bold text-purple-700">{accessory.traitName}</span>
-                          {accessory.traitEffect && (
-                            <span className="text-gray-600 ml-1 whitespace-pre-line">: {accessory.traitEffect}</span>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
+          <CardDetailSections 
+            card={card} 
+            variant="compact"
+            showStats={false}
+            showAcquisition={false}
+          />
         </div>
       )}
     </div>
