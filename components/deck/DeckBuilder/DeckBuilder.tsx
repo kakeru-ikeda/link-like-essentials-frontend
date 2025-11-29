@@ -5,13 +5,17 @@ import { useDeck } from '@/hooks/useDeck';
 import { DeckSlot } from '../DeckSlot';
 import { DECK_SLOT_MAPPING } from '@/constants/deckConfig';
 import { CHARACTERS } from '@/constants/characters';
+import {
+  getCharacterColor,
+  getCharacterBackgroundColor,
+} from '@/constants/characterColors';
 
 interface DeckBuilderProps {
   onSlotClick: (slotId: number) => void;
 }
 
 export const DeckBuilder: React.FC<DeckBuilderProps> = ({ onSlotClick }) => {
-  const { deck } = useDeck();
+  const { deck, removeCard, toggleAceCard } = useDeck();
 
   if (!deck) {
     return (
@@ -36,14 +40,22 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({ onSlotClick }) => {
   });
 
   return (
-    <div className="w-full max-w-7xl mx-auto p-4">
-      <h2 className="text-2xl font-bold mb-6">デッキ編成</h2>
-      <div className="grid grid-cols-3 gap-6 sm:gap-8">
-        {characterGroups.map(({ character, slots }) => (
-          <div key={character} className="flex flex-col space-y-2">
+    <div className="w-full max-w-4xl h-full flex items-center py-2">
+      <div className="w-full grid grid-cols-3 gap-2 sm:gap-3 md:gap-4 lg:gap-5 auto-rows-fr">{characterGroups.map(({ character, slots }) => {
+          const backgroundColor = getCharacterBackgroundColor(character, 0.25);
+          
+          return (
+            <div 
+              key={character} 
+              className="flex flex-col space-y-0.5 sm:space-y-1 md:space-y-1.5 p-2 sm:p-3 rounded-lg backdrop-blur-sm"
+              style={{
+                backgroundColor: backgroundColor,
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+              }}
+            >
             {/* キャラクター名 */}
-            <div className="text-center mb-2">
-              <h3 className="text-sm font-bold text-gray-700">{character}</h3>
+            <div className="text-center mb-0.5">
+              <h3 className="text-[10px] sm:text-xs font-bold text-gray-700">{character}</h3>
             </div>
             
             {/* メインカード (最初のスロット) */}
@@ -51,16 +63,22 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({ onSlotClick }) => {
               <DeckSlot
                 slot={slots[0]}
                 onSlotClick={onSlotClick}
+                onRemoveCard={removeCard}
+                onToggleAce={toggleAceCard}
+                isAce={deck.aceSlotId === slots[0].slotId}
                 isMain={true}
               />
             )}
             
             {/* サブカード (2枚目と3枚目のスロット) */}
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-0.5 sm:gap-1">
               {slots[1] && (
                 <DeckSlot
                   slot={slots[1]}
                   onSlotClick={onSlotClick}
+                  onRemoveCard={removeCard}
+                  onToggleAce={toggleAceCard}
+                  isAce={deck.aceSlotId === slots[1].slotId}
                   isMain={false}
                 />
               )}
@@ -68,12 +86,16 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({ onSlotClick }) => {
                 <DeckSlot
                   slot={slots[2]}
                   onSlotClick={onSlotClick}
+                  onRemoveCard={removeCard}
+                  onToggleAce={toggleAceCard}
+                  isAce={deck.aceSlotId === slots[2].slotId}
                   isMain={false}
                 />
               )}
             </div>
           </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

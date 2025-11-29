@@ -11,6 +11,7 @@ export interface Deck {
   id: string;
   name: string;
   slots: DeckSlot[];
+  aceSlotId: number | null;
   createdAt: string;
   updatedAt: string;
 }
