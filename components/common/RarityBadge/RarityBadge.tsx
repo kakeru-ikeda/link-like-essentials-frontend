@@ -6,11 +6,13 @@ import { Rarity } from '@/models/enums';
 interface RarityBadgeProps {
   rarity: Rarity;
   size?: 'small' | 'large';
+  position?: 'absolute' | 'inline';
 }
 
 export const RarityBadge: React.FC<RarityBadgeProps> = ({ 
   rarity, 
-  size = 'large' 
+  size = 'large',
+  position = 'absolute'
 }) => {
   // レアリティに応じた背景色とグラデーションを取得
   const getRarityStyle = (rarity: Rarity): string => {
@@ -36,13 +38,15 @@ export const RarityBadge: React.FC<RarityBadgeProps> = ({
     ? 'px-2 py-1 text-xs' 
     : 'px-1.5 py-0.5 text-[10px]';
 
+  const positionClasses = position === 'absolute'
+    ? 'absolute top-8 left-1 z-20 pointer-events-none'
+    : 'inline-block';
+
   return (
-    <div className="absolute top-8 left-1 z-20 pointer-events-none">
-      <div 
-        className={`${sizeClasses} ${getRarityStyle(rarity)} font-bold rounded shadow-lg`}
-      >
-        {rarity}
-      </div>
-    </div>
+    <span 
+      className={`${sizeClasses} ${positionClasses} ${getRarityStyle(rarity)} font-bold rounded shadow-sm`}
+    >
+      {rarity}
+    </span>
   );
 };

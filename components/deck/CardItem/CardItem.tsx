@@ -2,6 +2,10 @@
 
 import React from 'react';
 import { Card } from '@/models/Card';
+import { RarityBadge } from '@/components/common/RarityBadge';
+import { ApBadge } from '@/components/common/ApBadge';
+import { StyleTypeBadge } from '@/components/common/StyleTypeBadge';
+import { FavoriteModeBadge } from '@/components/common/FavoriteModeBadge';
 
 interface CardItemProps {
   card: Card;
@@ -14,20 +18,21 @@ export const CardItem: React.FC<CardItemProps> = ({ card, onSelect }) => {
   return (
     <button
       onClick={() => onSelect(card)}
-      className="relative w-full aspect-[16/10] border-2 border-gray-200 rounded-lg overflow-hidden hover:border-blue-500 hover:shadow-lg transition-all bg-white"
+      className="w-full flex items-center gap-4 p-4 hover:bg-gray-50 transition-colors text-left"
     >
-      {!imageError && card.detail?.awakeAfterStorageUrl ? (
-        <img
-          src={card.detail.awakeAfterStorageUrl}
-          alt={card.cardName}
-          className="w-full h-full object-cover"
-          onError={() => setImageError(true)}
-        />
-      ) : (
-        <div className="flex items-center justify-center h-full bg-gray-200">
-          <div className="text-center text-gray-500">
+      {/* カード画像サムネイル */}
+      <div className="w-24 h-16 flex-shrink-0 rounded-lg overflow-hidden border-2 border-gray-200">
+        {!imageError && card.detail?.awakeAfterStorageUrl ? (
+          <img
+            src={card.detail.awakeAfterStorageUrl}
+            alt={card.cardName}
+            className="w-full h-full object-cover"
+            onError={() => setImageError(true)}
+          />
+        ) : (
+          <div className="flex items-center justify-center h-full bg-gray-200">
             <svg
-              className="w-12 h-12 mx-auto mb-2"
+              className="w-8 h-8 text-gray-400"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -39,20 +44,45 @@ export const CardItem: React.FC<CardItemProps> = ({ card, onSelect }) => {
                 d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
               />
             </svg>
-            <p className="text-xs">画像なし</p>
           </div>
-        </div>
-      )}
-      <div className="absolute top-2 right-2">
-        <span className="inline-block px-2 py-1 text-xs font-bold text-white bg-purple-600 rounded">
-          {card.rarity}
-        </span>
+        )}
       </div>
-      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
-        <p className="text-white text-sm font-medium truncate">
-          {card.cardName}
-        </p>
-        <p className="text-white/80 text-xs">{card.characterName}</p>
+
+      {/* カード情報 */}
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2 mb-1 flex-wrap">
+          <RarityBadge rarity={card.rarity} position="inline" size="small" />
+          {card.detail?.skill?.ap && (
+            <ApBadge ap={card.detail.skill.ap} position="inline" size="small" />
+          )}
+          {card.styleType && (
+            <StyleTypeBadge styleType={card.styleType} size="small" />
+          )}
+          {card.detail?.favoriteMode && card.detail.favoriteMode !== 'NONE' && (
+            <FavoriteModeBadge favoriteMode={card.detail.favoriteMode} size="small" />
+          )}
+        </div>
+        <h3 className="font-bold text-gray-900 truncate">{card.cardName}</h3>
+        <p className="text-sm text-gray-600">{card.characterName}</p>
+      </div>
+
+      {/* 選択ボタン */}
+      <div className="flex-shrink-0">
+        <div className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center">
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+            />
+          </svg>
+        </div>
       </div>
     </button>
   );

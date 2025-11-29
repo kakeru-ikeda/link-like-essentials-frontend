@@ -9,6 +9,7 @@ interface DeckState {
   setDeck: (deck: Deck) => void;
   addCardToSlot: (slotId: number, card: Card) => void;
   removeCardFromSlot: (slotId: number) => void;
+  swapCards: (slotId1: number, slotId2: number) => void;
   setAceCard: (slotId: number) => void;
   clearAceCard: () => void;
   clearDeck: () => void;
@@ -65,6 +66,20 @@ export const useDeckStore = create<DeckState>()(
             if (state.deck.aceSlotId === slotId) {
               state.deck.aceSlotId = null;
             }
+          }
+        }
+      }),
+
+    swapCards: (slotId1, slotId2) =>
+      set((state) => {
+        if (state.deck) {
+          const slot1 = state.deck.slots.find((s) => s.slotId === slotId1);
+          const slot2 = state.deck.slots.find((s) => s.slotId === slotId2);
+          if (slot1 && slot2) {
+            const tempCard = slot1.card;
+            slot1.card = slot2.card;
+            slot2.card = tempCard;
+            state.deck.updatedAt = new Date().toISOString();
           }
         }
       }),

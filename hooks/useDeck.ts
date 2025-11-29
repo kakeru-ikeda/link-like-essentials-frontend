@@ -8,6 +8,7 @@ export const useDeck = () => {
     setDeck,
     addCardToSlot,
     removeCardFromSlot,
+    swapCards: swapCardsInDeck,
     setAceCard,
     clearAceCard,
     clearDeck,
@@ -27,6 +28,11 @@ export const useDeck = () => {
 
   const removeCard = (slotId: number): void => {
     removeCardFromSlot(slotId);
+    saveDeckToLocal();
+  };
+
+  const swapCards = (slotId1: number, slotId2: number): void => {
+    swapCardsInDeck(slotId1, slotId2);
     saveDeckToLocal();
   };
 
@@ -60,6 +66,7 @@ export const useDeck = () => {
     setDeck,
     addCard,
     removeCard,
+    swapCards,
     toggleAceCard,
     clearAllCards,
     saveDeck,
