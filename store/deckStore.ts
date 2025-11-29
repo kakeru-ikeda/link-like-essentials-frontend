@@ -9,6 +9,8 @@ interface DeckState {
   setDeck: (deck: Deck) => void;
   addCardToSlot: (slotId: number, card: Card) => void;
   removeCardFromSlot: (slotId: number) => void;
+  setAceCard: (slotId: number) => void;
+  clearAceCard: () => void;
   clearDeck: () => void;
   saveDeckToLocal: () => void;
   loadDeckFromLocal: () => void;
@@ -26,6 +28,7 @@ const createEmptyDeck = (): Deck => {
     id: crypto.randomUUID(),
     name: '新しいデッキ',
     slots,
+    aceSlotId: null,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
@@ -58,7 +61,31 @@ export const useDeckStore = create<DeckState>()(
           if (slot) {
             slot.card = null;
             state.deck.updatedAt = new Date().toISOString();
+            // カードを削除する際、そのスロットがエースだった場合はエースも解除
+            if (state.deck.aceSlotId === slotId) {
+              state.deck.aceSlotId = null;
+            }
           }
+        }
+      }),
+
+    setAceCard: (slotId) =>
+      set((state) => {
+        if (state.deck) {
+          const slot = state.deck.slots.find((s) => s.slotId === slotId);
+          // カードがセットされている場合のみエースに設定可能
+          if (slot?.card) {
+            state.deck.aceSlotId = slotId;
+            state.deck.updatedAt = new Date().toISOString();
+          }
+        }
+      }),
+
+    clearAceCard: () =>
+      set((state) => {
+        if (state.deck) {
+          state.deck.aceSlotId = null;
+          state.deck.updatedAt = new Date().toISOString();
         }
       }),
 

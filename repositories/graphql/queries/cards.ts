@@ -19,6 +19,12 @@ export const GET_CARDS = gql`
             id
             cardId
             awakeAfterStorageUrl
+            favoriteMode
+            skill {
+              name
+              ap
+              effect
+            }
           }
         }
       }

@@ -8,6 +8,8 @@ export const useDeck = () => {
     setDeck,
     addCardToSlot,
     removeCardFromSlot,
+    setAceCard,
+    clearAceCard,
     clearDeck,
     saveDeckToLocal,
     loadDeckFromLocal,
@@ -42,11 +44,23 @@ export const useDeck = () => {
     saveDeckToLocal();
   };
 
+  const toggleAceCard = (slotId: number): void => {
+    if (deck?.aceSlotId === slotId) {
+      // 既にエースの場合は解除
+      clearAceCard();
+    } else {
+      // 新しくエースに設定（自動的に排他的）
+      setAceCard(slotId);
+    }
+    saveDeckToLocal();
+  };
+
   return {
     deck,
     setDeck,
     addCard,
     removeCard,
+    toggleAceCard,
     clearAllCards,
     saveDeck,
     resetDeck,

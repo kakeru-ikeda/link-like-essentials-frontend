@@ -4,19 +4,29 @@ import React, { useState } from 'react';
 import { DeckSlot as DeckSlotType } from '@/models/Deck';
 import { Card } from '@/models/Card';
 import { getCharacterColor } from '@/constants/characterColors';
+import { ApBadge } from '@/components/common/ApBadge';
+import { RarityBadge } from '@/components/common/RarityBadge';
+import { AceBadge } from '@/components/common/AceBadge';
 
 interface DeckSlotProps {
   slot: DeckSlotType;
   onSlotClick: (slotId: number) => void;
+  onRemoveCard?: (slotId: number) => void;
+  onToggleAce?: (slotId: number) => void;
+  isAce?: boolean;
   isMain?: boolean; // メインカードかサブカードかを判定
 }
 
 export const DeckSlot: React.FC<DeckSlotProps> = ({ 
   slot, 
   onSlotClick,
+  onRemoveCard,
+  onToggleAce,
+  isAce = false,
   isMain = false 
 }) => {
   const [imageError, setImageError] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   // キャラクターカラーを取得（画像枠線用）
   const characterColor = getCharacterColor(slot.characterName);
@@ -26,13 +36,74 @@ export const DeckSlot: React.FC<DeckSlotProps> = ({
     ? `relative w-full ${aspectRatio} border-2 border-gray-300 rounded-lg overflow-hidden hover:border-blue-500 transition-colors bg-white`
     : `relative w-full ${aspectRatio} border border-gray-300 rounded overflow-hidden hover:border-blue-500 transition-colors bg-white`;
 
+  const handleRemoveClick = (e: React.MouseEvent): void => {
+    e.stopPropagation(); // スロットのクリックイベントを防ぐ
+    if (onRemoveCard && slot.card) {
+      onRemoveCard(slot.slotId);
+    }
+  };
+
+  const handleSlotClick = (): void => {
+    onSlotClick(slot.slotId);
+  };
+
   return (
-    <button
-      onClick={() => onSlotClick(slot.slotId)}
-      className={containerClass}
+    <div
+      onClick={handleSlotClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className={`${containerClass} cursor-pointer`}
     >
       {slot.card ? (
-        <div className="w-full h-full">
+        <div className="w-full h-full relative">
+          {/* AP表示 */}
+          {slot.card.detail?.skill?.ap && (
+            <ApBadge 
+              ap={slot.card.detail.skill.ap}
+              favoriteMode={slot.card.detail.favoriteMode}
+              size={isMain ? 'large' : 'small'}
+            />
+          )}
+
+          {/* レアリティ表示 */}
+          <RarityBadge 
+            rarity={slot.card.rarity}
+            size={isMain ? 'large' : 'small'}
+          />
+
+          {/* エースバッジ（ホバー時 or エース設定済みの場合のみ表示） */}
+          {(isHovered || isAce) && (
+            <AceBadge
+              isAce={isAce}
+              onToggle={() => onToggleAce?.(slot.slotId)}
+              disabled={!slot.card}
+              size={isMain ? 'large' : 'small'}
+            />
+          )}
+          
+          {/* 削除ボタン（ホバー時のみ表示） */}
+          {isHovered && onRemoveCard && (
+            <button
+              onClick={handleRemoveClick}
+              className="absolute top-1 right-1 z-10 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 transition-colors shadow-lg"
+              aria-label="カードを削除"
+            >
+              <svg
+                className="w-3 h-3 sm:w-4 sm:h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          )}
+          
           {!imageError && slot.card.detail?.awakeAfterStorageUrl ? (
             <div 
               className="w-full h-full border-2"
@@ -91,6 +162,6 @@ export const DeckSlot: React.FC<DeckSlotProps> = ({
           </p>
         </div>
       )}
-    </button>
+    </div>
   );
 };

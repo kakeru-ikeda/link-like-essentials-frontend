@@ -15,7 +15,7 @@ interface DeckBuilderProps {
 }
 
 export const DeckBuilder: React.FC<DeckBuilderProps> = ({ onSlotClick }) => {
-  const { deck } = useDeck();
+  const { deck, removeCard, toggleAceCard } = useDeck();
 
   if (!deck) {
     return (
@@ -63,6 +63,9 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({ onSlotClick }) => {
               <DeckSlot
                 slot={slots[0]}
                 onSlotClick={onSlotClick}
+                onRemoveCard={removeCard}
+                onToggleAce={toggleAceCard}
+                isAce={deck.aceSlotId === slots[0].slotId}
                 isMain={true}
               />
             )}
@@ -73,6 +76,9 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({ onSlotClick }) => {
                 <DeckSlot
                   slot={slots[1]}
                   onSlotClick={onSlotClick}
+                  onRemoveCard={removeCard}
+                  onToggleAce={toggleAceCard}
+                  isAce={deck.aceSlotId === slots[1].slotId}
                   isMain={false}
                 />
               )}
@@ -80,6 +86,9 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({ onSlotClick }) => {
                 <DeckSlot
                   slot={slots[2]}
                   onSlotClick={onSlotClick}
+                  onRemoveCard={removeCard}
+                  onToggleAce={toggleAceCard}
+                  isAce={deck.aceSlotId === slots[2].slotId}
                   isMain={false}
                 />
               )}
