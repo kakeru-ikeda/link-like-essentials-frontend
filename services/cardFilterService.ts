@@ -157,8 +157,10 @@ export function filterCardsOnClient(cards: Card[], filter: CardFilter): Card[] {
         
         // 1つのスキル効果タイプ内の複数キーワードは常にOR検索
         // （例：RESHUFFLE = ['シャッフル' OR '手札をすべて捨てて' OR '手札を全て捨てて']）
-        return keywords.some((keyword) =>
-          targets.some((target) => {
+        return keywords.some((keyword) => {
+          // 検索対象（スキル、スペシャルアピール、特性）はOR検索
+          // 「スキル」「特性」を選択 → スキル OR 特性のいずれかにマッチすればOK
+          return targets.some((target) => {
             const texts: (string | undefined)[] = [];
             
             switch (target) {
@@ -178,10 +180,8 @@ export function filterCardsOnClient(cards: Card[], filter: CardFilter): Card[] {
                 // アクセサリーカードの特性
                 card.accessories?.forEach(acc => texts.push(acc.traitEffect));
                 break;
-              default:
-                return false;
             }
-
+            
             // いずれかのテキストにキーワードが含まれているかチェック
             return texts.some(text => {
               if (!text) return false;
@@ -200,8 +200,8 @@ export function filterCardsOnClient(cards: Card[], filter: CardFilter): Card[] {
               // 通常の文字列検索
               return text.includes(keyword);
             });
-          })
-        );
+          });
+        });
       };
 
       let hasEffect: boolean;

@@ -1,13 +1,13 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import { Card } from '@/models/Card';
-import { Rarity, StyleType, LimitedType } from '@/models/enums';
+import { CardFilter } from '@/models/Filter';
 
 export interface CardFilters {
   characterName?: string;
-  rarity?: Rarity[];
-  styleType?: StyleType[];
-  limited?: LimitedType[];
+  rarity?: any[];
+  styleType?: any[];
+  limited?: any[];
   searchText?: string;
 }
 
@@ -15,10 +15,13 @@ interface CardState {
   cards: Card[];
   selectedCard: Card | null;
   filters: CardFilters;
+  // ハイライト用のアクティブフィルタ
+  activeFilter: CardFilter | null;
   setCards: (cards: Card[]) => void;
   setSelectedCard: (card: Card | null) => void;
   updateFilters: (filters: Partial<CardFilters>) => void;
   clearFilters: () => void;
+  setActiveFilter: (filter: CardFilter | null) => void;
 }
 
 export const useCardStore = create<CardState>()(
@@ -26,6 +29,7 @@ export const useCardStore = create<CardState>()(
     cards: [],
     selectedCard: null,
     filters: {},
+    activeFilter: null,
 
     setCards: (cards) =>
       set((state) => {
@@ -45,6 +49,11 @@ export const useCardStore = create<CardState>()(
     clearFilters: () =>
       set((state) => {
         state.filters = {};
+      }),
+
+    setActiveFilter: (filter) =>
+      set((state) => {
+        state.activeFilter = filter;
       }),
   }))
 );

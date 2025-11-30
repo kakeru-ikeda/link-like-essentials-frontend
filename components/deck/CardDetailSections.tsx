@@ -2,6 +2,9 @@
 
 import React from 'react';
 import { Card } from '@/models/Card';
+import { HighlightText } from '@/components/common/HighlightText';
+import { useCardStore } from '@/store/cardStore';
+import { getHighlightKeywords } from '@/services/highlightService';
 
 interface CardDetailSectionsProps {
   card: Card;
@@ -17,6 +20,8 @@ export const CardDetailSections: React.FC<CardDetailSectionsProps> = ({
   showAcquisition = false,
 }) => {
   const isCompact = variant === 'compact';
+  const activeFilter = useCardStore((state) => state.activeFilter);
+  const highlightKeywords = getHighlightKeywords(activeFilter);
 
   // スタイルクラス定義
   const sectionClass = isCompact
@@ -73,7 +78,7 @@ export const CardDetailSections: React.FC<CardDetailSectionsProps> = ({
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <span className={`${nameClass} ${isCompact ? 'text-green-600' : 'text-gray-900 font-bold'}`}>
-                {card.detail.specialAppeal.name}
+                <HighlightText text={card.detail.specialAppeal.name} keywords={highlightKeywords} />
               </span>
               {card.detail.specialAppeal.ap && (
                 <span className={apBadgeClass}>AP {card.detail.specialAppeal.ap}</span>
@@ -81,7 +86,7 @@ export const CardDetailSections: React.FC<CardDetailSectionsProps> = ({
             </div>
             {card.detail.specialAppeal.effect && (
               <p className={`${effectClass} ${isCompact ? '' : 'mt-1'}`}>
-                {card.detail.specialAppeal.effect}
+                <HighlightText text={card.detail.specialAppeal.effect} keywords={highlightKeywords} />
               </p>
             )}
           </div>
@@ -95,7 +100,7 @@ export const CardDetailSections: React.FC<CardDetailSectionsProps> = ({
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <span className={`${nameClass} ${isCompact ? 'text-blue-600' : 'text-gray-900 font-bold'}`}>
-                {card.detail.skill.name}
+                <HighlightText text={card.detail.skill.name} keywords={highlightKeywords} />
               </span>
               {card.detail.skill.ap && (
                 <span className={apBadgeClass}>AP {card.detail.skill.ap}</span>
@@ -103,7 +108,7 @@ export const CardDetailSections: React.FC<CardDetailSectionsProps> = ({
             </div>
             {card.detail.skill.effect && (
               <p className={`${effectClass} ${isCompact ? '' : 'mt-1'}`}>
-                {card.detail.skill.effect}
+                <HighlightText text={card.detail.skill.effect} keywords={highlightKeywords} />
               </p>
             )}
           </div>
@@ -116,11 +121,11 @@ export const CardDetailSections: React.FC<CardDetailSectionsProps> = ({
           <h4 className={`${baseTitleClass} text-purple-600`}>特性</h4>
           <div className="space-y-1">
             <span className={`${nameClass} ${isCompact ? 'text-purple-600' : 'text-gray-900 font-bold'}`}>
-              {card.detail.trait.name}
+              <HighlightText text={card.detail.trait.name} keywords={highlightKeywords} />
             </span>
             {card.detail.trait.effect && (
               <p className={`${effectClass} ${isCompact ? '' : 'mt-1'}`}>
-                {card.detail.trait.effect}
+                <HighlightText text={card.detail.trait.effect} keywords={highlightKeywords} />
               </p>
             )}
           </div>
@@ -139,7 +144,7 @@ export const CardDetailSections: React.FC<CardDetailSectionsProps> = ({
               >
                 <div className={`flex items-${isCompact ? 'center' : 'start'} ${isCompact ? 'gap-2 mb-1' : 'justify-between gap-2 mb-1'}`}>
                   <p className={`${isCompact ? 'text-xs font-bold text-blue-600' : 'text-sm font-medium text-blue-600'}`}>
-                    {accessory.name}
+                    <HighlightText text={accessory.name} keywords={highlightKeywords} />
                   </p>
                   {accessory.ap && (
                     <span className={apBadgeClass}>AP {accessory.ap}</span>
@@ -147,17 +152,17 @@ export const CardDetailSections: React.FC<CardDetailSectionsProps> = ({
                 </div>
                 {accessory.effect && (
                   <p className={`${isCompact ? 'text-xs text-gray-600 whitespace-pre-line mb-1' : 'text-xs text-gray-600 mt-1'}`}>
-                    {accessory.effect}
+                    <HighlightText text={accessory.effect} keywords={highlightKeywords} />
                   </p>
                 )}
                 {accessory.traitName && (
                   <div className={isCompact ? 'text-xs' : 'mt-2 pt-2 border-t border-gray-200'}>
                     <p className={isCompact ? 'font-bold text-purple-700' : 'text-xs font-medium text-purple-700'}>
-                      {accessory.traitName}
+                      <HighlightText text={accessory.traitName} keywords={highlightKeywords} />
                     </p>
                     {accessory.traitEffect && (
                       <p className={`${isCompact ? 'text-gray-600 ml-1 whitespace-pre-line' : 'text-xs text-gray-600 mt-1'}`}>
-                        {isCompact ? `: ${accessory.traitEffect}` : accessory.traitEffect}
+                        <HighlightText text={isCompact ? `: ${accessory.traitEffect}` : accessory.traitEffect} keywords={highlightKeywords} />
                       </p>
                     )}
                   </div>
