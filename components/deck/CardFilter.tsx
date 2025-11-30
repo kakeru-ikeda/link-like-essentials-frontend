@@ -379,6 +379,45 @@ export const CardFilterComponent: React.FC<CardFilterProps> = ({
             </div>
           </div>
 
+          {/* トークンカードの有無 */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              トークンカード
+            </label>
+            <div className="flex gap-2">
+              <button
+                onClick={() =>
+                  handleFilterUpdate({
+                    hasAccessories:
+                      filter.hasAccessories === true ? undefined : true,
+                  })
+                }
+                className={`px-3 py-1 rounded-full text-sm font-medium transition ${
+                  filter.hasAccessories === true
+                    ? 'bg-cyan-500 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                あり
+              </button>
+              <button
+                onClick={() =>
+                  handleFilterUpdate({
+                    hasAccessories:
+                      filter.hasAccessories === false ? undefined : false,
+                  })
+                }
+                className={`px-3 py-1 rounded-full text-sm font-medium transition ${
+                  filter.hasAccessories === false
+                    ? 'bg-cyan-500 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                なし
+              </button>
+            </div>
+          </div>
+
           {/* リセットボタン */}
           <div className="pt-4 border-t border-gray-200">
             <button

@@ -220,6 +220,14 @@ export function filterCardsOnClient(cards: Card[], filter: CardFilter): Card[] {
       }
     }
 
+    // アクセサリーカードの有無
+    if (filter.hasAccessories !== undefined) {
+      const hasAccessories = card.accessories && card.accessories.length > 0;
+      if (filter.hasAccessories !== hasAccessories) {
+        return false;
+      }
+    }
+
     return true;
   });
 }
