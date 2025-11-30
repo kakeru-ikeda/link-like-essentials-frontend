@@ -25,12 +25,6 @@ export const FavoriteModeBadge: React.FC<FavoriteModeBadgeProps> = ({
       case 'NEUTRAL':
       case 'ニュートラル':
         return 'ニュートラル';
-      case 'SMILE':
-        return 'スマイル';
-      case 'PURE':
-        return 'ピュア';
-      case 'COOL':
-        return 'クール';
       default:
         return mode;
     }

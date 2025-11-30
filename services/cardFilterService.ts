@@ -1,9 +1,201 @@
-import { CardFilter } from '@/models/Filter';
-import { getSkillEffectKeywords } from '@/constants/skillEffects';
+import { Card } from '@/models/Card';
+import { CardFilter, FilterMode } from '@/models/Filter';
+import { FavoriteMode } from '@/models/enums';
+import { getSkillEffectKeyword, getSkillEffectKeywords, SkillEffectType, SkillSearchTarget } from '@/constants/skillEffects';
+import {
+  STYLE_TYPE_MAP,
+  FAVORITE_MODE_MAP,
+  LIMITED_TYPE_MAP,
+} from '@/constants/enumMappings';
+
+/**
+ * クライアントサイドでカードをフィルタリング
+ * 
+ * @param cards カード配列
+ * @param filter カードフィルター
+ * @returns フィルタリング後のカード配列
+ */
+export function filterCardsOnClient(cards: Card[], filter: CardFilter): Card[] {
+  return cards.filter((card) => {
+    // キーワード検索
+    if (filter.keyword) {
+      const keyword = filter.keyword.toLowerCase();
+      if (
+        !card.cardName?.toLowerCase().includes(keyword) &&
+        !card.characterName?.toLowerCase().includes(keyword)
+      ) {
+        return false;
+      }
+    }
+
+    // レアリティ
+    if (filter.rarities && filter.rarities.length > 0) {
+      const mode = filter.filterMode ?? FilterMode.OR;
+      if (mode === FilterMode.OR) {
+        // OR検索: いずれかのレアリティに一致
+        if (!filter.rarities.includes(card.rarity)) {
+          return false;
+        }
+      } else {
+        // AND検索: 単一項目なので存在チェックのみ（実質OR検索と同じ）
+        if (!filter.rarities.includes(card.rarity)) {
+          return false;
+        }
+      }
+    }
+
+    // キャラクター（部分一致）
+    if (filter.characterNames && filter.characterNames.length > 0) {
+      const mode = filter.filterMode ?? FilterMode.OR;
+      if (mode === FilterMode.OR) {
+        // OR検索: いずれかのキャラクター名が部分一致
+        // 例：「桂城泉＆セラス」は「桂城泉」でも「セラス」でもマッチ
+        const hasMatch = filter.characterNames.some(name => 
+          card.characterName.includes(name)
+        );
+        if (!hasMatch) {
+          return false;
+        }
+      } else {
+        // AND検索: すべてのキャラクター名が部分一致
+        // 例：「桂城泉」AND「セラス」を選択 → 「桂城泉＆セラス」がマッチ
+        const allMatch = filter.characterNames.every(name => 
+          card.characterName.includes(name)
+        );
+        if (!allMatch) {
+          return false;
+        }
+      }
+    }
+
+    // スタイルタイプ
+    if (filter.styleTypes && filter.styleTypes.length > 0) {
+      const mode = filter.filterMode ?? FilterMode.OR;
+      if (mode === FilterMode.OR) {
+        // OR検索: いずれかのスタイルタイプに一致
+        if (!filter.styleTypes.includes(card.styleType)) {
+          return false;
+        }
+      } else {
+        // AND検索: 単一カードは1スタイルタイプのみなので実質OR検索と同じ
+        if (!filter.styleTypes.includes(card.styleType)) {
+          return false;
+        }
+      }
+    }
+
+    // 得意ムード（Enum値で比較）
+    if (filter.favoriteModes && filter.favoriteModes.length > 0) {
+      if (!card.detail?.favoriteMode) {
+        return false;
+      }
+      
+      const mode = filter.filterMode ?? FilterMode.OR;
+      if (mode === FilterMode.OR) {
+        // OR検索: いずれかの得意ムードに一致
+        if (!filter.favoriteModes.includes(card.detail.favoriteMode as FavoriteMode)) {
+          return false;
+        }
+      } else {
+        // AND検索: 単一カードは1得意ムードのみなので実質OR検索と同じ
+        if (!filter.favoriteModes.includes(card.detail.favoriteMode as FavoriteMode)) {
+          return false;
+        }
+      }
+    }
+
+    // 入手方法
+    if (filter.limitedTypes && filter.limitedTypes.length > 0) {
+      const mode = filter.filterMode ?? FilterMode.OR;
+      if (mode === FilterMode.OR) {
+        // OR検索: いずれかの入手方法に一致
+        if (!filter.limitedTypes.includes(card.limited)) {
+          return false;
+        }
+      } else {
+        // AND検索: 単一カードは1入手方法のみなので実質OR検索と同じ
+        if (!filter.limitedTypes.includes(card.limited)) {
+          return false;
+        }
+      }
+    }
+
+    // スキル効果検索
+    if (filter.skillEffects && filter.skillEffects.length > 0) {
+      const targets = filter.skillSearchTargets ?? [
+        SkillSearchTarget.SKILL,
+        SkillSearchTarget.SPECIAL_APPEAL,
+        SkillSearchTarget.TRAIT,
+      ];
+
+      const mode = filter.filterMode ?? FilterMode.OR;
+      
+      // 各スキル効果タイプが一致するかチェックする関数
+      const checkSkillEffect = (effectType: SkillEffectType): boolean => {
+        const keywords = getSkillEffectKeyword(effectType);
+        
+        // 1つのスキル効果タイプ内の複数キーワードは常にOR検索
+        // （例：RESHUFFLE = ['シャッフル' OR '手札をすべて捨てて' OR '手札を全て捨てて']）
+        return keywords.some((keyword) =>
+          targets.some((target) => {
+            let text: string | undefined;
+            switch (target) {
+              case SkillSearchTarget.SKILL:
+                text = card.detail?.skill?.effect;
+                break;
+              case SkillSearchTarget.SPECIAL_APPEAL:
+                text = card.detail?.specialAppeal?.effect;
+                break;
+              case SkillSearchTarget.TRAIT:
+                text = card.detail?.trait?.effect;
+                break;
+              default:
+                return false;
+            }
+
+            if (!text) return false;
+
+            // 正規表現パターンかどうかをチェック（\\ を含む場合は正規表現として扱う）
+            if (keyword.includes('\\')) {
+              try {
+                const regex = new RegExp(keyword);
+                return regex.test(text);
+              } catch {
+                // 正規表現が不正な場合は通常の文字列検索にフォールバック
+                return text.includes(keyword);
+              }
+            }
+
+            // 通常の文字列検索
+            return text.includes(keyword);
+          })
+        );
+      };
+
+      let hasEffect: boolean;
+      if (mode === FilterMode.OR) {
+        // OR検索: いずれかのスキル効果タイプに一致
+        // 例：HEART_CAPTURE OR RESHUFFLE
+        hasEffect = filter.skillEffects.some(checkSkillEffect);
+      } else {
+        // AND検索: すべてのスキル効果タイプに一致
+        // 例：HEART_CAPTURE AND RESHUFFLE（両方の効果を持つカード）
+        hasEffect = filter.skillEffects.every(checkSkillEffect);
+      }
+
+      if (!hasEffect) {
+        return false;
+      }
+    }
+
+    return true;
+  });
+}
 
 /**
  * カードフィルターからGraphQLクエリ用のフィルターパラメータを生成
  * 
+ * @deprecated クライアントサイドフィルタリングを使用するため、現在は使用していません
  * @param filter カードフィルター
  * @returns GraphQLクエリ用のフィルターオブジェクト
  */

@@ -1,6 +1,14 @@
 import { Rarity, StyleType, LimitedType, FavoriteMode } from './enums';
 import { SkillEffectType, SkillSearchTarget } from '@/constants/skillEffects';
 
+/**
+ * フィルター条件の結合モード
+ */
+export enum FilterMode {
+  OR = 'OR',   // いずれかに一致（デフォルト）
+  AND = 'AND', // すべてに一致
+}
+
 export interface CardFilter {
   // キーワード検索
   keyword?: string;
@@ -25,6 +33,9 @@ export interface CardFilter {
 
   // スキル検索対象（スペシャルアピール、スキル、特性）
   skillSearchTargets?: SkillSearchTarget[];
+
+  // フィルター条件の結合モード（デフォルト: OR）
+  filterMode?: FilterMode;
 }
 
 export enum SortField {

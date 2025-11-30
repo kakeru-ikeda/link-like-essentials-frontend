@@ -1,11 +1,8 @@
 import { useQuery } from '@apollo/client';
 import { GET_CARDS, GET_CARD_DETAIL } from '@/repositories/graphql/queries/cards';
 import { Card } from '@/models/Card';
-import { CardFilters } from '@/store/cardStore';
-
-interface CardsQueryVariables {
-  filter?: CardFilters;
-}
+import { CardFilter } from '@/models/Filter';
+import { filterCardsOnClient } from '@/services/cardFilterService';
 
 interface CardsQueryData {
   cards: Card[];
@@ -15,22 +12,38 @@ interface CardDetailQueryData {
   card: Card;
 }
 
-export const useCards = (filter?: CardFilters, skip?: boolean) => {
-  const { data, loading, error } = useQuery<
-    CardsQueryData,
-    CardsQueryVariables
-  >(GET_CARDS, {
-    variables: { filter },
-    skip, // クエリをスキップするオプション
+/**
+ * カード一覧を取得するフック
+ * クライアントサイドフィルタリングを使用
+ * 
+ * @param filter カードフィルター（省略時は全件取得）
+ * @param skip クエリをスキップするかどうか
+ * @returns カード配列、ローディング状態、エラーメッセージ
+ */
+export const useCards = (filter?: CardFilter, skip?: boolean) => {
+  // 全件取得（filterパラメータなし）
+  const { data, loading, error } = useQuery<CardsQueryData>(GET_CARDS, {
+    skip,
   });
 
+  const allCards = data?.cards ?? [];
+
+  // クライアントサイドフィルタリング
+  const filteredCards = filter ? filterCardsOnClient(allCards, filter) : allCards;
+
   return {
-    cards: data?.cards ?? [],
+    cards: filteredCards,
     loading,
     error: error?.message,
   };
 };
 
+/**
+ * カード詳細を取得するフック
+ * 
+ * @param id カードID
+ * @returns カード詳細、ローディング状態、エラーメッセージ
+ */
 export const useCardDetail = (id: string) => {
   const { data, loading, error } = useQuery<
     CardDetailQueryData,

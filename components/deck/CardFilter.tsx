@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { CardFilter } from '@/models/Filter';
+import { CardFilter, FilterMode } from '@/models/Filter';
 import { Rarity, StyleType, LimitedType, FavoriteMode } from '@/models/enums';
 import { CHARACTERS } from '@/constants/characters';
 import { SideModal } from '@/components/common/SideModal';
@@ -147,6 +147,42 @@ export const CardFilterComponent: React.FC<CardFilterProps> = ({
         width="md"
       >
         <div className="p-4 space-y-6">
+          {/* AND/OR検索モード切り替え */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              検索モード
+            </label>
+            <div className="flex gap-2">
+              <button
+                onClick={() => handleFilterUpdate({ filterMode: FilterMode.OR })}
+                className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition ${
+                  (filter.filterMode ?? FilterMode.OR) === FilterMode.OR
+                    ? 'bg-blue-500 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                OR検索
+                <span className="block text-xs mt-1 opacity-90">いずれかに一致</span>
+              </button>
+              <button
+                onClick={() => handleFilterUpdate({ filterMode: FilterMode.AND })}
+                className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition ${
+                  filter.filterMode === FilterMode.AND
+                    ? 'bg-blue-500 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                AND検索
+                <span className="block text-xs mt-1 opacity-90">すべてに一致</span>
+              </button>
+            </div>
+            <p className="mt-2 text-xs text-gray-500">
+              {(filter.filterMode ?? FilterMode.OR) === FilterMode.OR
+                ? '選択した条件のいずれかに一致するカードを表示します'
+                : '選択したすべての条件に一致するカードのみを表示します（スキル効果で有効）'}
+            </p>
+          </div>
+
           {/* キーワード検索 */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
