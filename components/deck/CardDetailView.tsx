@@ -9,7 +9,7 @@ import { FavoriteModeBadge } from '@/components/common/FavoriteModeBadge';
 import { LimitedTypeBadge } from '@/components/common/LimitedTypeBadge';
 import { Loading } from '@/components/common/Loading';
 import { CardDetailSections } from '@/components/deck/CardDetailSections';
-import { getCharacterColor } from '@/constants/characterColors';
+import { getCharacterColor } from '@/constants/characters';
 
 interface CardDetailViewProps {
   cardId: string;

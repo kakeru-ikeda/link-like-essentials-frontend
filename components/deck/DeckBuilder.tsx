@@ -7,11 +7,11 @@ import { CardDetailView } from '@/components/deck/CardDetailView';
 import { SideModal } from '@/components/common/SideModal';
 import { Card } from '@/models/Card';
 import { DECK_SLOT_MAPPING } from '@/constants/deckConfig';
-import { CHARACTERS } from '@/constants/characters';
 import {
+  DECK_FRAME_105,
   getCharacterColor,
   getCharacterBackgroundColor,
-} from '@/constants/characterColors';
+} from '@/constants/characters';
 
 interface DeckBuilderProps {
   onSlotClick: (slotId: number) => void;
@@ -41,7 +41,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({ onSlotClick }) => {
   }
 
   // キャラクターごとにスロットをグループ化
-  const characterGroups = CHARACTERS.map((character) => {
+  const characterGroups = DECK_FRAME_105.map((character) => {
     const slots = DECK_SLOT_MAPPING
       .filter((m) => m.characterName === character)
       .sort((a, b) => a.slotId - b.slotId)

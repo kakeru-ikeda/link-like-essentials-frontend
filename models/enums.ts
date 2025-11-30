@@ -39,7 +39,7 @@ export enum ParentType {
 
 export enum FavoriteMode {
   NONE = 'NONE',
-  SMILE = 'SMILE',
-  PURE = 'PURE',
-  COOL = 'COOL',
+  HAPPY = 'HAPPY',
+  MELLOW = 'MELLOW',
+  NEUTRAL = 'NEUTRAL',
 }
