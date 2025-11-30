@@ -1,57 +1,48 @@
 import { gql } from '@apollo/client';
 
 export const GET_CARDS = gql`
-  query GetCards($first: Int, $after: String, $filter: CardFilterInput) {
-    cards(first: $first, after: $after, filter: $filter) {
-      edges {
-        node {
+  query GetCards($filter: CardFilterInput) {
+    cards(filter: $filter) {
+      id
+      cardName
+      characterName
+      rarity
+      styleType
+      limited
+      cardUrl
+      isLocked
+      createdAt
+      updatedAt
+      detail {
+        id
+        cardId
+        awakeAfterStorageUrl
+        favoriteMode
+        specialAppeal {
+          name
+          ap
+          effect
+        }
+        skill {
+          name
+          ap
+          effect
+        }
+        trait {
+          name
+          effect
+        }
+        accessories {
           id
-          cardName
-          characterName
-          rarity
-          styleType
-          limited
-          cardUrl
-          isLocked
-          createdAt
-          updatedAt
-          detail {
-            id
-            cardId
-            awakeAfterStorageUrl
-            favoriteMode
-            specialAppeal {
-              name
-              ap
-              effect
-            }
-            skill {
-              name
-              ap
-              effect
-            }
-            trait {
-              name
-              effect
-            }
-            accessories {
-              id
-              cardId
-              parentType
-              name
-              ap
-              effect
-              traitName
-              traitEffect
-            }
-          }
+          cardId
+          parentType
+          name
+          ap
+          effect
+          traitName
+          traitEffect
         }
       }
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-      totalCount
     }
   }
 `;

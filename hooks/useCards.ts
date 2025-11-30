@@ -4,53 +4,30 @@ import { Card } from '@/models/Card';
 import { CardFilters } from '@/store/cardStore';
 
 interface CardsQueryVariables {
-  first?: number;
-  after?: string;
   filter?: CardFilters;
 }
 
 interface CardsQueryData {
-  cards: {
-    edges: Array<{
-      node: Card;
-    }>;
-    pageInfo: {
-      hasNextPage: boolean;
-      endCursor: string;
-    };
-    totalCount: number;
-  };
+  cards: Card[];
 }
 
 interface CardDetailQueryData {
   card: Card;
 }
 
-export const useCards = (filter?: CardFilters, first: number = 20) => {
-  const { data, loading, error, fetchMore } = useQuery<
+export const useCards = (filter?: CardFilters, skip?: boolean) => {
+  const { data, loading, error } = useQuery<
     CardsQueryData,
     CardsQueryVariables
   >(GET_CARDS, {
-    variables: { first, filter },
+    variables: { filter },
+    skip, // クエリをスキップするオプション
   });
 
-  const loadMore = (): void => {
-    if (data?.cards.pageInfo.hasNextPage) {
-      fetchMore({
-        variables: {
-          after: data.cards.pageInfo.endCursor,
-        },
-      });
-    }
-  };
-
   return {
-    cards: data?.cards.edges.map((edge) => edge.node) ?? [],
-    hasNextPage: data?.cards.pageInfo.hasNextPage ?? false,
-    totalCount: data?.cards.totalCount ?? 0,
+    cards: data?.cards ?? [],
     loading,
     error: error?.message,
-    loadMore,
   };
 };
 
