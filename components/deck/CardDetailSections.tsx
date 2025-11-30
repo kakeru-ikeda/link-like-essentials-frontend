@@ -128,11 +128,11 @@ export const CardDetailSections: React.FC<CardDetailSectionsProps> = ({
       )}
 
       {/* アクセサリー */}
-      {card.accessories && card.accessories.length > 0 && (
+      {((card.accessories && card.accessories.length > 0) || (card.detail?.accessories && card.detail.accessories.length > 0)) && (
         <div className={sectionClass}>
           <h4 className={`${baseTitleClass} text-orange-600`}>アクセサリー</h4>
           <div className={isCompact ? 'space-y-2' : 'space-y-3'}>
-            {card.accessories.map((accessory) => (
+            {(card.accessories || card.detail?.accessories || []).map((accessory) => (
               <div
                 key={accessory.id}
                 className={isCompact ? 'border-l-2 border-blue-500 pl-2' : 'bg-gray-50 rounded p-3'}
