@@ -13,7 +13,6 @@ import { useDeck } from '@/hooks/useDeck';
 import { useCards } from '@/hooks/useCards';
 import { Card } from '@/models/Card';
 import { CardFilter } from '@/models/Filter';
-import { useCardStore } from '@/store/cardStore';
 
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -21,7 +20,6 @@ export default function Home() {
   const [cardFilter, setCardFilter] = useState<CardFilter>({});
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const { deck, addCard, removeCard, swapCards, clearAllCards, saveDeck } = useDeck();
-  const { filters, updateFilters } = useCardStore();
 
   // 現在選択されているスロットのキャラクター名を取得
   const currentCharacterName = React.useMemo(() => {
@@ -45,12 +43,24 @@ export default function Home() {
       .map((slot) => slot.card!.id);
   }, [deck, currentSlotId]);
 
-  // カード一覧を取得（キャラクターでフィルタリング）
+  // カード一覧を取得（キャラクター + その他のフィルターでフィルタリング）
   // スロット未選択時はフェッチをスキップ
+  const filterForQuery = React.useMemo(() => {
+    if (currentSlotId === null) return undefined;
+    
+    // 現在のフィルターをベースにする
+    const combinedFilter: CardFilter = { ...cardFilter };
+    
+    // フリー枠以外の場合、キャラクター名を強制的に追加
+    if (currentCharacterName && currentCharacterName !== 'フリー') {
+      combinedFilter.characterNames = [currentCharacterName];
+    }
+    
+    return combinedFilter;
+  }, [currentSlotId, currentCharacterName, cardFilter]);
+
   const { cards, loading } = useCards(
-    currentCharacterName && currentCharacterName !== 'フリー'
-      ? { characterName: currentCharacterName }
-      : undefined,
+    filterForQuery,
     currentSlotId === null // スロット未選択ならスキップ
   );
 
@@ -100,7 +110,7 @@ export default function Home() {
 
   const handleApplyFilters = (filter: CardFilter): void => {
     setCardFilter(filter);
-    // TODO: フィルター条件に基づいてカードをフィルタリング
+    setIsFilterModalOpen(false);
   };
 
   const handleClearFilter = (key: keyof CardFilter): void => {
@@ -114,7 +124,6 @@ export default function Home() {
     }
     
     setCardFilter(newFilter);
-    // TODO: フィルター条件に基づいてカードをフィルタリング
   };
 
   const countActiveFilters = (): number => {

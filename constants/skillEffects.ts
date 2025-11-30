@@ -73,7 +73,7 @@ export const SKILL_EFFECT_DESCRIPTIONS: Record<SkillEffectType, string> = {
   [SkillEffectType.VIBES]:
     'ビートハートの出現個数を増加させる。一部を除くハートキャプチャの効能も上がる。',
   [SkillEffectType.AMBIENCE]:
-    'ムード値がハッピー、メロウいずれかのときにムード値を増減する。',
+    'ハッピー、メロウいずれかの方向にムード値を増減する。',
   [SkillEffectType.MENTAL_RECOVER]:
     'メンタル最大値に対する一定割合のメンタルを回復する。',
   [SkillEffectType.MENTAL_PROTECT]:
@@ -110,14 +110,14 @@ export const SKILL_EFFECT_KEYWORDS: Record<SkillEffectType, string[]> = {
   [SkillEffectType.ATTRACT_BOOST]: ['ラブアトラクト効果を'],
   [SkillEffectType.VOLTAGE_BOOST]: ['ボルテージゲイン効果を'],
   [SkillEffectType.VIBES]: ['ビートハートの出現個数を'],
-  [SkillEffectType.AMBIENCE]: ['ムード値を%する'],
+  [SkillEffectType.AMBIENCE]: ['ムード値を'],
   [SkillEffectType.MENTAL_RECOVER]: ['メンタルを最大値の'],
   [SkillEffectType.MENTAL_PROTECT]: ['メンタル自然減少を無効'],
-  [SkillEffectType.RESHUFFLE]: ['シャッフル', '手札をすべて捨てて'],
+  [SkillEffectType.RESHUFFLE]: ['シャッフル', '手札をすべて捨てて', '手札を全て捨てて'],
   [SkillEffectType.EXTEND_HAND]: ['手札の上限枚数を'],
-  [SkillEffectType.BLESSING]: ['消費APを-%する'],
+  [SkillEffectType.BLESSING]: ['消費APを-'],
   [SkillEffectType.IMITATION]: ['カードがステージにセットされ'],
-  [SkillEffectType.AP_GAIN]: ['APを%回復'],
+  [SkillEffectType.AP_GAIN]: ['APを\\d+回復'],
   [SkillEffectType.HEAT_UP]: ['AP回復速度を'],
   [SkillEffectType.BELIEF]: ['メンタルダウンしなくなり'],
   [SkillEffectType.IGNITION]: ['イグニッションモード'],
