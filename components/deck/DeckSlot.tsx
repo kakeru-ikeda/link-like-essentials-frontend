@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { DeckSlot as DeckSlotType } from '@/models/Deck';
 import { Card } from '@/models/Card';
-import { getCharacterColor } from '@/constants/characterColors';
+import { getCharacterColor } from '@/constants/characters';
 import { ApBadge } from '@/components/common/ApBadge';
 import { RarityBadge } from '@/components/common/RarityBadge';
 import { AceBadge } from '@/components/common/AceBadge';

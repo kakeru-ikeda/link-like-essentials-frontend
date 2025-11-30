@@ -4,16 +4,22 @@ import React, { useState } from 'react';
 import { DeckBuilder } from '@/components/deck/DeckBuilder';
 import { CardList } from '@/components/deck/CardList';
 import { CurrentCardDisplay } from '@/components/deck/CurrentCardDisplay';
+import { CardFilterComponent } from '@/components/deck/CardFilter';
+import { FilterButton } from '@/components/deck/FilterButton';
+import { ActiveFilters } from '@/components/deck/ActiveFilters';
 import { SideModal } from '@/components/common/SideModal';
 import { Button } from '@/components/common/Button';
 import { useDeck } from '@/hooks/useDeck';
 import { useCards } from '@/hooks/useCards';
 import { Card } from '@/models/Card';
+import { CardFilter } from '@/models/Filter';
 import { useCardStore } from '@/store/cardStore';
 
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentSlotId, setCurrentSlotId] = useState<number | null>(null);
+  const [cardFilter, setCardFilter] = useState<CardFilter>({});
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const { deck, addCard, removeCard, swapCards, clearAllCards, saveDeck } = useDeck();
   const { filters, updateFilters } = useCardStore();
 
@@ -56,6 +62,14 @@ export default function Home() {
   const handleSlotClick = (slotId: number): void => {
     setCurrentSlotId(slotId);
     setIsModalOpen(true);
+    
+    // フリー以外のキャラクター枠の場合、デフォルトでそのキャラクターのフィルターを設定
+    const slot = deck?.slots.find((s) => s.slotId === slotId);
+    if (slot?.characterName && slot.characterName !== 'フリー') {
+      setCardFilter({ characterNames: [slot.characterName] });
+    } else {
+      setCardFilter({});
+    }
   };
 
   const handleSelectCard = (card: Card): void => {
@@ -81,6 +95,38 @@ export default function Home() {
   const handleCloseModal = (): void => {
     setIsModalOpen(false);
     setCurrentSlotId(null);
+  };
+
+  const handleApplyFilters = (filter: CardFilter): void => {
+    setCardFilter(filter);
+    // TODO: フィルター条件に基づいてカードをフィルタリング
+  };
+
+  const handleClearFilter = (key: keyof CardFilter): void => {
+    const newFilter = { ...cardFilter };
+    
+    // キャラクター名フィルターの場合、ロックされたキャラクター以外を削除
+    if (key === 'characterNames' && currentCharacterName && currentCharacterName !== 'フリー') {
+      newFilter.characterNames = [currentCharacterName];
+    } else {
+      delete newFilter[key];
+    }
+    
+    setCardFilter(newFilter);
+    // TODO: フィルター条件に基づいてカードをフィルタリング
+  };
+
+  const countActiveFilters = (): number => {
+    let count = 0;
+    if (cardFilter.keyword) count++;
+    if (cardFilter.rarities && cardFilter.rarities.length > 0) count += cardFilter.rarities.length;
+    if (cardFilter.styleTypes && cardFilter.styleTypes.length > 0) count += cardFilter.styleTypes.length;
+    if (cardFilter.limitedTypes && cardFilter.limitedTypes.length > 0) count += cardFilter.limitedTypes.length;
+    if (cardFilter.favoriteModes && cardFilter.favoriteModes.length > 0) count += cardFilter.favoriteModes.length;
+    if (cardFilter.characterNames && cardFilter.characterNames.length > 0) count += cardFilter.characterNames.length;
+    if (cardFilter.skillEffects && cardFilter.skillEffects.length > 0) count += cardFilter.skillEffects.length;
+    if (cardFilter.skillSearchTargets && cardFilter.skillSearchTargets.length > 0) count += cardFilter.skillSearchTargets.length;
+    return count;
   };
 
   return (
@@ -112,11 +158,25 @@ export default function Home() {
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         title={`カードを選択 - ${currentCharacterName || ''}`}
+        headerActions={
+          <FilterButton
+            activeCount={countActiveFilters()}
+            onClick={() => setIsFilterModalOpen(true)}
+          />
+        }
       >
         <div className="flex flex-col h-full">
           {currentSlotCard && currentCharacterName && (
             <CurrentCardDisplay card={currentSlotCard} characterName={currentCharacterName} />
           )}
+
+          {/* 選択中のフィルター表示 */}
+          <ActiveFilters
+            filter={cardFilter}
+            onClearFilter={handleClearFilter}
+            lockedCharacter={currentCharacterName !== 'フリー' ? currentCharacterName : undefined}
+          />
+
           <div className="flex-1 overflow-y-auto">
             <CardList
               cards={filteredCards}
@@ -126,6 +186,15 @@ export default function Home() {
             />
           </div>
         </div>
+
+        {/* フィルターUIモーダル */}
+        <CardFilterComponent
+          onApplyFilters={handleApplyFilters}
+          currentFilter={cardFilter}
+          isFilterModalOpen={isFilterModalOpen}
+          onCloseFilterModal={() => setIsFilterModalOpen(false)}
+          lockedCharacter={currentCharacterName !== 'フリー' ? currentCharacterName : undefined}
+        />
       </SideModal>
     </div>
   );
