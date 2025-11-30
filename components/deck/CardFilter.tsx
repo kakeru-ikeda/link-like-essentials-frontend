@@ -48,7 +48,12 @@ export const CardFilterComponent: React.FC<CardFilterProps> = ({
   };
 
   const handleReset = (): void => {
-    setFilter({});
+    // ロックされたキャラクターは保持
+    const newFilter: CardFilter = {};
+    if (lockedCharacter) {
+      newFilter.characterNames = [lockedCharacter];
+    }
+    setFilter(newFilter);
   };
 
   const handleApply = (): void => {
@@ -144,7 +149,7 @@ export const CardFilterComponent: React.FC<CardFilterProps> = ({
         isOpen={isFilterModalOpen}
         onClose={handleCloseModal}
         title="絞り込み"
-        width="md"
+        width="lg"
       >
         <div className="p-4 space-y-6">
           {/* AND/OR検索モード切り替え */}
@@ -374,6 +379,45 @@ export const CardFilterComponent: React.FC<CardFilterProps> = ({
             </div>
           </div>
 
+          {/* トークンカードの有無 */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              トークンカード
+            </label>
+            <div className="flex gap-2">
+              <button
+                onClick={() =>
+                  handleFilterUpdate({
+                    hasAccessories:
+                      filter.hasAccessories === true ? undefined : true,
+                  })
+                }
+                className={`px-3 py-1 rounded-full text-sm font-medium transition ${
+                  filter.hasAccessories === true
+                    ? 'bg-cyan-500 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                あり
+              </button>
+              <button
+                onClick={() =>
+                  handleFilterUpdate({
+                    hasAccessories:
+                      filter.hasAccessories === false ? undefined : false,
+                  })
+                }
+                className={`px-3 py-1 rounded-full text-sm font-medium transition ${
+                  filter.hasAccessories === false
+                    ? 'bg-cyan-500 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                なし
+              </button>
+            </div>
+          </div>
+
           {/* リセットボタン */}
           <div className="pt-4 border-t border-gray-200">
             <button
@@ -385,7 +429,7 @@ export const CardFilterComponent: React.FC<CardFilterProps> = ({
           </div>
 
           {/* 適用ボタン */}
-          <div className="pt-2">
+          <div>
             <button
               onClick={handleApply}
               className="w-full px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded-md transition font-medium"

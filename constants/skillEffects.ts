@@ -111,7 +111,7 @@ export const SKILL_EFFECT_KEYWORDS: Record<SkillEffectType, string[]> = {
   [SkillEffectType.VOLTAGE_BOOST]: ['ボルテージゲイン効果を'],
   [SkillEffectType.VIBES]: ['ビートハートの出現個数を'],
   [SkillEffectType.AMBIENCE]: ['ムード値を'],
-  [SkillEffectType.MENTAL_RECOVER]: ['メンタルを最大値の'],
+  [SkillEffectType.MENTAL_RECOVER]: ['メンタルを最大値の\\d+%回復'],
   [SkillEffectType.MENTAL_PROTECT]: ['メンタル自然減少を無効'],
   [SkillEffectType.RESHUFFLE]: ['シャッフル', '手札をすべて捨てて', '手札を全て捨てて'],
   [SkillEffectType.EXTEND_HAND]: ['手札の上限枚数を'],

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DeckBuilder } from '@/components/deck/DeckBuilder';
 import { CardList } from '@/components/deck/CardList';
 import { CurrentCardDisplay } from '@/components/deck/CurrentCardDisplay';
@@ -11,6 +11,7 @@ import { SideModal } from '@/components/common/SideModal';
 import { Button } from '@/components/common/Button';
 import { useDeck } from '@/hooks/useDeck';
 import { useCards } from '@/hooks/useCards';
+import { useCardStore } from '@/store/cardStore';
 import { Card } from '@/models/Card';
 import { CardFilter } from '@/models/Filter';
 
@@ -20,6 +21,12 @@ export default function Home() {
   const [cardFilter, setCardFilter] = useState<CardFilter>({});
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const { deck, addCard, removeCard, swapCards, clearAllCards, saveDeck } = useDeck();
+  const setActiveFilter = useCardStore((state) => state.setActiveFilter);
+
+  // フィルタが変更されたらactiveFilterを更新
+  useEffect(() => {
+    setActiveFilter(cardFilter);
+  }, [cardFilter, setActiveFilter]);
 
   // 現在選択されているスロットのキャラクター名を取得
   const currentCharacterName = React.useMemo(() => {
@@ -168,6 +175,7 @@ export default function Home() {
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         title={`カードを選択 - ${currentCharacterName || ''}`}
+        width="md"
         headerActions={
           <FilterButton
             activeCount={countActiveFilters()}

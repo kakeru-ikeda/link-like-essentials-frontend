@@ -43,6 +43,16 @@ export const GET_CARDS = gql`
           traitEffect
         }
       }
+      accessories {
+        id
+        cardId
+        parentType
+        name
+        ap
+        effect
+        traitName
+        traitEffect
+      }
     }
   }
 `;

@@ -20,10 +20,31 @@ export function filterCardsOnClient(cards: Card[], filter: CardFilter): Card[] {
     // キーワード検索
     if (filter.keyword) {
       const keyword = filter.keyword.toLowerCase();
-      if (
-        !card.cardName?.toLowerCase().includes(keyword) &&
-        !card.characterName?.toLowerCase().includes(keyword)
-      ) {
+      
+      // 検索対象フィールドを配列にまとめる
+      const searchFields: (string | undefined)[] = [
+        card.cardName,
+        card.characterName,
+        // スキル名・効果
+        card.detail?.skill?.name,
+        card.detail?.skill?.effect,
+        card.detail?.specialAppeal?.name,
+        card.detail?.specialAppeal?.effect,
+        card.detail?.trait?.name,
+        card.detail?.trait?.effect,
+      ];
+      
+      // アクセサリーのスキル名・効果・特性名・特性効果も追加
+      card.accessories?.forEach(acc => {
+        searchFields.push(acc.name, acc.effect, acc.traitName, acc.traitEffect);
+      });
+      
+      // いずれかのフィールドにキーワードが含まれているかチェック
+      const hasMatch = searchFields.some(field => 
+        field?.toLowerCase().includes(keyword)
+      );
+      
+      if (!hasMatch) {
         return false;
       }
     }
@@ -136,40 +157,51 @@ export function filterCardsOnClient(cards: Card[], filter: CardFilter): Card[] {
         
         // 1つのスキル効果タイプ内の複数キーワードは常にOR検索
         // （例：RESHUFFLE = ['シャッフル' OR '手札をすべて捨てて' OR '手札を全て捨てて']）
-        return keywords.some((keyword) =>
-          targets.some((target) => {
-            let text: string | undefined;
+        return keywords.some((keyword) => {
+          // 検索対象（スキル、スペシャルアピール、特性）はOR検索
+          // 「スキル」「特性」を選択 → スキル OR 特性のいずれかにマッチすればOK
+          return targets.some((target) => {
+            const texts: (string | undefined)[] = [];
+            
             switch (target) {
               case SkillSearchTarget.SKILL:
-                text = card.detail?.skill?.effect;
+                // カード本体のスキル
+                texts.push(card.detail?.skill?.effect);
+                // アクセサリーカードのスキル
+                card.accessories?.forEach(acc => texts.push(acc.effect));
                 break;
               case SkillSearchTarget.SPECIAL_APPEAL:
-                text = card.detail?.specialAppeal?.effect;
+                // カード本体のスペシャルアピールのみ（アクセサリーにはない）
+                texts.push(card.detail?.specialAppeal?.effect);
                 break;
               case SkillSearchTarget.TRAIT:
-                text = card.detail?.trait?.effect;
+                // カード本体の特性
+                texts.push(card.detail?.trait?.effect);
+                // アクセサリーカードの特性
+                card.accessories?.forEach(acc => texts.push(acc.traitEffect));
                 break;
-              default:
-                return false;
             }
+            
+            // いずれかのテキストにキーワードが含まれているかチェック
+            return texts.some(text => {
+              if (!text) return false;
 
-            if (!text) return false;
-
-            // 正規表現パターンかどうかをチェック（\\ を含む場合は正規表現として扱う）
-            if (keyword.includes('\\')) {
-              try {
-                const regex = new RegExp(keyword);
-                return regex.test(text);
-              } catch {
-                // 正規表現が不正な場合は通常の文字列検索にフォールバック
-                return text.includes(keyword);
+              // 正規表現パターンかどうかをチェック（\\ を含む場合は正規表現として扱う）
+              if (keyword.includes('\\')) {
+                try {
+                  const regex = new RegExp(keyword);
+                  return regex.test(text);
+                } catch {
+                  // 正規表現が不正な場合は通常の文字列検索にフォールバック
+                  return text.includes(keyword);
+                }
               }
-            }
 
-            // 通常の文字列検索
-            return text.includes(keyword);
-          })
-        );
+              // 通常の文字列検索
+              return text.includes(keyword);
+            });
+          });
+        });
       };
 
       let hasEffect: boolean;
@@ -184,6 +216,14 @@ export function filterCardsOnClient(cards: Card[], filter: CardFilter): Card[] {
       }
 
       if (!hasEffect) {
+        return false;
+      }
+    }
+
+    // アクセサリーカードの有無
+    if (filter.hasAccessories !== undefined) {
+      const hasAccessories = card.accessories && card.accessories.length > 0;
+      if (filter.hasAccessories !== hasAccessories) {
         return false;
       }
     }
