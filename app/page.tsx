@@ -175,6 +175,7 @@ export default function Home() {
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         title={`カードを選択 - ${currentCharacterName || ''}`}
+        width="md"
         headerActions={
           <FilterButton
             activeCount={countActiveFilters()}

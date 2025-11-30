@@ -123,7 +123,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({ onSlotClick }) => {
         isOpen={isDetailModalOpen}
         onClose={handleCloseDetail}
         title="カード詳細"
-        width="md"
+        width="lg"
       >
         {selectedCardId && <CardDetailView cardId={selectedCardId} />}
       </SideModal>

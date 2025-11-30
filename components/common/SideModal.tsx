@@ -8,14 +8,16 @@ interface SideModalProps {
   onClose: () => void;
   children: React.ReactNode;
   title?: string;
-  width?: 'sm' | 'md' | 'lg';
+  width?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
   headerActions?: React.ReactNode;
 }
 
 const widthClasses = {
   sm: 'w-[30%]',
-  md: 'w-[40%]',
-  lg: 'w-[50%]',
+  md: 'w-[45%]',
+  lg: 'w-[55%]',
+  xl: 'w-[65%]',
+  full: 'w-[75%]',
 };
 
 export function SideModal({

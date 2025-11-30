@@ -144,7 +144,7 @@ export const CardFilterComponent: React.FC<CardFilterProps> = ({
         isOpen={isFilterModalOpen}
         onClose={handleCloseModal}
         title="絞り込み"
-        width="md"
+        width="lg"
       >
         <div className="p-4 space-y-6">
           {/* AND/OR検索モード切り替え */}
