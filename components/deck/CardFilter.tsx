@@ -48,7 +48,12 @@ export const CardFilterComponent: React.FC<CardFilterProps> = ({
   };
 
   const handleReset = (): void => {
-    setFilter({});
+    // ロックされたキャラクターは保持
+    const newFilter: CardFilter = {};
+    if (lockedCharacter) {
+      newFilter.characterNames = [lockedCharacter];
+    }
+    setFilter(newFilter);
   };
 
   const handleApply = (): void => {
@@ -385,7 +390,7 @@ export const CardFilterComponent: React.FC<CardFilterProps> = ({
           </div>
 
           {/* 適用ボタン */}
-          <div className="pt-2">
+          <div>
             <button
               onClick={handleApply}
               className="w-full px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded-md transition font-medium"
