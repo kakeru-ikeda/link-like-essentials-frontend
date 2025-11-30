@@ -46,11 +46,12 @@ export default function Home() {
   }, [deck, currentSlotId]);
 
   // カード一覧を取得（キャラクターでフィルタリング）
-  // 「フリー」枠の場合は全カードを対象とするため、フィルターを適用しない
+  // スロット未選択時はフェッチをスキップ
   const { cards, loading } = useCards(
     currentCharacterName && currentCharacterName !== 'フリー'
       ? { characterName: currentCharacterName }
-      : undefined
+      : undefined,
+    currentSlotId === null // スロット未選択ならスキップ
   );
 
   // 現在のカードを除外したカードリスト
