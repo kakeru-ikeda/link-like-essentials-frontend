@@ -150,8 +150,9 @@ export const CardFilterComponent: React.FC<CardFilterProps> = ({
         isOpen={isFilterModalOpen}
         onClose={handleCloseModal}
         title="絞り込み"
-        width="lg"
+        width="sm"
         hideCloseButton={true}
+        zIndex={60}
         headerActions={
           <div className="flex gap-2">
             <button

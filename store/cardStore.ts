@@ -17,11 +17,14 @@ interface CardState {
   filters: CardFilters;
   // ハイライト用のアクティブフィルタ
   activeFilter: CardFilter | null;
+  // 保存されたフィルター（キャラクターロック以外）
+  savedFilter: CardFilter;
   setCards: (cards: Card[]) => void;
   setSelectedCard: (card: Card | null) => void;
   updateFilters: (filters: Partial<CardFilters>) => void;
   clearFilters: () => void;
   setActiveFilter: (filter: CardFilter | null) => void;
+  setSavedFilter: (filter: CardFilter) => void;
 }
 
 export const useCardStore = create<CardState>()(
@@ -30,6 +33,7 @@ export const useCardStore = create<CardState>()(
     selectedCard: null,
     filters: {},
     activeFilter: null,
+    savedFilter: {},
 
     setCards: (cards) =>
       set((state) => {
@@ -54,6 +58,11 @@ export const useCardStore = create<CardState>()(
     setActiveFilter: (filter) =>
       set((state) => {
         state.activeFilter = filter;
+      }),
+
+    setSavedFilter: (filter) =>
+      set((state) => {
+        state.savedFilter = filter;
       }),
   }))
 );
