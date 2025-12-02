@@ -1,4 +1,4 @@
-import { CharacterName } from '@/models/Character';
+import { CharacterName } from '@/constants/characters';
 
 export const DECK_SLOT_COUNT = 18;
 

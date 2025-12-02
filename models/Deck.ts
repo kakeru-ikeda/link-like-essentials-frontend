@@ -1,5 +1,5 @@
 import { Card } from './Card';
-import { CharacterName } from './Character';
+import { CharacterName } from '../constants/characters';
 
 export interface DeckSlot {
   slotId: number;

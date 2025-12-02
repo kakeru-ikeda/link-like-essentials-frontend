@@ -16,6 +16,8 @@ export const CHARACTERS = [
   '大賀美沙知',
 ] as const;
 
+export type CharacterName = (typeof CHARACTERS)[number] | (typeof DECK_FRAME_105)[number];
+
 /**
  * 105期デッキフレーム用キャラクター配置（9名 + フリー）
  */

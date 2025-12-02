@@ -336,7 +336,7 @@ export const CardFilterComponent: React.FC<CardFilterProps> = ({
             {/* 検索範囲の選択 */}
             <div>
               <label className="block text-xs font-medium text-gray-600 mb-2">
-                検索範囲:
+                検索範囲
               </label>
               <div className="flex flex-wrap gap-2">
                 {Object.values(SkillSearchTarget).map((target) => (
