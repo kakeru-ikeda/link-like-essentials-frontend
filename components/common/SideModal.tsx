@@ -1,7 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
+import { KeywordSearchInput } from '@/components/common/KeywordSearchInput';
 
 interface SideModalProps {
   isOpen: boolean;
@@ -10,6 +12,13 @@ interface SideModalProps {
   title?: string;
   width?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
   headerActions?: React.ReactNode;
+  hideCloseButton?: boolean;
+  keywordSearch?: {
+    value: string;
+    onChange: (value: string) => void;
+    placeholder?: string;
+  };
+  zIndex?: number; // z-indexを外部から指定可能に
 }
 
 const widthClasses = {
@@ -27,10 +36,19 @@ export function SideModal({
   title,
   width = 'md',
   headerActions,
+  hideCloseButton = false,
+  keywordSearch,
+  zIndex = 40,
 }: SideModalProps): JSX.Element | null {
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const [shouldMount, setShouldMount] = useState<boolean>(false);
   const [isAnimating, setIsAnimating] = useState<boolean>(false);
+  const [mounted, setMounted] = useState<boolean>(false);
+
+  // クライアントサイドでマウントされたことを確認
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // マウント・アンマウント制御
   useEffect(() => {
@@ -91,45 +109,61 @@ export function SideModal({
     };
   }, [isOpen]);
 
-  if (!shouldMount) return null;
+  if (!shouldMount || !mounted) return null;
 
-  return (
+  const modalContent = (
     <>
       {/* オーバーレイ */}
       <div
-        className={`fixed inset-0 bg-black/50 z-40 transition-opacity duration-300 ${
+        className={`fixed inset-0 bg-black/50 transition-opacity duration-300 ${
           isVisible ? 'opacity-100' : 'opacity-0'
         }`}
+        style={{ zIndex }}
         onClick={handleClose}
         aria-hidden="true"
       />
 
       {/* サイドモーダル本体 */}
       <div
-        className={`fixed top-0 right-0 h-full ${widthClasses[width]} bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-out flex flex-col ${
+        className={`fixed top-0 right-0 h-full ${widthClasses[width]} bg-white shadow-2xl transform transition-transform duration-300 ease-out flex flex-col ${
           isVisible ? 'translate-x-0' : 'translate-x-full'
         }`}
+        style={{ zIndex: zIndex + 10 }}
         role="dialog"
         aria-modal="true"
         aria-labelledby={title ? 'side-modal-title' : undefined}
       >
         {/* ヘッダー */}
         {title && (
-          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 flex-shrink-0">
-            <h2 id="side-modal-title" className="text-xl font-bold text-gray-900">
-              {title}
-            </h2>
-            <div className="flex items-center gap-2">
-              {headerActions}
-              <button
-                onClick={handleClose}
-                className="p-2 rounded-full hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                aria-label="閉じる"
-                disabled={isAnimating}
-              >
-                <X className="w-5 h-5 text-gray-600" />
-              </button>
+          <div className="border-b border-gray-200 flex-shrink-0">
+            <div className="flex items-center justify-between px-6 py-4">
+              <h2 id="side-modal-title" className="text-xl font-bold text-gray-900">
+                {title}
+              </h2>
+              <div className="flex items-center gap-2">
+                {headerActions}
+                {!hideCloseButton && (
+                  <button
+                    onClick={handleClose}
+                    className="p-2 rounded-full hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    aria-label="閉じる"
+                    disabled={isAnimating}
+                  >
+                    <X className="w-5 h-5 text-gray-600" />
+                  </button>
+                )}
+              </div>
             </div>
+            {/* キーワード検索 */}
+            {keywordSearch && (
+              <div className="px-6 pb-4">
+                <KeywordSearchInput
+                  value={keywordSearch.value}
+                  onChange={keywordSearch.onChange}
+                  placeholder={keywordSearch.placeholder}
+                />
+              </div>
+            )}
           </div>
         )}
 
@@ -140,4 +174,6 @@ export function SideModal({
       </div>
     </>
   );
+
+  return createPortal(modalContent, document.body);
 }

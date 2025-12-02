@@ -9,14 +9,12 @@ interface CardListProps {
   cards: Card[];
   loading: boolean;
   onSelectCard: (card: Card) => void;
-  assignedCardIds?: string[];
 }
 
 export const CardList: React.FC<CardListProps> = ({
   cards,
   loading,
   onSelectCard,
-  assignedCardIds = [],
 }) => {
   if (loading) {
     return <Loading />;
@@ -37,7 +35,6 @@ export const CardList: React.FC<CardListProps> = ({
           key={card.id}
           card={card}
           onSelect={onSelectCard}
-          isAssigned={assignedCardIds.includes(card.id)}
         />
       ))}
     </div>
