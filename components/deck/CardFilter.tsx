@@ -6,6 +6,7 @@ import { Rarity, StyleType, LimitedType, FavoriteMode } from '@/models/enums';
 import { CHARACTERS } from '@/constants/characters';
 import { SideModal } from '@/components/common/SideModal';
 import { Tooltip } from '@/components/common/Tooltip';
+import { KeywordSearchInput } from '@/components/common/KeywordSearchInput';
 import {
   RARITY_LABELS,
   STYLE_TYPE_LABELS,
@@ -150,6 +151,23 @@ export const CardFilterComponent: React.FC<CardFilterProps> = ({
         onClose={handleCloseModal}
         title="絞り込み"
         width="lg"
+        hideCloseButton={true}
+        headerActions={
+          <div className="flex gap-2">
+            <button
+              onClick={handleReset}
+              className="px-3 py-1.5 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition font-medium"
+            >
+              リセット
+            </button>
+            <button
+              onClick={handleApply}
+              className="px-3 py-1.5 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded-md transition font-medium"
+            >
+              フィルターを適用
+            </button>
+          </div>
+        }
       >
         <div className="p-4 space-y-6">
           {/* AND/OR検索モード切り替え */}
@@ -193,16 +211,15 @@ export const CardFilterComponent: React.FC<CardFilterProps> = ({
             <label className="block text-sm font-medium text-gray-700 mb-2">
               キーワード検索
             </label>
-            <input
-              type="text"
+            <KeywordSearchInput
               value={filter.keyword || ''}
-              onChange={(e) =>
+              onChange={(value) =>
                 handleFilterUpdate({
-                  keyword: e.target.value || undefined,
+                  keyword: value || undefined,
                 })
               }
+              onEnter={handleApply}
               placeholder="カード名やキャラクター名で検索..."
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
@@ -416,26 +433,6 @@ export const CardFilterComponent: React.FC<CardFilterProps> = ({
                 なし
               </button>
             </div>
-          </div>
-
-          {/* リセットボタン */}
-          <div className="pt-4 border-t border-gray-200">
-            <button
-              onClick={handleReset}
-              className="w-full px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition font-medium"
-            >
-              すべてリセット
-            </button>
-          </div>
-
-          {/* 適用ボタン */}
-          <div>
-            <button
-              onClick={handleApply}
-              className="w-full px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded-md transition font-medium"
-            >
-              フィルターを適用
-            </button>
           </div>
         </div>
       </SideModal>

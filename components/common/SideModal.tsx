@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
+import { KeywordSearchInput } from '@/components/common/KeywordSearchInput';
 
 interface SideModalProps {
   isOpen: boolean;
@@ -10,6 +11,12 @@ interface SideModalProps {
   title?: string;
   width?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
   headerActions?: React.ReactNode;
+  hideCloseButton?: boolean;
+  keywordSearch?: {
+    value: string;
+    onChange: (value: string) => void;
+    placeholder?: string;
+  };
 }
 
 const widthClasses = {
@@ -27,6 +34,8 @@ export function SideModal({
   title,
   width = 'md',
   headerActions,
+  hideCloseButton = false,
+  keywordSearch,
 }: SideModalProps): JSX.Element | null {
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const [shouldMount, setShouldMount] = useState<boolean>(false);
@@ -115,21 +124,35 @@ export function SideModal({
       >
         {/* ヘッダー */}
         {title && (
-          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 flex-shrink-0">
-            <h2 id="side-modal-title" className="text-xl font-bold text-gray-900">
-              {title}
-            </h2>
-            <div className="flex items-center gap-2">
-              {headerActions}
-              <button
-                onClick={handleClose}
-                className="p-2 rounded-full hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                aria-label="閉じる"
-                disabled={isAnimating}
-              >
-                <X className="w-5 h-5 text-gray-600" />
-              </button>
+          <div className="border-b border-gray-200 flex-shrink-0">
+            <div className="flex items-center justify-between px-6 py-4">
+              <h2 id="side-modal-title" className="text-xl font-bold text-gray-900">
+                {title}
+              </h2>
+              <div className="flex items-center gap-2">
+                {headerActions}
+                {!hideCloseButton && (
+                  <button
+                    onClick={handleClose}
+                    className="p-2 rounded-full hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    aria-label="閉じる"
+                    disabled={isAnimating}
+                  >
+                    <X className="w-5 h-5 text-gray-600" />
+                  </button>
+                )}
+              </div>
             </div>
+            {/* キーワード検索 */}
+            {keywordSearch && (
+              <div className="px-6 pb-4">
+                <KeywordSearchInput
+                  value={keywordSearch.value}
+                  onChange={keywordSearch.onChange}
+                  placeholder={keywordSearch.placeholder}
+                />
+              </div>
+            )}
           </div>
         )}
 

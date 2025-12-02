@@ -197,6 +197,11 @@ export default function Home() {
         onClose={handleCloseModal}
         title={`カードを選択 - ${currentCharacterName || ''}`}
         width="md"
+        keywordSearch={{
+          value: cardFilter.keyword || '',
+          onChange: (value) => setCardFilter({ ...cardFilter, keyword: value || undefined }),
+          placeholder: 'カード名やキャラクター名で検索...',
+        }}
         headerActions={
           <FilterButton
             activeCount={countActiveFilters()}
