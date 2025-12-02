@@ -241,7 +241,7 @@ export default function Home() {
     <div className="h-screen flex flex-col overflow-hidden">
       <div className="flex-1 flex gap-4 px-4 py-2 min-h-0">
         {/* 左側: デッキビルダー */}
-        <div className="w-3/5 min-h-0 flex items-start pt-4">
+        <div className="w-3/5 min-h-0 flex items-start">
           <DeckBuilder onSlotClick={handleSlotClick} />
         </div>
 
