@@ -18,20 +18,40 @@ export const CurrentCardDisplay: React.FC<CurrentCardDisplayProps> = ({
   characterName,
 }) => {
   const [imageError, setImageError] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isDetailExpanded, setIsDetailExpanded] = useState(false);
+  const [isSectionOpen, setIsSectionOpen] = useState(true);
 
-  const handleToggleExpand = (): void => {
-    setIsExpanded(!isExpanded);
+  const handleToggleDetail = (): void => {
+    setIsDetailExpanded(!isDetailExpanded);
+  };
+
+  const handleToggleSection = (): void => {
+    setIsSectionOpen(!isSectionOpen);
   };
 
   return (
     <div className="bg-blue-50 border-b border-blue-200 flex-shrink-0">
-      {/* メイン表示エリア */}
+      {/* セクションヘッダー */}
       <button
-        onClick={handleToggleExpand}
-        className="w-full p-4 hover:bg-blue-100 transition-colors text-left"
+        onClick={handleToggleSection}
+        className="w-full px-4 py-2 hover:bg-blue-100 transition-colors text-left flex items-center justify-between"
       >
-        <h3 className="text-sm font-bold text-gray-700 mb-2">現在のカード</h3>
+        <h3 className="text-sm font-bold text-gray-700">現在のカード</h3>
+        <div className="flex-shrink-0">
+          {isSectionOpen ? (
+            <ChevronUp className="w-4 h-4 text-gray-600" />
+          ) : (
+            <ChevronDown className="w-4 h-4 text-gray-600" />
+          )}
+        </div>
+      </button>
+
+      {/* メイン表示エリア */}
+      {isSectionOpen && (
+      <button
+        onClick={handleToggleDetail}
+        className="w-full px-4 pb-4 hover:bg-blue-100 transition-colors text-left"
+      >
         <div className="flex items-center gap-3 bg-white rounded-lg p-3">
           {/* カード画像サムネイル */}
           <div className="w-20 h-14 flex-shrink-0 rounded-lg overflow-hidden border-2 border-gray-200">
@@ -77,7 +97,7 @@ export const CurrentCardDisplay: React.FC<CurrentCardDisplayProps> = ({
 
           {/* 展開アイコン */}
           <div className="flex-shrink-0">
-            {isExpanded ? (
+            {isDetailExpanded ? (
               <ChevronUp className="w-5 h-5 text-gray-600" />
             ) : (
               <ChevronDown className="w-5 h-5 text-gray-600" />
@@ -85,9 +105,10 @@ export const CurrentCardDisplay: React.FC<CurrentCardDisplayProps> = ({
           </div>
         </div>
       </button>
+      )}
 
       {/* 展開エリア（詳細情報） */}
-      {isExpanded && card.detail && (
+      {isSectionOpen && isDetailExpanded && card.detail && (
         <div className="px-4 pb-4 bg-blue-50">
           <CardDetailSections 
             card={card} 
