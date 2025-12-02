@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { DeckBuilder } from '@/components/deck/DeckBuilder';
 import { CardList } from '@/components/deck/CardList';
 import { CurrentCardDisplay } from '@/components/deck/CurrentCardDisplay';
+import { InProgressCardDisplay } from '@/components/deck/InProgressCardDisplay';
 import { CardFilterComponent } from '@/components/deck/CardFilter';
 import { FilterButton } from '@/components/deck/FilterButton';
 import { ActiveFilters } from '@/components/deck/ActiveFilters';
@@ -49,6 +50,26 @@ export default function Home() {
       .filter((slot) => slot.slotId !== currentSlotId && slot.card)
       .map((slot) => slot.card!.id);
   }, [deck, currentSlotId]);
+
+  // 編成済みのカードリストを取得（現在のスロットと同じキャラクターのみ、現在のスロットを除く）
+  // フリー枠は特別扱い：フリー枠に編成されているカードも対象に含める
+  const assignedCards = React.useMemo(() => {
+    if (!deck || !currentCharacterName) return [];
+    return deck.slots
+      .filter((slot) => {
+        if (slot.slotId === currentSlotId || !slot.card) return false;
+        
+        // 同じキャラクター枠のカードは表示
+        if (slot.characterName === currentCharacterName) return true;
+        
+        // フリー枠に編成されているカードで、選択中のキャラクターと一致する場合も表示
+        if (slot.characterName === 'フリー' && slot.card.characterName === currentCharacterName) return true;
+        
+        return false;
+      })
+      .map((slot) => slot.card!)
+      .filter((card, index, self) => self.findIndex((c) => c.id === card.id) === index); // 重複を除外
+  }, [deck, currentSlotId, currentCharacterName]);
 
   // カード一覧を取得（キャラクター + その他のフィルターでフィルタリング）
   // スロット未選択時はフェッチをスキップ
@@ -186,6 +207,10 @@ export default function Home() {
         <div className="flex flex-col h-full">
           {currentSlotCard && currentCharacterName && (
             <CurrentCardDisplay card={currentSlotCard} characterName={currentCharacterName} />
+          )}
+
+          {assignedCards.length > 0 && (
+            <InProgressCardDisplay cards={assignedCards} />
           )}
 
           {/* 選択中のフィルター表示 */}

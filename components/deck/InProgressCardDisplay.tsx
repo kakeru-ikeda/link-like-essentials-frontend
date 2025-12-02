@@ -1,0 +1,152 @@
+'use client';
+
+import React, { useState } from 'react';
+import { Card } from '@/models/Card';
+import { RarityBadge } from '@/components/common/RarityBadge';
+import { StyleTypeBadge } from '@/components/common/StyleTypeBadge';
+import { FavoriteModeBadge } from '@/components/common/FavoriteModeBadge';
+import { CardDetailSections } from '@/components/deck/CardDetailSections';
+import { ChevronDown, ChevronUp } from 'lucide-react';
+
+interface InProgressCardDisplayProps {
+  cards: Card[];
+}
+
+export const InProgressCardDisplay: React.FC<InProgressCardDisplayProps> = ({
+  cards,
+}) => {
+  const [expandedCardIds, setExpandedCardIds] = useState<Set<string>>(new Set());
+  const [imageErrors, setImageErrors] = useState<Set<string>>(new Set());
+  const [isSectionOpen, setIsSectionOpen] = useState(true);
+
+  const handleToggleSection = (): void => {
+    setIsSectionOpen(!isSectionOpen);
+  };
+
+  const handleToggleExpand = (cardId: string): void => {
+    setExpandedCardIds((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(cardId)) {
+        newSet.delete(cardId);
+      } else {
+        newSet.add(cardId);
+      }
+      return newSet;
+    });
+  };
+
+  const handleImageError = (cardId: string): void => {
+    setImageErrors((prev) => new Set(prev).add(cardId));
+  };
+
+  if (cards.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className="bg-green-50 border-b border-green-200 flex-shrink-0">
+      {/* セクションヘッダー */}
+      <button
+        onClick={handleToggleSection}
+        className="w-full px-4 py-2 hover:bg-green-100 transition-colors text-left flex items-center justify-between"
+      >
+        <h3 className="text-sm font-bold text-gray-700">
+          編成中のカード ({cards.length})
+        </h3>
+        <div className="flex-shrink-0">
+          {isSectionOpen ? (
+            <ChevronUp className="w-4 h-4 text-gray-600" />
+          ) : (
+            <ChevronDown className="w-4 h-4 text-gray-600" />
+          )}
+        </div>
+      </button>
+
+      {/* カードリスト */}
+      {isSectionOpen && (
+      <div className="px-4 pb-4">
+        <div className="space-y-2">
+          {cards.map((card) => {
+            const isExpanded = expandedCardIds.has(card.id);
+            const hasImageError = imageErrors.has(card.id);
+
+            return (
+              <div key={card.id} className="bg-white rounded-lg border border-green-200">
+                <button
+                  onClick={() => handleToggleExpand(card.id)}
+                  className="w-full p-3 hover:bg-green-50 transition-colors text-left"
+                >
+                  <div className="flex items-center gap-3">
+                    {/* カード画像サムネイル */}
+                    <div className="w-20 h-14 flex-shrink-0 rounded-lg overflow-hidden border-2 border-gray-200">
+                      {!hasImageError && card.detail?.awakeAfterStorageUrl ? (
+                        <img
+                          src={card.detail.awakeAfterStorageUrl}
+                          alt={card.cardName}
+                          className="w-full h-full object-cover"
+                          onError={() => handleImageError(card.id)}
+                        />
+                      ) : (
+                        <div className="flex items-center justify-center h-full bg-gray-200">
+                          <svg
+                            className="w-6 h-6 text-gray-400"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                            />
+                          </svg>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* カード情報 */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1 flex-wrap">
+                        <RarityBadge rarity={card.rarity} position="inline" size="small" />
+                        {card.styleType && (
+                          <StyleTypeBadge styleType={card.styleType} size="small" />
+                        )}
+                        {card.detail?.favoriteMode && card.detail.favoriteMode !== 'NONE' && (
+                          <FavoriteModeBadge favoriteMode={card.detail.favoriteMode} size="small" />
+                        )}
+                      </div>
+                      <h4 className="font-bold text-gray-900 text-sm truncate">{card.cardName}</h4>
+                    </div>
+
+                    {/* 展開アイコン */}
+                    <div className="flex-shrink-0">
+                      {isExpanded ? (
+                        <ChevronUp className="w-5 h-5 text-gray-600" />
+                      ) : (
+                        <ChevronDown className="w-5 h-5 text-gray-600" />
+                      )}
+                    </div>
+                  </div>
+                </button>
+
+                {/* 展開エリア（詳細情報） */}
+                {isExpanded && card.detail && (
+                  <div className="px-3 pb-3 bg-green-50">
+                    <CardDetailSections 
+                      card={card} 
+                      variant="compact"
+                      showStats={false}
+                      showAcquisition={false}
+                    />
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+      )}
+    </div>
+  );
+};
