@@ -63,14 +63,14 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({ onSlotClick }) => {
             return (
               <div 
                 key={character} 
-                className="flex flex-col space-y-0.5 sm:space-y-1 md:space-y-1.5 p-2 sm:p-3 rounded-lg backdrop-blur-sm"
+                className="flex flex-col h-full gap-1 sm:gap-1.5 md:gap-2 p-2 sm:p-3 rounded-lg backdrop-blur-sm"
                 style={{
                   backgroundColor: backgroundColor,
                   boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
                 }}
               >
               {/* キャラクター名 */}
-              <div className="text-center mb-0.5">
+              <div className="text-center flex-shrink-0">
                 <h3 className="text-[10px] sm:text-xs font-bold text-gray-700">{character}</h3>
               </div>
               
@@ -88,28 +88,32 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({ onSlotClick }) => {
               )}
               
               {/* サブカード (2枚目と3枚目のスロット) */}
-              <div className="grid grid-cols-2 gap-0.5 sm:gap-1">
+              <div className="flex gap-1 sm:gap-1.5 md:gap-2">
                 {slots[1] && (
-                  <DeckSlot
-                    slot={slots[1]}
-                    onSlotClick={onSlotClick}
-                    onRemoveCard={removeCard}
-                    onToggleAce={toggleAceCard}
-                    onShowDetail={handleShowDetail}
-                    isAce={deck.aceSlotId === slots[1].slotId}
-                    isMain={false}
-                  />
+                  <div className="flex-1 max-w-[55%]">
+                    <DeckSlot
+                      slot={slots[1]}
+                      onSlotClick={onSlotClick}
+                      onRemoveCard={removeCard}
+                      onToggleAce={toggleAceCard}
+                      onShowDetail={handleShowDetail}
+                      isAce={deck.aceSlotId === slots[1].slotId}
+                      isMain={false}
+                    />
+                  </div>
                 )}
                 {slots[2] && (
-                  <DeckSlot
-                    slot={slots[2]}
-                    onSlotClick={onSlotClick}
-                    onRemoveCard={removeCard}
-                    onToggleAce={toggleAceCard}
-                    onShowDetail={handleShowDetail}
-                    isAce={deck.aceSlotId === slots[2].slotId}
-                    isMain={false}
-                  />
+                  <div className="flex-1 max-w-[48%]">
+                    <DeckSlot
+                      slot={slots[2]}
+                      onSlotClick={onSlotClick}
+                      onRemoveCard={removeCard}
+                      onToggleAce={toggleAceCard}
+                      onShowDetail={handleShowDetail}
+                      isAce={deck.aceSlotId === slots[2].slotId}
+                      isMain={false}
+                    />
+                  </div>
                 )}
               </div>
             </div>
