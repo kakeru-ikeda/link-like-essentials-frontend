@@ -33,10 +33,9 @@ export const DeckSlot: React.FC<DeckSlotProps> = ({
   // キャラクターカラーを取得（画像枠線用）
   const characterColor = getCharacterColor(slot.characterName);
 
-  const aspectRatio = 'aspect-[16/9]';
   const containerClass = isMain 
-    ? `relative w-full ${aspectRatio} border-2 border-gray-300 rounded-lg overflow-hidden hover:border-blue-500 transition-colors bg-white`
-    : `relative w-full ${aspectRatio} border border-gray-300 rounded overflow-hidden hover:border-blue-500 transition-colors bg-white`;
+    ? `relative w-full aspect-[16/9] border-2 border-gray-300 rounded-lg overflow-hidden hover:border-blue-500 transition-colors bg-white`
+    : `relative w-full aspect-[16/9] border border-gray-300 rounded overflow-hidden hover:border-blue-500 transition-colors bg-white`;
 
   const handleRemoveClick = (e: React.MouseEvent): void => {
     e.stopPropagation(); // スロットのクリックイベントを防ぐ
