@@ -96,11 +96,17 @@ export default function Home() {
     currentSlotId === null // スロット未選択ならスキップ
   );
 
-  // 現在のカードを除外したカードリスト
+  // 現在のカードと編成中のカードを除外したカードリスト
   const filteredCards = React.useMemo(() => {
-    if (!currentSlotCard) return cards;
-    return cards.filter((card) => card.id !== currentSlotCard.id);
-  }, [cards, currentSlotCard]);
+    // 現在のスロットのカードIDを除外
+    const currentCardId = currentSlotCard?.id;
+    // 編成中のカードIDリストを除外
+    return cards.filter((card) => {
+      if (currentCardId && card.id === currentCardId) return false;
+      if (assignedCardIds.includes(card.id)) return false;
+      return true;
+    });
+  }, [cards, currentSlotCard, assignedCardIds]);
 
   const handleSlotClick = (slotId: number): void => {
     setCurrentSlotId(slotId);
@@ -133,6 +139,14 @@ export default function Home() {
         addCard(currentSlotId, card);
       }
 
+      setIsModalOpen(false);
+      setCurrentSlotId(null);
+    }
+  };
+
+  const handleRemoveCurrentCard = (): void => {
+    if (currentSlotId !== null) {
+      removeCard(currentSlotId);
       setIsModalOpen(false);
       setCurrentSlotId(null);
     }
@@ -276,14 +290,6 @@ export default function Home() {
         }
       >
         <div className="flex flex-col h-full">
-          {currentSlotCard && currentCharacterName && (
-            <CurrentCardDisplay card={currentSlotCard} characterName={currentCharacterName} />
-          )}
-
-          {assignedCards.length > 0 && (
-            <InProgressCardDisplay cards={assignedCards} />
-          )}
-
           {/* 選択中のフィルター表示 */}
           <ActiveFilters
             filter={cardFilter}
@@ -292,11 +298,25 @@ export default function Home() {
           />
 
           <div className="flex-1 overflow-y-auto">
+            {currentSlotCard && currentCharacterName && (
+              <CurrentCardDisplay 
+                card={currentSlotCard} 
+                characterName={currentCharacterName}
+                onRemove={handleRemoveCurrentCard}
+              />
+            )}
+
+            {assignedCards.length > 0 && (
+              <InProgressCardDisplay 
+                cards={assignedCards}
+                onSelectCard={handleSelectCard}
+              />
+            )}
+
             <CardList
               cards={filteredCards}
               loading={loading}
               onSelectCard={handleSelectCard}
-              assignedCardIds={assignedCardIds}
             />
           </div>
         </div>

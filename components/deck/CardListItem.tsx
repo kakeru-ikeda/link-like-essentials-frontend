@@ -6,36 +6,83 @@ import { RarityBadge } from '@/components/common/RarityBadge';
 import { StyleTypeBadge } from '@/components/common/StyleTypeBadge';
 import { FavoriteModeBadge } from '@/components/common/FavoriteModeBadge';
 import { CardDetailSections } from '@/components/deck/CardDetailSections';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp, Plus, Minus, ArrowLeftRight } from 'lucide-react';
 
 interface CardListItemProps {
   card: Card;
   onSelect: (card: Card) => void;
-  isAssigned?: boolean;
+  variant?: 'default' | 'current' | 'inProgress';
 }
 
-export const CardListItem: React.FC<CardListItemProps> = ({ card, onSelect, isAssigned = false }) => {
+export const CardListItem: React.FC<CardListItemProps> = ({ card, onSelect, variant = 'default' }) => {
   const [imageError, setImageError] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
-  const handleToggleExpand = (): void => {
+  const handleToggleExpand = (e: React.MouseEvent): void => {
+    e.stopPropagation();
     setIsExpanded(!isExpanded);
   };
 
-  const handleSelect = (e: React.MouseEvent): void => {
-    e.stopPropagation();
+  const handleSelect = (): void => {
     onSelect(card);
   };
 
+  // バリアント別のスタイル定義
+  const variantStyles = {
+    default: {
+      container: 'border-b border-gray-200',
+      hover: 'hover:bg-gray-50',
+      detailBg: 'bg-gray-50',
+      actionBg: 'bg-blue-500/10',
+      actionIcon: 'bg-blue-500',
+      icon: Plus,
+    },
+    current: {
+      container: 'bg-white rounded-lg border border-blue-200',
+      hover: 'hover:bg-blue-50',
+      detailBg: 'bg-blue-50',
+      actionBg: 'bg-red-500/10',
+      actionIcon: 'bg-red-500',
+      icon: Minus,
+    },
+    inProgress: {
+      container: 'bg-white rounded-lg border border-green-200',
+      hover: 'hover:bg-green-50',
+      detailBg: 'bg-green-50',
+      actionBg: 'bg-orange-500/10',
+      actionIcon: 'bg-orange-500',
+      icon: ArrowLeftRight,
+    },
+  };
+
+  const styles = variantStyles[variant];
+  const ActionIcon = styles.icon;
+
+  // ホバー時のアクションアイコン
+  const getActionIcon = () => {
+    if (!isHovered) return null;
+    
+    return (
+      <div className={`absolute inset-0 ${styles.actionBg} flex items-center justify-center pointer-events-none`}>
+        <div className={`${styles.actionIcon} text-white rounded-full p-2 shadow-lg`}>
+          <ActionIcon className="w-4 h-4" strokeWidth={3} />
+        </div>
+      </div>
+    );
+  };
+
   return (
-    <div className="border-b border-gray-200">
+    <div className={styles.container}>
       {/* メイン表示エリア */}
       <button
-        onClick={handleToggleExpand}
-        className="w-full flex items-center gap-4 p-4 hover:bg-gray-50 transition-colors text-left"
+        onClick={handleSelect}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        className={`w-full flex items-center gap-4 p-4 ${styles.hover} transition-colors text-left relative`}
       >
         {/* カード画像サムネイル */}
-        <div className="w-24 h-16 flex-shrink-0 rounded-lg overflow-hidden border-2 border-gray-200">
+        <div className="w-24 h-16 flex-shrink-0 rounded-lg overflow-hidden border-2 border-gray-200 relative">
           {!imageError && card.detail?.awakeAfterStorageUrl ? (
             <img
               src={card.detail.awakeAfterStorageUrl}
@@ -60,6 +107,8 @@ export const CardListItem: React.FC<CardListItemProps> = ({ card, onSelect, isAs
               </svg>
             </div>
           )}
+          {/* ホバー時のアクションアイコン（画像上） */}
+          {getActionIcon()}
         </div>
 
         {/* カード情報 */}
@@ -72,52 +121,31 @@ export const CardListItem: React.FC<CardListItemProps> = ({ card, onSelect, isAs
             {card.detail?.favoriteMode && card.detail.favoriteMode !== 'NONE' && (
               <FavoriteModeBadge favoriteMode={card.detail.favoriteMode} size="small" />
             )}
-            {isAssigned && (
-              <span className="text-xs px-2 py-0.5 rounded bg-orange-100 text-orange-700 font-bold">
-                編成中
-              </span>
-            )}
           </div>
           <h3 className="font-bold text-gray-900 truncate">{card.cardName}</h3>
           <p className="text-sm text-gray-600">{card.characterName}</p>
         </div>
 
-        {/* 展開アイコン */}
-        <div className="flex-shrink-0">
-          {isExpanded ? (
-            <ChevronUp className="w-5 h-5 text-gray-600" />
-          ) : (
-            <ChevronDown className="w-5 h-5 text-gray-600" />
-          )}
-        </div>
-
-        {/* 選択ボタン */}
+        {/* 詳細展開ボタン */}
         <button
-          onClick={handleSelect}
-          className="flex-shrink-0 p-2 -m-2"
-          aria-label="カードを選択"
+          onClick={handleToggleExpand}
+          className="flex-shrink-0 px-3 py-2 rounded-lg border border-gray-300 bg-white hover:bg-gray-100 transition-colors shadow-sm"
+          aria-label="詳細を表示"
         >
-          <div className="w-10 h-10 rounded-full bg-blue-500 hover:bg-blue-600 text-white flex items-center justify-center transition-colors">
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-              />
-            </svg>
+          <div className="flex items-center gap-1">
+            <span className="text-sm font-medium text-gray-700">詳細</span>
+            {isExpanded ? (
+              <ChevronUp className="w-4 h-4 text-gray-600" />
+            ) : (
+              <ChevronDown className="w-4 h-4 text-gray-600" />
+            )}
           </div>
         </button>
       </button>
 
       {/* 展開エリア（詳細情報） */}
       {isExpanded && card.detail && (
-        <div className="px-4 pb-4 bg-gray-50">
+        <div className={`px-4 pb-4 ${styles.detailBg}`}>
           <CardDetailSections 
             card={card} 
             variant="compact"
