@@ -68,6 +68,7 @@ export const CardDetailView: React.FC<CardDetailViewProps> = ({ cardId }) => {
                 setIsAwakeAfter(false);
                 setImageError(false);
               }}
+              disabled={!isAwakeAfter}
               className={`px-3 py-1 text-xs font-medium rounded transition-colors ${
                 !isAwakeAfter
                   ? 'bg-white text-gray-900'
@@ -82,6 +83,7 @@ export const CardDetailView: React.FC<CardDetailViewProps> = ({ cardId }) => {
                 setIsAwakeAfter(true);
                 setImageError(false);
               }}
+              disabled={isAwakeAfter}
               className={`px-3 py-1 text-xs font-medium rounded transition-colors ${
                 isAwakeAfter
                   ? 'bg-white text-gray-900'
