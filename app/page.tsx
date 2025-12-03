@@ -15,13 +15,16 @@ import { useCards } from '@/hooks/useCards';
 import { useCardStore } from '@/store/cardStore';
 import { Card } from '@/models/Card';
 import { CardFilter } from '@/models/Filter';
+import { filterCardsBySlot } from '@/services/deckFilterService';
+import { canPlaceCardInSlot } from '@/constants/deckRules';
+import { DECK_SLOT_MAPPING } from '@/constants/deckConfig';
 
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentSlotId, setCurrentSlotId] = useState<number | null>(null);
   const [cardFilter, setCardFilter] = useState<CardFilter>({});
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
-  const { deck, addCard, removeCard, swapCards, clearAllCards, saveDeck } = useDeck();
+  const { deck, addCard, removeCard, swapCards, clearAllCards, saveDeck, getLastError } = useDeck();
   const { setActiveFilter, savedFilter, setSavedFilter } = useCardStore((state) => ({
     setActiveFilter: state.setActiveFilter,
     savedFilter: state.savedFilter,
@@ -33,18 +36,18 @@ export default function Home() {
     setActiveFilter(cardFilter);
   }, [cardFilter, setActiveFilter]);
 
-  // 現在選択されているスロットのキャラクター名を取得
-  const currentCharacterName = React.useMemo(() => {
-    if (currentSlotId === null || !deck) return undefined;
+  // 現在選択されているスロットのカード、キャラクター名、スロットタイプを取得
+  const { currentSlotCard, currentCharacterName, currentSlotType } = React.useMemo(() => {
+    if (currentSlotId === null || !deck) {
+      return { currentSlotCard: null, currentCharacterName: undefined, currentSlotType: undefined };
+    }
     const slot = deck.slots.find((s) => s.slotId === currentSlotId);
-    return slot?.characterName;
-  }, [currentSlotId, deck]);
-
-  // 現在選択されているスロットのカードを取得
-  const currentSlotCard = React.useMemo(() => {
-    if (currentSlotId === null || !deck) return null;
-    const slot = deck.slots.find((s) => s.slotId === currentSlotId);
-    return slot?.card || null;
+    const slotMapping = deck ? DECK_SLOT_MAPPING.find((m) => m.slotId === currentSlotId) : undefined;
+    return {
+      currentSlotCard: slot?.card || null,
+      currentCharacterName: slot?.characterName,
+      currentSlotType: slotMapping?.slotType,
+    };
   }, [currentSlotId, deck]);
 
   // 編成済みのカードIDリストを取得（現在のスロットを除く）
@@ -55,73 +58,68 @@ export default function Home() {
       .map((slot) => slot.card!.id);
   }, [deck, currentSlotId]);
 
-  // 編成済みのカードリストを取得（現在のスロットと同じキャラクターのみ、現在のスロットを除く）
-  // フリー枠は特別扱い：フリー枠に編成されているカードも対象に含める
+  // 編成済みのカードリストを取得（現在のスロットに配置可能なカードのみ表示）
   const assignedCards = React.useMemo(() => {
-    if (!deck || !currentCharacterName) return [];
+    if (!deck || currentSlotId === null) return [];
+    
     return deck.slots
       .filter((slot) => {
         if (slot.slotId === currentSlotId || !slot.card) return false;
-        
-        // 同じキャラクター枠のカードは表示
-        if (slot.characterName === currentCharacterName) return true;
-        
-        // フリー枠に編成されているカードで、選択中のキャラクターと一致する場合も表示
-        if (slot.characterName === 'フリー' && slot.card.characterName === currentCharacterName) return true;
-        
-        return false;
+        return true;
       })
       .map((slot) => slot.card!)
-      .filter((card, index, self) => self.findIndex((c) => c.id === card.id) === index); // 重複を除外
-  }, [deck, currentSlotId, currentCharacterName]);
+      .filter((card, index, self) => {
+        // 重複を除外
+        if (self.findIndex((c) => c.id === card.id) !== index) return false;
+        
+        // 現在のスロットに配置可能かチェック
+        const validationResult = canPlaceCardInSlot(
+          { characterName: card.characterName, rarity: card.rarity },
+          currentSlotId
+        );
+        return validationResult.allowed;
+      });
+  }, [deck, currentSlotId]);
 
   // カード一覧を取得（キャラクター + その他のフィルターでフィルタリング）
   // スロット未選択時はフェッチをスキップ
   const filterForQuery = React.useMemo(() => {
     if (currentSlotId === null) return undefined;
     
-    // 現在のフィルターをベースにする
-    const combinedFilter: CardFilter = { ...cardFilter };
-    
-    // フリー枠以外の場合、キャラクター名を強制的に追加
-    if (currentCharacterName && currentCharacterName !== 'フリー') {
-      combinedFilter.characterNames = [currentCharacterName];
-    }
-    
-    return combinedFilter;
-  }, [currentSlotId, currentCharacterName, cardFilter]);
+    // 現在のフィルターをそのまま使用（キャラクター制限は後でクライアント側で適用）
+    return cardFilter;
+  }, [currentSlotId, cardFilter]);
 
   const { cards, loading } = useCards(
     filterForQuery,
     currentSlotId === null // スロット未選択ならスキップ
   );
 
-  // 現在のカードと編成中のカードを除外したカードリスト
+  // 現在のカードと編成中のカードを除外 + スロットの編成ルールでフィルタリング
   const filteredCards = React.useMemo(() => {
+    if (currentSlotId === null) return [];
+    
     // 現在のスロットのカードIDを除外
     const currentCardId = currentSlotCard?.id;
-    // 編成中のカードIDリストを除外
-    return cards.filter((card) => {
+    
+    // 1. 編成中のカードを除外
+    const availableCards = cards.filter((card) => {
       if (currentCardId && card.id === currentCardId) return false;
       if (assignedCardIds.includes(card.id)) return false;
       return true;
     });
-  }, [cards, currentSlotCard, assignedCardIds]);
+    
+    // 2. スロットの編成ルールに従ってフィルタリング
+    return filterCardsBySlot(availableCards, currentSlotId);
+  }, [cards, currentSlotCard, assignedCardIds, currentSlotId]);
 
   const handleSlotClick = (slotId: number): void => {
     setCurrentSlotId(slotId);
     setIsModalOpen(true);
     
-    // 保存されたフィルターをベースにする
-    const slot = deck?.slots.find((s) => s.slotId === slotId);
-    const baseFilter = { ...savedFilter };
-    
-    // フリー以外のキャラクター枠の場合、キャラクターロックを優先マージ
-    if (slot?.characterName && slot.characterName !== 'フリー') {
-      baseFilter.characterNames = [slot.characterName];
-    }
-    
-    setCardFilter(baseFilter);
+    // 保存されたフィルターを使用するが、キャラクターフィルタだけはクリア
+    const { characterNames, ...filterWithoutCharacter } = savedFilter;
+    setCardFilter(filterWithoutCharacter);
   };
 
   const handleSelectCard = (card: Card): void => {
@@ -132,15 +130,23 @@ export default function Home() {
       );
 
       if (assignedSlot) {
-        // 編成済みの場合は入れ替え
+        // 編成済みの場合は入れ替え（制約違反するカードは自動的に剥がれる）
         swapCards(currentSlotId, assignedSlot.slotId);
+        setIsModalOpen(false);
+        setCurrentSlotId(null);
       } else {
-        // 編成済みでない場合は通常追加
-        addCard(currentSlotId, card);
+        // 編成済みでない場合は通常追加（編成ルールチェック付き）
+        const success = addCard(currentSlotId, card);
+        
+        if (success) {
+          setIsModalOpen(false);
+          setCurrentSlotId(null);
+        } else {
+          // エラーメッセージを表示
+          const errorMessage = getLastError() || '編成できませんでした';
+          alert(errorMessage);
+        }
       }
-
-      setIsModalOpen(false);
-      setCurrentSlotId(null);
     }
   };
 
@@ -159,58 +165,15 @@ export default function Home() {
 
   const handleApplyFilters = (filter: CardFilter): void => {
     setCardFilter(filter);
-    
-    // キャラクターロック以外を保存
-    const filterToSave = { ...filter };
-    if (currentCharacterName && currentCharacterName !== 'フリー') {
-      // ロックされたキャラクターを除外
-      const { characterNames, ...rest } = filterToSave;
-      if (characterNames && characterNames.length > 1) {
-        // ロックされたキャラ以外があれば保存
-        const savedFilterWithCharacters: CardFilter = {
-          ...rest,
-          characterNames: characterNames.filter((name) => name !== currentCharacterName),
-        };
-        setSavedFilter(savedFilterWithCharacters);
-      } else {
-        // ロックされたキャラだけならcharacterNamesは保存しない
-        setSavedFilter(rest as CardFilter);
-      }
-    } else {
-      setSavedFilter(filterToSave);
-    }
-    
+    setSavedFilter(filter);
     setIsFilterModalOpen(false);
   };
 
   const handleClearFilter = (key: keyof CardFilter): void => {
     const newFilter = { ...cardFilter };
-    
-    // キャラクター名フィルターの場合、ロックされたキャラクター以外を削除
-    if (key === 'characterNames' && currentCharacterName && currentCharacterName !== 'フリー') {
-      newFilter.characterNames = [currentCharacterName];
-    } else {
-      delete newFilter[key];
-    }
-    
+    delete newFilter[key];
     setCardFilter(newFilter);
-    
-    // savedFilterも更新（キャラクターロック以外）
-    const filterToSave = { ...newFilter };
-    if (currentCharacterName && currentCharacterName !== 'フリー') {
-      const { characterNames, ...rest } = filterToSave;
-      if (characterNames && characterNames.length > 1) {
-        const savedFilterWithCharacters: CardFilter = {
-          ...rest,
-          characterNames: characterNames.filter((name) => name !== currentCharacterName),
-        };
-        setSavedFilter(savedFilterWithCharacters);
-      } else {
-        setSavedFilter(rest as CardFilter);
-      }
-    } else {
-      setSavedFilter(filterToSave);
-    }
+    setSavedFilter(newFilter);
   };
 
   const countActiveFilters = (): number => {
@@ -227,14 +190,8 @@ export default function Home() {
   };
 
   const handleClearAllFilters = (): void => {
-    // キャラクターロックは保持
-    if (currentCharacterName && currentCharacterName !== 'フリー') {
-      setCardFilter({ characterNames: [currentCharacterName] });
-      setSavedFilter({});
-    } else {
-      setCardFilter({});
-      setSavedFilter({});
-    }
+    setCardFilter({});
+    setSavedFilter({});
   };
 
   return (
@@ -265,7 +222,7 @@ export default function Home() {
       <SideModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
-        title={`カードを選択 - ${currentCharacterName || ''}`}
+        title={`${currentSlotType === 'main' ? 'メイン' : currentSlotType === 'side' ? 'サイド' : 'カードを選択'} - ${currentCharacterName || ''}`}
         width="md"
         keywordSearch={{
           value: cardFilter.keyword || '',
@@ -294,7 +251,6 @@ export default function Home() {
           <ActiveFilters
             filter={cardFilter}
             onClearFilter={handleClearFilter}
-            lockedCharacter={currentCharacterName !== 'フリー' ? currentCharacterName : undefined}
           />
 
           <div className="flex-1 overflow-y-auto">
@@ -327,7 +283,7 @@ export default function Home() {
           currentFilter={cardFilter}
           isFilterModalOpen={isFilterModalOpen}
           onCloseFilterModal={() => setIsFilterModalOpen(false)}
-          lockedCharacter={currentCharacterName !== 'フリー' ? currentCharacterName : undefined}
+          currentSlotId={currentSlotId}
         />
       </SideModal>
     </div>

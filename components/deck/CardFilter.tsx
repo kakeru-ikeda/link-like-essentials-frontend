@@ -7,6 +7,7 @@ import { CHARACTERS } from '@/constants/characters';
 import { SideModal } from '@/components/common/SideModal';
 import { Tooltip } from '@/components/common/Tooltip';
 import { KeywordSearchInput } from '@/components/common/KeywordSearchInput';
+import { getSelectableCharactersForSlot } from '@/services/characterFilterService';
 import {
   RARITY_LABELS,
   STYLE_TYPE_LABELS,
@@ -21,22 +22,28 @@ import {
   SKILL_EFFECT_DESCRIPTIONS,
 } from '@/constants/skillEffects';
 
-interface CardFilterProps {
+interface CardFilterComponentProps {
   onApplyFilters: (filter: CardFilter) => void;
-  currentFilter?: CardFilter;
+  currentFilter: CardFilter;
   isFilterModalOpen: boolean;
   onCloseFilterModal: () => void;
-  lockedCharacter?: string;
+  currentSlotId?: number | null;
 }
 
-export const CardFilterComponent: React.FC<CardFilterProps> = ({
+export const CardFilterComponent: React.FC<CardFilterComponentProps> = ({
   onApplyFilters,
   currentFilter,
   isFilterModalOpen,
   onCloseFilterModal,
-  lockedCharacter,
+  currentSlotId,
 }) => {
   const [filter, setFilter] = useState<CardFilter>(currentFilter || {});
+
+  // 現在のスロットに配置可能なキャラクターのみを取得
+  const selectableCharacters = React.useMemo(
+    () => getSelectableCharactersForSlot(currentSlotId ?? null),
+    [currentSlotId]
+  );
 
   // 親から渡されたフィルターで初期化
   React.useEffect(() => {
@@ -49,12 +56,7 @@ export const CardFilterComponent: React.FC<CardFilterProps> = ({
   };
 
   const handleReset = (): void => {
-    // ロックされたキャラクターは保持
-    const newFilter: CardFilter = {};
-    if (lockedCharacter) {
-      newFilter.characterNames = [lockedCharacter];
-    }
-    setFilter(newFilter);
+    setFilter({});
   };
 
   const handleApply = (): void => {
@@ -109,9 +111,6 @@ export const CardFilterComponent: React.FC<CardFilterProps> = ({
   };
 
   const toggleCharacter = (character: string): void => {
-    // ロックされたキャラクターは解除できない
-    if (lockedCharacter === character) return;
-    
     const characterNames = filter.characterNames || [];
     const newCharacterNames = characterNames.includes(character)
       ? characterNames.filter((c) => c !== character)
@@ -274,29 +273,21 @@ export const CardFilterComponent: React.FC<CardFilterProps> = ({
           <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
             <label className="block text-sm font-medium text-gray-700 mb-3">
               キャラクター
-              {lockedCharacter && (
-                <span className="ml-2 text-xs text-gray-500">（{lockedCharacter}は固定）</span>
-              )}
             </label>
             <div className="flex flex-wrap gap-2">
-              {CHARACTERS.map((character) => {
-                const isLocked = lockedCharacter === character;
+              {selectableCharacters.map((character) => {
                 const isSelected = filter.characterNames?.includes(character);
                 return (
                   <button
                     key={character}
                     onClick={() => toggleCharacter(character)}
-                    disabled={isLocked}
                     className={`px-3 py-1 rounded-full text-sm font-medium transition ${
                       isSelected
-                        ? isLocked
-                          ? 'bg-pink-600 text-white cursor-not-allowed opacity-90'
-                          : 'bg-pink-500 text-white'
+                        ? 'bg-pink-500 text-white'
                         : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
-                    } ${isLocked ? 'cursor-not-allowed' : ''}`}
+                    }`}
                   >
                     {character}
-                    {isLocked && ' 🔒'}
                   </button>
                 );
               })}
@@ -336,7 +327,7 @@ export const CardFilterComponent: React.FC<CardFilterProps> = ({
             {/* 検索範囲の選択 */}
             <div>
               <label className="block text-xs font-medium text-gray-600 mb-2">
-                検索範囲:
+                検索範囲
               </label>
               <div className="flex flex-wrap gap-2">
                 {Object.values(SkillSearchTarget).map((target) => (
