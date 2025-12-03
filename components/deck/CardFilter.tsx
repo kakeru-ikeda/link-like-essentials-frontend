@@ -273,11 +273,6 @@ export const CardFilterComponent: React.FC<CardFilterComponentProps> = ({
           <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
             <label className="block text-sm font-medium text-gray-700 mb-3">
               キャラクター
-              {selectableCharacters.length < CHARACTERS.length && (
-                <span className="ml-2 text-xs text-gray-500">
-                  （配置可能なキャラクターのみ表示）
-                </span>
-              )}
             </label>
             <div className="flex flex-wrap gap-2">
               {selectableCharacters.map((character) => {
