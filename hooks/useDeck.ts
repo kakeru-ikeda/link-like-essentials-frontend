@@ -15,15 +15,19 @@ export const useDeck = () => {
     saveDeckToLocal,
     loadDeckFromLocal,
     initializeDeck,
+    getLastError,
   } = useDeckStore();
 
   useEffect(() => {
     loadDeckFromLocal();
   }, [loadDeckFromLocal]);
 
-  const addCard = (slotId: number, card: Card): void => {
-    addCardToSlot(slotId, card);
-    saveDeckToLocal();
+  const addCard = (slotId: number, card: Card): boolean => {
+    const success = addCardToSlot(slotId, card);
+    if (success) {
+      saveDeckToLocal();
+    }
+    return success;
   };
 
   const removeCard = (slotId: number): void => {
@@ -31,9 +35,12 @@ export const useDeck = () => {
     saveDeckToLocal();
   };
 
-  const swapCards = (slotId1: number, slotId2: number): void => {
-    swapCardsInDeck(slotId1, slotId2);
-    saveDeckToLocal();
+  const swapCards = (slotId1: number, slotId2: number): boolean => {
+    const success = swapCardsInDeck(slotId1, slotId2);
+    if (success) {
+      saveDeckToLocal();
+    }
+    return success;
   };
 
   const clearAllCards = (): void => {
@@ -71,5 +78,6 @@ export const useDeck = () => {
     clearAllCards,
     saveDeck,
     resetDeck,
+    getLastError,
   };
 };

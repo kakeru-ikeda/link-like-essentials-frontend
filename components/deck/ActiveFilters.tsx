@@ -15,14 +15,12 @@ import {
 
 interface ActiveFiltersProps {
   filter: CardFilter;
-  onClearFilter?: (key: keyof CardFilter) => void;
-  lockedCharacter?: string;
+  onClearFilter: (key: keyof CardFilter) => void;
 }
 
 export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
   filter,
   onClearFilter,
-  lockedCharacter,
 }) => {
   const hasActiveFilters =
     filter.keyword ||
@@ -132,22 +130,18 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
           <span className="px-2 py-1 bg-pink-100 text-pink-700 text-xs rounded-full flex items-center gap-1">
             {filter.characterNames.join(', ')}
             {onClearFilter && (
-              // ロックキャラのみの場合は×ボタンを表示しない
-              // ロックキャラ以外が含まれる場合は×ボタンを表示（ロックキャラ以外を削除する）
-              (filter.characterNames.length > 1 || !lockedCharacter || !filter.characterNames.includes(lockedCharacter)) && (
-                <button
-                  onClick={() => onClearFilter('characterNames')}
-                  className="hover:bg-pink-200 rounded-full p-0.5"
-                >
-                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      fillRule="evenodd"
-                      d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </button>
-              )
+              <button
+                onClick={() => onClearFilter('characterNames')}
+                className="hover:bg-pink-200 rounded-full p-0.5"
+              >
+                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                  <path
+                    fillRule="evenodd"
+                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </button>
             )}
           </span>
         )}
