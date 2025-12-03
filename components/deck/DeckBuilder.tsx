@@ -12,15 +12,17 @@ import {
   getCharacterColor,
   getCharacterBackgroundColor,
 } from '@/constants/characters';
+import { canPlaceCardInSlot } from '@/constants/deckRules';
 
 interface DeckBuilderProps {
   onSlotClick: (slotId: number) => void;
 }
 
 export const DeckBuilder: React.FC<DeckBuilderProps> = ({ onSlotClick }) => {
-  const { deck, removeCard, toggleAceCard } = useDeck();
+  const { deck, removeCard, toggleAceCard, swapCards } = useDeck();
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [draggingSlotId, setDraggingSlotId] = useState<number | null>(null);
 
   const handleShowDetail = (card: Card): void => {
     setSelectedCardId(card.id);
@@ -30,6 +32,48 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({ onSlotClick }) => {
   const handleCloseDetail = (): void => {
     setIsDetailModalOpen(false);
     setSelectedCardId(null);
+  };
+
+  const handleDragStart = (slotId: number): void => {
+    const slot = deck?.slots.find((s) => s.slotId === slotId);
+    // カードがあるスロットのみドラッグ可能
+    if (slot?.card) {
+      setDraggingSlotId(slotId);
+    }
+  };
+
+  const handleDragEnd = (): void => {
+    setDraggingSlotId(null);
+  };
+
+  const handleDrop = (targetSlotId: number): void => {
+    if (draggingSlotId !== null && draggingSlotId !== targetSlotId) {
+      // スワップを実行
+      swapCards(draggingSlotId, targetSlotId);
+    }
+    setDraggingSlotId(null);
+  };
+
+  const canDropToSlot = (targetSlotId: number): boolean => {
+    if (draggingSlotId === null || draggingSlotId === targetSlotId) {
+      return false;
+    }
+
+    const draggingSlot = deck?.slots.find((s) => s.slotId === draggingSlotId);
+    if (!draggingSlot?.card) {
+      return false;
+    }
+
+    // ドラッグ中のカードがターゲットスロットに配置可能かチェック
+    const result = canPlaceCardInSlot(
+      {
+        characterName: draggingSlot.card.characterName,
+        rarity: draggingSlot.card.rarity,
+      },
+      targetSlotId
+    );
+
+    return result.allowed;
   };
 
   if (!deck) {
@@ -84,6 +128,11 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({ onSlotClick }) => {
                   onShowDetail={handleShowDetail}
                   isAce={deck.aceSlotId === slots[0].slotId}
                   isMain={true}
+                  onDragStart={handleDragStart}
+                  onDragEnd={handleDragEnd}
+                  onDrop={handleDrop}
+                  isDragging={draggingSlotId === slots[0].slotId}
+                  isDroppable={draggingSlotId !== null && canDropToSlot(slots[0].slotId)}
                 />
               )}
               
@@ -99,6 +148,11 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({ onSlotClick }) => {
                       onShowDetail={handleShowDetail}
                       isAce={deck.aceSlotId === slots[1].slotId}
                       isMain={false}
+                      onDragStart={handleDragStart}
+                      onDragEnd={handleDragEnd}
+                      onDrop={handleDrop}
+                      isDragging={draggingSlotId === slots[1].slotId}
+                      isDroppable={draggingSlotId !== null && canDropToSlot(slots[1].slotId)}
                     />
                   </div>
                 )}
@@ -112,6 +166,11 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({ onSlotClick }) => {
                       onShowDetail={handleShowDetail}
                       isAce={deck.aceSlotId === slots[2].slotId}
                       isMain={false}
+                      onDragStart={handleDragStart}
+                      onDragEnd={handleDragEnd}
+                      onDrop={handleDrop}
+                      isDragging={draggingSlotId === slots[2].slotId}
+                      isDroppable={draggingSlotId !== null && canDropToSlot(slots[2].slotId)}
                     />
                   </div>
                 )}

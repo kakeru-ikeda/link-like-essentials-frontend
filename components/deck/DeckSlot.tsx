@@ -16,6 +16,11 @@ interface DeckSlotProps {
   onShowDetail?: (card: Card) => void;
   isAce?: boolean;
   isMain?: boolean; // メインカードかサブカードかを判定
+  onDragStart?: (slotId: number) => void;
+  onDragEnd?: () => void;
+  onDrop?: (slotId: number) => void;
+  isDragging?: boolean;
+  isDroppable?: boolean;
 }
 
 export const DeckSlot: React.FC<DeckSlotProps> = ({ 
@@ -25,7 +30,12 @@ export const DeckSlot: React.FC<DeckSlotProps> = ({
   onToggleAce,
   onShowDetail,
   isAce = false,
-  isMain = false 
+  isMain = false,
+  onDragStart,
+  onDragEnd,
+  onDrop,
+  isDragging = false,
+  isDroppable = false,
 }) => {
   const [imageError, setImageError] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -55,12 +65,52 @@ export const DeckSlot: React.FC<DeckSlotProps> = ({
     onSlotClick(slot.slotId);
   };
 
+  const handleDragStart = (e: React.DragEvent<HTMLDivElement>): void => {
+    if (slot.card && onDragStart) {
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', slot.slotId.toString());
+      onDragStart(slot.slotId);
+    }
+  };
+
+  const handleDragEnd = (e: React.DragEvent<HTMLDivElement>): void => {
+    e.preventDefault();
+    if (onDragEnd) {
+      onDragEnd();
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>): void => {
+    if (isDroppable) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>): void => {
+    e.preventDefault();
+    if (isDroppable && onDrop) {
+      onDrop(slot.slotId);
+    }
+  };
+
+  // ドラッグ中の透明度とドロップ可能時のハイライト
+  const dragClass = isDragging ? 'opacity-50' : '';
+  const dropClass = isDroppable 
+    ? 'ring-4 ring-green-400 ring-offset-2 bg-green-50' 
+    : '';
+
   return (
     <div
+      draggable={!!slot.card}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
       onClick={handleSlotClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className={`${containerClass} cursor-pointer`}
+      className={`${containerClass} ${dragClass} ${dropClass} cursor-pointer`}
     >
       {slot.card ? (
         <div className="w-full h-full relative">
@@ -149,6 +199,7 @@ export const DeckSlot: React.FC<DeckSlotProps> = ({
                 alt={slot.card.cardName}
                 className="w-full h-full object-cover"
                 onError={() => setImageError(true)}
+                draggable={false}
               />
             </div>
           ) : (
