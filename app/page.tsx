@@ -158,9 +158,11 @@ export default function Home() {
     }
   };
 
-  const handleCloseModal = (): void => {
+  const handleCloseModal = (filter: CardFilter): void => {
     setIsModalOpen(false);
     setCurrentSlotId(null);
+    setCardFilter(filter);
+    setSavedFilter(filter);
   };
 
   const handleApplyFilters = (filter: CardFilter): void => {
@@ -221,7 +223,7 @@ export default function Home() {
 
       <SideModal
         isOpen={isModalOpen}
-        onClose={handleCloseModal}
+        onClose={() => handleCloseModal(cardFilter)}
         title={`${currentSlotType === 'main' ? 'メイン' : currentSlotType === 'side' ? 'サイド' : 'カードを選択'} - ${currentCharacterName || ''}`}
         width="md"
         keywordSearch={{
