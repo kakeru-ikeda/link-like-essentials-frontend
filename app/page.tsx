@@ -161,6 +161,8 @@ export default function Home() {
   const handleCloseModal = (): void => {
     setIsModalOpen(false);
     setCurrentSlotId(null);
+    setCardFilter(cardFilter);
+    setSavedFilter(cardFilter);
   };
 
   const handleApplyFilters = (filter: CardFilter): void => {
