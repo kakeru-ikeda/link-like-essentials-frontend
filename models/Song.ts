@@ -1,4 +1,5 @@
-import { SongCategory } from './enums';
+import { SongCategory, SongAttribute } from './enums';
+import { CharacterName } from '@/constants/characters';
 
 /**
  * ムード推移のセクション
@@ -21,8 +22,8 @@ export interface Song {
   songName: string;
   songUrl?: string;
   category: SongCategory;
-  attribute: string;
-  centerCharacter: string;
+  attribute: SongAttribute;
+  centerCharacter: CharacterName;
   singers: string[];
   jacketImageUrl?: string;
   liveAnalyzerImageUrl?: string;
@@ -44,7 +45,7 @@ export interface CategoryStats {
  * 属性別統計
  */
 export interface AttributeStats {
-  attribute: string;
+  attribute: SongAttribute;
   count: number;
 }
 
@@ -52,7 +53,7 @@ export interface AttributeStats {
  * センターキャラクター別統計
  */
 export interface CenterCharacterStats {
-  centerCharacter: string;
+  centerCharacter: CharacterName;
   count: number;
 }
 

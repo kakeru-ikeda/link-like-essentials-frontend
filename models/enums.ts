@@ -52,3 +52,9 @@ export enum SongCategory {
   TERM_105_FT_TSUZURI = '105期ft.綴理',
   TERM_105_FT_MEGUMI = '105期ft.慈',
 }
+
+export enum SongAttribute {
+  SMILE = 'スマイル',
+  PURE = 'ピュア',
+  COOL = 'クール',
+}

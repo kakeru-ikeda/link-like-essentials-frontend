@@ -1,32 +1,33 @@
 import { gql } from '@apollo/client';
 
 /**
+ * 楽曲フィールドのフラグメント
+ */
+const SONG_FIELDS = gql`
+  fragment SongFields on Song {
+    id
+    songName
+    songUrl
+    category
+    attribute
+    centerCharacter
+    singers
+    jacketImageUrl
+    liveAnalyzerImageUrl
+    isLocked
+    createdAt
+    updatedAt
+  }
+`;
+
+/**
  * 全楽曲取得クエリ（フィルター付き）
  */
 export const GET_SONGS = gql`
+  ${SONG_FIELDS}
   query GetSongs($filter: SongFilterInput) {
     songs(filter: $filter) {
-      id
-      songName
-      songUrl
-      category
-      attribute
-      centerCharacter
-      singers
-      jacketImageUrl
-      liveAnalyzerImageUrl
-      isLocked
-      createdAt
-      updatedAt
-      moodProgressions {
-        id
-        section
-        progression
-        sectionOrder
-        isLocked
-        createdAt
-        updatedAt
-      }
+      ...SongFields
     }
   }
 `;
@@ -35,29 +36,10 @@ export const GET_SONGS = gql`
  * 単一楽曲取得クエリ（IDで取得）
  */
 export const GET_SONG_BY_ID = gql`
+  ${SONG_FIELDS}
   query GetSongById($id: ID!) {
     song(id: $id) {
-      id
-      songName
-      songUrl
-      category
-      attribute
-      centerCharacter
-      singers
-      jacketImageUrl
-      liveAnalyzerImageUrl
-      isLocked
-      createdAt
-      updatedAt
-      moodProgressions {
-        id
-        section
-        progression
-        sectionOrder
-        isLocked
-        createdAt
-        updatedAt
-      }
+      ...SongFields
     }
   }
 `;
@@ -66,29 +48,10 @@ export const GET_SONG_BY_ID = gql`
  * 単一楽曲取得クエリ（楽曲名で取得）
  */
 export const GET_SONG_BY_NAME = gql`
+  ${SONG_FIELDS}
   query GetSongByName($songName: String!) {
     songByName(songName: $songName) {
-      id
-      songName
-      songUrl
-      category
-      attribute
-      centerCharacter
-      singers
-      jacketImageUrl
-      liveAnalyzerImageUrl
-      isLocked
-      createdAt
-      updatedAt
-      moodProgressions {
-        id
-        section
-        progression
-        sectionOrder
-        isLocked
-        createdAt
-        updatedAt
-      }
+      ...SongFields
     }
   }
 `;

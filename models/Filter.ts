@@ -1,4 +1,5 @@
-import { Rarity, StyleType, LimitedType, FavoriteMode, SongCategory } from './enums';
+import { Rarity, StyleType, LimitedType, FavoriteMode, SongCategory, SongAttribute } from './enums';
+import { CharacterName } from '@/constants/characters';
 import { SkillEffectType, SkillSearchTarget } from '@/constants/skillEffects';
 
 /**
@@ -71,10 +72,10 @@ export interface SongFilter {
   category?: SongCategory;
 
   // 属性絞り込み
-  attribute?: string;
+  attribute?: SongAttribute;
 
   // センターキャラクター絞り込み
-  centerCharacter?: string;
+  centerCharacter?: CharacterName;
 
   // 楽曲名部分一致検索
   songName?: string;

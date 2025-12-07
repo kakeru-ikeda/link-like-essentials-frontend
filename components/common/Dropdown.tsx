@@ -53,7 +53,7 @@ export const Dropdown = <T extends string = string>({
     : options;
 
   // 外側クリックで閉じる
-  useEffect(() => {
+  useEffect((): (() => void) | void => {
     const handleClickOutside = (event: MouseEvent): void => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsOpen(false);
@@ -71,7 +71,7 @@ export const Dropdown = <T extends string = string>({
   }, [isOpen]);
 
   // ドロップダウンが開いたら検索入力にフォーカス
-  useEffect(() => {
+  useEffect((): void => {
     if (isOpen && searchable && searchInputRef.current) {
       searchInputRef.current.focus();
     }

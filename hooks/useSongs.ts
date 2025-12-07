@@ -31,7 +31,7 @@ interface SongStatsQueryData {
  * @param skip クエリをスキップするかどうか
  * @returns 楽曲配列、ローディング状態、エラーメッセージ
  */
-export const useSongs = (filter?: SongFilter, skip?: boolean) => {
+export const useSongs = (filter?: SongFilter, skip?: boolean): { songs: Song[]; loading: boolean; error: string | undefined } => {
   const { data, loading, error } = useQuery<
     SongsQueryData,
     { filter?: SongFilter }
@@ -53,7 +53,7 @@ export const useSongs = (filter?: SongFilter, skip?: boolean) => {
  * @param id 楽曲ID
  * @returns 楽曲詳細、ローディング状態、エラーメッセージ
  */
-export const useSongById = (id: string) => {
+export const useSongById = (id: string): { song: Song | undefined; loading: boolean; error: string | undefined } => {
   const { data, loading, error } = useQuery<
     SongQueryData,
     { id: string }
@@ -75,7 +75,7 @@ export const useSongById = (id: string) => {
  * @param songName 楽曲名
  * @returns 楽曲詳細、ローディング状態、エラーメッセージ
  */
-export const useSongByName = (songName: string) => {
+export const useSongByName = (songName: string): { song: Song | undefined; loading: boolean; error: string | undefined } => {
   const { data, loading, error } = useQuery<
     SongByNameQueryData,
     { songName: string }
@@ -96,7 +96,7 @@ export const useSongByName = (songName: string) => {
  * 
  * @returns 楽曲統計、ローディング状態、エラーメッセージ
  */
-export const useSongStats = () => {
+export const useSongStats = (): { stats: SongStats | undefined; loading: boolean; error: string | undefined } => {
   const { data, loading, error } = useQuery<SongStatsQueryData>(GET_SONG_STATS);
 
   return {
