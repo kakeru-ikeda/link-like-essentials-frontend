@@ -1,4 +1,4 @@
-import { Rarity, StyleType, LimitedType, FavoriteMode } from './enums';
+import { Rarity, StyleType, LimitedType, FavoriteMode, SongCategory } from './enums';
 import { SkillEffectType, SkillSearchTarget } from '@/constants/skillEffects';
 
 /**
@@ -61,4 +61,24 @@ export enum SortOrder {
 export interface SortOption {
   field: SortField;
   order: SortOrder;
+}
+
+/**
+ * 楽曲フィルター条件
+ */
+export interface SongFilter {
+  // カテゴリー絞り込み
+  category?: SongCategory;
+
+  // 属性絞り込み
+  attribute?: string;
+
+  // センターキャラクター絞り込み
+  centerCharacter?: string;
+
+  // 楽曲名部分一致検索
+  songName?: string;
+
+  // 歌い手部分一致検索
+  singersContains?: string;
 }
