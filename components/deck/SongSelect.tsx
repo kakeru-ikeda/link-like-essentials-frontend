@@ -1,0 +1,97 @@
+'use client';
+
+import React, { useEffect } from 'react';
+import { Dropdown, DropdownOption } from '@/components/common/Dropdown';
+import { SongCategory } from '@/models/enums';
+import { useSongs } from '@/hooks/useSongs';
+import { Loading } from '@/components/common/Loading';
+
+interface SongSelectProps {
+  category?: SongCategory;
+  value?: string;
+  onChange: (songId: string, songName: string) => void;
+  disabled?: boolean;
+  className?: string;
+}
+
+/**
+ * 楽曲選択コンポーネント
+ * 選択されたカテゴリーに基づいて楽曲を表示
+ */
+export const SongSelect: React.FC<SongSelectProps> = ({
+  category,
+  value,
+  onChange,
+  disabled = false,
+  className = '',
+}) => {
+  // カテゴリーが選択されていない場合はクエリをスキップ
+  const { songs, loading, error } = useSongs(
+    category ? { category } : undefined,
+    !category
+  );
+
+  // カテゴリーが変更されたら選択をクリア
+  useEffect(() => {
+    if (category && value) {
+      // 選択された楽曲が現在のカテゴリーに存在しない場合はクリア
+      const songExists = songs.some((song) => song.id === value);
+      if (!songExists && songs.length > 0) {
+        onChange('', '');
+      }
+    }
+  }, [category, songs, value, onChange]);
+
+  const handleChange = (songId: string): void => {
+    const selectedSong = songs.find((song) => song.id === songId);
+    if (selectedSong) {
+      onChange(selectedSong.id, selectedSong.songName);
+    }
+  };
+
+  const songOptions: DropdownOption[] = songs.map((song) => ({
+    value: song.id,
+    label: song.songName,
+    image: song.jacketImageUrl,
+    description: `${song.centerCharacter}（${song.singers}）`,
+  }));
+
+  if (loading) {
+    return (
+      <div className={className}>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          楽曲
+        </label>
+        <div className="h-14 px-4 py-2.5 bg-white border border-gray-300 rounded-lg flex items-center gap-2">
+          <Loading />
+          <span className="text-sm text-gray-600">読み込み中...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={className}>
+        <p className="text-sm text-red-600">
+          楽曲の取得に失敗しました: {error}
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <Dropdown
+      value={value}
+      onChange={handleChange}
+      options={songOptions}
+      placeholder={category ? '楽曲を選択' : 'まずデッキタイプを選択してください'}
+      disabled={disabled || !category || songs.length === 0}
+      className={className}
+      label="楽曲"
+      showImages={true}
+      searchable={true}
+      searchPlaceholder="楽曲名、属性、キャラクターで検索..."
+    />
+  );
+};
