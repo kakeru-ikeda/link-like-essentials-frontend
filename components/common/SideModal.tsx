@@ -17,6 +17,7 @@ interface SideModalProps {
     value: string;
     onChange: (value: string) => void;
     placeholder?: string;
+    storageKey?: string;
   };
   zIndex?: number; // z-indexを外部から指定可能に
 }
@@ -161,6 +162,7 @@ export function SideModal({
                   value={keywordSearch.value}
                   onChange={keywordSearch.onChange}
                   placeholder={keywordSearch.placeholder}
+                  storageKey={keywordSearch.storageKey}
                 />
               </div>
             )}
