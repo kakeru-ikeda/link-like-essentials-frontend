@@ -43,3 +43,18 @@ export enum FavoriteMode {
   MELLOW = 'MELLOW',
   NEUTRAL = 'NEUTRAL',
 }
+
+export enum SongCategory {
+  TERM_103 = '103期',
+  TERM_104 = '104期',
+  TERM_105 = '105期',
+  TERM_105_FT_KOZUE = '105期ft.梢',
+  TERM_105_FT_TSUZURI = '105期ft.綴理',
+  TERM_105_FT_MEGUMI = '105期ft.慈',
+}
+
+export enum SongAttribute {
+  SMILE = 'スマイル',
+  PURE = 'ピュア',
+  COOL = 'クール',
+}
