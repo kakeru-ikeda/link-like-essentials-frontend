@@ -13,7 +13,7 @@ interface DeckSlotProps {
   onSlotClick: (slotId: number) => void;
   onRemoveCard?: (slotId: number) => void;
   onToggleAce?: (slotId: number) => void;
-  onShowDetail?: (card: Card) => void;
+  onShowDetail?: (cardId: string) => void;
   isAce?: boolean;
   isMain?: boolean; // メインカードかサブカードかを判定
   onDragStart?: (slotId: number) => void;
@@ -57,7 +57,7 @@ export const DeckSlot: React.FC<DeckSlotProps> = ({
   const handleDetailClick = (e: React.MouseEvent): void => {
     e.stopPropagation(); // スロットのクリックイベントを防ぐ
     if (onShowDetail && slot.card) {
-      onShowDetail(slot.card);
+      onShowDetail(slot.card.id);
     }
   };
 
