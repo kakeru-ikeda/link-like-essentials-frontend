@@ -8,7 +8,6 @@ interface KeywordSearchInputProps {
   onEnter?: () => void;
   placeholder?: string;
   className?: string;
-  storageKey?: string;
 }
 
 export function KeywordSearchInput({
@@ -17,7 +16,6 @@ export function KeywordSearchInput({
   onEnter,
   placeholder = 'カード名やキャラクター名で検索...',
   className = '',
-  storageKey,
 }: KeywordSearchInputProps): JSX.Element {
   const handleClear = (): void => {
     onChange('');
@@ -28,30 +26,6 @@ export function KeywordSearchInput({
       onEnter();
     }
   };
-
-  // マウント時に保存値があれば、親の value が空のときに復元する
-  React.useEffect((): void => {
-    if (!storageKey) return;
-    try {
-      const saved = localStorage.getItem(storageKey);
-      if (saved !== null && value === '') {
-        onChange(saved);
-      }
-    } catch {
-      /* noop */
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [storageKey, value, onChange]); // 初回マウントのみ
-
-  // value の変化を保存（storageKey がある場合）
-  React.useEffect((): void => {
-    if (!storageKey) return;
-    try {
-      localStorage.setItem(storageKey, value);
-    } catch {
-      /* noop */
-    }
-  }, [value, storageKey]);
 
   return (
     <div className={`relative ${className}`}>
