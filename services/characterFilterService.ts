@@ -7,6 +7,7 @@
 import { CHARACTERS } from '@/constants/characters';
 import { canPlaceCardInSlot, getCharacterGeneration } from '@/constants/deckRules';
 import { DECK_SLOT_MAPPING } from '@/constants/deckConfig';
+import { Card } from '@/models/Card';
 
 /**
  * 指定されたスロットに配置可能なキャラクターのみをフィルタリング
@@ -54,4 +55,24 @@ export function getSelectableCharactersForSlot(slotId: number | null): string[] 
     slotCharacter,
     ...selectableCharacters.filter((char) => char !== slotCharacter),
   ];
+}
+
+/**
+ * 利用可能なカードから現在のカードと編成済みカードを除外
+ * 
+ * @param cards - フィルタリング対象のカード配列
+ * @param currentCardId - 現在のスロットのカードID (除外対象)
+ * @param assignedCardIds - 他のスロットに編成済みのカードID配列 (除外対象)
+ * @returns 編成可能なカードのみの配列
+ */
+export function filterAvailableCards(
+  cards: Card[],
+  currentCardId: string | undefined,
+  assignedCardIds: string[]
+): Card[] {
+  return cards.filter((card) => {
+    if (currentCardId && card.id === currentCardId) return false;
+    if (assignedCardIds.includes(card.id)) return false;
+    return true;
+  });
 }
