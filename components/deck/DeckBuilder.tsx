@@ -175,7 +175,7 @@ export const DeckBuilder: React.FC = () => {
     if (cardFilter.skillSearchTargets && cardFilter.skillSearchTargets.length > 0) count += cardFilter.skillSearchTargets.length;
     return count;
   };
-  
+
   const handleClearAllFilters = (): void => { 
     setCardFilter({}); 
     setSavedFilter({});
@@ -225,12 +225,38 @@ export const DeckBuilder: React.FC = () => {
                 <div className="flex gap-1 sm:gap-1.5 md:gap-2">
                   {slots[1] && (
                     <div className="flex-1 max-w-[55%]">
-                      <DeckSlot slot={slots[1]} onSlotClick={handleSlotClick} onRemoveCard={removeCard} onToggleAce={toggleAceCard} onShowDetail={(id: string) => modal.openCardDetail(id)} isAce={deck.aceSlotId === slots[1].slotId} isMain={false} onDragStart={handleDragStart} onDragEnd={handleDragEnd} onDrop={handleDrop} isDragging={draggingSlotId === slots[1].slotId} isDroppable={draggingSlotId !== null && canDropToSlot(slots[1].slotId)} />
+                      <DeckSlot 
+                        slot={slots[1]} 
+                        onSlotClick={handleSlotClick} 
+                        onRemoveCard={removeCard} 
+                        onToggleAce={toggleAceCard} 
+                        onShowDetail={(id: string) => modal.openCardDetail(id)} 
+                        isAce={deck.aceSlotId === slots[1].slotId} 
+                        isMain={false} 
+                        onDragStart={handleDragStart} 
+                        onDragEnd={handleDragEnd} 
+                        onDrop={handleDrop} 
+                        isDragging={draggingSlotId === slots[1].slotId} 
+                        isDroppable={draggingSlotId !== null && canDropToSlot(slots[1].slotId)} 
+                      />
                     </div>
                   )}
                   {slots[2] && (
                     <div className="flex-1 max-w-[48%]">
-                      <DeckSlot slot={slots[2]} onSlotClick={handleSlotClick} onRemoveCard={removeCard} onToggleAce={toggleAceCard} onShowDetail={(id: string) => modal.openCardDetail(id)} isAce={deck.aceSlotId === slots[2].slotId} isMain={false} onDragStart={handleDragStart} onDragEnd={handleDragEnd} onDrop={handleDrop} isDragging={draggingSlotId === slots[2].slotId} isDroppable={draggingSlotId !== null && canDropToSlot(slots[2].slotId)} />
+                      <DeckSlot 
+                        slot={slots[2]} 
+                        onSlotClick={handleSlotClick} 
+                        onRemoveCard={removeCard} 
+                        onToggleAce={toggleAceCard} 
+                        onShowDetail={(id: string) => modal.openCardDetail(id)} 
+                        isAce={deck.aceSlotId === slots[2].slotId} 
+                        isMain={false} 
+                        onDragStart={handleDragStart} 
+                        onDragEnd={handleDragEnd} 
+                        onDrop={handleDrop} 
+                        isDragging={draggingSlotId === slots[2].slotId} 
+                        isDroppable={draggingSlotId !== null && canDropToSlot(slots[2].slotId)} 
+                      />
                     </div>
                   )}
                 </div>
