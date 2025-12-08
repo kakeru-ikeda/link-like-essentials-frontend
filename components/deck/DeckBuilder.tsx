@@ -142,10 +142,27 @@ export const DeckBuilder: React.FC = () => {
     modal.closeCardSearch();
   };
 
-  const handleFilterChange = (filter: CardFilterType): void => setCardFilter(filter);
-  const handleResetFilters = (): void => { setCardFilter({}); setSavedFilter({}); };
-  const handleApplyAndCloseFilter = (): void => { setSavedFilter(cardFilter); modal.closeFilter(); };
-  const handleClearFilter = (key: keyof CardFilterType): void => { const newFilter = { ...cardFilter }; delete newFilter[key]; setCardFilter(newFilter); setSavedFilter(newFilter); };
+  const handleFilterChange = (filter: CardFilterType): void => {
+    setCardFilter(filter);
+  };
+
+  const handleResetFilters = (): void => { 
+  setCardFilter({}); 
+  setSavedFilter({}); 
+  };
+
+  const handleApplyAndCloseFilter = (): void => { 
+  setSavedFilter(cardFilter); 
+  modal.closeFilter(); 
+  };
+
+  const handleClearFilter = (key: keyof CardFilterType): void => {
+    const newFilter = { ...cardFilter };
+    delete newFilter[key];
+    setCardFilter(newFilter);
+    setSavedFilter(newFilter);
+  };
+
   const countActiveFilters = (): number => {
     let count = 0;
     if (cardFilter.keyword) count++;
@@ -158,7 +175,11 @@ export const DeckBuilder: React.FC = () => {
     if (cardFilter.skillSearchTargets && cardFilter.skillSearchTargets.length > 0) count += cardFilter.skillSearchTargets.length;
     return count;
   };
-  const handleClearAllFilters = (): void => { setCardFilter({}); setSavedFilter({}); };
+  
+  const handleClearAllFilters = (): void => { 
+    setCardFilter({}); 
+    setSavedFilter({});
+  };
 
   if (!deck) {
     return (
