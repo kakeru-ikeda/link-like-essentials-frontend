@@ -41,7 +41,7 @@ export function KeywordSearchInput({
       /* noop */
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // 初回マウントのみ
+  }, [storageKey, value, onChange]); // 初回マウントのみ
 
   // value の変化を保存（storageKey がある場合）
   React.useEffect((): void => {
