@@ -19,7 +19,7 @@ import { useCardStore } from '@/store/cardStore';
 import { useModal } from '@/hooks/useModal';
 import type { Card } from '@/models/Card';
 import type { CardFilter as CardFilterType } from '@/models/Filter';
-import { filterCardsBySlot } from '@/services/deckFilterService';
+import { filterCardsBySlot, getAssignedCardsForSlot } from '@/services/deckFilterService';
 
 export const DeckBuilder: React.FC = () => {
   const { deck, removeCard, toggleAceCard, swapCards, addCard } = useDeck();
@@ -74,16 +74,9 @@ export const DeckBuilder: React.FC = () => {
   }, [deck, modal.currentSlotId]);
 
   const assignedCards = React.useMemo(() => {
-    if (!deck || modal.currentSlotId === null) return [];
-    return deck.slots
-      .filter((slot) => slot.slotId !== modal.currentSlotId && slot.card)
-      .map((slot) => slot.card!)
-      .filter((card, index, self) => {
-        if (self.findIndex((c) => c.id === card.id) !== index) return false;
-        const validationResult = canPlaceCardInSlot({ characterName: card.characterName, rarity: card.rarity }, modal.currentSlotId!);
-        return validationResult.allowed;
-      });
-  }, [deck, modal.currentSlotId]);
+  if (!deck || modal.currentSlotId === null) return [];
+  return getAssignedCardsForSlot(deck.slots, modal.currentSlotId);
+}, [deck, modal.currentSlotId]);
 
   const filterForQuery = React.useMemo(() => {
     if (modal.currentSlotId === null) return undefined;
