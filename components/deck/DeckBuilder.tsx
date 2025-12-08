@@ -20,6 +20,7 @@ import { useModal } from '@/hooks/useModal';
 import type { Card } from '@/models/Card';
 import type { CardFilter as CardFilterType } from '@/models/Filter';
 import { filterCardsBySlot, getAssignedCardsForSlot } from '@/services/deckFilterService';
+import { filterAvailableCards } from '@/services/characterFilterService';
 
 export const DeckBuilder: React.FC = () => {
   const { deck, removeCard, toggleAceCard, swapCards, addCard } = useDeck();
@@ -87,12 +88,7 @@ export const DeckBuilder: React.FC = () => {
 
   const filteredCards = React.useMemo(() => {
     if (modal.currentSlotId === null) return [];
-    const currentCardId = currentSlotCard?.id;
-    const availableCards = cards.filter((card) => {
-      if (currentCardId && card.id === currentCardId) return false;
-      if (assignedCardIds.includes(card.id)) return false;
-      return true;
-    });
+    const availableCards = filterAvailableCards(cards, currentSlotCard?.id, assignedCardIds);
     return filterCardsBySlot(availableCards, modal.currentSlotId);
   }, [cards, currentSlotCard, assignedCardIds, modal.currentSlotId]);
 
