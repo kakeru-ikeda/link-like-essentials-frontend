@@ -265,7 +265,6 @@ export const DeckBuilder: React.FC = () => {
           value: cardFilter.keyword || '',
           onChange: (value) => setCardFilter({ ...cardFilter, keyword: value || undefined }),
           placeholder: 'カード名やキャラクター名で検索...',
-          storageKey: 'deck-card-search-keyword',
         }}
         headerActions={
           <div className="flex items-center gap-2">
