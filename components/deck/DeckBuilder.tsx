@@ -302,13 +302,46 @@ export const DeckBuilder: React.FC = () => {
       </SideModal>
 
       {/* Filter modal */}
-      <SideModal isOpen={modal.isFilterOpen} onClose={modal.closeFilter} title="絞り込み" width="sm" hideCloseButton={true} zIndex={60} headerActions={<div className="flex gap-2"><button onClick={handleResetFilters} className="px-3 py-1.5 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition font-medium">リセット</button><button onClick={handleApplyAndCloseFilter} className="px-3 py-1.5 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded-md transition font-medium">フィルターを適用</button></div>}>
-        <CardFilter currentFilter={cardFilter} currentSlotId={modal.currentSlotId} onFilterChange={handleFilterChange} onReset={handleResetFilters} onApply={handleApplyAndCloseFilter} />
+      <SideModal 
+        isOpen={modal.isFilterOpen} 
+        onClose={modal.closeFilter} 
+        title="絞り込み" 
+        width="sm" 
+        hideCloseButton={true} 
+        zIndex={60} 
+        headerActions={
+          <div className="flex gap-2">
+            <button 
+              onClick={handleResetFilters} 
+              className="px-3 py-1.5 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition font-medium"
+              >リセット
+            </button>
+            <button 
+              onClick={handleApplyAndCloseFilter} 
+              className="px-3 py-1.5 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded-md transition font-medium"
+              >フィルターを適用
+            </button>
+          </div>
+        }>
+        <CardFilter 
+          currentFilter={cardFilter} 
+          currentSlotId={modal.currentSlotId} 
+          onFilterChange={handleFilterChange} 
+          onReset={handleResetFilters} 
+          onApply={handleApplyAndCloseFilter} 
+        />
       </SideModal>
 
       {/* Card detail modal */}
-      <SideModal isOpen={modal.isCardDetailOpen} onClose={modal.closeCardDetail} title="カード詳細" width="md">
-        {modal.selectedCardId && <CardDetailView cardId={modal.selectedCardId} />}
+      <SideModal 
+        isOpen={modal.isCardDetailOpen} 
+        onClose={modal.closeCardDetail} 
+        title="カード詳細" width="md"
+      >
+      {modal.selectedCardId && 
+      <CardDetailView 
+        cardId={modal.selectedCardId} 
+      />}
       </SideModal>
     </>
   );
