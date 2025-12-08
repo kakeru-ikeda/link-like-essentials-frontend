@@ -136,13 +136,13 @@ export const DeckBuilder: React.FC = () => {
   };
 
   const handleResetFilters = (): void => { 
-  setCardFilter({}); 
-  setSavedFilter({}); 
+    setCardFilter({}); 
+    setSavedFilter({}); 
   };
 
   const handleApplyAndCloseFilter = (): void => { 
-  setSavedFilter(cardFilter); 
-  modal.closeFilter(); 
+    setSavedFilter(cardFilter); 
+    modal.closeFilter(); 
   };
 
   const handleClearFilter = (key: keyof CardFilterType): void => {
