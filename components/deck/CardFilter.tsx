@@ -3,7 +3,6 @@
 import React from 'react';
 import type { CardFilter as CardFilterType } from '@/models/Filter';
 import { FilterMode } from '@/models/Filter';
-import type { UseFilterReturn } from '@/hooks/useFilter';
 import { Rarity, StyleType, LimitedType, FavoriteMode } from '@/models/enums';
 import { Tooltip } from '@/components/common/Tooltip';
 import { KeywordSearchInput } from '@/components/common/KeywordSearchInput';
@@ -23,13 +22,15 @@ import {
 } from '@/constants/skillEffects';
 
 interface CardFilterProps {
-  filter: UseFilterReturn;
+  filter: CardFilterType;
+  updateFilter: (updates: Partial<CardFilterType>) => void;
   currentSlotId?: number | null;
   onApply: () => void;
 }
 
 export const CardFilter: React.FC<CardFilterProps> = ({
   filter,
+  updateFilter,
   currentSlotId,
   onApply,
 }) => {
@@ -41,72 +42,72 @@ export const CardFilter: React.FC<CardFilterProps> = ({
   );
 
   const toggleRarity = (rarity: Rarity): void => {
-    const rarities = filter.draftFilter.rarities || [];
+    const rarities = filter.rarities || [];
     const newRarities = rarities.includes(rarity)
       ? rarities.filter((r) => r !== rarity)
       : [...rarities, rarity];
-    filter.updateDraftFilter({
+    updateFilter({
       rarities: newRarities.length > 0 ? newRarities : undefined,
     });
   };
 
   const toggleStyleType = (styleType: StyleType): void => {
-    const styleTypes = filter.draftFilter.styleTypes || [];
+    const styleTypes = filter.styleTypes || [];
     const newStyleTypes = styleTypes.includes(styleType)
       ? styleTypes.filter((s) => s !== styleType)
       : [...styleTypes, styleType];
-    filter.updateDraftFilter({
+    updateFilter({
       styleTypes: newStyleTypes.length > 0 ? newStyleTypes : undefined,
     });
   };
 
   const toggleLimitedType = (limitedType: LimitedType): void => {
-    const limitedTypes = filter.draftFilter.limitedTypes || [];
+    const limitedTypes = filter.limitedTypes || [];
     const newLimitedTypes = limitedTypes.includes(limitedType)
       ? limitedTypes.filter((l) => l !== limitedType)
       : [...limitedTypes, limitedType];
-    filter.updateDraftFilter({
+    updateFilter({
       limitedTypes: newLimitedTypes.length > 0 ? newLimitedTypes : undefined,
     });
   };
 
   const toggleFavoriteMode = (favoriteMode: FavoriteMode): void => {
-    const favoriteModes = filter.draftFilter.favoriteModes || [];
+    const favoriteModes = filter.favoriteModes || [];
     const newFavoriteModes = favoriteModes.includes(favoriteMode)
       ? favoriteModes.filter((f) => f !== favoriteMode)
       : [...favoriteModes, favoriteMode];
-    filter.updateDraftFilter({
+    updateFilter({
       favoriteModes: newFavoriteModes.length > 0 ? newFavoriteModes : undefined,
     });
   };
 
   const toggleCharacterName = (characterName: string): void => {
-    const characterNames = filter.draftFilter.characterNames || [];
+    const characterNames = filter.characterNames || [];
     const newCharacterNames = characterNames.includes(characterName)
       ? characterNames.filter((c) => c !== characterName)
       : [...characterNames, characterName];
-    filter.updateDraftFilter({
+    updateFilter({
       characterNames:
         newCharacterNames.length > 0 ? newCharacterNames : undefined,
     });
   };
 
   const toggleSkillEffect = (skillEffect: SkillEffectType): void => {
-    const skillEffects = filter.draftFilter.skillEffects || [];
+    const skillEffects = filter.skillEffects || [];
     const newSkillEffects = skillEffects.includes(skillEffect)
       ? skillEffects.filter((s) => s !== skillEffect)
       : [...skillEffects, skillEffect];
-    filter.updateDraftFilter({
+    updateFilter({
       skillEffects: newSkillEffects.length > 0 ? newSkillEffects : undefined,
     });
   };
 
   const toggleSkillSearchTarget = (target: SkillSearchTarget): void => {
-    const skillSearchTargets = filter.draftFilter.skillSearchTargets || [];
+    const skillSearchTargets = filter.skillSearchTargets || [];
     const newSkillSearchTargets = skillSearchTargets.includes(target)
       ? skillSearchTargets.filter((t) => t !== target)
       : [...skillSearchTargets, target];
-    filter.updateDraftFilter({
+    updateFilter({
       skillSearchTargets:
         newSkillSearchTargets.length > 0 ? newSkillSearchTargets : undefined,
     });
@@ -121,9 +122,9 @@ export const CardFilter: React.FC<CardFilterProps> = ({
         </label>
         <div className="flex gap-2">
           <button
-            onClick={() => filter.updateDraftFilter({ filterMode: FilterMode.OR })}
+            onClick={() => updateFilter({ filterMode: FilterMode.OR })}
             className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition ${
-              (filter.draftFilter.filterMode ?? FilterMode.OR) === FilterMode.OR
+              (filter.filterMode ?? FilterMode.OR) === FilterMode.OR
                 ? 'bg-blue-500 text-white'
                 : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
             }`}
@@ -132,9 +133,9 @@ export const CardFilter: React.FC<CardFilterProps> = ({
             <span className="block text-xs mt-1 opacity-90">いずれかに一致</span>
           </button>
           <button
-            onClick={() => filter.updateDraftFilter({ filterMode: FilterMode.AND })}
+            onClick={() => updateFilter({ filterMode: FilterMode.AND })}
             className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition ${
-              filter.draftFilter.filterMode === FilterMode.AND
+              filter.filterMode === FilterMode.AND
                 ? 'bg-blue-500 text-white'
                 : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
             }`}
@@ -144,7 +145,7 @@ export const CardFilter: React.FC<CardFilterProps> = ({
           </button>
         </div>
         <p className="mt-3 text-xs text-gray-500">
-          {(filter.draftFilter.filterMode ?? FilterMode.OR) === FilterMode.OR
+          {(filter.filterMode ?? FilterMode.OR) === FilterMode.OR
             ? '選択した条件のいずれかに一致するカードを表示します'
             : '選択したすべての条件に一致するカードのみを表示します(スキル効果で有効)'}
         </p>
@@ -156,9 +157,9 @@ export const CardFilter: React.FC<CardFilterProps> = ({
           キーワード検索
         </label>
         <KeywordSearchInput
-          value={filter.draftFilter.keyword || ''}
+          value={filter.keyword || ''}
           onChange={(value) =>
-            filter.updateDraftFilter({
+            updateFilter({
               keyword: value || undefined,
             })
           }
@@ -178,7 +179,7 @@ export const CardFilter: React.FC<CardFilterProps> = ({
               key={rarity}
               onClick={() => toggleRarity(rarity)}
               className={`px-3 py-1 rounded-full text-sm font-medium transition ${
-                filter.draftFilter.rarities?.includes(rarity)
+                filter.rarities?.includes(rarity)
                   ? 'bg-purple-500 text-white'
                   : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
               }`}
@@ -202,7 +203,7 @@ export const CardFilter: React.FC<CardFilterProps> = ({
                 key={favoriteMode}
                 onClick={() => toggleFavoriteMode(favoriteMode)}
               className={`px-3 py-1 rounded-full text-sm font-medium transition ${
-                  filter.draftFilter.favoriteModes?.includes(favoriteMode)
+                  filter.favoriteModes?.includes(favoriteMode)
                     ? 'bg-pink-500 text-white'
                     : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
                 }`}
@@ -220,7 +221,7 @@ export const CardFilter: React.FC<CardFilterProps> = ({
         </label>
         <div className="flex flex-wrap gap-2">
           {selectableCharacters.map((character) => {
-            const isSelected = filter.draftFilter.characterNames?.includes(character);
+            const isSelected = filter.characterNames?.includes(character);
             return (
               <button
                 key={character}
@@ -256,7 +257,7 @@ export const CardFilter: React.FC<CardFilterProps> = ({
                 <button
                   onClick={() => toggleSkillEffect(skillEffect)}
                   className={`px-3 py-1 rounded-full text-sm font-medium transition ${
-                    filter.draftFilter.skillEffects?.includes(skillEffect)
+                    filter.skillEffects?.includes(skillEffect)
                       ? 'bg-indigo-500 text-white'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
@@ -279,7 +280,7 @@ export const CardFilter: React.FC<CardFilterProps> = ({
                 key={target}
                 onClick={() => toggleSkillSearchTarget(target)}
               className={`px-3 py-1 rounded-full text-sm font-medium transition ${
-                  filter.draftFilter.skillSearchTargets?.includes(target)
+                  filter.skillSearchTargets?.includes(target)
                     ? 'bg-orange-500 text-white'
                     : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
                 }`}
@@ -302,7 +303,7 @@ export const CardFilter: React.FC<CardFilterProps> = ({
               key={styleType}
               onClick={() => toggleStyleType(styleType)}
               className={`px-3 py-1 rounded-full text-sm font-medium transition ${
-                filter.draftFilter.styleTypes?.includes(styleType)
+                filter.styleTypes?.includes(styleType)
                   ? 'bg-blue-500 text-white'
                   : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
               }`}
@@ -324,7 +325,7 @@ export const CardFilter: React.FC<CardFilterProps> = ({
               key={limitedType}
               onClick={() => toggleLimitedType(limitedType)}
               className={`px-3 py-1 rounded-full text-sm font-medium transition ${
-                filter.draftFilter.limitedTypes?.includes(limitedType)
+                filter.limitedTypes?.includes(limitedType)
                   ? 'bg-green-500 text-white'
                   : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
               }`}
@@ -343,13 +344,13 @@ export const CardFilter: React.FC<CardFilterProps> = ({
         <div className="flex gap-2">
           <button
             onClick={() =>
-              filter.updateDraftFilter({
+              updateFilter({
                 hasAccessories:
-                  filter.draftFilter.hasAccessories === true ? undefined : true,
+                  filter.hasAccessories === true ? undefined : true,
               })
             }
             className={`px-3 py-1 rounded-full text-sm font-medium transition ${
-              filter.draftFilter.hasAccessories === true
+              filter.hasAccessories === true
                 ? 'bg-cyan-500 text-white'
                 : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
             }`}
@@ -358,13 +359,13 @@ export const CardFilter: React.FC<CardFilterProps> = ({
           </button>
           <button
             onClick={() =>
-              filter.updateDraftFilter({
+              updateFilter({
                 hasAccessories:
-                  filter.draftFilter.hasAccessories === false ? undefined : false,
+                  filter.hasAccessories === false ? undefined : false,
               })
             }
             className={`px-3 py-1 rounded-full text-sm font-medium transition ${
-              filter.draftFilter.hasAccessories === false
+              filter.hasAccessories === false
                 ? 'bg-cyan-500 text-white'
                 : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
             }`}

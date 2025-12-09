@@ -31,11 +31,11 @@ export const DeckBuilder: React.FC = () => {
     setActiveFilter: state.setActiveFilter,
   }));
 
-  const filter = useFilter();
+  const { filter, updateFilter, setFilter, resetFilter, clearFilterKey, countActiveFilters } = useFilter();
 
   React.useEffect(() => {
-    setActiveFilter(filter.appliedFilter);
-  }, [filter.appliedFilter, setActiveFilter]);
+    setActiveFilter(filter);
+  }, [filter, setActiveFilter]);
 
   const handleDragStart = (slotId: number): void => {
     const slot = deck?.slots.find((s) => s.slotId === slotId);
@@ -79,8 +79,8 @@ export const DeckBuilder: React.FC = () => {
 
   const filterForQuery = React.useMemo(() => {
     if (sideModal.currentSlotId === null) return undefined;
-    return filter.appliedFilter;
-  }, [sideModal.currentSlotId, filter.appliedFilter]);
+    return filter;
+  }, [sideModal.currentSlotId, filter]);
 
   const { cards, loading } = useCards(filterForQuery, sideModal.currentSlotId === null);
 
@@ -92,7 +92,9 @@ export const DeckBuilder: React.FC = () => {
 
   const handleSlotClick = (slotId: number): void => {
     sideModal.openCardSearch(slotId);
-    filter.initializeFromSaved(filter.appliedFilter);
+    // キャラクター名を除外して初期化
+    const { characterNames, ...filterWithoutCharacter } = filter;
+    setFilter(filterWithoutCharacter);
   };
 
   const handleSelectCard = (card: Card): void => {
@@ -100,11 +102,11 @@ export const DeckBuilder: React.FC = () => {
       const assignedSlot = deck?.slots.find((slot) => slot.card?.id === card.id && slot.slotId !== sideModal.currentSlotId);
       if (assignedSlot) {
         swapCards(sideModal.currentSlotId, assignedSlot.slotId);
-        filter.applyFilterAndClose(sideModal.closeCardSearch);
+        sideModal.closeCardSearch();
       } else {
         const success = addCard(sideModal.currentSlotId, card);
         if (success) {
-          filter.applyFilterAndClose(sideModal.closeCardSearch);
+          sideModal.closeCardSearch();
         } else {
           const errorMessage = '編成できませんでした';
           alert(errorMessage);
@@ -116,20 +118,20 @@ export const DeckBuilder: React.FC = () => {
   const handleRemoveCurrentCard = (): void => {
     if (sideModal.currentSlotId !== null) {
       removeCard(sideModal.currentSlotId);
-      filter.applyFilterAndClose(sideModal.closeCardSearch);
+      sideModal.closeCardSearch();
     }
   };
 
   const handleCloseModal = (): void => {
-    filter.applyFilterAndClose(sideModal.closeCardSearch);
+    sideModal.closeCardSearch();
   };
 
   const handleApplyAndCloseFilter = (): void => { 
-    filter.applyFilterAndClose(sideModal.closeFilter);
+    sideModal.closeFilter();
   };
 
   const handleKeywordChange = (value: string): void => {
-    filter.updateAndApplyFilter({ keyword: value || undefined });
+    updateFilter({ keyword: value || undefined });
   };
 
   if (!deck) {
@@ -224,21 +226,21 @@ export const DeckBuilder: React.FC = () => {
         title={`${currentSlotType === 'main' ? 'メイン' : currentSlotType === 'side' ? 'サイド' : 'カードを選択'} - ${currentCharacterName || ''}`}
         width="md"
         keywordSearch={{
-          value: filter.draftFilter.keyword || '',
+          value: filter.keyword || '',
           onChange: handleKeywordChange,
           placeholder: 'カード名やキャラクター名で検索...',
         }}
         headerActions={
           <div className="flex items-center gap-2">
-            {filter.countActiveFilters() > 0 && (
-              <button onClick={filter.resetFilter} className="px-3 py-1.5 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition font-medium">リセット</button>
+            {countActiveFilters() > 0 && (
+              <button onClick={resetFilter} className="px-3 py-1.5 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition font-medium">リセット</button>
             )}
-            <FilterButton activeCount={filter.countActiveFilters()} onClick={() => sideModal.openFilter()} />
+            <FilterButton activeCount={countActiveFilters()} onClick={() => sideModal.openFilter()} />
           </div>
         }
       >
         <div className="flex flex-col h-full">
-          <ActiveFilters filter={filter} />
+          <ActiveFilters filter={filter} clearFilterKey={clearFilterKey} />
           <div className="flex-1 overflow-y-auto">
             {currentSlotCard && currentCharacterName && (
               <CurrentCardDisplay card={currentSlotCard} characterName={currentCharacterName} onRemove={handleRemoveCurrentCard} />
@@ -262,19 +264,20 @@ export const DeckBuilder: React.FC = () => {
         headerActions={
           <div className="flex gap-2">
             <button 
-              onClick={filter.resetDraftFilter} 
+              onClick={resetFilter} 
               className="px-3 py-1.5 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition font-medium"
               >リセット
             </button>
             <button 
               onClick={handleApplyAndCloseFilter} 
               className="px-3 py-1.5 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded-md transition font-medium"
-              >フィルターを適用
+              >閉じる
             </button>
           </div>
         }>
         <CardFilter 
-          filter={filter} 
+          filter={filter}
+          updateFilter={updateFilter}
           currentSlotId={sideModal.currentSlotId} 
           onApply={handleApplyAndCloseFilter} 
         />

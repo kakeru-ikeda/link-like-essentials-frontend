@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import type { UseFilterReturn } from '@/hooks/useFilter';
+import type { CardFilter } from '@/models/Filter';
 import {
   RARITY_LABELS,
   STYLE_TYPE_LABELS,
@@ -14,13 +14,15 @@ import {
 } from '@/constants/skillEffects';
 
 interface ActiveFiltersProps {
-  filter: UseFilterReturn;
+  filter: CardFilter;
+  clearFilterKey: (key: keyof CardFilter) => void;
 }
 
 export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
   filter,
+  clearFilterKey,
 }) => {
-  const currentFilter = filter.draftFilter;
+  const currentFilter = filter;
 
   const hasActiveFilters =
     currentFilter.keyword ||
@@ -46,7 +48,7 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
           <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full flex items-center gap-1">
             <span className="max-w-[100px] truncate">{currentFilter.keyword}</span>
             <button
-              onClick={() => filter.clearFilterKey('keyword')}
+              onClick={() => clearFilterKey('keyword')}
               className="hover:bg-blue-200 rounded-full p-0.5"
             >
               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
@@ -65,7 +67,7 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
           <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full flex items-center gap-1">
             {currentFilter.rarities.map((r) => RARITY_LABELS[r]).join(', ')}
             <button
-              onClick={() => filter.clearFilterKey('rarities')}
+              onClick={() => clearFilterKey('rarities')}
               className="hover:bg-blue-200 rounded-full p-0.5"
             >
               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
@@ -84,7 +86,7 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
           <span className="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full flex items-center gap-1">
             {currentFilter.styleTypes.map((s) => STYLE_TYPE_LABELS[s]).join(', ')}
             <button
-              onClick={() => filter.clearFilterKey('styleTypes')}
+              onClick={() => clearFilterKey('styleTypes')}
               className="hover:bg-purple-200 rounded-full p-0.5"
             >
               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
@@ -103,7 +105,7 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
           <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full flex items-center gap-1">
             {currentFilter.favoriteModes.map((f) => FAVORITE_MODE_LABELS[f]).join(', ')}
             <button
-              onClick={() => filter.clearFilterKey('favoriteModes')}
+              onClick={() => clearFilterKey('favoriteModes')}
               className="hover:bg-green-200 rounded-full p-0.5"
             >
               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
@@ -122,7 +124,7 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
           <span className="px-2 py-1 bg-pink-100 text-pink-700 text-xs rounded-full flex items-center gap-1">
             {currentFilter.characterNames.join(', ')}
             <button
-              onClick={() => filter.clearFilterKey('characterNames')}
+              onClick={() => clearFilterKey('characterNames')}
               className="hover:bg-pink-200 rounded-full p-0.5"
             >
               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
@@ -141,7 +143,7 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
           <span className="px-2 py-1 bg-indigo-100 text-indigo-700 text-xs rounded-full flex items-center gap-1">
             {currentFilter.skillEffects.map((s) => SKILL_EFFECT_LABELS[s]).join(', ')}
             <button
-              onClick={() => filter.clearFilterKey('skillEffects')}
+              onClick={() => clearFilterKey('skillEffects')}
               className="hover:bg-indigo-200 rounded-full p-0.5"
             >
               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
@@ -160,7 +162,7 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
           <span className="px-2 py-1 bg-teal-100 text-teal-700 text-xs rounded-full flex items-center gap-1">
             {currentFilter.skillSearchTargets.map((t) => SKILL_SEARCH_TARGET_LABELS[t]).join(', ')}
             <button
-              onClick={() => filter.clearFilterKey('skillSearchTargets')}
+              onClick={() => clearFilterKey('skillSearchTargets')}
               className="hover:bg-teal-200 rounded-full p-0.5"
             >
               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
@@ -179,7 +181,7 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
           <span className="px-2 py-1 bg-orange-100 text-orange-700 text-xs rounded-full flex items-center gap-1">
             {currentFilter.limitedTypes.map((l) => LIMITED_TYPE_LABELS[l]).join(', ')}
             <button
-              onClick={() => filter.clearFilterKey('limitedTypes')}
+              onClick={() => clearFilterKey('limitedTypes')}
               className="hover:bg-orange-200 rounded-full p-0.5"
             >
               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
