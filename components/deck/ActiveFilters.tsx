@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { CardFilter } from '@/models/Filter';
+import type { UseFilterReturn } from '@/hooks/useFilter';
 import {
   RARITY_LABELS,
   STYLE_TYPE_LABELS,
@@ -14,23 +14,23 @@ import {
 } from '@/constants/skillEffects';
 
 interface ActiveFiltersProps {
-  filter: CardFilter;
-  onClearFilter: (key: keyof CardFilter) => void;
+  filter: UseFilterReturn;
 }
 
 export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
   filter,
-  onClearFilter,
 }) => {
+  const currentFilter = filter.draftFilter;
+
   const hasActiveFilters =
-    filter.keyword ||
-    (filter.rarities && filter.rarities.length > 0) ||
-    (filter.styleTypes && filter.styleTypes.length > 0) ||
-    (filter.favoriteModes && filter.favoriteModes.length > 0) ||
-    (filter.characterNames && filter.characterNames.length > 0) ||
-    (filter.limitedTypes && filter.limitedTypes.length > 0) ||
-    (filter.skillEffects && filter.skillEffects.length > 0) ||
-    (filter.skillSearchTargets && filter.skillSearchTargets.length > 0);
+    currentFilter.keyword ||
+    (currentFilter.rarities && currentFilter.rarities.length > 0) ||
+    (currentFilter.styleTypes && currentFilter.styleTypes.length > 0) ||
+    (currentFilter.favoriteModes && currentFilter.favoriteModes.length > 0) ||
+    (currentFilter.characterNames && currentFilter.characterNames.length > 0) ||
+    (currentFilter.limitedTypes && currentFilter.limitedTypes.length > 0) ||
+    (currentFilter.skillEffects && currentFilter.skillEffects.length > 0) ||
+    (currentFilter.skillSearchTargets && currentFilter.skillSearchTargets.length > 0);
 
   if (!hasActiveFilters) {
     return null;
@@ -42,170 +42,154 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
         <span className="text-xs font-medium text-gray-600">適用中:</span>
 
         {/* キーワード */}
-        {filter.keyword && (
+        {currentFilter.keyword && (
           <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full flex items-center gap-1">
-            <span className="max-w-[100px] truncate">{filter.keyword}</span>
-            {onClearFilter && (
-              <button
-                onClick={() => onClearFilter('keyword')}
-                className="hover:bg-blue-200 rounded-full p-0.5"
-              >
-                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                  <path
-                    fillRule="evenodd"
-                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </button>
-            )}
+            <span className="max-w-[100px] truncate">{currentFilter.keyword}</span>
+            <button
+              onClick={() => filter.clearFilterKey('keyword')}
+              className="hover:bg-blue-200 rounded-full p-0.5"
+            >
+              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fillRule="evenodd"
+                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </button>
           </span>
         )}
 
         {/* レアリティ */}
-        {filter.rarities && filter.rarities.length > 0 && (
+        {currentFilter.rarities && currentFilter.rarities.length > 0 && (
           <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full flex items-center gap-1">
-            {filter.rarities.map((r) => RARITY_LABELS[r]).join(', ')}
-            {onClearFilter && (
-              <button
-                onClick={() => onClearFilter('rarities')}
-                className="hover:bg-blue-200 rounded-full p-0.5"
-              >
-                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                  <path
-                    fillRule="evenodd"
-                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </button>
-            )}
+            {currentFilter.rarities.map((r) => RARITY_LABELS[r]).join(', ')}
+            <button
+              onClick={() => filter.clearFilterKey('rarities')}
+              className="hover:bg-blue-200 rounded-full p-0.5"
+            >
+              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fillRule="evenodd"
+                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </button>
           </span>
         )}
 
         {/* スタイルタイプ */}
-        {filter.styleTypes && filter.styleTypes.length > 0 && (
+        {currentFilter.styleTypes && currentFilter.styleTypes.length > 0 && (
           <span className="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full flex items-center gap-1">
-            {filter.styleTypes.map((s) => STYLE_TYPE_LABELS[s]).join(', ')}
-            {onClearFilter && (
-              <button
-                onClick={() => onClearFilter('styleTypes')}
-                className="hover:bg-purple-200 rounded-full p-0.5"
-              >
-                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                  <path
-                    fillRule="evenodd"
-                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </button>
-            )}
+            {currentFilter.styleTypes.map((s) => STYLE_TYPE_LABELS[s]).join(', ')}
+            <button
+              onClick={() => filter.clearFilterKey('styleTypes')}
+              className="hover:bg-purple-200 rounded-full p-0.5"
+            >
+              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fillRule="evenodd"
+                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </button>
           </span>
         )}
 
         {/* 得意ムード */}
-        {filter.favoriteModes && filter.favoriteModes.length > 0 && (
+        {currentFilter.favoriteModes && currentFilter.favoriteModes.length > 0 && (
           <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full flex items-center gap-1">
-            {filter.favoriteModes.map((f) => FAVORITE_MODE_LABELS[f]).join(', ')}
-            {onClearFilter && (
-              <button
-                onClick={() => onClearFilter('favoriteModes')}
-                className="hover:bg-green-200 rounded-full p-0.5"
-              >
-                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                  <path
-                    fillRule="evenodd"
-                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </button>
-            )}
+            {currentFilter.favoriteModes.map((f) => FAVORITE_MODE_LABELS[f]).join(', ')}
+            <button
+              onClick={() => filter.clearFilterKey('favoriteModes')}
+              className="hover:bg-green-200 rounded-full p-0.5"
+            >
+              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fillRule="evenodd"
+                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </button>
           </span>
         )}
 
         {/* キャラクター */}
-        {filter.characterNames && filter.characterNames.length > 0 && (
+        {currentFilter.characterNames && currentFilter.characterNames.length > 0 && (
           <span className="px-2 py-1 bg-pink-100 text-pink-700 text-xs rounded-full flex items-center gap-1">
-            {filter.characterNames.join(', ')}
-            {onClearFilter && (
-              <button
-                onClick={() => onClearFilter('characterNames')}
-                className="hover:bg-pink-200 rounded-full p-0.5"
-              >
-                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                  <path
-                    fillRule="evenodd"
-                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </button>
-            )}
+            {currentFilter.characterNames.join(', ')}
+            <button
+              onClick={() => filter.clearFilterKey('characterNames')}
+              className="hover:bg-pink-200 rounded-full p-0.5"
+            >
+              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fillRule="evenodd"
+                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </button>
           </span>
         )}
 
         {/* スキル効果 */}
-        {filter.skillEffects && filter.skillEffects.length > 0 && (
+        {currentFilter.skillEffects && currentFilter.skillEffects.length > 0 && (
           <span className="px-2 py-1 bg-indigo-100 text-indigo-700 text-xs rounded-full flex items-center gap-1">
-            {filter.skillEffects.map((s) => SKILL_EFFECT_LABELS[s]).join(', ')}
-            {onClearFilter && (
-              <button
-                onClick={() => onClearFilter('skillEffects')}
-                className="hover:bg-indigo-200 rounded-full p-0.5"
-              >
-                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                  <path
-                    fillRule="evenodd"
-                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </button>
-            )}
+            {currentFilter.skillEffects.map((s) => SKILL_EFFECT_LABELS[s]).join(', ')}
+            <button
+              onClick={() => filter.clearFilterKey('skillEffects')}
+              className="hover:bg-indigo-200 rounded-full p-0.5"
+            >
+              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fillRule="evenodd"
+                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </button>
           </span>
         )}
 
         {/* スキル検索対象 */}
-        {filter.skillSearchTargets && filter.skillSearchTargets.length > 0 && (
+        {currentFilter.skillSearchTargets && currentFilter.skillSearchTargets.length > 0 && (
           <span className="px-2 py-1 bg-teal-100 text-teal-700 text-xs rounded-full flex items-center gap-1">
-            {filter.skillSearchTargets.map((t) => SKILL_SEARCH_TARGET_LABELS[t]).join(', ')}
-            {onClearFilter && (
-              <button
-                onClick={() => onClearFilter('skillSearchTargets')}
-                className="hover:bg-teal-200 rounded-full p-0.5"
-              >
-                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                  <path
-                    fillRule="evenodd"
-                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </button>
-            )}
+            {currentFilter.skillSearchTargets.map((t) => SKILL_SEARCH_TARGET_LABELS[t]).join(', ')}
+            <button
+              onClick={() => filter.clearFilterKey('skillSearchTargets')}
+              className="hover:bg-teal-200 rounded-full p-0.5"
+            >
+              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fillRule="evenodd"
+                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </button>
           </span>
         )}
 
         {/* 入手方法 */}
-        {filter.limitedTypes && filter.limitedTypes.length > 0 && (
+        {currentFilter.limitedTypes && currentFilter.limitedTypes.length > 0 && (
           <span className="px-2 py-1 bg-orange-100 text-orange-700 text-xs rounded-full flex items-center gap-1">
-            {filter.limitedTypes.map((l) => LIMITED_TYPE_LABELS[l]).join(', ')}
-            {onClearFilter && (
-              <button
-                onClick={() => onClearFilter('limitedTypes')}
-                className="hover:bg-orange-200 rounded-full p-0.5"
-              >
-                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                  <path
-                    fillRule="evenodd"
-                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </button>
-            )}
+            {currentFilter.limitedTypes.map((l) => LIMITED_TYPE_LABELS[l]).join(', ')}
+            <button
+              onClick={() => filter.clearFilterKey('limitedTypes')}
+              className="hover:bg-orange-200 rounded-full p-0.5"
+            >
+              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fillRule="evenodd"
+                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </button>
           </span>
         )}
       </div>
