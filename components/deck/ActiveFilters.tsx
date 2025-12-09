@@ -22,17 +22,15 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
   filter,
   clearFilterKey,
 }) => {
-  const currentFilter = filter;
-
   const hasActiveFilters =
-    currentFilter.keyword ||
-    (currentFilter.rarities && currentFilter.rarities.length > 0) ||
-    (currentFilter.styleTypes && currentFilter.styleTypes.length > 0) ||
-    (currentFilter.favoriteModes && currentFilter.favoriteModes.length > 0) ||
-    (currentFilter.characterNames && currentFilter.characterNames.length > 0) ||
-    (currentFilter.limitedTypes && currentFilter.limitedTypes.length > 0) ||
-    (currentFilter.skillEffects && currentFilter.skillEffects.length > 0) ||
-    (currentFilter.skillSearchTargets && currentFilter.skillSearchTargets.length > 0);
+    filter.keyword ||
+    (filter.rarities && filter.rarities.length > 0) ||
+    (filter.styleTypes && filter.styleTypes.length > 0) ||
+    (filter.favoriteModes && filter.favoriteModes.length > 0) ||
+    (filter.characterNames && filter.characterNames.length > 0) ||
+    (filter.limitedTypes && filter.limitedTypes.length > 0) ||
+    (filter.skillEffects && filter.skillEffects.length > 0) ||
+    (filter.skillSearchTargets && filter.skillSearchTargets.length > 0);
 
   if (!hasActiveFilters) {
     return null;
@@ -44,9 +42,9 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
         <span className="text-xs font-medium text-gray-600">適用中:</span>
 
         {/* キーワード */}
-        {currentFilter.keyword && (
+        {filter.keyword && (
           <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full flex items-center gap-1">
-            <span className="max-w-[100px] truncate">{currentFilter.keyword}</span>
+            <span className="max-w-[100px] truncate">{filter.keyword}</span>
             <button
               onClick={() => clearFilterKey('keyword')}
               className="hover:bg-blue-200 rounded-full p-0.5"
@@ -63,9 +61,9 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
         )}
 
         {/* レアリティ */}
-        {currentFilter.rarities && currentFilter.rarities.length > 0 && (
+        {filter.rarities && filter.rarities.length > 0 && (
           <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full flex items-center gap-1">
-            {currentFilter.rarities.map((r) => RARITY_LABELS[r]).join(', ')}
+            {filter.rarities.map((r) => RARITY_LABELS[r]).join(', ')}
             <button
               onClick={() => clearFilterKey('rarities')}
               className="hover:bg-blue-200 rounded-full p-0.5"
@@ -82,9 +80,9 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
         )}
 
         {/* スタイルタイプ */}
-        {currentFilter.styleTypes && currentFilter.styleTypes.length > 0 && (
+        {filter.styleTypes && filter.styleTypes.length > 0 && (
           <span className="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full flex items-center gap-1">
-            {currentFilter.styleTypes.map((s) => STYLE_TYPE_LABELS[s]).join(', ')}
+            {filter.styleTypes.map((s) => STYLE_TYPE_LABELS[s]).join(', ')}
             <button
               onClick={() => clearFilterKey('styleTypes')}
               className="hover:bg-purple-200 rounded-full p-0.5"
@@ -101,9 +99,9 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
         )}
 
         {/* 得意ムード */}
-        {currentFilter.favoriteModes && currentFilter.favoriteModes.length > 0 && (
+        {filter.favoriteModes && filter.favoriteModes.length > 0 && (
           <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full flex items-center gap-1">
-            {currentFilter.favoriteModes.map((f) => FAVORITE_MODE_LABELS[f]).join(', ')}
+            {filter.favoriteModes.map((f) => FAVORITE_MODE_LABELS[f]).join(', ')}
             <button
               onClick={() => clearFilterKey('favoriteModes')}
               className="hover:bg-green-200 rounded-full p-0.5"
@@ -120,9 +118,9 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
         )}
 
         {/* キャラクター */}
-        {currentFilter.characterNames && currentFilter.characterNames.length > 0 && (
+        {filter.characterNames && filter.characterNames.length > 0 && (
           <span className="px-2 py-1 bg-pink-100 text-pink-700 text-xs rounded-full flex items-center gap-1">
-            {currentFilter.characterNames.join(', ')}
+            {filter.characterNames.join(', ')}
             <button
               onClick={() => clearFilterKey('characterNames')}
               className="hover:bg-pink-200 rounded-full p-0.5"
@@ -139,9 +137,9 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
         )}
 
         {/* スキル効果 */}
-        {currentFilter.skillEffects && currentFilter.skillEffects.length > 0 && (
+        {filter.skillEffects && filter.skillEffects.length > 0 && (
           <span className="px-2 py-1 bg-indigo-100 text-indigo-700 text-xs rounded-full flex items-center gap-1">
-            {currentFilter.skillEffects.map((s) => SKILL_EFFECT_LABELS[s]).join(', ')}
+            {filter.skillEffects.map((s) => SKILL_EFFECT_LABELS[s]).join(', ')}
             <button
               onClick={() => clearFilterKey('skillEffects')}
               className="hover:bg-indigo-200 rounded-full p-0.5"
@@ -158,9 +156,9 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
         )}
 
         {/* スキル検索対象 */}
-        {currentFilter.skillSearchTargets && currentFilter.skillSearchTargets.length > 0 && (
+        {filter.skillSearchTargets && filter.skillSearchTargets.length > 0 && (
           <span className="px-2 py-1 bg-teal-100 text-teal-700 text-xs rounded-full flex items-center gap-1">
-            {currentFilter.skillSearchTargets.map((t) => SKILL_SEARCH_TARGET_LABELS[t]).join(', ')}
+            {filter.skillSearchTargets.map((t) => SKILL_SEARCH_TARGET_LABELS[t]).join(', ')}
             <button
               onClick={() => clearFilterKey('skillSearchTargets')}
               className="hover:bg-teal-200 rounded-full p-0.5"
@@ -177,9 +175,9 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
         )}
 
         {/* 入手方法 */}
-        {currentFilter.limitedTypes && currentFilter.limitedTypes.length > 0 && (
+        {filter.limitedTypes && filter.limitedTypes.length > 0 && (
           <span className="px-2 py-1 bg-orange-100 text-orange-700 text-xs rounded-full flex items-center gap-1">
-            {currentFilter.limitedTypes.map((l) => LIMITED_TYPE_LABELS[l]).join(', ')}
+            {filter.limitedTypes.map((l) => LIMITED_TYPE_LABELS[l]).join(', ')}
             <button
               onClick={() => clearFilterKey('limitedTypes')}
               className="hover:bg-orange-200 rounded-full p-0.5"
