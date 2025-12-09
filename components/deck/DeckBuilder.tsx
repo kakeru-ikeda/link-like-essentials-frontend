@@ -39,7 +39,9 @@ export const DeckBuilder: React.FC = () => {
 
   const handleDragStart = (slotId: number): void => {
     const slot = deck?.slots.find((s) => s.slotId === slotId);
-    if (slot?.card) setDraggingSlotId(slotId);
+    if (slot?.card) {
+      setDraggingSlotId(slotId);
+    }
   };
 
   const handleDragEnd = (): void => setDraggingSlotId(null);
@@ -50,9 +52,13 @@ export const DeckBuilder: React.FC = () => {
   };
 
   const canDropToSlot = (targetSlotId: number): boolean => {
-    if (draggingSlotId === null || draggingSlotId === targetSlotId) return false;
+    if (draggingSlotId === null || draggingSlotId === targetSlotId) { 
+      return false;
+    }
     const draggingSlot = deck?.slots.find((s) => s.slotId === draggingSlotId);
-    if (!draggingSlot?.card) return false;
+    if (!draggingSlot?.card) {
+      return false;
+    }
     const result = canPlaceCardInSlot(
       { characterName: draggingSlot.card.characterName, rarity: draggingSlot.card.rarity },
       targetSlotId
@@ -61,10 +67,20 @@ export const DeckBuilder: React.FC = () => {
   };
 
   const { currentSlotCard, currentCharacterName, currentSlotType } = React.useMemo(() => {
-    if (sideModal.currentSlotId === null || !deck) return { currentSlotCard: null, currentCharacterName: undefined, currentSlotType: undefined };
+    if (sideModal.currentSlotId === null || !deck) {
+      return { 
+        currentSlotCard: null,
+        currentCharacterName: undefined,
+        currentSlotType: undefined
+      };
+    }
     const slot = deck.slots.find((s) => s.slotId === sideModal.currentSlotId);
     const slotMapping = DECK_SLOT_MAPPING.find((m) => m.slotId === sideModal.currentSlotId);
-    return { currentSlotCard: slot?.card || null, currentCharacterName: slot?.characterName, currentSlotType: slotMapping?.slotType };
+    return { 
+      currentSlotCard: slot?.card || null,
+      currentCharacterName: slot?.characterName,
+      currentSlotType: slotMapping?.slotType
+    };
   }, [sideModal.currentSlotId, deck]);
 
   const assignedCardIds = React.useMemo(() => {
