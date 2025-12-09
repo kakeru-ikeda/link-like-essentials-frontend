@@ -73,7 +73,7 @@ export const CardDetailView: React.FC<CardDetailViewProps> = ({ cardId }) => {
               disabled={!isAwakeAfter}
               className={`px-3 py-1 text-xs font-medium rounded transition-colors ${
                 !isAwakeAfter
-                  ? 'bg-white text-gray-900 cursor-not-allowed'
+                  ? 'bg-white text-gray-900'
                   : 'text-white hover:bg-white/20'
               }`}
             >
