@@ -25,10 +25,8 @@ export function useFilter(): UseFilterReturn {
   const [filter, setFilter] = useState<CardFilter>({});
 
   // フィルター更新（immediate オプションで即座適用を制御）
-  const updateFilter = useCallback((updates: Partial<CardFilter>, options?: { immediate?: boolean }): void => {
+  const updateFilter = useCallback((updates: Partial<CardFilter>): void => {
     setFilter((prev) => ({ ...prev, ...updates }));
-    // immediate: false の場合は状態更新のみ（デフォルトは即座適用）
-    // 注: immediate: false は現在の設計では使用しないが、将来の拡張性のために残す
   }, []);
 
   // フィルターリセット
