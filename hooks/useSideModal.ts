@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react';
 
-interface ModalState {
+interface SideModalState {
   // カード検索モーダル
   isCardSearchOpen: boolean;
   currentSlotId: number | null;
@@ -15,7 +15,7 @@ interface ModalState {
   isFilterOpen: boolean;
 }
 
-interface ModalActions {
+interface SideModalActions {
   // カード検索モーダル
   openCardSearch: (slotId: number) => void;
   closeCardSearch: () => void;
@@ -29,10 +29,10 @@ interface ModalActions {
   closeFilter: () => void;
 }
 
-export interface UseModalReturn extends ModalState, ModalActions {}
+export interface UseSideModalReturn extends SideModalState, SideModalActions {}
 
-export function useModal(): UseModalReturn {
-  const [state, setState] = useState<ModalState>({
+export function useSideModal(): UseSideModalReturn {
+  const [state, setState] = useState<SideModalState>({
     isCardSearchOpen: false,
     currentSlotId: null,
     isCardDetailOpen: false,

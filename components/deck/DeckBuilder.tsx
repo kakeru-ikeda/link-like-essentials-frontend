@@ -16,7 +16,7 @@ import { FilterButton } from '@/components/deck/FilterButton';
 import { ActiveFilters } from '@/components/deck/ActiveFilters';
 import { useCards } from '@/hooks/useCards';
 import { useCardStore } from '@/store/cardStore';
-import { useModal } from '@/hooks/useModal';
+import { useSideModal } from '@/hooks/useSideModal';
 import type { Card } from '@/models/Card';
 import type { CardFilter as CardFilterType } from '@/models/Filter';
 import { filterCardsBySlot, getAssignedCardsForSlot } from '@/services/deckFilterService';
@@ -26,7 +26,7 @@ export const DeckBuilder: React.FC = () => {
   const { deck, removeCard, toggleAceCard, swapCards, addCard } = useDeck();
   const [draggingSlotId, setDraggingSlotId] = useState<number | null>(null);
 
-  const modal = useModal();
+  const modal = useSideModal();
   const { setActiveFilter, savedFilter, setSavedFilter } = useCardStore((state) => ({
     setActiveFilter: state.setActiveFilter,
     savedFilter: state.savedFilter,
