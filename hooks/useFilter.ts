@@ -1,82 +1,44 @@
 'use client';
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback } from 'react';
 import { CardFilter } from '@/models/Filter';
 
 export interface UseFilterReturn {
-  // 作業用フィルター（未適用）
-  draftFilter: CardFilter;
-  // 適用済みフィルター（検索クエリに使用）
-  appliedFilter: CardFilter;
+  // 単一のフィルター状態（読み取り専用）
+  readonly filter: Readonly<CardFilter>;
   
-  // フィルター更新（作業用のみ）
-  updateDraftFilter: (updates: Partial<CardFilter>) => void;
-  setDraftFilter: (filter: CardFilter) => void;
-  
-  // フィルター更新＋即座に適用（ヘッダーキーワード検索用）
-  updateAndApplyFilter: (updates: Partial<CardFilter>) => void;
-  
-  // フィルター適用
-  applyFilter: () => void;
-  applyFilterAndClose: (closeCallback: () => void) => void;
+  // フィルター更新（immediate: true で即座にクエリ実行）
+  updateFilter: (updates: Partial<CardFilter>, options?: { immediate?: boolean }) => void;
+  setFilter: (filter: CardFilter) => void;
   
   // フィルターリセット
   resetFilter: () => void;
-  resetDraftFilter: () => void;
   
   // 個別フィルタークリア
   clearFilterKey: (key: keyof CardFilter) => void;
   
   // フィルター数カウント
   countActiveFilters: () => number;
-  
-  // 初期化（スロット選択時など）
-  initializeFromSaved: (savedFilter: CardFilter) => void;
 }
 
 export function useFilter(): UseFilterReturn {
-  const [draftFilter, setDraftFilter] = useState<CardFilter>({});
-  const [appliedFilter, setAppliedFilter] = useState<CardFilter>({});
+  const [filter, setFilter] = useState<CardFilter>({});
 
-  // 作業用フィルターを部分的に更新
-  const updateDraftFilter = useCallback((updates: Partial<CardFilter>): void => {
-    setDraftFilter((prev) => ({ ...prev, ...updates }));
+  // フィルター更新（immediate オプションで即座適用を制御）
+  const updateFilter = useCallback((updates: Partial<CardFilter>, options?: { immediate?: boolean }): void => {
+    setFilter((prev) => ({ ...prev, ...updates }));
+    // immediate: false の場合は状態更新のみ（デフォルトは即座適用）
+    // 注: immediate: false は現在の設計では使用しないが、将来の拡張性のために残す
   }, []);
 
-  // フィルターを更新して即座に適用（ヘッダーキーワード検索用）
-  const updateAndApplyFilter = useCallback((updates: Partial<CardFilter>): void => {
-    setDraftFilter((prev) => {
-      const newFilter = { ...prev, ...updates };
-      setAppliedFilter(newFilter);
-      return newFilter;
-    });
-  }, []);
-
-  // 作業用フィルターを適用済みに反映
-  const applyFilter = useCallback((): void => {
-    setAppliedFilter(draftFilter);
-  }, [draftFilter]);
-
-  // フィルター適用してコールバック実行（モーダル閉じるなど）
-  const applyFilterAndClose = useCallback((closeCallback: () => void): void => {
-    setAppliedFilter(draftFilter);
-    closeCallback();
-  }, [draftFilter]);
-
-  // 両方リセット
+  // フィルターリセット
   const resetFilter = useCallback((): void => {
-    setDraftFilter({});
-    setAppliedFilter({});
+    setFilter({});
   }, []);
 
-  // 作業用のみリセット
-  const resetDraftFilter = useCallback((): void => {
-    setDraftFilter({});
-  }, []);
-
-  // 個別キーをクリア（作業用のみ）
+  // 個別キーをクリア
   const clearFilterKey = useCallback((key: keyof CardFilter): void => {
-    setDraftFilter((prev) => {
+    setFilter((prev) => {
       const newFilter = { ...prev };
       delete newFilter[key];
       return newFilter;
@@ -86,36 +48,23 @@ export function useFilter(): UseFilterReturn {
   // アクティブなフィルター数をカウント
   const countActiveFilters = useCallback((): number => {
     let count = 0;
-    if (draftFilter.keyword) count++;
-    if (draftFilter.rarities && draftFilter.rarities.length > 0) count += draftFilter.rarities.length;
-    if (draftFilter.styleTypes && draftFilter.styleTypes.length > 0) count += draftFilter.styleTypes.length;
-    if (draftFilter.limitedTypes && draftFilter.limitedTypes.length > 0) count += draftFilter.limitedTypes.length;
-    if (draftFilter.favoriteModes && draftFilter.favoriteModes.length > 0) count += draftFilter.favoriteModes.length;
-    if (draftFilter.characterNames && draftFilter.characterNames.length > 0) count += draftFilter.characterNames.length;
-    if (draftFilter.skillEffects && draftFilter.skillEffects.length > 0) count += draftFilter.skillEffects.length;
-    if (draftFilter.skillSearchTargets && draftFilter.skillSearchTargets.length > 0) count += draftFilter.skillSearchTargets.length;
+    if (filter.keyword) count++;
+    if (filter.rarities && filter.rarities.length > 0) count += filter.rarities.length;
+    if (filter.styleTypes && filter.styleTypes.length > 0) count += filter.styleTypes.length;
+    if (filter.limitedTypes && filter.limitedTypes.length > 0) count += filter.limitedTypes.length;
+    if (filter.favoriteModes && filter.favoriteModes.length > 0) count += filter.favoriteModes.length;
+    if (filter.characterNames && filter.characterNames.length > 0) count += filter.characterNames.length;
+    if (filter.skillEffects && filter.skillEffects.length > 0) count += filter.skillEffects.length;
+    if (filter.skillSearchTargets && filter.skillSearchTargets.length > 0) count += filter.skillSearchTargets.length;
     return count;
-  }, [draftFilter]);
-
-  // 保存済みフィルターから初期化（キャラクター名除外など）
-  const initializeFromSaved = useCallback((savedFilter: CardFilter): void => {
-    const { characterNames, ...filterWithoutCharacter } = savedFilter;
-    setDraftFilter(filterWithoutCharacter);
-    setAppliedFilter(filterWithoutCharacter);
-  }, []);
+  }, [filter]);
 
   return {
-    draftFilter,
-    appliedFilter,
-    updateDraftFilter,
-    setDraftFilter,
-    updateAndApplyFilter,
-    applyFilter,
-    applyFilterAndClose,
+    filter,
+    updateFilter,
+    setFilter,
     resetFilter,
-    resetDraftFilter,
     clearFilterKey,
     countActiveFilters,
-    initializeFromSaved,
   };
 }
