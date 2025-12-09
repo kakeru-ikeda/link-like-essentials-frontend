@@ -64,6 +64,8 @@ export const CardDetailView: React.FC<CardDetailViewProps> = ({ cardId }) => {
           <div className="absolute top-2 right-2 z-10 flex gap-1 bg-black/50 rounded-lg p-1">
             <button
               onClick={() => {
+                // 既に「覚醒前」表示なら何もしない
+                if (!isAwakeAfter) return;
                 setImageLoading(true);
                 setIsAwakeAfter(false);
                 setImageError(false);
@@ -79,6 +81,8 @@ export const CardDetailView: React.FC<CardDetailViewProps> = ({ cardId }) => {
             </button>
             <button
               onClick={() => {
+                // 既に「覚醒後」表示なら何もしない
+                if (isAwakeAfter) return;
                 setImageLoading(true);
                 setIsAwakeAfter(true);
                 setImageError(false);
