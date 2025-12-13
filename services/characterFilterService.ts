@@ -6,7 +6,7 @@
 
 import { CHARACTERS } from '@/constants/characters';
 import { canPlaceCardInSlot, getCharacterGeneration } from '@/constants/deckRules';
-import { DECK_SLOT_MAPPING } from '@/constants/deckConfig';
+import { DECK_SLOT_MAPPING_105 } from '@/constants/deckConfig';
 import { Card } from '@/models/Card';
 
 /**
@@ -21,7 +21,7 @@ export function getSelectableCharactersForSlot(slotId: number | null): string[] 
     return [...CHARACTERS];
   }
 
-  const slotMapping = DECK_SLOT_MAPPING.find((m) => m.slotId === slotId);
+  const slotMapping = DECK_SLOT_MAPPING_105.find((m) => m.slotId === slotId);
   if (!slotMapping) {
     return [...CHARACTERS];
   }

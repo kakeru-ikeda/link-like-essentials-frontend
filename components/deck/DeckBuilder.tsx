@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useDeck } from '@/hooks/useDeck';
 import { DeckSlot } from '@/components/deck/DeckSlot';
-import { DECK_SLOT_MAPPING } from '@/constants/deckConfig';
+import { DECK_SLOT_MAPPING_105 } from '@/constants/deckConfig';
 import { DECK_FRAME_105, getCharacterBackgroundColor } from '@/constants/characters';
 import { canPlaceCardInSlot } from '@/constants/deckRules';
 import { SideModal } from '@/components/common/SideModal';
@@ -75,7 +75,7 @@ export const DeckBuilder: React.FC = () => {
       };
     }
     const slot = deck.slots.find((s) => s.slotId === sideModal.currentSlotId);
-    const slotMapping = DECK_SLOT_MAPPING.find((m) => m.slotId === sideModal.currentSlotId);
+    const slotMapping = DECK_SLOT_MAPPING_105.find((m) => m.slotId === sideModal.currentSlotId);
     return { 
       currentSlotCard: slot?.card || null,
       currentCharacterName: slot?.characterName,
@@ -159,7 +159,7 @@ export const DeckBuilder: React.FC = () => {
   }
 
   const characterGroups = DECK_FRAME_105.map((character) => {
-    const slots = DECK_SLOT_MAPPING
+    const slots = DECK_SLOT_MAPPING_105
       .filter((m) => m.characterName === character)
       .sort((a, b) => a.slotId - b.slotId)
       .map((mapping) => deck.slots.find((s) => s.slotId === mapping.slotId))

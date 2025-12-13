@@ -3,7 +3,7 @@ import { immer } from 'zustand/middleware/immer';
 import { Deck, DeckSlot } from '@/models/Deck';
 import { Card } from '@/models/Card';
 import { DeckType } from '@/models/enums';
-import { DECK_SLOT_MAPPING } from '@/constants/deckConfig';
+import { DECK_SLOT_MAPPING_105 } from '@/constants/deckConfig';
 import { canPlaceCardInSlot } from '@/constants/deckRules';
 
 interface DeckState {
@@ -25,7 +25,7 @@ interface DeckState {
 }
 
 const createEmptyDeck = (): Deck => {
-  const slots: DeckSlot[] = DECK_SLOT_MAPPING.map((mapping) => ({
+  const slots: DeckSlot[] = DECK_SLOT_MAPPING_105.map((mapping) => ({
     slotId: mapping.slotId,
     characterName: mapping.characterName,
     card: null,

@@ -6,7 +6,7 @@
  * - 例外ルール: 特定条件下で他のキャラクター・期のカードも編成可能
  */
 
-import { DECK_SLOT_MAPPING, SlotType } from './deckConfig';
+import { DECK_SLOT_MAPPING_105, SlotType } from './deckConfig';
 
 /**
  * 期別所属キャラクター
@@ -99,7 +99,7 @@ export function canPlaceCardInSlot(
   },
   slotId: number
 ): { allowed: boolean; reason?: string } {
-  const slotMapping = DECK_SLOT_MAPPING.find((m) => m.slotId === slotId);
+  const slotMapping = DECK_SLOT_MAPPING_105.find((m) => m.slotId === slotId);
   if (!slotMapping) {
     return { allowed: false, reason: '無効なスロットIDです' };
   }
