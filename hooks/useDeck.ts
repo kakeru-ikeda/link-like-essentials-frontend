@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useDeckStore } from '@/store/deckStore';
 import { Card } from '@/models/Card';
+import { DeckType } from '@/models/enums';
 
 export const useDeck = () => {
   const {
@@ -12,6 +13,8 @@ export const useDeck = () => {
     setAceCard,
     clearAceCard,
     clearDeck,
+    setDeckType,
+    setSong,
     saveDeckToLocal,
     loadDeckFromLocal,
     initializeDeck,
@@ -68,6 +71,16 @@ export const useDeck = () => {
     saveDeckToLocal();
   };
 
+  const updateDeckType = (deckType: DeckType): void => {
+    setDeckType(deckType);
+    saveDeckToLocal();
+  };
+
+  const updateSong = (songId: string, songName: string): void => {
+    setSong(songId, songName);
+    saveDeckToLocal();
+  };
+
   return {
     deck,
     setDeck,
@@ -75,6 +88,8 @@ export const useDeck = () => {
     removeCard,
     swapCards,
     toggleAceCard,
+    updateDeckType,
+    updateSong,
     clearAllCards,
     saveDeck,
     resetDeck,

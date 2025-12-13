@@ -1,5 +1,6 @@
 import { Card } from './Card';
 import { CharacterName } from '../constants/characters';
+import { DeckType } from './enums';
 
 export interface DeckSlot {
   slotId: number;
@@ -12,6 +13,9 @@ export interface Deck {
   name: string;
   slots: DeckSlot[];
   aceSlotId: number | null;
+  deckType?: DeckType;
+  songId?: string;
+  songName?: string;
   createdAt: string;
   updatedAt: string;
 }

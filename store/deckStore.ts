@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import { Deck, DeckSlot } from '@/models/Deck';
 import { Card } from '@/models/Card';
+import { DeckType } from '@/models/enums';
 import { DECK_SLOT_MAPPING } from '@/constants/deckConfig';
 import { canPlaceCardInSlot } from '@/constants/deckRules';
 
@@ -15,6 +16,8 @@ interface DeckState {
   setAceCard: (slotId: number) => void;
   clearAceCard: () => void;
   clearDeck: () => void;
+  setDeckType: (deckType: DeckType) => void;
+  setSong: (songId: string, songName: string) => void;
   saveDeckToLocal: () => void;
   loadDeckFromLocal: () => void;
   initializeDeck: () => void;
@@ -173,6 +176,23 @@ export const useDeckStore = create<DeckState>()(
           state.deck.slots.forEach((slot) => {
             slot.card = null;
           });
+          state.deck.updatedAt = new Date().toISOString();
+        }
+      }),
+
+    setDeckType: (deckType) =>
+      set((state) => {
+        if (state.deck) {
+          state.deck.deckType = deckType;
+          state.deck.updatedAt = new Date().toISOString();
+        }
+      }),
+
+    setSong: (songId, songName) =>
+      set((state) => {
+        if (state.deck) {
+          state.deck.songId = songId;
+          state.deck.songName = songName;
           state.deck.updatedAt = new Date().toISOString();
         }
       }),

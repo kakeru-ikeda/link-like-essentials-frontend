@@ -1,4 +1,4 @@
-import { StyleType, FavoriteMode, LimitedType } from '@/models/enums';
+import { StyleType, FavoriteMode, LimitedType, DeckType } from '@/models/enums';
 
 /**
  * スタイルタイプのEnum → 日本語マッピング
@@ -8,6 +8,18 @@ export const STYLE_TYPE_MAP: Record<StyleType, string> = {
   [StyleType.MOODMAKER]: 'ムードメーカー',
   [StyleType.PERFORMER]: 'パフォーマー',
   [StyleType.TRICKSTER]: 'トリックスター',
+};
+
+/**
+ * デッキタイプのEnum → 日本語マッピング
+ */
+export const DECK_TYPE_MAP: Record<DeckType, string> = {
+  [DeckType.TERM_103]: '103期',
+  [DeckType.TERM_104]: '104期',
+  [DeckType.TERM_105]: '105期',
+  [DeckType.TERM_105_FT_KOZUE]: '105期ft.梢',
+  [DeckType.TERM_105_FT_TSUZURI]: '105期ft.綴理',
+  [DeckType.TERM_105_FT_MEGUMI]: '105期ft.慈',
 };
 
 /**
