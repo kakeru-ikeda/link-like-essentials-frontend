@@ -6,7 +6,8 @@
  * - 例外ルール: 特定条件下で他のキャラクター・期のカードも編成可能
  */
 
-import { DECK_SLOT_MAPPING_105, SlotType } from './deckConfig';
+import { getDeckSlotMapping, SlotType } from './deckConfig';
+import { DeckType } from '@/models/enums';
 
 /**
  * 期別所属キャラクター
@@ -86,27 +87,28 @@ export function getCharacterUnit(
 }
 
 /**
- * カードが特定のスロットに配置可能かチェック（105期デッキフレーム用）
+ * カードが特定のスロットに配置可能かチェック
  *
- * @param card - 配置するカード
+ * @param cardInfo - 配置するカードの情報
  * @param slotId - 配置先のスロットID
+ * @param deckType - デッキタイプ
  * @returns 配置可否と理由
  */
 export function canPlaceCardInSlot(
-  card: {
-    characterName: string;
-    rarity?: string;
-  },
-  slotId: number
+  cardInfo: { characterName: string; rarity?: string },
+  slotId: number,
+  deckType?: DeckType
 ): { allowed: boolean; reason?: string } {
-  const slotMapping = DECK_SLOT_MAPPING_105.find((m) => m.slotId === slotId);
+  const mapping = getDeckSlotMapping(deckType);
+  const slotMapping = mapping.find((m) => m.slotId === slotId);
+  
   if (!slotMapping) {
     return { allowed: false, reason: '無効なスロットIDです' };
   }
 
   const slotCharacter = slotMapping.characterName;
   const slotType = slotMapping.slotType;
-  const cardGeneration = getCharacterGeneration(card.characterName);
+  const cardGeneration = getCharacterGeneration(cardInfo.characterName);
 
   // フリー枠はすべてのカードが配置可能
   if (slotCharacter === 'フリー') {
@@ -114,29 +116,24 @@ export function canPlaceCardInSlot(
   }
 
   // 基本ルール: 同じキャラクターのカードは配置可能
-  if (card.characterName === slotCharacter) {
+  if (cardInfo.characterName === slotCharacter) {
     return { allowed: true };
   }
 
   // --- 以下、例外ルール ---
 
   // 102期生LRカードの特殊ルール
-  if (cardGeneration === 102 && card.rarity === 'LR') {
+  if (cardGeneration === 102 && cardInfo.rarity === 'LR') {
     const slotGeneration = getCharacterGeneration(slotCharacter);
-    
-    // 102期のメイン・サイドに配置可能
-    if (slotGeneration === 102) {
-      return { allowed: true };
-    }
-    
-    // 103期・104期のサイドのみ配置可能
-    if (slotGeneration && [103, 104].includes(slotGeneration) && slotType === 'side') {
+
+    // 102期・103期・104期のサイドに配置可能
+    if (slotGeneration && [102, 103, 104].includes(slotGeneration) && slotType === 'side') {
       return { allowed: true };
     }
   }
 
   // 大賀美沙知のカード（101期生）
-  if (card.characterName === '大賀美沙知') {
+  if (cardInfo.characterName === '大賀美沙知') {
     const slotGeneration = getCharacterGeneration(slotCharacter);
     
     // 102期・103期のサイドのみ配置可能
@@ -151,7 +148,7 @@ export function canPlaceCardInSlot(
   }
 
   // 102期生＆カード（乙宗梢＆夕霧綴理＆藤島慈）
-  if (cardGeneration === 102 && card.characterName.includes('＆')) {
+  if (cardGeneration === 102 && cardInfo.characterName.includes('＆')) {
     const slotGeneration = getCharacterGeneration(slotCharacter);
     
     // 102期・103期・104期のサイドのみ配置可能
@@ -166,8 +163,8 @@ export function canPlaceCardInSlot(
   }
 
   // Edel Note＆カード（桂城泉＆セラス）
-  const cardUnit = getCharacterUnit(card.characterName);
-  if (cardUnit === 'Edel Note' && card.characterName.includes('＆')) {
+  const cardUnit = getCharacterUnit(cardInfo.characterName);
+  if (cardUnit === 'Edel Note' && cardInfo.characterName.includes('＆')) {
     const slotUnit = getCharacterUnit(slotCharacter);
     
     // Edel Noteのサイドのみ配置可能

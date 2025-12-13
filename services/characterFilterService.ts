@@ -6,8 +6,9 @@
 
 import { CHARACTERS } from '@/constants/characters';
 import { canPlaceCardInSlot, getCharacterGeneration } from '@/constants/deckRules';
-import { DECK_SLOT_MAPPING_105 } from '@/constants/deckConfig';
+import { getDeckSlotMapping } from '@/constants/deckConfig';
 import { Card } from '@/models/Card';
+import { DeckType } from '@/models/enums';
 
 /**
  * 指定されたスロットに配置可能なキャラクターのみをフィルタリング
@@ -15,13 +16,14 @@ import { Card } from '@/models/Card';
  * @param slotId - 配置先のスロットID
  * @returns 配置可能なキャラクター名の配列
  */
-export function getSelectableCharactersForSlot(slotId: number | null): string[] {
+export function getSelectableCharactersForSlot(slotId: number | null, deckType?: DeckType): string[] {
   if (slotId === null) {
     // スロット未選択時は全キャラクター表示
     return [...CHARACTERS];
   }
 
-  const slotMapping = DECK_SLOT_MAPPING_105.find((m) => m.slotId === slotId);
+  const mapping = getDeckSlotMapping(deckType);
+  const slotMapping = mapping.find((m) => m.slotId === slotId);
   if (!slotMapping) {
     return [...CHARACTERS];
   }
@@ -33,7 +35,7 @@ export function getSelectableCharactersForSlot(slotId: number | null): string[] 
   // 各キャラクターのカードがスロットに配置可能かチェック
   const selectableCharacters = CHARACTERS.filter((characterName) => {
     // 基本チェック: レアリティなしで配置可能か
-    const basicResult = canPlaceCardInSlot({ characterName }, slotId);
+    const basicResult = canPlaceCardInSlot({ characterName }, slotId, deckType);
     if (basicResult.allowed) {
       return true;
     }

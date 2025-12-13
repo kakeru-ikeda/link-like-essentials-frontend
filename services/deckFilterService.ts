@@ -7,19 +7,22 @@
 import { Card } from '@/models/Card';
 import { canPlaceCardInSlot } from '@/constants/deckRules';
 import { DeckSlot } from '@/models/Deck';
+import { DeckType } from '@/models/enums';
 
 /**
  * 指定されたスロットに配置可能なカードのみをフィルタリング
  *
  * @param cards - フィルタリング対象のカード配列
  * @param slotId - 配置先のスロットID
+ * @param deckType - デッキタイプ
  * @returns 配置可能なカードのみの配列
  */
-export function filterCardsBySlot(cards: Card[], slotId: number): Card[] {
+export function filterCardsBySlot(cards: Card[], slotId: number, deckType?: DeckType): Card[] {
   return cards.filter((card) => {
     const result = canPlaceCardInSlot(
       { characterName: card.characterName, rarity: card.rarity },
-      slotId
+      slotId,
+      deckType
     );
     return result.allowed;
   });
@@ -30,11 +33,13 @@ export function filterCardsBySlot(cards: Card[], slotId: number): Card[] {
  * 
  * @param slots - デッキのスロット配列
  * @param currentSlotId - 現在選択中のスロットID
+ * @param deckType - デッキタイプ
  * @returns 配置可能な編成済みカードの配列
  */
 export function getAssignedCardsForSlot(
   slots: DeckSlot[],
-  currentSlotId: number
+  currentSlotId: number,
+  deckType?: DeckType
 ): Card[] {
   return slots
     .filter((slot) => slot.slotId !== currentSlotId && slot.card)
@@ -46,7 +51,8 @@ export function getAssignedCardsForSlot(
       // 現在のスロットに配置可能かチェック
       const validationResult = canPlaceCardInSlot(
         { characterName: card.characterName, rarity: card.rarity },
-        currentSlotId
+        currentSlotId,
+        deckType
       );
       return validationResult.allowed;
     });

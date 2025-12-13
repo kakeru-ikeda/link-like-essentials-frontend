@@ -3,8 +3,8 @@
 import React, { useState } from 'react';
 import { useDeck } from '@/hooks/useDeck';
 import { DeckSlot } from '@/components/deck/DeckSlot';
-import { DECK_SLOT_MAPPING_105 } from '@/constants/deckConfig';
-import { DECK_FRAME_105, getCharacterBackgroundColor } from '@/constants/characters';
+import { getDeckSlotMapping, getDeckFrame } from '@/constants/deckConfig';
+import { getCharacterBackgroundColor } from '@/constants/characters';
 import { canPlaceCardInSlot } from '@/constants/deckRules';
 import { SideModal } from '@/components/common/SideModal';
 import { CardList } from '@/components/deck/CardList';
@@ -61,7 +61,8 @@ export const DeckBuilder: React.FC = () => {
     }
     const result = canPlaceCardInSlot(
       { characterName: draggingSlot.card.characterName, rarity: draggingSlot.card.rarity },
-      targetSlotId
+      targetSlotId,
+      deck?.deckType
     );
     return result.allowed;
   };
@@ -75,7 +76,8 @@ export const DeckBuilder: React.FC = () => {
       };
     }
     const slot = deck.slots.find((s) => s.slotId === sideModal.currentSlotId);
-    const slotMapping = DECK_SLOT_MAPPING_105.find((m) => m.slotId === sideModal.currentSlotId);
+    const mapping = getDeckSlotMapping(deck.deckType);
+    const slotMapping = mapping.find((m) => m.slotId === sideModal.currentSlotId);
     return { 
       currentSlotCard: slot?.card || null,
       currentCharacterName: slot?.characterName,
@@ -90,7 +92,7 @@ export const DeckBuilder: React.FC = () => {
 
   const assignedCards = React.useMemo(() => {
   if (!deck || sideModal.currentSlotId === null) return [];
-  return getAssignedCardsForSlot(deck.slots, sideModal.currentSlotId);
+  return getAssignedCardsForSlot(deck.slots, sideModal.currentSlotId, deck.deckType);
 }, [deck, sideModal.currentSlotId]);
 
   const filterForQuery = React.useMemo(() => {
@@ -103,8 +105,8 @@ export const DeckBuilder: React.FC = () => {
   const filteredCards = React.useMemo(() => {
     if (sideModal.currentSlotId === null) return [];
     const availableCards = filterAvailableCards(cards, currentSlotCard?.id, assignedCardIds);
-    return filterCardsBySlot(availableCards, sideModal.currentSlotId);
-  }, [cards, currentSlotCard, assignedCardIds, sideModal.currentSlotId]);
+    return filterCardsBySlot(availableCards, sideModal.currentSlotId, deck?.deckType);
+  }, [cards, currentSlotCard, assignedCardIds, sideModal.currentSlotId, deck?.deckType]);
 
   const handleSlotClick = (slotId: number): void => {
     sideModal.openCardSearch(slotId);
@@ -158,8 +160,10 @@ export const DeckBuilder: React.FC = () => {
     );
   }
 
-  const characterGroups = DECK_FRAME_105.map((character) => {
-    const slots = DECK_SLOT_MAPPING_105
+  const deckFrame = getDeckFrame(deck.deckType);
+  const deckMapping = getDeckSlotMapping(deck.deckType);
+  const characterGroups = deckFrame.map((character) => {
+    const slots = deckMapping
       .filter((m) => m.characterName === character)
       .sort((a, b) => a.slotId - b.slotId)
       .map((mapping) => deck.slots.find((s) => s.slotId === mapping.slotId))
