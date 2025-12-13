@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dropdown, DropdownOption } from '@/components/common/Dropdown';
 import { SongSelect } from '@/components/deck/SongSelect';
 import { DeckType } from '@/models/enums';
@@ -9,9 +9,21 @@ import { useDeck } from '@/hooks/useDeck';
 
 export const DeckDashboard: React.FC = () => {
   const { deck, updateDeckType, updateSong } = useDeck();
+  const [selectedDeckType, setSelectedDeckType] = useState<DeckType | undefined>(deck?.deckType);
+
+  // deckが変更されたら同期
+  useEffect(() => {
+    setSelectedDeckType(deck?.deckType);
+  }, [deck?.deckType]);
 
   const handleDeckTypeChange = (value: string): void => {
-    updateDeckType(value as DeckType);
+    const newDeckType = value as DeckType;
+    const success = updateDeckType(newDeckType);
+    
+    if (success) {
+      setSelectedDeckType(newDeckType);
+    }
+    // キャンセルされた場合は元の値を保持（useEffectで同期される）
   };
 
   const handleSongChange = (songId: string, songName: string): void => {
@@ -31,7 +43,7 @@ export const DeckDashboard: React.FC = () => {
       
       <div className="flex gap-4">
         <Dropdown
-          value={deck?.deckType}
+          value={selectedDeckType}
           onChange={handleDeckTypeChange}
           options={deckTypeOptions}
           placeholder="デッキタイプを選択"
