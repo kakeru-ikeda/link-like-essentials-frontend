@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { DeckBuilder } from '@/components/deck/DeckBuilder';
+import { DeckDashboard } from '@/components/deck/DeckDashboard';
 import { Button } from '@/components/common/Button';
 import { useDeck } from '@/hooks/useDeck';
 
@@ -18,10 +19,8 @@ export default function Home() {
 
         {/* 右側: 今後使用するエリア + ボタン */}
         <div className="flex-1 flex flex-col gap-4 pt-4">
-          {/* 今後使用するエリア */}
-          <div className="flex-1 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center">
-            <p className="text-gray-400 text-sm">今後使用予定</p>
-          </div>
+          {/* DeckDashboard */}
+          <DeckDashboard />
           
           {/* ボタン */}
           <div className="flex flex-col gap-2">
