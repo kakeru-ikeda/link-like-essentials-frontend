@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useDeckStore } from '@/store/deckStore';
 import { Card } from '@/models/Card';
+import { DeckType } from '@/models/enums';
 
 export const useDeck = () => {
   const {
@@ -12,6 +13,8 @@ export const useDeck = () => {
     setAceCard,
     clearAceCard,
     clearDeck,
+    setDeckType,
+    setSong,
     saveDeckToLocal,
     loadDeckFromLocal,
     initializeDeck,
@@ -68,6 +71,30 @@ export const useDeck = () => {
     saveDeckToLocal();
   };
 
+  const updateDeckType = (deckType: DeckType): boolean => {
+    // デッキにカードが編成されているかチェック
+    const hasCards = deck?.slots.some((slot) => slot.card !== null);
+    
+    if (hasCards) {
+      const confirmed = window.confirm(
+        'デッキタイプを変更すると、現在編成されているカードがすべてリセットされます。\n変更してもよろしいですか？'
+      );
+      
+      if (!confirmed) {
+        return false;
+      }
+    }
+    
+    setDeckType(deckType);
+    saveDeckToLocal();
+    return true; // 変更成功
+  };
+
+  const updateSong = (songId: string, songName: string): void => {
+    setSong(songId, songName);
+    saveDeckToLocal();
+  };
+
   return {
     deck,
     setDeck,
@@ -75,6 +102,8 @@ export const useDeck = () => {
     removeCard,
     swapCards,
     toggleAceCard,
+    updateDeckType,
+    updateSong,
     clearAllCards,
     saveDeck,
     resetDeck,

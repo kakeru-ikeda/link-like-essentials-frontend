@@ -2,12 +2,12 @@
 
 import React, { useEffect } from 'react';
 import { Dropdown, DropdownOption } from '@/components/common/Dropdown';
-import { SongCategory } from '@/models/enums';
+import { DeckType } from '@/models/enums';
 import { useSongs } from '@/hooks/useSongs';
 import { Loading } from '@/components/common/Loading';
 
 interface SongSelectProps {
-  category?: SongCategory;
+  deckType?: DeckType;
   value?: string;
   onChange: (songId: string, songName: string) => void;
   disabled?: boolean;
@@ -19,7 +19,7 @@ interface SongSelectProps {
  * 選択されたカテゴリーに基づいて楽曲を表示
  */
 export const SongSelect: React.FC<SongSelectProps> = ({
-  category,
+  deckType,
   value,
   onChange,
   disabled = false,
@@ -27,20 +27,20 @@ export const SongSelect: React.FC<SongSelectProps> = ({
 }) => {
   // カテゴリーが選択されていない場合はクエリをスキップ
   const { songs, loading, error } = useSongs(
-    category ? { category } : undefined,
-    !category
+    deckType ? { category: deckType } : undefined,
+    !deckType
   );
 
   // カテゴリーが変更されたら選択をクリア
   useEffect(() => {
-    if (category && value) {
+    if (deckType && value) {
       // 選択された楽曲が現在のカテゴリーに存在しない場合はクリア
       const songExists = songs.some((song) => song.id === value);
       if (!songExists && songs.length > 0) {
         onChange('', '');
       }
     }
-  }, [category, songs, value, onChange]);
+  }, [deckType, songs, value, onChange]);
 
   const handleChange = (songId: string): void => {
     const selectedSong = songs.find((song) => song.id === songId);
@@ -85,8 +85,8 @@ export const SongSelect: React.FC<SongSelectProps> = ({
       value={value}
       onChange={handleChange}
       options={songOptions}
-      placeholder={category ? '楽曲を選択' : 'まずデッキタイプを選択してください'}
-      disabled={disabled || !category || songs.length === 0}
+      placeholder={deckType ? '楽曲を選択' : 'まずデッキタイプを選択してください'}
+      disabled={disabled || !deckType || songs.length === 0}
       className={className}
       label="楽曲"
       showImages={true}
