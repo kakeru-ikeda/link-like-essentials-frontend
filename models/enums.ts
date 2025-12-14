@@ -44,7 +44,7 @@ export enum FavoriteMode {
   NEUTRAL = 'NEUTRAL',
 }
 
-export enum SongCategory {
+export enum DeckType {
   TERM_103 = '103期',
   TERM_104 = '104期',
   TERM_105 = '105期',

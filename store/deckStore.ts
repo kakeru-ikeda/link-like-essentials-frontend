@@ -2,7 +2,8 @@ import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import { Deck, DeckSlot } from '@/models/Deck';
 import { Card } from '@/models/Card';
-import { DECK_SLOT_MAPPING } from '@/constants/deckConfig';
+import { DeckType } from '@/models/enums';
+import { getDeckSlotMapping } from '@/constants/deckConfig';
 import { canPlaceCardInSlot } from '@/constants/deckRules';
 
 interface DeckState {
@@ -15,16 +16,19 @@ interface DeckState {
   setAceCard: (slotId: number) => void;
   clearAceCard: () => void;
   clearDeck: () => void;
+  setDeckType: (deckType: DeckType) => void;
+  setSong: (songId: string, songName: string) => void;
   saveDeckToLocal: () => void;
   loadDeckFromLocal: () => void;
   initializeDeck: () => void;
   getLastError: () => string | null;
 }
 
-const createEmptyDeck = (): Deck => {
-  const slots: DeckSlot[] = DECK_SLOT_MAPPING.map((mapping) => ({
-    slotId: mapping.slotId,
-    characterName: mapping.characterName,
+const createEmptyDeck = (deckType?: DeckType): Deck => {
+  const mapping = getDeckSlotMapping(deckType);
+  const slots: DeckSlot[] = mapping.map((m) => ({
+    slotId: m.slotId,
+    characterName: m.characterName,
     card: null,
   }));
 
@@ -33,6 +37,7 @@ const createEmptyDeck = (): Deck => {
     name: '新しいデッキ',
     slots,
     aceSlotId: null,
+    deckType,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
@@ -49,9 +54,11 @@ export const useDeckStore = create<DeckState>()(
       }),
 
     addCardToSlot: (slotId, card) => {
+      const state = get();
       const validationResult = canPlaceCardInSlot(
         { characterName: card.characterName, rarity: card.rarity },
-        slotId
+        slotId,
+        state.deck?.deckType
       );
 
       if (!validationResult.allowed) {
@@ -114,7 +121,8 @@ export const useDeckStore = create<DeckState>()(
           if (slot1.card) {
             const validation1 = canPlaceCardInSlot(
               { characterName: slot1.card.characterName, rarity: slot1.card.rarity },
-              slotId1
+              slotId1,
+              state.deck.deckType
             );
             if (!validation1.allowed) {
               slot1.card = null;
@@ -129,7 +137,8 @@ export const useDeckStore = create<DeckState>()(
           if (slot2.card) {
             const validation2 = canPlaceCardInSlot(
               { characterName: slot2.card.characterName, rarity: slot2.card.rarity },
-              slotId2
+              slotId2,
+              state.deck.deckType
             );
             if (!validation2.allowed) {
               slot2.card = null;
@@ -177,6 +186,31 @@ export const useDeckStore = create<DeckState>()(
         }
       }),
 
+    setDeckType: (deckType) =>
+      set((state) => {
+        if (state.deck) {
+          // デッキタイプ変更時はスロット構成を再構築
+          const newDeck = createEmptyDeck(deckType);
+          state.deck = {
+            ...newDeck,
+            id: state.deck.id,
+            name: state.deck.name,
+            songId: state.deck.songId,
+            songName: state.deck.songName,
+            createdAt: state.deck.createdAt,
+          };
+        }
+      }),
+
+    setSong: (songId, songName) =>
+      set((state) => {
+        if (state.deck) {
+          state.deck.songId = songId;
+          state.deck.songName = songName;
+          state.deck.updatedAt = new Date().toISOString();
+        }
+      }),
+
     saveDeckToLocal: () =>
       set((state) => {
         if (state.deck && typeof window !== 'undefined') {
@@ -189,7 +223,8 @@ export const useDeckStore = create<DeckState>()(
         if (typeof window !== 'undefined') {
           const savedDeck = localStorage.getItem('deck');
           if (savedDeck) {
-            state.deck = JSON.parse(savedDeck);
+            const parsed = JSON.parse(savedDeck);
+            state.deck = parsed;
           } else {
             state.deck = createEmptyDeck();
           }
@@ -198,7 +233,8 @@ export const useDeckStore = create<DeckState>()(
 
     initializeDeck: () =>
       set((state) => {
-        state.deck = createEmptyDeck();
+        const currentDeckType = state.deck?.deckType;
+        state.deck = createEmptyDeck(currentDeckType);
       }),
 
     getLastError: () => get().lastError,

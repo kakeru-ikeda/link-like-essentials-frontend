@@ -1,4 +1,4 @@
-import { SongCategory, SongAttribute } from './enums';
+import { DeckType, SongAttribute } from './enums';
 import { CharacterName } from '@/constants/characters';
 
 /**
@@ -21,7 +21,7 @@ export interface Song {
   id: string;
   songName: string;
   songUrl?: string;
-  category: SongCategory;
+  deckType: DeckType;
   attribute: SongAttribute;
   centerCharacter: CharacterName;
   singers: string[];
@@ -37,7 +37,7 @@ export interface Song {
  * カテゴリー別統計
  */
 export interface CategoryStats {
-  category: SongCategory;
+  category: DeckType;
   count: number;
 }
 

@@ -16,22 +16,7 @@ export const CHARACTERS = [
   '大賀美沙知',
 ] as const;
 
-export type CharacterName = (typeof CHARACTERS)[number] | (typeof DECK_FRAME_105)[number];
-
-/**
- * 105期デッキフレーム用キャラクター配置（9名 + フリー）
- */
-export const DECK_FRAME_105 = [
-  'セラス',
-  '桂城泉',
-  'フリー',
-  '百生吟子',
-  '徒町小鈴',
-  '安養寺姫芽',
-  '日野下花帆',
-  '村野さやか',
-  '大沢瑠璃乃',
-] as const;
+export type CharacterName = (typeof CHARACTERS)[number] | 'フリー';
 
 /**
  * キャラクターごとのテーマカラー定義

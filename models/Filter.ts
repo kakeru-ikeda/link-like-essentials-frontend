@@ -1,4 +1,4 @@
-import { Rarity, StyleType, LimitedType, FavoriteMode, SongCategory, SongAttribute } from './enums';
+import { Rarity, StyleType, LimitedType, FavoriteMode, DeckType, SongAttribute } from './enums';
 import { CharacterName } from '@/constants/characters';
 import { SkillEffectType, SkillSearchTarget } from '@/constants/skillEffects';
 
@@ -69,7 +69,7 @@ export interface SortOption {
  */
 export interface SongFilter {
   // カテゴリー絞り込み
-  category?: SongCategory;
+  category?: DeckType;
 
   // 属性絞り込み
   attribute?: SongAttribute;
