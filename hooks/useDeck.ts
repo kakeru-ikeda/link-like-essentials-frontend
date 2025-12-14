@@ -9,6 +9,7 @@ export const useDeck = () => {
     deck,
     setDeck,
     setCardToSlot,
+    swapCardSlots,
     setAceSlotId,
     clearAllSlots,
     setDeckType,
@@ -41,6 +42,10 @@ export const useDeck = () => {
   };
 
   const removeCard = (slotId: number): void => {
+    // エースカードの場合は先に解除
+    if (deck?.aceSlotId === slotId) {
+      setAceSlotId(null);
+    }
     setCardToSlot(slotId, null);
     saveDeckToLocal();
   };
@@ -56,24 +61,8 @@ export const useDeck = () => {
       return false;
     }
 
-    // スワップ実行
-    const slot1 = deck.slots.find((s) => s.slotId === slotId1);
-    const slot2 = deck.slots.find((s) => s.slotId === slotId2);
-    
-    if (!slot1 || !slot2) return false;
-
-    const tempCard = slot1.card;
-    setCardToSlot(slotId1, slot2.card);
-    setCardToSlot(slotId2, tempCard);
-
-    // 制約違反のカードを剥がす
-    validation.removedSlots.forEach((slotId) => {
-      setCardToSlot(slotId, null);
-      // エースカードだった場合は解除
-      if (deck.aceSlotId === slotId) {
-        setAceSlotId(null);
-      }
-    });
+    // スワップ実行（atomic操作）
+    swapCardSlots(slotId1, slotId2, validation.removedSlots);
 
     setLastError(null);
     saveDeckToLocal();

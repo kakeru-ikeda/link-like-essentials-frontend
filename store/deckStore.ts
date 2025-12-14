@@ -13,6 +13,7 @@ interface DeckState {
   deck: Deck | null;
   setDeck: (deck: Deck) => void;
   setCardToSlot: (slotId: number, card: Card | null) => void;
+  swapCardSlots: (slotId1: number, slotId2: number, removedSlots: number[]) => void;
   setAceSlotId: (slotId: number | null) => void;
   clearAllSlots: () => void;
   setDeckType: (deckType: DeckType) => void;
@@ -57,10 +58,35 @@ export const useDeckStore = create<DeckState>()(
           if (slot) {
             slot.card = card;
             state.deck.updatedAt = new Date().toISOString();
-            // カードを削除する際、そのスロットがエースだった場合はエースも解除
-            if (card === null && state.deck.aceSlotId === slotId) {
-              state.deck.aceSlotId = null;
-            }
+          }
+        }
+      }),
+
+    swapCardSlots: (slotId1, slotId2, removedSlots) =>
+      set((state) => {
+        if (state.deck) {
+          const slot1 = state.deck.slots.find((s) => s.slotId === slotId1);
+          const slot2 = state.deck.slots.find((s) => s.slotId === slotId2);
+          
+          if (slot1 && slot2) {
+            // スワップ実行
+            const tempCard = slot1.card;
+            slot1.card = slot2.card;
+            slot2.card = tempCard;
+
+            // 制約違反のカードを剥がす
+            removedSlots.forEach((slotId) => {
+              const slot = state.deck!.slots.find((s) => s.slotId === slotId);
+              if (slot) {
+                slot.card = null;
+              }
+              // エースカードだった場合は解除
+              if (state.deck!.aceSlotId === slotId) {
+                state.deck!.aceSlotId = null;
+              }
+            });
+
+            state.deck.updatedAt = new Date().toISOString();
           }
         }
       }),
