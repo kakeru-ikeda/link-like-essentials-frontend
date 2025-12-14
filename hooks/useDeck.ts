@@ -1,53 +1,76 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useDeckStore } from '@/store/deckStore';
 import { Card } from '@/models/Card';
 import { DeckType } from '@/models/enums';
+import { DeckService } from '@/services/deckService';
 
 export const useDeck = () => {
   const {
     deck,
     setDeck,
-    addCardToSlot,
-    removeCardFromSlot,
-    swapCards: swapCardsInDeck,
-    setAceCard,
-    clearAceCard,
-    clearDeck,
+    setCardToSlot,
+    swapCardSlots,
+    setAceSlotId,
+    clearAllSlots,
     setDeckType,
     setSong,
     saveDeckToLocal,
     loadDeckFromLocal,
     initializeDeck,
-    getLastError,
   } = useDeckStore();
+
+  const [lastError, setLastError] = useState<string | null>(null);
 
   useEffect(() => {
     loadDeckFromLocal();
   }, [loadDeckFromLocal]);
 
   const addCard = (slotId: number, card: Card): boolean => {
-    const success = addCardToSlot(slotId, card);
-    if (success) {
-      saveDeckToLocal();
+    // バリデーション
+    const validation = DeckService.validateCardPlacement(card, slotId, deck?.deckType);
+    
+    if (!validation.success) {
+      setLastError(validation.error || 'カードを配置できません');
+      return false;
     }
-    return success;
+
+    // Store更新
+    setCardToSlot(slotId, card);
+    setLastError(null);
+    saveDeckToLocal();
+    return true;
   };
 
   const removeCard = (slotId: number): void => {
-    removeCardFromSlot(slotId);
+    // エースカードの場合は先に解除
+    if (deck?.aceSlotId === slotId) {
+      setAceSlotId(null);
+    }
+    setCardToSlot(slotId, null);
     saveDeckToLocal();
   };
 
   const swapCards = (slotId1: number, slotId2: number): boolean => {
-    const success = swapCardsInDeck(slotId1, slotId2);
-    if (success) {
-      saveDeckToLocal();
+    if (!deck) return false;
+
+    // スワップ実行前のバリデーション
+    const validation = DeckService.validateSwap(deck, slotId1, slotId2);
+    
+    if (!validation.success) {
+      setLastError(validation.error || 'カードを入れ替えできません');
+      return false;
     }
-    return success;
+
+    // スワップ実行（atomic操作）
+    swapCardSlots(slotId1, slotId2, validation.removedSlots);
+
+    setLastError(null);
+    saveDeckToLocal();
+    return true;
   };
 
   const clearAllCards = (): void => {
-    clearDeck();
+    clearAllSlots();
     saveDeckToLocal();
   };
 
@@ -61,21 +84,23 @@ export const useDeck = () => {
   };
 
   const toggleAceCard = (slotId: number): void => {
-    if (deck?.aceSlotId === slotId) {
-      // 既にエースの場合は解除
-      clearAceCard();
+    if (!deck) return;
+
+    // 既にエースの場合は解除
+    if (DeckService.isAceCard(deck, slotId)) {
+      setAceSlotId(null);
     } else {
-      // 新しくエースに設定（自動的に排他的）
-      setAceCard(slotId);
+      // カードがセットされている場合のみエースに設定
+      if (DeckService.hasCardInSlot(deck, slotId)) {
+        setAceSlotId(slotId);
+      }
     }
     saveDeckToLocal();
   };
 
   const updateDeckType = (deckType: DeckType): boolean => {
     // デッキにカードが編成されているかチェック
-    const hasCards = deck?.slots.some((slot) => slot.card !== null);
-    
-    if (hasCards) {
+    if (DeckService.hasCards(deck)) {
       const confirmed = window.confirm(
         'デッキタイプを変更すると、現在編成されているカードがすべてリセットされます。\n変更してもよろしいですか？'
       );
@@ -87,7 +112,7 @@ export const useDeck = () => {
     
     setDeckType(deckType);
     saveDeckToLocal();
-    return true; // 変更成功
+    return true;
   };
 
   const updateSong = (songId: string, songName: string): void => {
@@ -107,6 +132,6 @@ export const useDeck = () => {
     clearAllCards,
     saveDeck,
     resetDeck,
-    getLastError,
+    getLastError: () => lastError,
   };
 };
