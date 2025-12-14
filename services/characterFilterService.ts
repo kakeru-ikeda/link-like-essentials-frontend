@@ -27,6 +27,12 @@ export function getSelectableCharactersForSlot(slotId: number | null): string[] 
   }
 
   const slotCharacter = slotMapping.characterName;
+
+  // フリー枠の場合に、'フリー'を除く全キャラクターを表示
+  if (slotCharacter === 'フリー') {
+    return [...CHARACTERS];
+  }
+
   const slotType = slotMapping.slotType;
   const slotGeneration = getCharacterGeneration(slotCharacter);
 
