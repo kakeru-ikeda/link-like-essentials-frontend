@@ -4,24 +4,22 @@ import { Deck, DeckSlot } from '@/models/Deck';
 import { Card } from '@/models/Card';
 import { DeckType } from '@/models/enums';
 import { getDeckSlotMapping } from '@/constants/deckConfig';
-import { canPlaceCardInSlot } from '@/constants/deckRules';
 
+/**
+ * デッキストアの状態管理インターフェース
+ * ビジネスロジックはservices/deckService.tsに委譲
+ */
 interface DeckState {
   deck: Deck | null;
-  lastError: string | null;
   setDeck: (deck: Deck) => void;
-  addCardToSlot: (slotId: number, card: Card) => boolean;
-  removeCardFromSlot: (slotId: number) => void;
-  swapCards: (slotId1: number, slotId2: number) => boolean;
-  setAceCard: (slotId: number) => void;
-  clearAceCard: () => void;
-  clearDeck: () => void;
+  setCardToSlot: (slotId: number, card: Card | null) => void;
+  setAceSlotId: (slotId: number | null) => void;
+  clearAllSlots: () => void;
   setDeckType: (deckType: DeckType) => void;
   setSong: (songId: string, songName: string) => void;
   saveDeckToLocal: () => void;
   loadDeckFromLocal: () => void;
   initializeDeck: () => void;
-  getLastError: () => string | null;
 }
 
 const createEmptyDeck = (deckType?: DeckType): Deck => {
@@ -44,144 +42,44 @@ const createEmptyDeck = (deckType?: DeckType): Deck => {
 };
 
 export const useDeckStore = create<DeckState>()(
-  immer((set, get) => ({
+  immer((set) => ({
     deck: null,
-    lastError: null,
 
     setDeck: (deck) =>
       set((state) => {
         state.deck = deck;
       }),
 
-    addCardToSlot: (slotId, card) => {
-      const state = get();
-      const validationResult = canPlaceCardInSlot(
-        { characterName: card.characterName, rarity: card.rarity },
-        slotId,
-        state.deck?.deckType
-      );
-
-      if (!validationResult.allowed) {
-        set((state) => {
-          state.lastError = validationResult.reason || '編成できませんでした';
-        });
-        return false;
-      }
-
+    setCardToSlot: (slotId, card) =>
       set((state) => {
         if (state.deck) {
           const slot = state.deck.slots.find((s) => s.slotId === slotId);
           if (slot) {
             slot.card = card;
             state.deck.updatedAt = new Date().toISOString();
-            state.lastError = null;
-          }
-        }
-      });
-      return true;
-    },
-
-    removeCardFromSlot: (slotId) =>
-      set((state) => {
-        if (state.deck) {
-          const slot = state.deck.slots.find((s) => s.slotId === slotId);
-          if (slot) {
-            slot.card = null;
-            state.deck.updatedAt = new Date().toISOString();
             // カードを削除する際、そのスロットがエースだった場合はエースも解除
-            if (state.deck.aceSlotId === slotId) {
+            if (card === null && state.deck.aceSlotId === slotId) {
               state.deck.aceSlotId = null;
             }
           }
         }
       }),
 
-    swapCards: (slotId1, slotId2) => {
-      const state = get();
-      if (!state.deck) return false;
-
-      const slot1 = state.deck.slots.find((s) => s.slotId === slotId1);
-      const slot2 = state.deck.slots.find((s) => s.slotId === slotId2);
-
-      if (!slot1 || !slot2) return false;
-
+    setAceSlotId: (slotId) =>
       set((state) => {
         if (state.deck) {
-          const slot1 = state.deck.slots.find((s) => s.slotId === slotId1);
-          const slot2 = state.deck.slots.find((s) => s.slotId === slotId2);
-          if (!slot1 || !slot2) return;
-
-          // スワップ実行
-          const tempCard = slot1.card;
-          slot1.card = slot2.card;
-          slot2.card = tempCard;
-
-          // スワップ後の編成ルールチェック
-          // slot1に配置されたカードが制約違反なら剥がす
-          if (slot1.card) {
-            const validation1 = canPlaceCardInSlot(
-              { characterName: slot1.card.characterName, rarity: slot1.card.rarity },
-              slotId1,
-              state.deck.deckType
-            );
-            if (!validation1.allowed) {
-              slot1.card = null;
-              // エースカードだった場合は解除
-              if (state.deck.aceSlotId === slotId1) {
-                state.deck.aceSlotId = null;
-              }
-            }
-          }
-
-          // slot2に配置されたカードが制約違反なら剥がす
-          if (slot2.card) {
-            const validation2 = canPlaceCardInSlot(
-              { characterName: slot2.card.characterName, rarity: slot2.card.rarity },
-              slotId2,
-              state.deck.deckType
-            );
-            if (!validation2.allowed) {
-              slot2.card = null;
-              // エースカードだった場合は解除
-              if (state.deck.aceSlotId === slotId2) {
-                state.deck.aceSlotId = null;
-              }
-            }
-          }
-
-          state.deck.updatedAt = new Date().toISOString();
-          state.lastError = null;
-        }
-      });
-      return true;
-    },
-
-    setAceCard: (slotId) =>
-      set((state) => {
-        if (state.deck) {
-          const slot = state.deck.slots.find((s) => s.slotId === slotId);
-          // カードがセットされている場合のみエースに設定可能
-          if (slot?.card) {
-            state.deck.aceSlotId = slotId;
-            state.deck.updatedAt = new Date().toISOString();
-          }
-        }
-      }),
-
-    clearAceCard: () =>
-      set((state) => {
-        if (state.deck) {
-          state.deck.aceSlotId = null;
+          state.deck.aceSlotId = slotId;
           state.deck.updatedAt = new Date().toISOString();
         }
       }),
 
-    clearDeck: () =>
+    clearAllSlots: () =>
       set((state) => {
         if (state.deck) {
           state.deck.slots.forEach((slot) => {
             slot.card = null;
           });
+          state.deck.aceSlotId = null;
           state.deck.updatedAt = new Date().toISOString();
         }
       }),
@@ -236,7 +134,5 @@ export const useDeckStore = create<DeckState>()(
         const currentDeckType = state.deck?.deckType;
         state.deck = createEmptyDeck(currentDeckType);
       }),
-
-    getLastError: () => get().lastError,
   }))
 );
