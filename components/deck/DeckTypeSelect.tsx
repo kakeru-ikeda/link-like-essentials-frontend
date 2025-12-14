@@ -12,7 +12,7 @@ interface DeckTypeProps {
 }
 
 /**
- * 楽曲カテゴリー選択コンポーネント
+ * デッキタイプ選択コンポーネント
  */
 export const DeckTypeSelect: React.FC<DeckTypeProps> = ({
   value,

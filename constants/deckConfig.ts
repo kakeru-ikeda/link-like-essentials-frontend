@@ -68,7 +68,7 @@ export const DECK_SLOT_MAPPING_104: DeckSlotMapping[] = [
   { slotId: 15, characterName: '夕霧綴理', slotType: 'side', row: 2, col: 3 },
   { slotId: 16, characterName: '藤島慈', slotType: 'main', row: 2, col: 4 },
   { slotId: 17, characterName: '藤島慈', slotType: 'side', row: 2, col: 5 },
-]
+];
 
 export const DECK_SLOT_MAPPING_103: DeckSlotMapping[] = [
   // 上段（103期生）
@@ -118,7 +118,7 @@ export const DECK_SLOT_MAPPING_105_FT_KOZUE: DeckSlotMapping[] = [
   { slotId: 15, characterName: '村野さやか', slotType: 'side', row: 2, col: 3 },
   { slotId: 16, characterName: '大沢瑠璃乃', slotType: 'main', row: 2, col: 4 },
   { slotId: 17, characterName: '大沢瑠璃乃', slotType: 'side', row: 2, col: 5 },
-]
+];
 
 export const DECK_SLOT_MAPPING_105_FT_TSUZURI: DeckSlotMapping[] = [
   // 上段（105期生ft.綴理）
@@ -144,7 +144,7 @@ export const DECK_SLOT_MAPPING_105_FT_TSUZURI: DeckSlotMapping[] = [
   { slotId: 15, characterName: '村野さやか', slotType: 'side', row: 2, col: 3 },
   { slotId: 16, characterName: '大沢瑠璃乃', slotType: 'main', row: 2, col: 4 },
   { slotId: 17, characterName: '大沢瑠璃乃', slotType: 'side', row: 2, col: 5 },
-]
+];
 
 export const DECK_SLOT_MAPPING_105_FT_MEGUMI: DeckSlotMapping[] = [
   // 上段（105期生ft.慈）
