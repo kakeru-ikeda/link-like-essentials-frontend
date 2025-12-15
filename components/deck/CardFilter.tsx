@@ -3,7 +3,7 @@
 import React from 'react';
 import type { CardFilter as CardFilterType } from '@/models/Filter';
 import { FilterMode } from '@/models/Filter';
-import { Rarity, StyleType, LimitedType, FavoriteMode, TokenFilter } from '@/models/enums';
+import { Rarity, StyleType, LimitedType, FavoriteMode } from '@/models/enums';
 import { Tooltip } from '@/components/common/Tooltip';
 import { KeywordSearchInput } from '@/components/common/KeywordSearchInput';
 import { getSelectableCharactersForSlot } from '@/services/characterFilterService';
@@ -12,7 +12,6 @@ import {
   STYLE_TYPE_LABELS,
   LIMITED_TYPE_LABELS,
   FAVORITE_MODE_LABELS,
-  TOKEN_FILTER_LABELS,
 } from '@/constants/labels';
 import {
   SkillEffectType,
@@ -343,29 +342,34 @@ export const CardFilter: React.FC<CardFilterProps> = ({
           トークンカード
         </label>
         <div className="flex flex-wrap gap-2">
-          {Object.entries(TOKEN_FILTER_LABELS).map(([key, label]) => {
-            const filterValue = key as TokenFilter;
-            return (
-              <button
-                key={key}
-                onClick={() =>
-                  updateFilter({
-                    hasTokens:
-                      filter.hasTokens === filterValue
-                        ? undefined
-                        : filterValue,
-                  })
-                }
-                className={`px-3 py-1 rounded-full text-sm font-medium transition ${
-                  filter.hasTokens === filterValue
-                    ? 'bg-cyan-500 text-white'
-                    : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
-                }`}
-              >
-                {label}
-              </button>
-            );
-          })}
+          <button
+            onClick={() =>
+              updateFilter({
+                hasTokens: filter.hasTokens === true ? undefined : true,
+              })
+            }
+            className={`px-3 py-1 rounded-full text-sm font-medium transition ${
+              filter.hasTokens === true
+                ? 'bg-cyan-500 text-white'
+                : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
+            }`}
+          >
+            あり
+          </button>
+          <button
+            onClick={() =>
+              updateFilter({
+                hasTokens: filter.hasTokens === false ? undefined : false,
+              })
+            }
+            className={`px-3 py-1 rounded-full text-sm font-medium transition ${
+              filter.hasTokens === false
+                ? 'bg-cyan-500 text-white'
+                : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
+            }`}
+          >
+            なし
+          </button>
         </div>
       </div>
     </div>
