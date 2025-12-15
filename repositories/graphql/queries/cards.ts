@@ -67,6 +67,7 @@ export const GET_CARD_DETAIL = gql`
       styleType
       limited
       cardUrl
+      releaseDate
       isLocked
       createdAt
       updatedAt
