@@ -1,6 +1,6 @@
 import { Card } from '@/models/Card';
 import { CardFilter, FilterMode } from '@/models/Filter';
-import { FavoriteMode, TokenFilter } from '@/models/enums';
+import { FavoriteMode } from '@/models/enums';
 import { getSkillEffectKeyword, getSkillEffectKeywords, SkillEffectType, SkillSearchTarget } from '@/constants/skillEffects';
 import {
   STYLE_TYPE_MAP,
@@ -227,10 +227,7 @@ export function filterCardsOnClient(cards: Card[], filter: CardFilter): Card[] {
     // トークンカードの有無
     if (filter.hasTokens !== undefined) {
       const hasTokens = card.accessories && card.accessories.length > 0;
-      if (filter.hasTokens === TokenFilter.HAS && !hasTokens) {
-        return false;
-      }
-      if (filter.hasTokens === TokenFilter.NONE && hasTokens) {
+      if (filter.hasTokens !== hasTokens) {
         return false;
       }
     }
