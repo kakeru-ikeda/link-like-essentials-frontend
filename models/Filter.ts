@@ -1,4 +1,4 @@
-import { Rarity, StyleType, LimitedType, FavoriteMode, DeckType, SongAttribute, TokenFilter } from './enums';
+import { Rarity, StyleType, LimitedType, FavoriteMode, DeckType, SongAttribute } from './enums';
 import { CharacterName } from '@/constants/characters';
 import { SkillEffectType, SkillSearchTarget } from '@/constants/skillEffects';
 
@@ -39,7 +39,7 @@ export interface CardFilter {
   filterMode?: FilterMode;
 
   // トークンカードの有無
-  hasTokens?: TokenFilter;
+  hasTokens?: boolean;
 }
 
 export enum SortField {

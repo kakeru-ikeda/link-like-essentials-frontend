@@ -1,4 +1,4 @@
-import { Rarity, StyleType, LimitedType, FavoriteMode, TokenFilter } from '@/models/enums';
+import { Rarity, StyleType, LimitedType, FavoriteMode } from '@/models/enums';
 import { SortField } from '@/models/Filter';
 
 export const RARITY_LABELS: Record<Rarity, string> = {
@@ -39,11 +39,6 @@ export const FAVORITE_MODE_LABELS: Record<FavoriteMode, string> = {
   [FavoriteMode.HAPPY]: 'ハッピー',
   [FavoriteMode.MELLOW]: 'メロウ',
   [FavoriteMode.NEUTRAL]: 'ニュートラル',
-};
-
-export const TOKEN_FILTER_LABELS: Record<TokenFilter, string> = {
-  [TokenFilter.HAS]: 'あり',
-  [TokenFilter.NONE]: 'なし',
 };
 
 export const SORT_FIELD_LABELS: Record<SortField, string> = {
