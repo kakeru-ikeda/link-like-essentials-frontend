@@ -51,7 +51,7 @@ export interface Card {
   cardUrl: string;
   characterName: string;
   styleType: StyleType;
-  releaseDate: Date;
+  releaseDate: string;
   isLocked: boolean;
   createdAt: string;
   updatedAt: string;
