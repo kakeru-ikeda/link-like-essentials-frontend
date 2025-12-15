@@ -44,6 +44,11 @@ export enum FavoriteMode {
   NEUTRAL = 'NEUTRAL',
 }
 
+export enum TokenFilter {
+  HAS = 'HAS',
+  NONE = 'NONE',
+}
+
 export enum DeckType {
   TERM_103 = '103期',
   TERM_104 = '104期',
