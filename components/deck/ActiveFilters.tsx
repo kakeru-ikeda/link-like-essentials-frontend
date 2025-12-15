@@ -7,7 +7,6 @@ import {
   STYLE_TYPE_LABELS,
   LIMITED_TYPE_LABELS,
   FAVORITE_MODE_LABELS,
-  TOKEN_FILTER_LABELS,
 } from '@/constants/labels';
 import {
   SKILL_EFFECT_LABELS,
@@ -198,7 +197,7 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
         {/* トークンカードの有無 */}
         {filter.hasTokens !== undefined && (
           <span className="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full flex items-center gap-1">
-            トークン{TOKEN_FILTER_LABELS[filter.hasTokens]}
+            トークン{filter.hasTokens ? 'あり' : 'なし'}
             <button
               onClick={() => clearFilterKey('hasTokens')}
               className="hover:bg-yellow-200 rounded-full p-0.5"
