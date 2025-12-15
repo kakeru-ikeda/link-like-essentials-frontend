@@ -10,6 +10,7 @@ export const GET_CARDS = gql`
       styleType
       limited
       cardUrl
+      releaseDate
       isLocked
       createdAt
       updatedAt
