@@ -1,6 +1,6 @@
 import { Card } from '@/models/Card';
 import { CardFilter, FilterMode } from '@/models/Filter';
-import { FavoriteMode } from '@/models/enums';
+import { FavoriteMode, TokenFilter } from '@/models/enums';
 import { getSkillEffectKeyword, getSkillEffectKeywords, SkillEffectType, SkillSearchTarget } from '@/constants/skillEffects';
 import {
   STYLE_TYPE_MAP,
@@ -224,10 +224,13 @@ export function filterCardsOnClient(cards: Card[], filter: CardFilter): Card[] {
       }
     }
 
-    // アクセサリーカードの有無
-    if (filter.hasAccessories !== undefined) {
-      const hasAccessories = card.accessories && card.accessories.length > 0;
-      if (filter.hasAccessories !== hasAccessories) {
+    // トークンカードの有無
+    if (filter.hasTokens !== undefined) {
+      const hasTokens = card.accessories && card.accessories.length > 0;
+      if (filter.hasTokens === TokenFilter.HAS && !hasTokens) {
+        return false;
+      }
+      if (filter.hasTokens === TokenFilter.NONE && hasTokens) {
         return false;
       }
     }
