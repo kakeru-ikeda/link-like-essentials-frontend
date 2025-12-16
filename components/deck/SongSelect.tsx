@@ -58,7 +58,7 @@ export const SongSelect: React.FC<SongSelectProps> = ({
     value: song.id,
     label: song.songName,
     image: song.jacketImageUrl,
-    description: `${song.centerCharacter}（${song.singers}）`,
+    description: `${song.singers}（${song.centerCharacter}）`,
   }));
 
   if (loading) {
