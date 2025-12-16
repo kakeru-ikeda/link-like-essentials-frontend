@@ -38,8 +38,8 @@ export interface CardFilter {
   // フィルター条件の結合モード（デフォルト: OR）
   filterMode?: FilterMode;
 
-  // アクセサリーカードの有無
-  hasAccessories?: boolean;
+  // トークンカードの有無
+  hasTokens?: boolean;
 }
 
 export enum SortField {

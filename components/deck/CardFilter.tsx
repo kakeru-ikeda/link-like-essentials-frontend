@@ -341,16 +341,15 @@ export const CardFilter: React.FC<CardFilterProps> = ({
         <label className="block text-sm font-medium text-gray-700 mb-3">
           トークンカード
         </label>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <button
             onClick={() =>
               updateFilter({
-                hasAccessories:
-                  filter.hasAccessories === true ? undefined : true,
+                hasTokens: filter.hasTokens === true ? undefined : true,
               })
             }
             className={`px-3 py-1 rounded-full text-sm font-medium transition ${
-              filter.hasAccessories === true
+              filter.hasTokens === true
                 ? 'bg-cyan-500 text-white'
                 : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
             }`}
@@ -360,12 +359,11 @@ export const CardFilter: React.FC<CardFilterProps> = ({
           <button
             onClick={() =>
               updateFilter({
-                hasAccessories:
-                  filter.hasAccessories === false ? undefined : false,
+                hasTokens: filter.hasTokens === false ? undefined : false,
               })
             }
             className={`px-3 py-1 rounded-full text-sm font-medium transition ${
-              filter.hasAccessories === false
+              filter.hasTokens === false
                 ? 'bg-cyan-500 text-white'
                 : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
             }`}

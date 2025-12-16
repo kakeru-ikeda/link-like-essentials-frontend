@@ -224,10 +224,10 @@ export function filterCardsOnClient(cards: Card[], filter: CardFilter): Card[] {
       }
     }
 
-    // アクセサリーカードの有無
-    if (filter.hasAccessories !== undefined) {
-      const hasAccessories = card.accessories && card.accessories.length > 0;
-      if (filter.hasAccessories !== hasAccessories) {
+    // トークンカードの有無
+    if (filter.hasTokens !== undefined) {
+      const hasTokens = card.accessories && card.accessories.length > 0;
+      if (filter.hasTokens !== hasTokens) {
         return false;
       }
     }
