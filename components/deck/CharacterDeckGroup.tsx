@@ -4,12 +4,15 @@ import React from 'react';
 import { DeckSlot } from '@/components/deck/DeckSlot';
 import { DeckSlot as DeckSlotType } from '@/models/Deck';
 import { getCharacterBackgroundColor } from '@/constants/characters';
+import { VerticalBadge } from '@/components/common/VerticalBadge';
 
 interface CharacterDeckGroupProps {
   character: string;
   slots: DeckSlotType[];
   aceSlotId: number | null;
   draggingSlotId: number | null;
+  isCenter?: boolean;
+  isSinger?: boolean;
   onSlotClick: (slotId: number) => void;
   onRemoveCard: (slotId: number) => void;
   onToggleAce: (slotId: number) => void;
@@ -26,6 +29,8 @@ export const CharacterDeckGroup: React.FC<CharacterDeckGroupProps> = React.memo(
     slots,
     aceSlotId,
     draggingSlotId,
+    isCenter = false,
+    isSinger = false,
     onSlotClick,
     onRemoveCard,
     onToggleAce,
@@ -38,13 +43,23 @@ export const CharacterDeckGroup: React.FC<CharacterDeckGroupProps> = React.memo(
     const backgroundColor = getCharacterBackgroundColor(character, 0.5);
 
     return (
-      <div
-        className="flex flex-col h-full gap-1 sm:gap-1.5 md:gap-2 p-2 sm:p-3 rounded-lg backdrop-blur-sm"
-        style={{
-          backgroundColor,
-          boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06)',
-        }}
-      >
+      <div className="relative h-full">
+        {/* Left badge area - positioned absolutely outside the frame */}
+        {(isCenter || isSinger) && (
+          <div className="absolute -left-3 top-0 bottom-0 z-10 flex flex-col gap-1 pt-2">
+            {isCenter && <VerticalBadge text="センター" className="bg-gradient-to-b from-pink-400 to-pink-500" />}
+            {isSinger && !isCenter && <VerticalBadge text="歌唱" className="" />}
+          </div>
+        )}
+
+        {/* Card slots area */}
+        <div
+          className="flex flex-col h-full gap-1 sm:gap-1.5 md:gap-2 p-2 sm:p-3 rounded-lg backdrop-blur-sm"
+          style={{
+            backgroundColor,
+            boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06)',
+          }}
+        >
         {/* Character name header */}
         <div className="text-center flex-shrink-0">
           <h3 className="text-[10px] sm:text-xs font-bold text-gray-700">{character}</h3>
@@ -108,12 +123,15 @@ export const CharacterDeckGroup: React.FC<CharacterDeckGroupProps> = React.memo(
           )}
         </div>
       </div>
+      </div>
     );
   },
   (prevProps, nextProps) => {
     if (prevProps.character !== nextProps.character) return false;
     if (prevProps.aceSlotId !== nextProps.aceSlotId) return false;
     if (prevProps.draggingSlotId !== nextProps.draggingSlotId) return false;
+    if (prevProps.isCenter !== nextProps.isCenter) return false;
+    if (prevProps.isSinger !== nextProps.isSinger) return false;
 
     // slots配列の各slotを比較（カードの有無、slotId、characterName）
     if (prevProps.slots.length !== nextProps.slots.length) return false;

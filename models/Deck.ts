@@ -16,6 +16,8 @@ export interface Deck {
   deckType?: DeckType;
   songId?: string;
   songName?: string;
+  centerCharacter?: string;
+  participations?: string[];
   createdAt: string;
   updatedAt: string;
 }

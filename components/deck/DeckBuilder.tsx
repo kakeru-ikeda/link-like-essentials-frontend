@@ -185,6 +185,8 @@ export const DeckBuilder: React.FC = () => {
               slots={slots}
               aceSlotId={deck.aceSlotId}
               draggingSlotId={draggingSlotId}
+              isCenter={deck?.centerCharacter === character}
+              isSinger={deck?.participations?.includes(character) || false}
               onSlotClick={handleSlotClick}
               onRemoveCard={removeCard}
               onToggleAce={toggleAceCard}

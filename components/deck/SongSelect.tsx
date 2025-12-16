@@ -9,7 +9,7 @@ import { Loading } from '@/components/common/Loading';
 interface SongSelectProps {
   deckType?: DeckType;
   value?: string;
-  onChange: (songId: string, songName: string) => void;
+  onChange: (song: { id: string; name: string; centerCharacter: string; participations: string[] }) => void;
   disabled?: boolean;
   className?: string;
 }
@@ -37,7 +37,7 @@ export const SongSelect: React.FC<SongSelectProps> = ({
       // 選択された楽曲が現在のカテゴリーに存在しない場合はクリア
       const songExists = songs.some((song) => song.id === value);
       if (!songExists && songs.length > 0) {
-        onChange('', '');
+        onChange({ id: '', name: '', centerCharacter: '', participations: [] });
       }
     }
   }, [deckType, songs, value, onChange]);
@@ -45,7 +45,12 @@ export const SongSelect: React.FC<SongSelectProps> = ({
   const handleChange = (songId: string): void => {
     const selectedSong = songs.find((song) => song.id === songId);
     if (selectedSong) {
-      onChange(selectedSong.id, selectedSong.songName);
+      onChange({
+        id: selectedSong.id,
+        name: selectedSong.songName,
+        centerCharacter: selectedSong.centerCharacter,
+        participations: selectedSong.participations,
+      });
     }
   };
 
