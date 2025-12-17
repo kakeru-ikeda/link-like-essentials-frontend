@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import { HiPencil } from 'react-icons/hi2';
 import { DeckTypeSelect } from '@/components/deck/DeckTypeSelect';
 import { SongSelect } from '@/components/deck/SongSelect';
 import { CenterCardDisplay } from '@/components/deck/CenterCardDisplay';
@@ -88,16 +89,19 @@ export const DeckDashboard: React.FC = () => {
             onChange={handleNameChange}
             onBlur={handleNameBlur}
             onKeyDown={handleNameKeyDown}
-            className="text-2xl font-bold text-gray-800 bg-transparent border-none outline-none focus:ring-0 p-0 -ml-0.5"
+            className="text-2xl font-bold text-gray-800 bg-transparent border-none outline-none focus:ring-0 p-0 -ml-0.5 w-full"
             placeholder="デッキ名を入力..."
           />
         ) : (
-          <h1
+          <div 
             onClick={handleNameClick}
-            className="text-2xl font-bold text-gray-800 cursor-text hover:bg-gray-100 rounded px-1 -ml-1 py-0.5 transition-colors"
+            className="group flex items-center gap-2 cursor-text hover:bg-gray-100 rounded px-1 -ml-1 py-0.5 transition-colors w-full"
           >
-            {deck?.name || '新しいデッキ'}
-          </h1>
+            <h1 className="text-2xl font-bold text-gray-800 truncate flex-1">
+              {deck?.name || '新しいデッキ'}
+            </h1>
+            <HiPencil className="w-5 h-5 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+          </div>
         )}
       </div>
       
