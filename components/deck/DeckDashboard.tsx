@@ -24,8 +24,8 @@ export const DeckDashboard: React.FC = () => {
     // キャンセルされた場合は元の値を保持（useEffectで同期される）
   };
 
-  const handleSongChange = (songId: string, songName: string): void => {
-    updateSong(songId, songName);
+  const handleSongChange = (song: { id: string; name: string; centerCharacter: string; participations: string[] }): void => {
+    updateSong(song);
   };
 
   return (
