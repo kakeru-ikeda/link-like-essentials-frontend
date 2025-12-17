@@ -13,6 +13,7 @@ export const useDeck = () => {
     setAceSlotId,
     clearAllSlots,
     setDeckType,
+    setDeckName,
     setSong,
     saveDeckToLocal,
     loadDeckFromLocal,
@@ -120,6 +121,11 @@ export const useDeck = () => {
     saveDeckToLocal();
   };
 
+  const updateDeckName = (name: string): void => {
+    setDeckName(name);
+    saveDeckToLocal();
+  };
+
   return {
     deck,
     setDeck,
@@ -128,6 +134,7 @@ export const useDeck = () => {
     swapCards,
     toggleAceCard,
     updateDeckType,
+    updateDeckName,
     updateSong,
     clearAllCards,
     saveDeck,
