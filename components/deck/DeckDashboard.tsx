@@ -24,7 +24,7 @@ export const DeckDashboard: React.FC = () => {
     // キャンセルされた場合は元の値を保持（useEffectで同期される）
   };
 
-  const handleSongChange = (song: { id: string; name: string; centerCharacter: string; participations: string[] }): void => {
+  const handleSongChange = (song: { id: string; name: string; centerCharacter: string; participations: string[]; liveAnalyzerImageUrl?: string }): void => {
     updateSong(song);
   };
 
@@ -46,6 +46,16 @@ export const DeckDashboard: React.FC = () => {
           className="flex-1"
         />
       </div>
+
+      {deck?.liveAnalyzerImageUrl && (
+        <div className="mt-2">
+          <img
+            src={deck.liveAnalyzerImageUrl}
+            alt="ライブアナライザ"
+            className="w-full h-auto rounded-lg border border-gray-300"
+          />
+        </div>
+      )}
     </div>
   );
 };

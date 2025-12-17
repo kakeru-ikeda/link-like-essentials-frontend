@@ -17,7 +17,7 @@ interface DeckState {
   setAceSlotId: (slotId: number | null) => void;
   clearAllSlots: () => void;
   setDeckType: (deckType: DeckType) => void;
-  setSong: (song: { id: string; name: string; centerCharacter: string; participations: string[] }) => void;
+  setSong: (song: { id: string; name: string; centerCharacter: string; participations: string[]; liveAnalyzerImageUrl?: string }) => void;
   saveDeckToLocal: () => void;
   loadDeckFromLocal: () => void;
   initializeDeck: () => void;
@@ -133,6 +133,7 @@ export const useDeckStore = create<DeckState>()(
           state.deck.songName = song.name;
           state.deck.centerCharacter = song.centerCharacter;
           state.deck.participations = song.participations;
+          state.deck.liveAnalyzerImageUrl = song.liveAnalyzerImageUrl;
           state.deck.updatedAt = new Date().toISOString();
         }
       }),

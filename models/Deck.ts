@@ -18,6 +18,7 @@ export interface Deck {
   songName?: string;
   centerCharacter?: string;
   participations?: string[];
+  liveAnalyzerImageUrl?: string;
   createdAt: string;
   updatedAt: string;
 }

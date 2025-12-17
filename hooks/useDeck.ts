@@ -115,7 +115,7 @@ export const useDeck = () => {
     return true;
   };
 
-  const updateSong = (song: { id: string; name: string; centerCharacter: string; participations: string[] }): void => {
+  const updateSong = (song: { id: string; name: string; centerCharacter: string; participations: string[]; liveAnalyzerImageUrl?: string }): void => {
     setSong(song);
     saveDeckToLocal();
   };
