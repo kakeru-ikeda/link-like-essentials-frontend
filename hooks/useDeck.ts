@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useDeckStore } from '@/store/deckStore';
 import { Card } from '@/models/Card';
+import { Song } from '@/models/Song';
 import { DeckType } from '@/models/enums';
 import { DeckService } from '@/services/deckService';
 
@@ -116,7 +117,7 @@ export const useDeck = () => {
     return true;
   };
 
-  const updateSong = (song: { id: string; name: string; centerCharacter: string; participations: string[]; liveAnalyzerImageUrl?: string }): void => {
+  const updateSong = (song: Partial<Song>): void => {
     setSong(song);
     saveDeckToLocal();
   };

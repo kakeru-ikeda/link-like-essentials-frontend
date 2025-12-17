@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import { Deck, DeckSlot } from '@/models/Deck';
 import { Card } from '@/models/Card';
+import { Song } from '@/models/Song';
 import { DeckType } from '@/models/enums';
 import { getDeckSlotMapping } from '@/constants/deckConfig';
 
@@ -18,7 +19,7 @@ interface DeckState {
   clearAllSlots: () => void;
   setDeckType: (deckType: DeckType) => void;
   setDeckName: (name: string) => void;
-  setSong: (song: { id: string; name: string; centerCharacter: string; participations: string[]; liveAnalyzerImageUrl?: string }) => void;
+  setSong: (song: Partial<Song>) => void;
   saveDeckToLocal: () => void;
   loadDeckFromLocal: () => void;
   initializeDeck: () => void;
@@ -139,7 +140,7 @@ export const useDeckStore = create<DeckState>()(
       set((state) => {
         if (state.deck) {
           state.deck.songId = song.id;
-          state.deck.songName = song.name;
+          state.deck.songName = song.songName;
           state.deck.centerCharacter = song.centerCharacter;
           state.deck.participations = song.participations;
           state.deck.liveAnalyzerImageUrl = song.liveAnalyzerImageUrl;

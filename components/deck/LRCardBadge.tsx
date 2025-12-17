@@ -47,7 +47,7 @@ export const LRCardBadge: React.FC<LRCardBadgeProps> = ({ card }) => {
   return (
     <Tooltip content={tooltipContent} position="top">
       <div
-        className="px-2 py-1 rounded text-xs font-medium cursor-help border-1"
+        className="px-2 py-1 rounded text-xs font-medium cursor-help border"
         style={{
           backgroundColor: getCharacterBackgroundColor(card.characterName, 0.3),
           borderColor: getCharacterBackgroundColor(card.characterName, 0.6),

@@ -5,6 +5,7 @@ import { DeckTypeSelect } from '@/components/deck/DeckTypeSelect';
 import { SongSelect } from '@/components/deck/SongSelect';
 import { CenterCardDisplay } from '@/components/deck/CenterCardDisplay';
 import { LRCardsList } from '@/components/deck/LRCardsList';
+import { Song } from '@/models/Song';
 import { DeckType } from '@/models/enums';
 import { useDeck } from '@/hooks/useDeck';
 import { getCenterCard, getOtherLRCards } from '@/services/deckAnalysisService';
@@ -45,7 +46,7 @@ export const DeckDashboard: React.FC = () => {
     // キャンセルされた場合は元の値を保持（useEffectで同期される）
   };
 
-  const handleSongChange = (song: { id: string; name: string; centerCharacter: string; participations: string[]; liveAnalyzerImageUrl?: string }): void => {
+  const handleSongChange = (song: Partial<Song>): void => {
     updateSong(song);
   };
 
