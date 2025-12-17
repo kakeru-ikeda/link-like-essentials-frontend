@@ -2,6 +2,7 @@
 
 import React, { useEffect } from 'react';
 import { Dropdown, DropdownOption } from '@/components/common/Dropdown';
+import { Song } from '@/models/Song';
 import { DeckType } from '@/models/enums';
 import { useSongs } from '@/hooks/useSongs';
 import { Loading } from '@/components/common/Loading';
@@ -9,7 +10,7 @@ import { Loading } from '@/components/common/Loading';
 interface SongSelectProps {
   deckType?: DeckType;
   value?: string;
-  onChange: (song: { id: string; name: string; centerCharacter: string; participations: string[] }) => void;
+  onChange: (song: Partial<Song>) => void;
   disabled?: boolean;
   className?: string;
 }
@@ -37,7 +38,7 @@ export const SongSelect: React.FC<SongSelectProps> = ({
       // 選択された楽曲が現在のカテゴリーに存在しない場合はクリア
       const songExists = songs.some((song) => song.id === value);
       if (!songExists && songs.length > 0) {
-        onChange({ id: '', name: '', centerCharacter: '', participations: [] });
+        onChange({});
       }
     }
   }, [deckType, songs, value, onChange]);
@@ -47,9 +48,10 @@ export const SongSelect: React.FC<SongSelectProps> = ({
     if (selectedSong) {
       onChange({
         id: selectedSong.id,
-        name: selectedSong.songName,
+        songName: selectedSong.songName,
         centerCharacter: selectedSong.centerCharacter,
         participations: selectedSong.participations,
+        liveAnalyzerImageUrl: selectedSong.liveAnalyzerImageUrl,
       });
     }
   };

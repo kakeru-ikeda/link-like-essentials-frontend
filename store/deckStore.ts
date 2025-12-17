@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import { Deck, DeckSlot } from '@/models/Deck';
 import { Card } from '@/models/Card';
+import { Song } from '@/models/Song';
 import { DeckType } from '@/models/enums';
 import { getDeckSlotMapping } from '@/constants/deckConfig';
 
@@ -17,7 +18,8 @@ interface DeckState {
   setAceSlotId: (slotId: number | null) => void;
   clearAllSlots: () => void;
   setDeckType: (deckType: DeckType) => void;
-  setSong: (song: { id: string; name: string; centerCharacter: string; participations: string[] }) => void;
+  setDeckName: (name: string) => void;
+  setSong: (song: Partial<Song>) => void;
   saveDeckToLocal: () => void;
   loadDeckFromLocal: () => void;
   initializeDeck: () => void;
@@ -126,13 +128,22 @@ export const useDeckStore = create<DeckState>()(
         }
       }),
 
+    setDeckName: (name) =>
+      set((state) => {
+        if (state.deck) {
+          state.deck.name = name;
+          state.deck.updatedAt = new Date().toISOString();
+        }
+      }),
+
     setSong: (song) =>
       set((state) => {
         if (state.deck) {
           state.deck.songId = song.id;
-          state.deck.songName = song.name;
+          state.deck.songName = song.songName;
           state.deck.centerCharacter = song.centerCharacter;
           state.deck.participations = song.participations;
+          state.deck.liveAnalyzerImageUrl = song.liveAnalyzerImageUrl;
           state.deck.updatedAt = new Date().toISOString();
         }
       }),
