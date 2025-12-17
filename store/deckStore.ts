@@ -16,7 +16,7 @@ interface DeckState {
   setCardToSlot: (slotId: number, card: Card | null) => void;
   swapCardSlots: (slotId1: number, slotId2: number, removedSlots: number[]) => void;
   setAceSlotId: (slotId: number | null) => void;
-  clearAllSlots: () => void;
+  clearDeck: () => void;
   setDeckType: (deckType: DeckType) => void;
   setDeckName: (name: string) => void;
   setSong: (song: Partial<Song>) => void;
@@ -101,13 +101,18 @@ export const useDeckStore = create<DeckState>()(
         }
       }),
 
-    clearAllSlots: () =>
+    clearDeck: () =>
       set((state) => {
         if (state.deck) {
           state.deck.slots.forEach((slot) => {
             slot.card = null;
           });
           state.deck.aceSlotId = null;
+          state.deck.songId = undefined;
+          state.deck.songName = undefined;
+          state.deck.centerCharacter = undefined;
+          state.deck.participations = undefined;
+          state.deck.liveAnalyzerImageUrl = undefined;
           state.deck.updatedAt = new Date().toISOString();
         }
       }),

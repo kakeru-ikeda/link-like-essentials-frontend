@@ -12,7 +12,7 @@ export const useDeck = () => {
     setCardToSlot,
     swapCardSlots,
     setAceSlotId,
-    clearAllSlots,
+    clearDeck,
     setDeckType,
     setDeckName,
     setSong,
@@ -72,7 +72,7 @@ export const useDeck = () => {
   };
 
   const clearAllCards = (): void => {
-    clearAllSlots();
+    clearDeck();
     saveDeckToLocal();
   };
 
