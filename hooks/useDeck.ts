@@ -101,6 +101,11 @@ export const useDeck = () => {
   };
 
   const updateDeckType = (deckType: DeckType): boolean => {
+    // 同じデッキタイプの場合は何もしない
+    if (deck?.deckType === deckType) {
+      return true;
+    }
+
     // デッキにカードが編成されているかチェック
     if (DeckService.hasCards(deck)) {
       const confirmed = window.confirm(
