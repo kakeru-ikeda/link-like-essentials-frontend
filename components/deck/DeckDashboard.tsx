@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
-import { HiPencil } from 'react-icons/hi2';
+import React, { useState, useEffect } from 'react';
+import { DeckTitle } from '@/components/deck/DeckTitle';
 import { DeckTypeSelect } from '@/components/deck/DeckTypeSelect';
 import { SongSelect } from '@/components/deck/SongSelect';
 import { CenterCardDisplay } from '@/components/deck/CenterCardDisplay';
@@ -21,9 +21,6 @@ interface DeckDashboardProps {
 export const DeckDashboard: React.FC<DeckDashboardProps> = ({ showLimitBreak, onShowLimitBreakChange }) => {
   const { deck, updateDeckType, updateDeckName, updateDeckMemo, updateSong } = useDeck();
   const [selectedDeckType, setSelectedDeckType] = useState<DeckType | undefined>(deck?.deckType);
-  const [isEditingName, setIsEditingName] = useState<boolean>(false);
-  const [tempName, setTempName] = useState<string>(deck?.name || '新しいデッキ');
-  const inputRef = useRef<HTMLInputElement>(null);
 
   // センターカードを取得（ビジネスロジックはserviceに委譲）
   const centerCard = React.useMemo(() => getCenterCard(deck), [deck]);
@@ -34,16 +31,7 @@ export const DeckDashboard: React.FC<DeckDashboardProps> = ({ showLimitBreak, on
   // deckが変更されたら同期
   useEffect(() => {
     setSelectedDeckType(deck?.deckType);
-    setTempName(deck?.name || '新しいデッキ');
-  }, [deck?.deckType, deck?.name]);
-
-  // 編集モード時にフォーカス
-  useEffect(() => {
-    if (isEditingName && inputRef.current) {
-      inputRef.current.focus();
-      inputRef.current.select();
-    }
-  }, [isEditingName]);
+  }, [deck?.deckType]);
 
   const handleDeckTypeChange = (newDeckType: DeckType): void => {
     const success = updateDeckType(newDeckType);
@@ -58,60 +46,12 @@ export const DeckDashboard: React.FC<DeckDashboardProps> = ({ showLimitBreak, on
     updateSong(song);
   };
 
-  const handleNameClick = (): void => {
-    setIsEditingName(true);
-  };
-
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    setTempName(e.target.value);
-  };
-
-  const handleNameBlur = (): void => {
-    const trimmedName = tempName.trim();
-    if (trimmedName && trimmedName !== deck?.name) {
-      updateDeckName(trimmedName);
-    } else if (!trimmedName) {
-      setTempName(deck?.name || '新しいデッキ');
-    }
-    setIsEditingName(false);
-  };
-
-  const handleNameKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
-    if (e.key === 'Enter') {
-      inputRef.current?.blur();
-    } else if (e.key === 'Escape') {
-      setTempName(deck?.name || '新しいデッキ');
-      setIsEditingName(false);
-    }
-  };
-
   return (
     <div className="flex-1 flex flex-col gap-4 p-4 border-2 border-gray-300 rounded-lg overflow-hidden">
-      <div className="flex flex-col gap-2">
-        {isEditingName ? (
-          <input
-            ref={inputRef}
-            type="text"
-            value={tempName}
-            onChange={handleNameChange}
-            onBlur={handleNameBlur}
-            onKeyDown={handleNameKeyDown}
-            className="text-2xl font-bold text-gray-800 bg-transparent border-none outline-none focus:ring-0 p-0 -ml-0.5 w-full"
-            placeholder="デッキ名を入力..."
-          />
-        ) : (
-          <div 
-            onClick={handleNameClick}
-            className="group flex items-center gap-2 cursor-text hover:bg-gray-100 rounded px-1 -ml-1 py-0.5 transition-colors w-full"
-          >
-            <h1 className="text-2xl font-bold text-gray-800 truncate flex-1">
-              {deck?.name || '新しいデッキ'}
-            </h1>
-            <HiPencil className="w-5 h-5 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
-          </div>
-        )}
-      </div>
-      
+      <DeckTitle 
+        title={deck?.name || '新しいデッキ'}
+        onTitleChange={updateDeckName}
+      />
       <div className="flex gap-4">
         <DeckTypeSelect
           value={selectedDeckType}
