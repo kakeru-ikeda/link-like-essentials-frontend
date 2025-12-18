@@ -4,7 +4,7 @@ import { Deck } from '@/models/Deck';
 import React from 'react';
 
 interface DeckTabsProps {
-  tabs: Deck[];
+  tabs: Pick<Deck, 'id' | 'name'>[];
   activeTabId: string;
   onChangeTab: (tabId: string) => void;
   onAddTab: () => void;
@@ -20,11 +20,7 @@ export const DeckTabs: React.FC<DeckTabsProps> = ({
   onDeleteTab,
   children 
 }) => {
-  const handleDelete = (e: React.MouseEvent, tabId: string): void => {
-    e.stopPropagation();
-    onDeleteTab(tabId);
-  };
-
+  
   return (
     <div className="flex h-full">
       {/* メインコンテンツエリア */}
@@ -52,7 +48,7 @@ export const DeckTabs: React.FC<DeckTabsProps> = ({
                 {/* 削除ボタン（ホバー時のみ表示） */}
                 {tabs.length > 1 && (
                   <button
-                    onClick={(e) => handleDelete(e, tab.id)}
+                    onClick={() => onDeleteTab(tab.id)}
                     className="absolute -top-1 -left-1 bg-red-500 hover:bg-red-600 text-white rounded-full w-4 h-4 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                     aria-label="デッキを削除"
                   >
