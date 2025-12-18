@@ -1,50 +1,28 @@
 'use client';
 
-import React, { useState } from 'react';
-
-interface DeckTab {
-  id: number;
-  name: string;
-}
+import { Deck } from '@/models/Deck';
+import React from 'react';
 
 interface DeckTabsProps {
+  tabs: Deck[];
+  activeTabId: string;
+  onTabChange: (tabId: string) => void;
+  onTabadd: () => void;
+  onTabDelete: (tabId: string) => void;
   children: React.ReactNode;
 }
 
-export const DeckTabs: React.FC<DeckTabsProps> = ({ children }) => {
-  const [activeTabId, setActiveTabId] = useState<number>(1);
-  const [tabs, setTabs] = useState<DeckTab[]>([
-    { id: 1, name: 'デッキ1' },
-    { id: 2, name: 'デッキ2' },
-    { id: 3, name: 'デッキ3' },
-  ]);
-  const [nextId, setNextId] = useState<number>(4);
-
-  const handleAddDeck = (): void => {
-    const newDeck = { id: nextId, name: `デッキ${nextId}` };
-    setTabs([...tabs, newDeck]);
-    setNextId(nextId + 1);
-    setActiveTabId(newDeck.id);
-  };
-
-  const handleDeleteDeck = (tabId: number): void => {
-    if (tabs.length <= 1) {
-      alert('最低1つのデッキが必要です');
-      return;
-    }
-    
-    const newTabs = tabs.filter(tab => tab.id !== tabId);
-    setTabs(newTabs);
-    
-    // 削除したタブがアクティブだった場合、最初のタブをアクティブに
-    if (activeTabId === tabId) {
-      setActiveTabId(newTabs[0].id);
-    }
-  };
-
-  const handleDelete = (e: React.MouseEvent, tabId: number): void => {
+export const DeckTabs: React.FC<DeckTabsProps> = ({ 
+  tabs,
+  activeTabId,
+  onTabChange,
+  onTabadd,
+  onTabDelete,
+  children 
+}) => {
+  const handleDelete = (e: React.MouseEvent, tabId: string): void => {
     e.stopPropagation();
-    handleDeleteDeck(tabId);
+    onTabDelete(tabId);
   };
 
   return (
@@ -61,7 +39,7 @@ export const DeckTabs: React.FC<DeckTabsProps> = ({ children }) => {
             {tabs.map((tab) => (
               <div key={tab.id} className="relative group">
                 <button
-                  onClick={() => setActiveTabId(tab.id)}
+                  onClick={() => onTabChange(tab.id)}
                   className={`w-full px-2 py-5 rounded-md text-sm font-medium transition ${
                     activeTabId === tab.id
                       ? 'bg-blue-500 text-white'
@@ -101,7 +79,7 @@ export const DeckTabs: React.FC<DeckTabsProps> = ({ children }) => {
         {/* 新規デッキ追加ボタン（下部固定） */}
         <div className="p-1 border-t border-gray-200">
           <button
-            onClick={handleAddDeck}
+            onClick={onTabadd}
             className="w-full px-2 py-6 rounded-md text-sm font-medium transition bg-green-500 hover:bg-green-600 text-white cursor-pointer"
             style={{ writingMode: 'vertical-rl', textOrientation: 'upright' }}
           >
