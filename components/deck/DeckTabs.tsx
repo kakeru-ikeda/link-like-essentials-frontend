@@ -6,23 +6,23 @@ import React from 'react';
 interface DeckTabsProps {
   tabs: Deck[];
   activeTabId: string;
-  onTabChange: (tabId: string) => void;
-  onTabadd: () => void;
-  onTabDelete: (tabId: string) => void;
+  onChangeTab: (tabId: string) => void;
+  onAddTab: () => void;
+  onDeleteTab: (tabId: string) => void;
   children: React.ReactNode;
 }
 
 export const DeckTabs: React.FC<DeckTabsProps> = ({ 
   tabs,
   activeTabId,
-  onTabChange,
-  onTabadd,
-  onTabDelete,
+  onChangeTab,
+  onAddTab,
+  onDeleteTab,
   children 
 }) => {
   const handleDelete = (e: React.MouseEvent, tabId: string): void => {
     e.stopPropagation();
-    onTabDelete(tabId);
+    onDeleteTab(tabId);
   };
 
   return (
@@ -39,7 +39,7 @@ export const DeckTabs: React.FC<DeckTabsProps> = ({
             {tabs.map((tab) => (
               <div key={tab.id} className="relative group">
                 <button
-                  onClick={() => onTabChange(tab.id)}
+                  onClick={() => onChangeTab(tab.id)}
                   className={`w-full px-2 py-5 rounded-md text-sm font-medium transition ${
                     activeTabId === tab.id
                       ? 'bg-blue-500 text-white'
@@ -79,7 +79,7 @@ export const DeckTabs: React.FC<DeckTabsProps> = ({
         {/* 新規デッキ追加ボタン（下部固定） */}
         <div className="p-1 border-t border-gray-200">
           <button
-            onClick={onTabadd}
+            onClick={onAddTab}
             className="w-full px-2 py-6 rounded-md text-sm font-medium transition bg-green-500 hover:bg-green-600 text-white cursor-pointer"
             style={{ writingMode: 'vertical-rl', textOrientation: 'upright' }}
           >
