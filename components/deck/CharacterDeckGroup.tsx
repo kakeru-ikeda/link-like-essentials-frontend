@@ -13,10 +13,13 @@ interface CharacterDeckGroupProps {
   draggingSlotId: number | null;
   isCenter?: boolean;
   isSinger?: boolean;
+  showLimitBreak?: boolean;
+  limitBreakCounts: { [cardId: string]: number };
   onSlotClick: (slotId: number) => void;
   onRemoveCard: (slotId: number) => void;
   onToggleAce: (slotId: number) => void;
   onShowDetail: (cardId: string) => void;
+  onLimitBreakChange: (slotId: number, count: number) => void;
   onDragStart: (slotId: number) => void;
   onDragEnd: () => void;
   onDrop: (slotId: number) => void;
@@ -31,10 +34,13 @@ export const CharacterDeckGroup: React.FC<CharacterDeckGroupProps> = React.memo(
     draggingSlotId,
     isCenter = false,
     isSinger = false,
+    showLimitBreak = false,
+    limitBreakCounts,
     onSlotClick,
     onRemoveCard,
     onToggleAce,
     onShowDetail,
+    onLimitBreakChange,
     onDragStart,
     onDragEnd,
     onDrop,
@@ -73,6 +79,7 @@ export const CharacterDeckGroup: React.FC<CharacterDeckGroupProps> = React.memo(
             onRemoveCard={onRemoveCard}
             onToggleAce={onToggleAce}
             onShowDetail={onShowDetail}
+            onLimitBreakChange={onLimitBreakChange}
             isAce={aceSlotId === slots[0].slotId}
             isMain={true}
             onDragStart={onDragStart}
@@ -80,6 +87,8 @@ export const CharacterDeckGroup: React.FC<CharacterDeckGroupProps> = React.memo(
             onDrop={onDrop}
             isDragging={draggingSlotId === slots[0].slotId}
             isDroppable={draggingSlotId !== null && canDropToSlot(slots[0].slotId)}
+            showLimitBreak={showLimitBreak}
+            limitBreakCount={slots[0].card ? (limitBreakCounts[slots[0].card.id] ?? 14) : 14}
           />
         )}
 
@@ -93,6 +102,7 @@ export const CharacterDeckGroup: React.FC<CharacterDeckGroupProps> = React.memo(
                 onRemoveCard={onRemoveCard}
                 onToggleAce={onToggleAce}
                 onShowDetail={onShowDetail}
+                onLimitBreakChange={onLimitBreakChange}
                 isAce={aceSlotId === slots[1].slotId}
                 isMain={false}
                 onDragStart={onDragStart}
@@ -100,6 +110,8 @@ export const CharacterDeckGroup: React.FC<CharacterDeckGroupProps> = React.memo(
                 onDrop={onDrop}
                 isDragging={draggingSlotId === slots[1].slotId}
                 isDroppable={draggingSlotId !== null && canDropToSlot(slots[1].slotId)}
+                showLimitBreak={showLimitBreak}
+                limitBreakCount={slots[1].card ? (limitBreakCounts[slots[1].card.id] ?? 14) : 14}
               />
             </div>
           )}
@@ -111,6 +123,7 @@ export const CharacterDeckGroup: React.FC<CharacterDeckGroupProps> = React.memo(
                 onRemoveCard={onRemoveCard}
                 onToggleAce={onToggleAce}
                 onShowDetail={onShowDetail}
+                onLimitBreakChange={onLimitBreakChange}
                 isAce={aceSlotId === slots[2].slotId}
                 isMain={false}
                 onDragStart={onDragStart}
@@ -118,6 +131,8 @@ export const CharacterDeckGroup: React.FC<CharacterDeckGroupProps> = React.memo(
                 onDrop={onDrop}
                 isDragging={draggingSlotId === slots[2].slotId}
                 isDroppable={draggingSlotId !== null && canDropToSlot(slots[2].slotId)}
+                showLimitBreak={showLimitBreak}
+                limitBreakCount={slots[2].card ? (limitBreakCounts[slots[2].card.id] ?? 14) : 14}
               />
             </div>
           )}
@@ -132,6 +147,14 @@ export const CharacterDeckGroup: React.FC<CharacterDeckGroupProps> = React.memo(
     if (prevProps.draggingSlotId !== nextProps.draggingSlotId) return false;
     if (prevProps.isCenter !== nextProps.isCenter) return false;
     if (prevProps.isSinger !== nextProps.isSinger) return false;
+    if (prevProps.showLimitBreak !== nextProps.showLimitBreak) return false;
+
+    // limitBreakCountsの変更をチェック
+    for (const slot of prevProps.slots) {
+      if (slot.card && prevProps.limitBreakCounts[slot.card.id] !== nextProps.limitBreakCounts[slot.card.id]) {
+        return false;
+      }
+    }
 
     // slots配列の各slotを比較（カードの有無、slotId、characterName）
     if (prevProps.slots.length !== nextProps.slots.length) return false;

@@ -12,6 +12,7 @@ export const useDeck = () => {
     setCardToSlot,
     swapCardSlots,
     setAceSlotId,
+    setLimitBreakCount,
     clearDeck,
     setDeckType,
     setDeckName,
@@ -132,6 +133,11 @@ export const useDeck = () => {
     saveDeckToLocal();
   };
 
+  const updateLimitBreakCount = (slotId: number, count: number): void => {
+    setLimitBreakCount(slotId, count);
+    saveDeckToLocal();
+  };
+
   return {
     deck,
     setDeck,
@@ -142,6 +148,7 @@ export const useDeck = () => {
     updateDeckType,
     updateDeckName,
     updateSong,
+    updateLimitBreakCount,
     clearAllCards,
     saveDeck,
     resetDeck,

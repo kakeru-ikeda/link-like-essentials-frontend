@@ -6,12 +6,18 @@ import { DeckTypeSelect } from '@/components/deck/DeckTypeSelect';
 import { SongSelect } from '@/components/deck/SongSelect';
 import { CenterCardDisplay } from '@/components/deck/CenterCardDisplay';
 import { LRCardsList } from '@/components/deck/LRCardsList';
+import { Checkbox } from '@/components/common/Checkbox';
 import { Song } from '@/models/Song';
 import { DeckType } from '@/models/enums';
 import { useDeck } from '@/hooks/useDeck';
 import { getCenterCard, getOtherLRCards } from '@/services/deckAnalysisService';
 
-export const DeckDashboard: React.FC = () => {
+interface DeckDashboardProps {
+  showLimitBreak: boolean;
+  onShowLimitBreakChange: (value: boolean) => void;
+}
+
+export const DeckDashboard: React.FC<DeckDashboardProps> = ({ showLimitBreak, onShowLimitBreakChange }) => {
   const { deck, updateDeckType, updateDeckName, updateSong } = useDeck();
   const [selectedDeckType, setSelectedDeckType] = useState<DeckType | undefined>(deck?.deckType);
   const [isEditingName, setIsEditingName] = useState<boolean>(false);
@@ -117,6 +123,14 @@ export const DeckDashboard: React.FC = () => {
           value={deck?.songId}
           onChange={handleSongChange}
           className="flex-1"
+        />
+      </div>
+
+      <div className="border-t border-gray-200 pt-3">
+        <Checkbox
+          checked={showLimitBreak}
+          onChange={onShowLimitBreakChange}
+          label="上限解放数を表示"
         />
       </div>
 
