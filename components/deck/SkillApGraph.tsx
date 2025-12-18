@@ -69,31 +69,10 @@ const groupByApValue = (apDataList: ApData[]): Record<number, Record<string, num
 
   // データをグループ化
   apDataList.forEach(({ ap, favoriteMode }) => {
-    if (!grouped[ap][favoriteMode]) {
-      grouped[ap][favoriteMode] = 0;
-    }
     grouped[ap][favoriteMode]++;
   });
 
   return grouped;
-};
-
-/**
- * 好感度モードに応じた色を返す関数
- */
-const getFavoriteModeColor = (mode: string): string => {
-  switch (mode) {
-    case FavoriteMode.HAPPY:
-      return 'bg-pink-400';
-    case FavoriteMode.MELLOW:
-      return 'bg-blue-400';
-    case FavoriteMode.NEUTRAL:
-      return 'bg-gray-100 border border-gray-300';
-    case FavoriteMode.NONE:
-      return 'bg-gray-200';
-    default:
-      return 'bg-gray-200';
-  }
 };
 
 export const SkillApGraph: React.FC<SkillApGraphProps> = ({ deck }) => {

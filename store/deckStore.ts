@@ -34,12 +34,7 @@ const createEmptyDeck = (deckType?: DeckType): Deck => {
     characterName: m.characterName,
     card: null,
   }));
-
-  // 全スロットの上限解放数をデフォルト14に設定
-  const limitBreakCounts: { [slotId: number]: number } = {};
-  mapping.forEach((m) => {
-    limitBreakCounts[m.slotId] = 14;
-  });
+  const limitBreakCounts: { [cardId: string]: number } = {};
 
   return {
     id: crypto.randomUUID(),
@@ -138,6 +133,7 @@ export const useDeckStore = create<DeckState>()(
           state.deck.participations = undefined;
           state.deck.liveAnalyzerImageUrl = undefined;
           state.deck.memo = '';
+          state.deck.limitBreakCounts = {};
           state.deck.updatedAt = new Date().toISOString();
         }
       }),
@@ -200,12 +196,9 @@ export const useDeckStore = create<DeckState>()(
           if (savedDeck) {
             const parsed = JSON.parse(savedDeck);
             
-            // マイグレーション: limitBreakCounts が存在しない場合は追加
+            // マイグレーション: limitBreakCounts が存在しない場合は空オブジェクトで初期化
             if (!parsed.limitBreakCounts) {
               parsed.limitBreakCounts = {};
-              parsed.slots.forEach((slot: DeckSlot) => {
-                parsed.limitBreakCounts[slot.slotId] = 14;
-              });
             }
             
             state.deck = parsed;
