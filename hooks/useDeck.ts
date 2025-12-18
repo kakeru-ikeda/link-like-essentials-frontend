@@ -17,6 +17,7 @@ export const useDeck = () => {
     setDeckType,
     setDeckName,
     setSong,
+    setDeckMemo,
     saveDeckToLocal,
     loadDeckFromLocal,
     initializeDeck,
@@ -133,6 +134,11 @@ export const useDeck = () => {
     saveDeckToLocal();
   };
 
+  const updateDeckMemo = (memo: string): void => {
+    setDeckMemo(memo);
+    saveDeckToLocal();
+  };
+
   const updateLimitBreakCount = (slotId: number, count: number): void => {
     setLimitBreakCount(slotId, count);
     saveDeckToLocal();
@@ -147,6 +153,7 @@ export const useDeck = () => {
     toggleAceCard,
     updateDeckType,
     updateDeckName,
+    updateDeckMemo,
     updateSong,
     updateLimitBreakCount,
     clearAllCards,

@@ -21,10 +21,13 @@ interface DeckState {
   setDeckType: (deckType: DeckType) => void;
   setDeckName: (name: string) => void;
   setSong: (song: Partial<Song>) => void;
+  setDeckMemo: (memo: string) => void;
   saveDeckToLocal: () => void;
   loadDeckFromLocal: () => void;
   initializeDeck: () => void;
 }
+
+const DECK_MEMO_TEMPLATE = '[1セク]\n\n[2セク]\n\n[3セク]\n\n[4セク]\n\n[5セク]\n\n';
 
 const createEmptyDeck = (deckType?: DeckType): Deck => {
   const mapping = getDeckSlotMapping(deckType);
@@ -47,6 +50,7 @@ const createEmptyDeck = (deckType?: DeckType): Deck => {
     aceSlotId: null,
     limitBreakCounts,
     deckType,
+    memo: DECK_MEMO_TEMPLATE,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
@@ -125,6 +129,7 @@ export const useDeckStore = create<DeckState>()(
     clearDeck: () =>
       set((state) => {
         if (state.deck) {
+          state.deck.name = '新しいデッキ';
           state.deck.slots.forEach((slot) => {
             slot.card = null;
           });
@@ -134,6 +139,7 @@ export const useDeckStore = create<DeckState>()(
           state.deck.centerCharacter = undefined;
           state.deck.participations = undefined;
           state.deck.liveAnalyzerImageUrl = undefined;
+          state.deck.memo = DECK_MEMO_TEMPLATE;
           state.deck.updatedAt = new Date().toISOString();
         }
       }),
@@ -170,6 +176,14 @@ export const useDeckStore = create<DeckState>()(
           state.deck.centerCharacter = song.centerCharacter;
           state.deck.participations = song.participations;
           state.deck.liveAnalyzerImageUrl = song.liveAnalyzerImageUrl;
+          state.deck.updatedAt = new Date().toISOString();
+        }
+      }),
+
+    setDeckMemo: (memo) =>
+      set((state) => {
+        if (state.deck) {
+          state.deck.memo = memo;
           state.deck.updatedAt = new Date().toISOString();
         }
       }),

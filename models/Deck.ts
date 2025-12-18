@@ -20,6 +20,7 @@ export interface Deck {
   centerCharacter?: string;
   participations?: string[];
   liveAnalyzerImageUrl?: string;
+  memo?: string;
   createdAt: string;
   updatedAt: string;
 }

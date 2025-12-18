@@ -7,6 +7,7 @@ import { SongSelect } from '@/components/deck/SongSelect';
 import { CenterCardDisplay } from '@/components/deck/CenterCardDisplay';
 import { LRCardsList } from '@/components/deck/LRCardsList';
 import { Checkbox } from '@/components/common/Checkbox';
+import { TextAreaWithModal } from '@/components/common/TextAreaWithModal';
 import { Song } from '@/models/Song';
 import { DeckType } from '@/models/enums';
 import { useDeck } from '@/hooks/useDeck';
@@ -18,7 +19,7 @@ interface DeckDashboardProps {
 }
 
 export const DeckDashboard: React.FC<DeckDashboardProps> = ({ showLimitBreak, onShowLimitBreakChange }) => {
-  const { deck, updateDeckType, updateDeckName, updateSong } = useDeck();
+  const { deck, updateDeckType, updateDeckName, updateDeckMemo, updateSong } = useDeck();
   const [selectedDeckType, setSelectedDeckType] = useState<DeckType | undefined>(deck?.deckType);
   const [isEditingName, setIsEditingName] = useState<boolean>(false);
   const [tempName, setTempName] = useState<string>(deck?.name || '新しいデッキ');
@@ -85,7 +86,7 @@ export const DeckDashboard: React.FC<DeckDashboardProps> = ({ showLimitBreak, on
   };
 
   return (
-    <div className="flex-1 flex flex-col gap-4 p-4 border-2 border-gray-300 rounded-lg">
+    <div className="flex-1 flex flex-col gap-4 p-4 border-2 border-gray-300 rounded-lg overflow-hidden">
       <div className="flex flex-col gap-2">
         {isEditingName ? (
           <input
@@ -126,36 +127,56 @@ export const DeckDashboard: React.FC<DeckDashboardProps> = ({ showLimitBreak, on
         />
       </div>
 
-      <div className="border-t border-gray-200 pt-3">
-        <Checkbox
-          checked={showLimitBreak}
-          onChange={onShowLimitBreakChange}
-          label="上限解放数を表示"
-        />
-      </div>
-
       {/* ライブアナライザ */}
-      <div className="border border-gray-200 rounded-lg p-2">
-        {deck?.liveAnalyzerImageUrl ? (
-          <img
-            src={deck.liveAnalyzerImageUrl}
-            alt="ライブアナライザ"
-            className="w-full h-auto rounded-lg border border-gray-300"
-          />
-        ) : (
-          <div className="flex items-center justify-center py-8 bg-gray-50 rounded-lg text-gray-400">
-            <div className="text-center">
-              <div className="text-sm">楽曲未設定</div>
-              <div className="text-xs mt-1">ライブアナライザが表示されます</div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          ライブアナライザ
+        </label>
+        <div className="border border-gray-200 rounded-lg p-2">
+          {deck?.liveAnalyzerImageUrl ? (
+            <img
+              src={deck.liveAnalyzerImageUrl}
+              alt="ライブアナライザ"
+              className="w-full h-auto rounded-lg border border-gray-300"
+            />
+          ) : (
+            <div className="flex items-center justify-center py-8 bg-gray-50 rounded-lg text-gray-400">
+              <div className="text-center">
+                <div className="text-sm">楽曲未設定</div>
+                <div className="text-xs mt-1">ライブアナライザが表示されます</div>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       {/* センターカードのスペシャルアピール */}
       <div className="border border-gray-200 rounded-lg p-2">
         <CenterCardDisplay centerCard={centerCard} />
         <LRCardsList lrCards={otherLRCards} />
+      </div>
+
+      {/* チャート */}
+      <div className="flex-1 flex flex-col min-h-0 border-t border-gray-200 pt-3">
+        <TextAreaWithModal
+          value={deck?.memo || ''}
+          onChange={updateDeckMemo}
+          label="チャート"
+          placeholder="チャートを入力..."
+          rows={3}
+          modalTitle="チャート"
+          modalRows={15}
+          className="flex-1"
+        />
+      </div>
+
+      {/* 上限解放表示切替 - 最下部に固定 */}
+      <div className="border-t border-gray-200 pt-3 mt-auto">
+        <Checkbox
+          checked={showLimitBreak}
+          onChange={onShowLimitBreakChange}
+          label="上限解放数を表示"
+        />
       </div>
     </div>
   );
