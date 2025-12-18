@@ -1,6 +1,5 @@
 'use client';
 
-import React, { useState } from 'react';
 import { DeckBuilder } from '@/components/deck/DeckBuilder';
 import { DeckDashboard } from '@/components/deck/DeckDashboard';
 import { DeckTabs } from '@/components/deck/DeckTabs';
