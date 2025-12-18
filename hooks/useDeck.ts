@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useDeckStore } from '@/store/deckStore';
 import { Card } from '@/models/Card';
+import { Song } from '@/models/Song';
 import { DeckType } from '@/models/enums';
 import { DeckService } from '@/services/deckService';
 
@@ -11,9 +12,12 @@ export const useDeck = () => {
     setCardToSlot,
     swapCardSlots,
     setAceSlotId,
-    clearAllSlots,
+    setLimitBreakCount,
+    clearDeck,
     setDeckType,
+    setDeckName,
     setSong,
+    setDeckMemo,
     saveDeckToLocal,
     loadDeckFromLocal,
     initializeDeck,
@@ -70,7 +74,7 @@ export const useDeck = () => {
   };
 
   const clearAllCards = (): void => {
-    clearAllSlots();
+    clearDeck();
     saveDeckToLocal();
   };
 
@@ -99,6 +103,11 @@ export const useDeck = () => {
   };
 
   const updateDeckType = (deckType: DeckType): boolean => {
+    // 同じデッキタイプの場合は何もしない
+    if (deck?.deckType === deckType) {
+      return true;
+    }
+
     // デッキにカードが編成されているかチェック
     if (DeckService.hasCards(deck)) {
       const confirmed = window.confirm(
@@ -115,8 +124,23 @@ export const useDeck = () => {
     return true;
   };
 
-  const updateSong = (songId: string, songName: string): void => {
-    setSong(songId, songName);
+  const updateSong = (song: Partial<Song>): void => {
+    setSong(song);
+    saveDeckToLocal();
+  };
+
+  const updateDeckName = (name: string): void => {
+    setDeckName(name);
+    saveDeckToLocal();
+  };
+
+  const updateDeckMemo = (memo: string): void => {
+    setDeckMemo(memo);
+    saveDeckToLocal();
+  };
+
+  const updateLimitBreakCount = (slotId: number, count: number): void => {
+    setLimitBreakCount(slotId, count);
     saveDeckToLocal();
   };
 
@@ -128,7 +152,10 @@ export const useDeck = () => {
     swapCards,
     toggleAceCard,
     updateDeckType,
+    updateDeckName,
+    updateDeckMemo,
     updateSong,
+    updateLimitBreakCount,
     clearAllCards,
     saveDeck,
     resetDeck,

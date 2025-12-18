@@ -14,6 +14,7 @@ interface DeckSlotProps {
   onRemoveCard?: (slotId: number) => void;
   onToggleAce?: (slotId: number) => void;
   onShowDetail?: (cardId: string) => void;
+  onLimitBreakChange?: (slotId: number, count: number) => void;
   isAce?: boolean;
   isMain?: boolean; // メインカードかサブカードかを判定
   onDragStart?: (slotId: number) => void;
@@ -21,6 +22,8 @@ interface DeckSlotProps {
   onDrop?: (slotId: number) => void;
   isDragging?: boolean;
   isDroppable?: boolean;
+  limitBreakCount?: number;
+  showLimitBreak?: boolean;
 }
 
 export const DeckSlot: React.FC<DeckSlotProps> = ({ 
@@ -29,6 +32,7 @@ export const DeckSlot: React.FC<DeckSlotProps> = ({
   onRemoveCard,
   onToggleAce,
   onShowDetail,
+  onLimitBreakChange,
   isAce = false,
   isMain = false,
   onDragStart,
@@ -36,6 +40,8 @@ export const DeckSlot: React.FC<DeckSlotProps> = ({
   onDrop,
   isDragging = false,
   isDroppable = false,
+  limitBreakCount = 14,
+  showLimitBreak = false,
 }) => {
   const [imageError, setImageError] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -63,6 +69,22 @@ export const DeckSlot: React.FC<DeckSlotProps> = ({
 
   const handleSlotClick = (): void => {
     onSlotClick(slot.slotId);
+  };
+
+  const handleLimitIncrease = (e: React.MouseEvent<HTMLButtonElement>): void => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (onLimitBreakChange && limitBreakCount < 14) {
+      onLimitBreakChange(slot.slotId, limitBreakCount + 1);
+    }
+  };
+
+  const handleLimitDecrease = (e: React.MouseEvent<HTMLButtonElement>): void => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (onLimitBreakChange && limitBreakCount > 1) {
+      onLimitBreakChange(slot.slotId, limitBreakCount - 1);
+    }
   };
 
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>): void => {
@@ -114,6 +136,71 @@ export const DeckSlot: React.FC<DeckSlotProps> = ({
     >
       {slot.card ? (
         <div className="w-full h-full relative">
+          {/* 上限解放数表示（カード中央に大きく表示） */}
+          {showLimitBreak && (
+            <div 
+              className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none"
+            >
+              <div className="relative">
+                {/* 数値表示（中央固定） */}
+                <div className={`${isMain ? 'text-8xl' : 'text-5xl'} font-black text-white drop-shadow-[0_4px_8px_rgba(0,0,0,0.9)] select-none tabular-nums`}>
+                  {limitBreakCount.toString().padStart(2, '0')}
+                </div>
+
+                {/* ホバー時のボタングループ */}
+                {isHovered && (
+                  <div className="absolute left-full top-1/2 -translate-y-1/2 flex flex-col gap-1 ml-2 pointer-events-auto">
+                    {/* 上ボタン */}
+                    <button
+                      type="button"
+                      onClick={handleLimitIncrease}
+                      disabled={limitBreakCount >= 14}
+                      className="bg-white/90 hover:bg-white disabled:bg-gray-400 disabled:cursor-not-allowed text-gray-800 rounded-full p-0.5 transition-colors shadow-lg"
+                      aria-label="上限解放数を増やす"
+                    >
+                      <svg
+                        className="w-3 h-3"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={3}
+                          d="M5 15l7-7 7 7"
+                        />
+                      </svg>
+                    </button>
+
+                    {/* 下ボタン */}
+                    <button
+                      type="button"
+                      onClick={handleLimitDecrease}
+                      disabled={limitBreakCount <= 1}
+                      className="bg-white/90 hover:bg-white disabled:bg-gray-400 disabled:cursor-not-allowed text-gray-800 rounded-full p-0.5 transition-colors shadow-lg"
+                      aria-label="上限解放数を減らす"
+                    >
+                      <svg
+                        className="w-3 h-3"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={3}
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* AP表示 */}
           {slot.card.detail?.skill?.ap && (
             <ApBadge 

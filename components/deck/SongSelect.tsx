@@ -2,6 +2,7 @@
 
 import React, { useEffect } from 'react';
 import { Dropdown, DropdownOption } from '@/components/common/Dropdown';
+import { Song } from '@/models/Song';
 import { DeckType } from '@/models/enums';
 import { useSongs } from '@/hooks/useSongs';
 import { Loading } from '@/components/common/Loading';
@@ -9,7 +10,7 @@ import { Loading } from '@/components/common/Loading';
 interface SongSelectProps {
   deckType?: DeckType;
   value?: string;
-  onChange: (songId: string, songName: string) => void;
+  onChange: (song: Partial<Song>) => void;
   disabled?: boolean;
   className?: string;
 }
@@ -37,7 +38,7 @@ export const SongSelect: React.FC<SongSelectProps> = ({
       // 選択された楽曲が現在のカテゴリーに存在しない場合はクリア
       const songExists = songs.some((song) => song.id === value);
       if (!songExists && songs.length > 0) {
-        onChange('', '');
+        onChange({});
       }
     }
   }, [deckType, songs, value, onChange]);
@@ -45,7 +46,13 @@ export const SongSelect: React.FC<SongSelectProps> = ({
   const handleChange = (songId: string): void => {
     const selectedSong = songs.find((song) => song.id === songId);
     if (selectedSong) {
-      onChange(selectedSong.id, selectedSong.songName);
+      onChange({
+        id: selectedSong.id,
+        songName: selectedSong.songName,
+        centerCharacter: selectedSong.centerCharacter,
+        participations: selectedSong.participations,
+        liveAnalyzerImageUrl: selectedSong.liveAnalyzerImageUrl,
+      });
     }
   };
 
@@ -53,7 +60,7 @@ export const SongSelect: React.FC<SongSelectProps> = ({
     value: song.id,
     label: song.songName,
     image: song.jacketImageUrl,
-    description: `${song.centerCharacter}（${song.singers}）`,
+    description: `${song.singers}（${song.centerCharacter}）`,
   }));
 
   if (loading) {

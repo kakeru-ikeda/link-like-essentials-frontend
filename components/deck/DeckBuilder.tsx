@@ -1,10 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useDeck } from '@/hooks/useDeck';
-import { DeckSlot } from '@/components/deck/DeckSlot';
+import { CharacterDeckGroup } from '@/components/deck/CharacterDeckGroup';
 import { getDeckSlotMapping, getDeckFrame } from '@/constants/deckConfig';
-import { getCharacterBackgroundColor } from '@/constants/characters';
 import { canPlaceCardInSlot } from '@/constants/deckRules';
 import { SideModal } from '@/components/common/SideModal';
 import { CardList } from '@/components/deck/CardList';
@@ -22,8 +21,12 @@ import type { Card } from '@/models/Card';
 import { filterCardsBySlot, getAssignedCardsForSlot } from '@/services/deckFilterService';
 import { filterAvailableCards } from '@/services/characterFilterService';
 
-export const DeckBuilder: React.FC = () => {
-  const { deck, removeCard, toggleAceCard, swapCards, addCard } = useDeck();
+interface DeckBuilderProps {
+  showLimitBreak?: boolean;
+}
+
+export const DeckBuilder: React.FC<DeckBuilderProps> = ({ showLimitBreak = false }) => {
+  const { deck, removeCard, toggleAceCard, swapCards, addCard, updateLimitBreakCount } = useDeck();
   const [draggingSlotId, setDraggingSlotId] = useState<number | null>(null);
 
   const sideModal = useSideModal();
@@ -37,21 +40,21 @@ export const DeckBuilder: React.FC = () => {
     setActiveFilter(filter);
   }, [filter, setActiveFilter]);
 
-  const handleDragStart = (slotId: number): void => {
+  const handleDragStart = useCallback((slotId: number): void => {
     const slot = deck?.slots.find((s) => s.slotId === slotId);
     if (slot?.card) {
       setDraggingSlotId(slotId);
     }
-  };
+  }, [deck?.slots]);
 
-  const handleDragEnd = (): void => setDraggingSlotId(null);
+  const handleDragEnd = useCallback((): void => setDraggingSlotId(null), []);
 
-  const handleDrop = (targetSlotId: number): void => {
+  const handleDrop = useCallback((targetSlotId: number): void => {
     if (draggingSlotId !== null && draggingSlotId !== targetSlotId) swapCards(draggingSlotId, targetSlotId);
     setDraggingSlotId(null);
-  };
+  }, [draggingSlotId, swapCards]);
 
-  const canDropToSlot = (targetSlotId: number): boolean => {
+  const canDropToSlot = useCallback((targetSlotId: number): boolean => {
     if (draggingSlotId === null || draggingSlotId === targetSlotId) { 
       return false;
     }
@@ -65,7 +68,7 @@ export const DeckBuilder: React.FC = () => {
       deck?.deckType
     );
     return result.allowed;
-  };
+  }, [draggingSlotId, deck?.slots, deck?.deckType]);
 
   const { currentSlotCard, currentCharacterName, currentSlotType } = React.useMemo(() => {
     if (sideModal.currentSlotId === null || !deck) {
@@ -108,14 +111,18 @@ export const DeckBuilder: React.FC = () => {
     return filterCardsBySlot(availableCards, sideModal.currentSlotId, deck?.deckType);
   }, [cards, currentSlotCard, assignedCardIds, sideModal.currentSlotId, deck?.deckType]);
 
-  const handleSlotClick = (slotId: number): void => {
+  const handleSlotClick = useCallback((slotId: number): void => {
     sideModal.openCardSearch(slotId);
     // キャラクター名を除外して初期化
     const { characterNames, ...filterWithoutCharacter } = filter;
     setFilter(filterWithoutCharacter);
-  };
+  }, [sideModal, filter, setFilter]);
 
-  const handleSelectCard = (card: Card): void => {
+  const handleShowDetail = useCallback((cardId: string): void => {
+    sideModal.openCardDetail(cardId);
+  }, [sideModal]);
+
+  const handleSelectCard = useCallback((card: Card): void => {
     if (sideModal.currentSlotId !== null) {
       const assignedSlot = deck?.slots.find((slot) => slot.card?.id === card.id && slot.slotId !== sideModal.currentSlotId);
       if (assignedSlot) {
@@ -131,26 +138,26 @@ export const DeckBuilder: React.FC = () => {
         }
       }
     }
-  };
+  }, [sideModal, deck?.slots, swapCards, addCard]);
 
-  const handleRemoveCurrentCard = (): void => {
+  const handleRemoveCurrentCard = useCallback((): void => {
     if (sideModal.currentSlotId !== null) {
       removeCard(sideModal.currentSlotId);
       sideModal.closeCardSearch();
     }
-  };
+  }, [sideModal, removeCard]);
 
-  const handleCloseModal = (): void => {
+  const handleCloseModal = useCallback((): void => {
     sideModal.closeCardSearch();
-  };
+  }, [sideModal]);
 
-  const handleApplyAndCloseFilter = (): void => { 
+  const handleApplyAndCloseFilter = useCallback((): void => { 
     sideModal.closeFilter();
-  };
+  }, [sideModal]);
 
-  const handleKeywordChange = (value: string): void => {
+  const handleKeywordChange = useCallback((value: string): void => {
     updateFilter({ keyword: value || undefined });
-  };
+  }, [updateFilter]);
 
   if (!deck) {
     return (
@@ -174,68 +181,29 @@ export const DeckBuilder: React.FC = () => {
   return (
     <>
       <div className="w-full max-w-4xl h-full flex items-center py-2">
-        <div className="w-full grid grid-cols-3 gap-2 sm:gap-3 md:gap-4 lg:gap-5 auto-rows-fr">{characterGroups.map(({ character, slots }) => {
-            const backgroundColor = getCharacterBackgroundColor(character, 0.25);
-            return (
-              <div key={character} className="flex flex-col h-full gap-1 sm:gap-1.5 md:gap-2 p-2 sm:p-3 rounded-lg backdrop-blur-sm" style={{ backgroundColor, boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06)' }}>
-                <div className="text-center flex-shrink-0"><h3 className="text-[10px] sm:text-xs font-bold text-gray-700">{character}</h3></div>
-                {slots[0] && (
-                  <DeckSlot
-                    slot={slots[0]}
-                    onSlotClick={handleSlotClick}
-                    onRemoveCard={removeCard}
-                    onToggleAce={toggleAceCard}
-                    onShowDetail={(id: string) => sideModal.openCardDetail(id)}
-                    isAce={deck.aceSlotId === slots[0].slotId}
-                    isMain={true}
-                    onDragStart={handleDragStart}
-                    onDragEnd={handleDragEnd}
-                    onDrop={handleDrop}
-                    isDragging={draggingSlotId === slots[0].slotId}
-                    isDroppable={draggingSlotId !== null && canDropToSlot(slots[0].slotId)}
-                  />
-                )}
-                <div className="flex gap-1 sm:gap-1.5 md:gap-2">
-                  {slots[1] && (
-                    <div className="flex-1 max-w-[55%]">
-                      <DeckSlot 
-                        slot={slots[1]} 
-                        onSlotClick={handleSlotClick} 
-                        onRemoveCard={removeCard} 
-                        onToggleAce={toggleAceCard} 
-                        onShowDetail={(id: string) => sideModal.openCardDetail(id)} 
-                        isAce={deck.aceSlotId === slots[1].slotId} 
-                        isMain={false} 
-                        onDragStart={handleDragStart} 
-                        onDragEnd={handleDragEnd} 
-                        onDrop={handleDrop} 
-                        isDragging={draggingSlotId === slots[1].slotId} 
-                        isDroppable={draggingSlotId !== null && canDropToSlot(slots[1].slotId)} 
-                      />
-                    </div>
-                  )}
-                  {slots[2] && (
-                    <div className="flex-1 max-w-[48%]">
-                      <DeckSlot 
-                        slot={slots[2]} 
-                        onSlotClick={handleSlotClick} 
-                        onRemoveCard={removeCard} 
-                        onToggleAce={toggleAceCard} 
-                        onShowDetail={(id: string) => sideModal.openCardDetail(id)} 
-                        isAce={deck.aceSlotId === slots[2].slotId} 
-                        isMain={false} 
-                        onDragStart={handleDragStart} 
-                        onDragEnd={handleDragEnd} 
-                        onDrop={handleDrop} 
-                        isDragging={draggingSlotId === slots[2].slotId} 
-                        isDroppable={draggingSlotId !== null && canDropToSlot(slots[2].slotId)} 
-                      />
-                    </div>
-                  )}
-                </div>
-              </div>
-            );
-          })}
+        <div className="w-full grid grid-cols-3 gap-2 sm:gap-3 md:gap-4 lg:gap-5 auto-rows-fr">
+          {characterGroups.map(({ character, slots }) => (
+            <CharacterDeckGroup
+              key={character}
+              character={character}
+              slots={slots}
+              aceSlotId={deck.aceSlotId}
+              draggingSlotId={draggingSlotId}
+              isCenter={deck?.centerCharacter === character}
+              isSinger={deck?.participations?.includes(character) || false}
+              showLimitBreak={showLimitBreak}
+              limitBreakCounts={deck.limitBreakCounts}
+              onSlotClick={handleSlotClick}
+              onRemoveCard={removeCard}
+              onToggleAce={toggleAceCard}
+              onShowDetail={handleShowDetail}
+              onLimitBreakChange={updateLimitBreakCount}
+              onDragStart={handleDragStart}
+              onDragEnd={handleDragEnd}
+              onDrop={handleDrop}
+              canDropToSlot={canDropToSlot}
+            />
+          ))}
         </div>
       </div>
 

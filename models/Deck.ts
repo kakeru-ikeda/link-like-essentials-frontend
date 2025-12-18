@@ -13,9 +13,14 @@ export interface Deck {
   name: string;
   slots: DeckSlot[];
   aceSlotId: number | null;
+  limitBreakCounts: { [cardId: string]: number };
   deckType?: DeckType;
   songId?: string;
   songName?: string;
+  centerCharacter?: string;
+  participations?: string[];
+  liveAnalyzerImageUrl?: string;
+  memo?: string;
   createdAt: string;
   updatedAt: string;
 }

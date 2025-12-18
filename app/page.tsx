@@ -1,5 +1,5 @@
 'use client';
-
+import React, { useState } from 'react';
 import { DeckBuilder } from '@/components/deck/DeckBuilder';
 import { DeckDashboard } from '@/components/deck/DeckDashboard';
 import { DeckTabs } from '@/components/deck/DeckTabs';
@@ -8,6 +8,7 @@ import { useDeck } from '@/hooks/useDeck';
 
 export default function Home() {
   const { clearAllCards, saveDeck } = useDeck();
+  const [showLimitBreak, setShowLimitBreak] = useState<boolean>(false);
 
   return (
     <div className="h-screen flex flex-col overflow-hidden">
@@ -28,7 +29,10 @@ export default function Home() {
           {/* 右側: 今後使用するエリア + ボタン */}
           <div className="flex-1 flex flex-col gap-4 pt-4">
             {/* DeckDashboard */}
-            <DeckDashboard />
+            <DeckDashboard 
+              showLimitBreak={showLimitBreak}
+              onShowLimitBreakChange={setShowLimitBreak}
+            />
             
             {/* ボタン */}
             <div className="flex flex-col gap-2">

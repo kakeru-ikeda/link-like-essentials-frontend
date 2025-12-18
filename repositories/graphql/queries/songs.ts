@@ -12,6 +12,7 @@ const SONG_FIELDS = gql`
     attribute
     centerCharacter
     singers
+    participations
     jacketImageUrl
     liveAnalyzerImageUrl
     isLocked

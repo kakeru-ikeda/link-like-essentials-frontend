@@ -25,6 +25,7 @@ export interface Song {
   attribute: SongAttribute;
   centerCharacter: CharacterName;
   singers: string[];
+  participations: string[];
   jacketImageUrl?: string;
   liveAnalyzerImageUrl?: string;
   isLocked: boolean;
