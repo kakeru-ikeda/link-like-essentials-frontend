@@ -23,7 +23,9 @@ export default function Home() {
         <div className="h-full flex gap-4 px-4 py-2 min-h-0">{" "}
           {/* 左側: デッキビルダー */}
           <div className="w-3/5 min-h-0 flex items-start">
-            <DeckBuilder />
+            <DeckBuilder
+              showLimitBreak={showLimitBreak}
+            />
           </div>
 
           {/* 右側: 今後使用するエリア + ボタン */}
