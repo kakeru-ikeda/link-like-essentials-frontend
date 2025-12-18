@@ -6,9 +6,9 @@ import React from 'react';
 interface DeckTabsProps {
   tabs: Pick<Deck, 'id' | 'name'>[];
   activeTabId: string;
-  onChangeTab: (tabId: string) => void;
+  onChangeTab: (id: string) => void;
   onAddTab: () => void;
-  onDeleteTab: (tabId: string) => void;
+  onDeleteTab: (id: string) => void;
   children: React.ReactNode;
 }
 
