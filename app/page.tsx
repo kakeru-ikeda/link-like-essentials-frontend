@@ -8,16 +8,17 @@ import { Button } from '@/components/common/Button';
 import { useDeck } from '@/hooks/useDeck';
 
 export default function Home() {
-  const { clearAllCards, saveDeck } = useDeck()
+  const { clearAllCards, saveDeck } = useDeck();
 
   return (
     <div className="h-screen flex flex-col overflow-hidden">
+      {/* TODO: DeckTabsにprops渡す */}
       <DeckTabs
         tabs={[]}
         activeTabId={''}
-        onTabChange={() => {}}
-        onTabadd={() => {}}
-        onTabDelete={() => {}}
+        onChangeTab={() => {}}
+        onAddTab={() => {}}
+        onDeleteTab={() => {}}
       >
         <div className="h-full flex gap-4 px-4 py-2 min-h-0">{" "}
           {/* 左側: デッキビルダー */}
