@@ -13,7 +13,7 @@ export default function Home() {
   return (
     <div className="h-screen flex flex-col overflow-hidden">
       <DeckTabs>
-        <div className="h-full flex gap-4 px-4 py-2 min-h-0">{" "}
+        <div className="h-full flex gap-4 px-4 py-2 min-h-0">
           {/* 左側: デッキビルダー */}
           <div className="w-3/5 min-h-0 flex items-start">
             <DeckBuilder />
