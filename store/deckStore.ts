@@ -16,10 +16,12 @@ interface DeckState {
   setCardToSlot: (slotId: number, card: Card | null) => void;
   swapCardSlots: (slotId1: number, slotId2: number, removedSlots: number[]) => void;
   setAceSlotId: (slotId: number | null) => void;
+  setLimitBreakCount: (slotId: number, count: number) => void;
   clearDeck: () => void;
   setDeckType: (deckType: DeckType) => void;
   setDeckName: (name: string) => void;
   setSong: (song: Partial<Song>) => void;
+  setDeckMemo: (memo: string) => void;
   saveDeckToLocal: () => void;
   loadDeckFromLocal: () => void;
   initializeDeck: () => void;
@@ -32,13 +34,16 @@ const createEmptyDeck = (deckType?: DeckType): Deck => {
     characterName: m.characterName,
     card: null,
   }));
+  const limitBreakCounts: { [cardId: string]: number } = {};
 
   return {
     id: crypto.randomUUID(),
     name: '新しいデッキ',
     slots,
     aceSlotId: null,
+    limitBreakCounts,
     deckType,
+    memo: '',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
@@ -101,9 +106,23 @@ export const useDeckStore = create<DeckState>()(
         }
       }),
 
+    setLimitBreakCount: (slotId, count) =>
+      set((state) => {
+        if (state.deck) {
+          const slot = state.deck.slots.find((s) => s.slotId === slotId);
+          if (slot?.card) {
+            // 1-14の範囲内に制限
+            const validatedCount = Math.max(1, Math.min(14, count));
+            state.deck.limitBreakCounts[slot.card.id] = validatedCount;
+            state.deck.updatedAt = new Date().toISOString();
+          }
+        }
+      }),
+
     clearDeck: () =>
       set((state) => {
         if (state.deck) {
+          state.deck.name = '新しいデッキ';
           state.deck.slots.forEach((slot) => {
             slot.card = null;
           });
@@ -113,6 +132,8 @@ export const useDeckStore = create<DeckState>()(
           state.deck.centerCharacter = undefined;
           state.deck.participations = undefined;
           state.deck.liveAnalyzerImageUrl = undefined;
+          state.deck.memo = '';
+          state.deck.limitBreakCounts = {};
           state.deck.updatedAt = new Date().toISOString();
         }
       }),
@@ -153,6 +174,14 @@ export const useDeckStore = create<DeckState>()(
         }
       }),
 
+    setDeckMemo: (memo) =>
+      set((state) => {
+        if (state.deck) {
+          state.deck.memo = memo;
+          state.deck.updatedAt = new Date().toISOString();
+        }
+      }),
+
     saveDeckToLocal: () =>
       set((state) => {
         if (state.deck && typeof window !== 'undefined') {
@@ -166,6 +195,12 @@ export const useDeckStore = create<DeckState>()(
           const savedDeck = localStorage.getItem('deck');
           if (savedDeck) {
             const parsed = JSON.parse(savedDeck);
+            
+            // マイグレーション: limitBreakCounts が存在しない場合は空オブジェクトで初期化
+            if (!parsed.limitBreakCounts) {
+              parsed.limitBreakCounts = {};
+            }
+            
             state.deck = parsed;
           } else {
             state.deck = createEmptyDeck();

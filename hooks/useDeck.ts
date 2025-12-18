@@ -12,10 +12,12 @@ export const useDeck = () => {
     setCardToSlot,
     swapCardSlots,
     setAceSlotId,
+    setLimitBreakCount,
     clearDeck,
     setDeckType,
     setDeckName,
     setSong,
+    setDeckMemo,
     saveDeckToLocal,
     loadDeckFromLocal,
     initializeDeck,
@@ -101,6 +103,11 @@ export const useDeck = () => {
   };
 
   const updateDeckType = (deckType: DeckType): boolean => {
+    // 同じデッキタイプの場合は何もしない
+    if (deck?.deckType === deckType) {
+      return true;
+    }
+
     // デッキにカードが編成されているかチェック
     if (DeckService.hasCards(deck)) {
       const confirmed = window.confirm(
@@ -127,6 +134,16 @@ export const useDeck = () => {
     saveDeckToLocal();
   };
 
+  const updateDeckMemo = (memo: string): void => {
+    setDeckMemo(memo);
+    saveDeckToLocal();
+  };
+
+  const updateLimitBreakCount = (slotId: number, count: number): void => {
+    setLimitBreakCount(slotId, count);
+    saveDeckToLocal();
+  };
+
   return {
     deck,
     setDeck,
@@ -136,7 +153,9 @@ export const useDeck = () => {
     toggleAceCard,
     updateDeckType,
     updateDeckName,
+    updateDeckMemo,
     updateSong,
+    updateLimitBreakCount,
     clearAllCards,
     saveDeck,
     resetDeck,

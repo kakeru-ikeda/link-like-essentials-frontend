@@ -36,6 +36,7 @@ export interface CardDetail {
   acquisitionMethod: string;
   awakeBeforeStorageUrl?: string;
   awakeAfterStorageUrl?: string;
+  limitBreakCount?: number;
   stats: Stats;
   specialAppeal?: Skill;
   skill?: Skill;

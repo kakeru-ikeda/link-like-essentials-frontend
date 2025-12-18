@@ -21,8 +21,12 @@ import type { Card } from '@/models/Card';
 import { filterCardsBySlot, getAssignedCardsForSlot } from '@/services/deckFilterService';
 import { filterAvailableCards } from '@/services/characterFilterService';
 
-export const DeckBuilder: React.FC = () => {
-  const { deck, removeCard, toggleAceCard, swapCards, addCard } = useDeck();
+interface DeckBuilderProps {
+  showLimitBreak?: boolean;
+}
+
+export const DeckBuilder: React.FC<DeckBuilderProps> = ({ showLimitBreak = false }) => {
+  const { deck, removeCard, toggleAceCard, swapCards, addCard, updateLimitBreakCount } = useDeck();
   const [draggingSlotId, setDraggingSlotId] = useState<number | null>(null);
 
   const sideModal = useSideModal();
@@ -187,10 +191,13 @@ export const DeckBuilder: React.FC = () => {
               draggingSlotId={draggingSlotId}
               isCenter={deck?.centerCharacter === character}
               isSinger={deck?.participations?.includes(character) || false}
+              showLimitBreak={showLimitBreak}
+              limitBreakCounts={deck.limitBreakCounts}
               onSlotClick={handleSlotClick}
               onRemoveCard={removeCard}
               onToggleAce={toggleAceCard}
               onShowDetail={handleShowDetail}
+              onLimitBreakChange={updateLimitBreakCount}
               onDragStart={handleDragStart}
               onDragEnd={handleDragEnd}
               onDrop={handleDrop}
