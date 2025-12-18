@@ -27,8 +27,6 @@ interface DeckState {
   initializeDeck: () => void;
 }
 
-const DECK_MEMO_TEMPLATE = '[1セク]\n\n[2セク]\n\n[3セク]\n\n[4セク]\n\n[5セク]\n\n';
-
 const createEmptyDeck = (deckType?: DeckType): Deck => {
   const mapping = getDeckSlotMapping(deckType);
   const slots: DeckSlot[] = mapping.map((m) => ({
@@ -50,7 +48,7 @@ const createEmptyDeck = (deckType?: DeckType): Deck => {
     aceSlotId: null,
     limitBreakCounts,
     deckType,
-    memo: DECK_MEMO_TEMPLATE,
+    memo: '',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
@@ -139,7 +137,7 @@ export const useDeckStore = create<DeckState>()(
           state.deck.centerCharacter = undefined;
           state.deck.participations = undefined;
           state.deck.liveAnalyzerImageUrl = undefined;
-          state.deck.memo = DECK_MEMO_TEMPLATE;
+          state.deck.memo = '';
           state.deck.updatedAt = new Date().toISOString();
         }
       }),
