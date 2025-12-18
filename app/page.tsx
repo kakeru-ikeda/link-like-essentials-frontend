@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { DeckBuilder } from '@/components/deck/DeckBuilder';
 import { DeckDashboard } from '@/components/deck/DeckDashboard';
 import { DeckTabs } from '@/components/deck/DeckTabs';
@@ -8,12 +8,18 @@ import { Button } from '@/components/common/Button';
 import { useDeck } from '@/hooks/useDeck';
 
 export default function Home() {
-  const { clearAllCards, saveDeck } = useDeck();
+  const { clearAllCards, saveDeck } = useDeck()
 
   return (
     <div className="h-screen flex flex-col overflow-hidden">
-      <DeckTabs>
-        <div className="h-full flex gap-4 px-4 py-2 min-h-0">
+      <DeckTabs
+        tabs={[]}
+        activeTabId={''}
+        onTabChange={() => {}}
+        onTabadd={() => {}}
+        onTabDelete={() => {}}
+      >
+        <div className="h-full flex gap-4 px-4 py-2 min-h-0">{" "}
           {/* 左側: デッキビルダー */}
           <div className="w-3/5 min-h-0 flex items-start">
             <DeckBuilder />
