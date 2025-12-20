@@ -5,22 +5,58 @@ import { DeckType } from './enums';
 export interface DeckSlot {
   slotId: number;
   characterName: CharacterName;
-  card: Card | null;
+  cardId: string | null;
+  limitBreak?: number;
+  card?: Card | null; // フロントエンド内部で使用（クラウド送信時は除外）
 }
+
+// クラウド送信用のDeckSlot型
+export type DeckSlotForCloud = Pick<DeckSlot, 'slotId' | 'cardId' | 'limitBreak'>;
 
 export interface Deck {
   id: string;
+  userId?: string;                   // デッキ作成者のAuthUID（クラウド保存時に追加）
+  userName?: string;                 // 作成者の表示名（将来的に実装）
   name: string;
   slots: DeckSlot[];
   aceSlotId: number | null;
-  limitBreakCounts: { [cardId: string]: number };
   deckType?: DeckType;
   songId?: string;
-  songName?: string;
-  centerCharacter?: string;
-  participations?: string[];
-  liveAnalyzerImageUrl?: string;
+  songName?: string;                 // フロントエンド内部で使用（songIdから復元、送信不要）
+  centerCharacter?: string;          // フロントエンド内部で使用（songIdから復元、送信不要）
+  participations?: string[];         // フロントエンド内部で使用（songIdから復元、送信不要）
+  liveAnalyzerImageUrl?: string;     // フロントエンド内部で使用（songIdから復元、送信不要）
   memo?: string;
+  tags?: string[];                   // 検索用タグ（サーバーサイドで自動生成）
+  viewCount?: number;                // 閲覧数（クラウド保存時のみ）
+  likeCount?: number;                // いいね数（将来的に実装）
   createdAt: string;
   updatedAt: string;
 }
+
+// クラウド送信用のDeck型（必要最小限のフィールドのみ）
+export type DeckForCloud = Pick<Deck, 
+  | 'id'
+  | 'name' 
+  | 'aceSlotId'
+  | 'deckType'
+  | 'songId'
+  | 'memo'
+  | 'createdAt'
+  | 'updatedAt'
+  | 'userId'
+> & {
+  slots: DeckSlotForCloud[];
+};
+
+// クラウド更新用のDeck型（Partial）
+export type DeckForCloudUpdate = Partial<Pick<Deck,
+  | 'name'
+  | 'aceSlotId'
+  | 'deckType'
+  | 'songId'
+  | 'memo'
+  | 'updatedAt'
+>> & {
+  slots?: DeckSlotForCloud[];
+};

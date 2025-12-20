@@ -5,6 +5,7 @@ import { Card } from '@/models/Card';
 import { Song } from '@/models/Song';
 import { DeckType } from '@/models/enums';
 import { getDeckSlotMapping } from '@/constants/deckConfig';
+import { deckCloudService } from '@/services/deckCloudService';
 
 /**
  * デッキストアの状態管理インターフェース
@@ -25,6 +26,13 @@ interface DeckState {
   saveDeckToLocal: () => void;
   loadDeckFromLocal: () => void;
   initializeDeck: () => void;
+  
+  // クラウド保存関連
+  saveToCloud: () => Promise<void>;
+  loadFromCloud: (deckId: string) => Promise<void>;
+  isSaving: boolean;
+  isLoading: boolean;
+  cloudError: string | null;
 }
 
 const createEmptyDeck = (deckType?: DeckType): Deck => {
@@ -32,16 +40,14 @@ const createEmptyDeck = (deckType?: DeckType): Deck => {
   const slots: DeckSlot[] = mapping.map((m) => ({
     slotId: m.slotId,
     characterName: m.characterName,
-    card: null,
+    cardId: null,
   }));
-  const limitBreakCounts: { [cardId: string]: number } = {};
 
   return {
     id: crypto.randomUUID(),
     name: '新しいデッキ',
     slots,
     aceSlotId: null,
-    limitBreakCounts,
     deckType,
     memo: '',
     createdAt: new Date().toISOString(),
@@ -50,7 +56,7 @@ const createEmptyDeck = (deckType?: DeckType): Deck => {
 };
 
 export const useDeckStore = create<DeckState>()(
-  immer((set) => ({
+  immer((set, get) => ({
     deck: null,
 
     setDeck: (deck) =>
@@ -64,6 +70,8 @@ export const useDeckStore = create<DeckState>()(
           const slot = state.deck.slots.find((s) => s.slotId === slotId);
           if (slot) {
             slot.card = card;
+            slot.cardId = card?.id ?? null;
+            slot.limitBreak = card ? (slot.limitBreak ?? 14) : undefined;
             state.deck.updatedAt = new Date().toISOString();
           }
         }
@@ -76,16 +84,26 @@ export const useDeckStore = create<DeckState>()(
           const slot2 = state.deck.slots.find((s) => s.slotId === slotId2);
           
           if (slot1 && slot2) {
-            // スワップ実行
+            // スワップ実行（card, cardId, limitBreakを全てスワップ）
             const tempCard = slot1.card;
+            const tempCardId = slot1.cardId;
+            const tempLimitBreak = slot1.limitBreak;
+            
             slot1.card = slot2.card;
+            slot1.cardId = slot2.cardId;
+            slot1.limitBreak = slot2.limitBreak;
+            
             slot2.card = tempCard;
+            slot2.cardId = tempCardId;
+            slot2.limitBreak = tempLimitBreak;
 
             // 制約違反のカードを剥がす
             removedSlots.forEach((slotId) => {
               const slot = state.deck!.slots.find((s) => s.slotId === slotId);
               if (slot) {
                 slot.card = null;
+                slot.cardId = null;
+                slot.limitBreak = undefined;
               }
               // エースカードだった場合は解除
               if (state.deck!.aceSlotId === slotId) {
@@ -113,7 +131,7 @@ export const useDeckStore = create<DeckState>()(
           if (slot?.card) {
             // 1-14の範囲内に制限
             const validatedCount = Math.max(1, Math.min(14, count));
-            state.deck.limitBreakCounts[slot.card.id] = validatedCount;
+            slot.limitBreak = validatedCount;
             state.deck.updatedAt = new Date().toISOString();
           }
         }
@@ -125,6 +143,8 @@ export const useDeckStore = create<DeckState>()(
           state.deck.name = '新しいデッキ';
           state.deck.slots.forEach((slot) => {
             slot.card = null;
+            slot.cardId = null;
+            slot.limitBreak = undefined;
           });
           state.deck.aceSlotId = null;
           state.deck.songId = undefined;
@@ -133,7 +153,6 @@ export const useDeckStore = create<DeckState>()(
           state.deck.participations = undefined;
           state.deck.liveAnalyzerImageUrl = undefined;
           state.deck.memo = '';
-          state.deck.limitBreakCounts = {};
           state.deck.updatedAt = new Date().toISOString();
         }
       }),
@@ -194,14 +213,7 @@ export const useDeckStore = create<DeckState>()(
         if (typeof window !== 'undefined') {
           const savedDeck = localStorage.getItem('deck');
           if (savedDeck) {
-            const parsed = JSON.parse(savedDeck);
-            
-            // マイグレーション: limitBreakCounts が存在しない場合は空オブジェクトで初期化
-            if (!parsed.limitBreakCounts) {
-              parsed.limitBreakCounts = {};
-            }
-            
-            state.deck = parsed;
+            state.deck = JSON.parse(savedDeck);
           } else {
             state.deck = createEmptyDeck();
           }
@@ -213,5 +225,57 @@ export const useDeckStore = create<DeckState>()(
         const currentDeckType = state.deck?.deckType;
         state.deck = createEmptyDeck(currentDeckType);
       }),
+
+    // クラウド保存関連
+    isSaving: false,
+    isLoading: false,
+    cloudError: null,
+
+    saveToCloud: async () => {
+      const { deck } = get();
+      if (!deck) return;
+
+      set((state) => {
+        state.isSaving = true;
+        state.cloudError = null;
+      });
+
+      try {
+        const savedDeck = await deckCloudService.saveDeckToCloud(deck);
+        set((state) => {
+          state.deck = savedDeck;
+          state.isSaving = false;
+        });
+      } catch (error) {
+        set((state) => {
+          state.isSaving = false;
+          state.cloudError =
+            error instanceof Error ? error.message : '保存に失敗しました';
+        });
+        throw error;
+      }
+    },
+
+    loadFromCloud: async (deckId: string) => {
+      set((state) => {
+        state.isLoading = true;
+        state.cloudError = null;
+      });
+
+      try {
+        const loadedDeck = await deckCloudService.loadDeckFromCloud(deckId);
+        set((state) => {
+          state.deck = loadedDeck;
+          state.isLoading = false;
+        });
+      } catch (error) {
+        set((state) => {
+          state.isLoading = false;
+          state.cloudError =
+            error instanceof Error ? error.message : '読み込みに失敗しました';
+        });
+        throw error;
+      }
+    },
   }))
 );
