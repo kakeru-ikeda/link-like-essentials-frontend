@@ -88,8 +88,6 @@ export const deckRepository = {
       userId: user?.uid,
     };
 
-    console.log('送信するデッキデータ:', deckForCloud);
-
     const response = await fetch(`${FUNCTIONS_BASE_URL}/decks`, {
       method: 'POST',
       headers: {

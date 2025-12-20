@@ -14,12 +14,9 @@ export const deckCloudService = {
     // 既にuserIdが設定されていれば更新、なければ新規作成
     if (deck.userId) {
       // 更新
-      console.log('Updating deck in cloud:', deck.id);
-      
       return await deckRepository.updateDeck(deck.id, deck);
     } else {
       // 新規作成
-      console.log('Creating new deck in cloud');
       return await deckRepository.createDeck(deck);
     }
   },
