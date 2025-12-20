@@ -192,7 +192,6 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({ showLimitBreak = false
               isCenter={deck?.centerCharacter === character}
               isSinger={deck?.participations?.includes(character) || false}
               showLimitBreak={showLimitBreak}
-              limitBreakCounts={deck.limitBreakCounts}
               onSlotClick={handleSlotClick}
               onRemoveCard={removeCard}
               onToggleAce={toggleAceCard}
