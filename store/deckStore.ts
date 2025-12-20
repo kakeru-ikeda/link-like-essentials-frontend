@@ -41,7 +41,6 @@ const createEmptyDeck = (deckType?: DeckType): Deck => {
     slotId: m.slotId,
     characterName: m.characterName,
     cardId: null,
-    card: null,
   }));
 
   return {

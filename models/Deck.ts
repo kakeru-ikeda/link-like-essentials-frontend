@@ -10,6 +10,9 @@ export interface DeckSlot {
   card?: Card | null; // フロントエンド内部で使用（クラウド送信時は除外）
 }
 
+// クラウド送信用のDeckSlot型
+export type DeckSlotForCloud = Pick<DeckSlot, 'slotId' | 'cardId' | 'limitBreak'>;
+
 export interface Deck {
   id: string;
   userId?: string;                   // デッキ作成者のAuthUID（クラウド保存時に追加）
@@ -30,3 +33,30 @@ export interface Deck {
   createdAt: string;
   updatedAt: string;
 }
+
+// クラウド送信用のDeck型（必要最小限のフィールドのみ）
+export type DeckForCloud = Pick<Deck, 
+  | 'id'
+  | 'name' 
+  | 'aceSlotId'
+  | 'deckType'
+  | 'songId'
+  | 'memo'
+  | 'createdAt'
+  | 'updatedAt'
+  | 'userId'
+> & {
+  slots: DeckSlotForCloud[];
+};
+
+// クラウド更新用のDeck型（Partial）
+export type DeckForCloudUpdate = Partial<Pick<Deck,
+  | 'name'
+  | 'aceSlotId'
+  | 'deckType'
+  | 'songId'
+  | 'memo'
+  | 'updatedAt'
+>> & {
+  slots?: DeckSlotForCloud[];
+};

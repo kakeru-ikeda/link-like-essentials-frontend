@@ -1,4 +1,4 @@
-import { Deck } from '@/models/Deck';
+import { Deck, DeckForCloud, DeckForCloudUpdate } from '@/models/Deck';
 import { auth } from '@/repositories/firebase/config';
 
 const FUNCTIONS_BASE_URL =
@@ -66,27 +66,8 @@ export const deckRepository = {
     return data.deck;
   },
 
-  async createDeck(deck: Deck): Promise<Deck> {
+  async createDeck(deckForCloud: DeckForCloud): Promise<Deck> {
     const token = await getAuthToken();
-    const user = auth.currentUser;
-
-    // クラウド送信用に必要最小限のデータのみを抽出
-    const deckForCloud = {
-      id: deck.id,
-      name: deck.name,
-      slots: deck.slots.map(slot => ({
-        slotId: slot.slotId,
-        cardId: slot.cardId,
-        ...(slot.limitBreak && { limitBreak: slot.limitBreak }),
-      })),
-      aceSlotId: deck.aceSlotId,
-      deckType: deck.deckType,
-      songId: deck.songId,
-      memo: deck.memo,
-      createdAt: deck.createdAt,
-      updatedAt: deck.updatedAt,
-      userId: user?.uid,
-    };
 
     const response = await fetch(`${FUNCTIONS_BASE_URL}/decks`, {
       method: 'POST',
@@ -107,28 +88,8 @@ export const deckRepository = {
     return data.deck;
   },
 
-  async updateDeck(deckId: string, deck: Partial<Deck>): Promise<Deck> {
+  async updateDeck(deckId: string, deckForCloud: DeckForCloudUpdate): Promise<Deck> {
     const token = await getAuthToken();
-    
-    // クラウド送信用に必要最小限のデータのみを抽出
-    const deckForCloud: Record<string, any> = {};
-    
-    // 必要なフィールドのみをコピー
-    if (deck.name !== undefined) deckForCloud.name = deck.name;
-    if (deck.aceSlotId !== undefined) deckForCloud.aceSlotId = deck.aceSlotId;
-    if (deck.deckType !== undefined) deckForCloud.deckType = deck.deckType;
-    if (deck.songId !== undefined) deckForCloud.songId = deck.songId;
-    if (deck.memo !== undefined) deckForCloud.memo = deck.memo;
-    if (deck.updatedAt !== undefined) deckForCloud.updatedAt = deck.updatedAt;
-    
-    // slotsは特別処理
-    if (deck.slots) {
-      deckForCloud.slots = deck.slots.map(slot => ({
-        slotId: slot.slotId,
-        cardId: slot.cardId,
-        ...(slot.limitBreak && { limitBreak: slot.limitBreak }),
-      }));
-    }
     
     const response = await fetch(`${FUNCTIONS_BASE_URL}/decks/${deckId}`, {
       method: 'PUT',
