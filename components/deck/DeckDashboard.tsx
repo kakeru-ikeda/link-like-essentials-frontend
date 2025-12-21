@@ -12,6 +12,11 @@ import { Song } from '@/models/Song';
 import { DeckType } from '@/models/enums';
 import { useDeck } from '@/hooks/useDeck';
 import { getCenterCard, getOtherLRCards } from '@/services/deckAnalysisService';
+import { LiveGrandPrixSelect } from './LiveGrandPrixSelect';
+import { LiveGrandPrixStageSelect } from './LiveGrandPrixStageSelect';
+import { useLiveGrandPrixById } from '@/hooks/useLiveGrandPrix';
+import { LiveGrandPrix, LiveGrandPrixDetail } from '@/models/LiveGrandPrix';
+import { ExpansionPanel } from '@/components/common/ExpansionPanel';
 
 interface DeckDashboardProps {
   showLimitBreak: boolean;
@@ -19,8 +24,23 @@ interface DeckDashboardProps {
 }
 
 export const DeckDashboard: React.FC<DeckDashboardProps> = ({ showLimitBreak, onShowLimitBreakChange }) => {
-  const { deck, updateDeckType, updateDeckName, updateDeckMemo, updateSong } = useDeck();
+  const { 
+    deck, 
+    updateDeckType, 
+    updateDeckName, 
+    updateDeckMemo, 
+    updateSong,
+    updateLiveGrandPrix,
+    updateLiveGrandPrixStageWithConfirmation
+  } = useDeck();
+  
   const [selectedDeckType, setSelectedDeckType] = useState<DeckType | undefined>(deck?.deckType);
+
+  // ライブグランプリの詳細を取得（選択されている場合のみ）
+  const { liveGrandPrix, loading: lgpLoading } = useLiveGrandPrixById(
+    deck?.liveGrandPrixId || '',
+    !deck?.liveGrandPrixId
+  );
 
   // センターカードを取得（ビジネスロジックはserviceに委譲）
   const centerCard = React.useMemo(() => getCenterCard(deck), [deck]);
@@ -46,12 +66,52 @@ export const DeckDashboard: React.FC<DeckDashboardProps> = ({ showLimitBreak, on
     updateSong(song);
   };
 
+  const handleLiveGrandPrixChange = (event: Partial<LiveGrandPrix>): void => {
+    if (event.id && event.eventName) {
+      updateLiveGrandPrix(event.id, event.eventName);
+    } else {
+      // クリア時
+      updateLiveGrandPrix('', '');
+    }
+  };
+
+  const handleLiveGrandPrixStageChange = (detail: LiveGrandPrixDetail): void => {
+    if (detail.id && detail.stageName) {
+      // ステージに関連する楽曲情報を自動設定
+      // GraphQLレスポンスではcategoryフィールドとして来る
+      const songData = detail.song as any;
+      const deckType = songData?.category || songData?.deckType;
+      
+      const song = detail.song ? {
+        id: detail.song.id,
+        songName: detail.song.songName,
+        centerCharacter: detail.song.centerCharacter,
+        participations: detail.song.participations,
+        liveAnalyzerImageUrl: detail.song.liveAnalyzerImageUrl,
+        deckType: deckType,
+      } : undefined;
+      
+      // 確認付きで更新
+      const success = updateLiveGrandPrixStageWithConfirmation(detail.id, detail.stageName, song);
+      
+      // デッキタイプも自動更新（確認がOKの場合のみ）
+      if (success && deckType) {
+        setSelectedDeckType(deckType);
+      }
+    } else {
+      // クリア時
+      updateLiveGrandPrixStageWithConfirmation('', '');
+    }
+  };
+
   return (
     <div className="flex-1 flex flex-col gap-4 p-4 border-2 border-gray-300 rounded-lg overflow-hidden">
       <DeckTitle 
         title={deck?.name || '新しいデッキ'}
         onTitleChange={updateDeckName}
       />
+      
+      {/* デッキタイプ＆楽曲選択 */}
       <div className="flex gap-4">
         <DeckTypeSelect
           value={selectedDeckType}
@@ -64,8 +124,29 @@ export const DeckDashboard: React.FC<DeckDashboardProps> = ({ showLimitBreak, on
           value={deck?.songId}
           onChange={handleSongChange}
           className="flex-1"
+          disabled={!!deck?.liveGrandPrixDetailId && !!deck?.liveAnalyzerImageUrl}
         />
       </div>
+
+      {/* ライブグランプリ選択 */}
+      <ExpansionPanel title="ライブグランプリ設定">
+        <div className="flex gap-4">
+          <LiveGrandPrixSelect
+            deckType={deck?.deckType}
+            value={deck?.liveGrandPrixId}
+            onChange={handleLiveGrandPrixChange}
+            className="flex-1"
+          />
+
+          <LiveGrandPrixStageSelect
+            details={liveGrandPrix?.details}
+            value={deck?.liveGrandPrixDetailId}
+            onChange={handleLiveGrandPrixStageChange}
+            disabled={lgpLoading || !deck?.liveGrandPrixId}
+            className="w-48"
+          />
+        </div>
+      </ExpansionPanel>
 
       {/* ライブアナライザ */}
       <div>
@@ -121,4 +202,3 @@ export const DeckDashboard: React.FC<DeckDashboardProps> = ({ showLimitBreak, on
     </div>
   );
 };
-

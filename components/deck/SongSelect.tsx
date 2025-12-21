@@ -69,7 +69,7 @@ export const SongSelect: React.FC<SongSelectProps> = ({
         <label className="block text-sm font-medium text-gray-700 mb-1">
           楽曲
         </label>
-        <div className="h-14 px-4 py-2.5 bg-white border border-gray-300 rounded-lg flex items-center gap-2">
+        <div className="h-10 px-4 py-2.5 bg-white border border-gray-300 rounded-lg flex items-center gap-2">
           <Loading />
           <span className="text-sm text-gray-600">読み込み中...</span>
         </div>
