@@ -4,6 +4,8 @@ import { Card } from '@/models/Card';
 import { Song } from '@/models/Song';
 import { DeckType } from '@/models/enums';
 import { DeckService } from '@/services/deckService';
+import { LiveGrandPrixService } from '@/services/liveGrandPrixService';
+import { LiveGrandPrixDetail } from '@/models/LiveGrandPrix';
 
 export const useDeck = () => {
   const {
@@ -104,8 +106,23 @@ export const useDeck = () => {
     saveDeckToLocal();
   };
 
-  const updateDeckType = (deckType: DeckType): void => {
-    setDeckType(deckType);
+  const updateDeckType = (newDeckType: DeckType): void => {
+    // バリデーション（ビジネスロジック）
+    const validation = DeckService.validateDeckTypeChange(deck, newDeckType);
+    
+    if (!validation.canChange) {
+      return;
+    }
+    
+    // 確認が必要な場合はダイアログ表示
+    if (validation.requiresConfirmation && validation.message) {
+      const confirmed = window.confirm(validation.message);
+      if (!confirmed) {
+        return;
+      }
+    }
+    
+    setDeckType(newDeckType);
     saveDeckToLocal();
   };
 
@@ -122,12 +139,31 @@ export const useDeck = () => {
     saveDeckToLocal();
   };
 
-  const updateLiveGrandPrixStage = (detailId: string, stageName: string, song?: Partial<Song>): void => {
-    setLiveGrandPrixStage(
-      detailId || undefined,
-      stageName || undefined,
-      song
-    );
+  const updateLiveGrandPrixStage = (detail: LiveGrandPrixDetail | null): void => {
+    if (detail?.id && detail.stageName) {
+      // ステージに関連する楽曲情報を自動設定（ビジネスロジック）
+      const song = LiveGrandPrixService.transformStageDetailToSong(detail);
+      
+      // バリデーション（ビジネスロジック）
+      const validation = DeckService.validateStageChange(deck, song?.deckType);
+      
+      // 確認が必要な場合はダイアログ表示
+      if (validation.requiresConfirmation && validation.message) {
+        const confirmed = window.confirm(validation.message);
+        if (!confirmed) {
+          return;
+        }
+      }
+      
+      setLiveGrandPrixStage(
+        detail.id,
+        detail.stageName,
+        song
+      );
+    } else {
+      // クリア時
+      setLiveGrandPrixStage(undefined, undefined, undefined);
+    }
     saveDeckToLocal();
   };
 

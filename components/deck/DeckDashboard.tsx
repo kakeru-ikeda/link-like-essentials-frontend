@@ -13,8 +13,6 @@ import { Song } from '@/models/Song';
 import { DeckType } from '@/models/enums';
 import { useDeck } from '@/hooks/useDeck';
 import { getCenterCard, getOtherLRCards } from '@/services/deckAnalysisService';
-import { LiveGrandPrixService } from '@/services/liveGrandPrixService';
-import { DeckService } from '@/services/deckService';
 import { LiveGrandPrixSelect } from './LiveGrandPrixSelect';
 import { LiveGrandPrixStageSelect } from './LiveGrandPrixStageSelect';
 import { useLiveGrandPrixById, useActiveLiveGrandPrix } from '@/hooks/useLiveGrandPrix';
@@ -64,21 +62,6 @@ export const DeckDashboard: React.FC = () => {
   }, [deck?.deckType]);
 
   const handleDeckTypeChange = (newDeckType: DeckType): void => {
-    // バリデーション（ビジネスロジックはserviceに委譲）
-    const validation = DeckService.validateDeckTypeChange(deck, newDeckType);
-    
-    if (!validation.canChange) {
-      return;
-    }
-    
-    // 確認が必要な場合はダイアログ表示（UI責務）
-    if (validation.requiresConfirmation && validation.message) {
-      const confirmed = window.confirm(validation.message);
-      if (!confirmed) {
-        return;
-      }
-    }
-    
     updateDeckType(newDeckType);
     setSelectedDeckType(newDeckType);
   };
@@ -97,31 +80,7 @@ export const DeckDashboard: React.FC = () => {
   };
 
   const handleLiveGrandPrixStageChange = (detail: LiveGrandPrixDetail | null): void => {
-    if (detail?.id && detail.stageName) {
-      // ステージに関連する楽曲情報を自動設定（ビジネスロジックはserviceに委譲）
-      const song = LiveGrandPrixService.transformStageDetailToSong(detail);
-      
-      // バリデーション（ビジネスロジックはserviceに委譲）
-      const validation = DeckService.validateStageChange(deck, song?.deckType);
-      
-      // 確認が必要な場合はダイアログ表示（UI責務）
-      if (validation.requiresConfirmation && validation.message) {
-        const confirmed = window.confirm(validation.message);
-        if (!confirmed) {
-          return;
-        }
-      }
-      
-      updateLiveGrandPrixStage(detail.id, detail.stageName, song);
-      
-      // デッキタイプも自動更新
-      if (song?.deckType) {
-        setSelectedDeckType(song.deckType);
-      }
-    } else {
-      // クリア時
-      updateLiveGrandPrixStage('', '');
-    }
+    updateLiveGrandPrixStage(detail);
   };
 
   const clearDeck = (): void => {

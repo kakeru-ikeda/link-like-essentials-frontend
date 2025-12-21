@@ -17,21 +17,6 @@ export interface LiveGrandPrixFilter {
  */
 export class LiveGrandPrixService {
   /**
-   * deckTypeから期を抽出
-   * 
-   * @param deckType デッキタイプ
-   * @returns 期（例: '103期', '104期'）
-   */
-  static extractYearTermFromDeckType(deckType?: DeckType): string | undefined {
-    if (!deckType) return undefined;
-    
-    // DeckTypeの値から期を抽出(例: '103期', '104期', '105期' など)
-    // ft.付きのデッキタイプも基本期に統一(例: '105期ft.梢' → '105期')
-    const match = deckType.match(/^(\d{3}期)/);
-    return match ? match[1] : undefined;
-  }
-
-  /**
    * ライブグランプリの詳細から楽曲情報を変換
    * GraphQLレスポンスの `category` フィールドを `deckType` に統一
    * 
@@ -95,17 +80,6 @@ export class LiveGrandPrixService {
    */
   static findActiveEvent(events: LiveGrandPrix[]): LiveGrandPrix | null {
     return events.find((event) => this.isActiveEvent(event)) || null;
-  }
-
-  /**
-   * ライブグランプリが選択された期に存在するかチェック
-   * 
-   * @param eventId 選択中のイベントID
-   * @param events 期でフィルタリングされたイベントリスト
-   * @returns 存在する場合true
-   */
-  static isEventInCurrentTerm(eventId: string, events: LiveGrandPrix[]): boolean {
-    return events.some((event) => event.id === eventId);
   }
 
   /**

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useMemo } from 'react';
+import React from 'react';
 import { Dropdown, DropdownOption } from '@/components/common/Dropdown';
 import { LiveGrandPrix } from '@/models/LiveGrandPrix';
 import { useLiveGrandPrix } from '@/hooks/useLiveGrandPrix';
@@ -27,25 +27,11 @@ export const LiveGrandPrixSelect: React.FC<LiveGrandPrixSelectProps> = ({
   disabled = false,
   className = '',
 }) => {
-  // deckTypeから期を判定（ビジネスロジックはserviceに委譲）
-  const yearTerm = useMemo(() => LiveGrandPrixService.extractYearTermFromDeckType(deckType), [deckType]);
-  
-  // 判定した期のライブグランプリを取得
+  // 選択されたデッキタイプの曲を含むライブグランプリを取得
   const { liveGrandPrix, loading, error } = useLiveGrandPrix(
-    yearTerm ? { yearTerm } : undefined,
-    !yearTerm // yearTermがない場合はクエリをスキップ
+    deckType ? { hasSongWithDeckType: deckType } : undefined,
+    !deckType // deckTypeがない場合はクエリをスキップ
   );
-
-  // デッキタイプが変更されたら選択をクリア
-  useEffect(() => {
-    if (deckType && value) {
-      // 選択されたライブグランプリが現在の期に存在しない場合はクリア（ビジネスロジックはserviceに委譲）
-      const eventExists = LiveGrandPrixService.isEventInCurrentTerm(value, liveGrandPrix);
-      if (!eventExists && liveGrandPrix.length > 0) {
-        onChange({});
-      }
-    }
-  }, [deckType, liveGrandPrix, value, onChange]);
 
   const handleChange = (eventId: string): void => {
     const selectedEvent = liveGrandPrix.find((event) => event.id === eventId);
