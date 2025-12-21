@@ -4,23 +4,51 @@ import React, { useState, useEffect } from 'react';
 import { DeckTitle } from '@/components/deck/DeckTitle';
 import { DeckTypeSelect } from '@/components/deck/DeckTypeSelect';
 import { SongSelect } from '@/components/deck/SongSelect';
+import { Button } from '@/components/common/Button';
 import { CenterCardDisplay } from '@/components/deck/CenterCardDisplay';
 import { LRCardsList } from '@/components/deck/LRCardsList';
-import { Checkbox } from '@/components/common/Checkbox';
 import { TextAreaWithModal } from '@/components/common/TextAreaWithModal';
+import { ActiveEventBadge } from '@/components/common/ActiveEventBadge';
 import { Song } from '@/models/Song';
 import { DeckType } from '@/models/enums';
 import { useDeck } from '@/hooks/useDeck';
 import { getCenterCard, getOtherLRCards } from '@/services/deckAnalysisService';
+import { LiveGrandPrixSelect } from './LiveGrandPrixSelect';
+import { LiveGrandPrixStageSelect } from './LiveGrandPrixStageSelect';
+import { useLiveGrandPrixById, useActiveLiveGrandPrix } from '@/hooks/useLiveGrandPrix';
+import { LiveGrandPrix, LiveGrandPrixDetail } from '@/models/LiveGrandPrix';
+import { ExpansionPanel } from '@/components/common/ExpansionPanel';
+import { EffectBadge } from '@/components/common/EffectBadge';
 
-interface DeckDashboardProps {
-  showLimitBreak: boolean;
-  onShowLimitBreakChange: (value: boolean) => void;
-}
-
-export const DeckDashboard: React.FC<DeckDashboardProps> = ({ showLimitBreak, onShowLimitBreakChange }) => {
-  const { deck, updateDeckType, updateDeckName, updateDeckMemo, updateSong } = useDeck();
+export const DeckDashboard: React.FC = () => {
+  const { 
+    deck, 
+    updateDeckType, 
+    updateDeckName, 
+    updateDeckMemo, 
+    updateSong,
+    updateLiveGrandPrix,
+    updateLiveGrandPrixStage,
+    clearAllCards,
+    saveDeck
+  } = useDeck();
+  
   const [selectedDeckType, setSelectedDeckType] = useState<DeckType | undefined>(deck?.deckType);
+
+  // ライブグランプリの詳細を取得（選択されている場合のみ）
+  const { liveGrandPrix, loading: lgpLoading } = useLiveGrandPrixById(
+    deck?.liveGrandPrixId || '',
+    !deck?.liveGrandPrixId
+  );
+
+  // 開催中のライブグランプリを取得
+  const { activeLiveGrandPrix } = useActiveLiveGrandPrix();
+
+  // 選択中のステージ詳細を取得
+  const selectedStageDetail = React.useMemo(() => {
+    if (!liveGrandPrix || !deck?.liveGrandPrixDetailId) return null;
+    return liveGrandPrix.details.find((detail) => detail.id === deck.liveGrandPrixDetailId) || null;
+  }, [liveGrandPrix, deck?.liveGrandPrixDetailId]);
 
   // センターカードを取得（ビジネスロジックはserviceに委譲）
   const centerCard = React.useMemo(() => getCenterCard(deck), [deck]);
@@ -34,24 +62,52 @@ export const DeckDashboard: React.FC<DeckDashboardProps> = ({ showLimitBreak, on
   }, [deck?.deckType]);
 
   const handleDeckTypeChange = (newDeckType: DeckType): void => {
-    const success = updateDeckType(newDeckType);
-    
-    if (success) {
-      setSelectedDeckType(newDeckType);
-    }
-    // キャンセルされた場合は元の値を保持（useEffectで同期される）
+    updateDeckType(newDeckType);
+    setSelectedDeckType(newDeckType);
   };
 
   const handleSongChange = (song: Partial<Song>): void => {
     updateSong(song);
   };
 
+  const handleLiveGrandPrixChange = (event: Partial<LiveGrandPrix>): void => {
+    if (event.id && event.eventName) {
+      updateLiveGrandPrix(event.id, event.eventName);
+    } else {
+      // クリア時
+      updateLiveGrandPrix('', '');
+    }
+  };
+
+  const handleLiveGrandPrixStageChange = (detail: LiveGrandPrixDetail | null): void => {
+    updateLiveGrandPrixStage(detail);
+  };
+
+  const clearDeck = (): void => {
+    clearAllCards();
+  };
+
   return (
     <div className="flex-1 flex flex-col gap-4 p-4 border-2 border-gray-300 rounded-lg overflow-hidden">
-      <DeckTitle 
-        title={deck?.name || '新しいデッキ'}
-        onTitleChange={updateDeckName}
-      />
+      {/* タイトル＆ボタン */}
+      <div className="flex items-center gap-4">
+        <div className="flex-1">
+          <DeckTitle 
+            title={deck?.name || '新しいデッキ'}
+            onTitleChange={updateDeckName}
+          />
+        </div>
+        <div className="flex gap-2 flex-shrink-0">
+          <Button variant="secondary" onClick={clearDeck}>
+            クリア
+          </Button>
+          <Button onClick={saveDeck}>
+            公開
+          </Button>
+        </div>
+      </div>
+      
+      {/* デッキタイプ＆楽曲選択 */}
       <div className="flex gap-4">
         <DeckTypeSelect
           value={selectedDeckType}
@@ -64,14 +120,56 @@ export const DeckDashboard: React.FC<DeckDashboardProps> = ({ showLimitBreak, on
           value={deck?.songId}
           onChange={handleSongChange}
           className="flex-1"
+          disabled={!!deck?.liveGrandPrixDetailId}
         />
       </div>
 
+      {/* ライブグランプリ選択 */}
+      <ExpansionPanel 
+        title={
+          <div className="flex items-center gap-2">
+            <span>ライブグランプリ設定</span>
+            {activeLiveGrandPrix && <ActiveEventBadge />}
+          </div>
+        }
+      >
+        <div className="flex gap-4">
+          <LiveGrandPrixSelect
+            deckType={deck?.deckType}
+            value={deck?.liveGrandPrixId}
+            onChange={handleLiveGrandPrixChange}
+            className="flex-1"
+          />
+
+          <LiveGrandPrixStageSelect
+            details={liveGrandPrix?.details}
+            value={deck?.liveGrandPrixDetailId}
+            onChange={handleLiveGrandPrixStageChange}
+            disabled={lgpLoading || !deck?.liveGrandPrixId}
+            className="w-48"
+          />
+        </div>
+      </ExpansionPanel>
+
       {/* ライブアナライザ */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          ライブアナライザ
-        </label>
+        <div className="flex items-center gap-2 mb-1">
+          <label className="block text-sm font-medium text-gray-700">
+            ライブアナライザ
+          </label>
+          {selectedStageDetail && (
+            <div className="flex items-center gap-1">
+              <EffectBadge
+                type="stage"
+                specialEffect={selectedStageDetail.specialEffect}
+              />
+              <EffectBadge
+                type="section"
+                sectionEffects={selectedStageDetail.sectionEffects}
+              />
+            </div>
+          )}
+        </div>
         <div className="border border-gray-200 rounded-lg p-2">
           {deck?.liveAnalyzerImageUrl ? (
             <img
@@ -109,16 +207,6 @@ export const DeckDashboard: React.FC<DeckDashboardProps> = ({ showLimitBreak, on
           className="flex-1"
         />
       </div>
-
-      {/* 上限解放表示切替 - 最下部に固定 */}
-      <div className="border-t border-gray-200 pt-3 mt-auto">
-        <Checkbox
-          checked={showLimitBreak}
-          onChange={onShowLimitBreakChange}
-          label="上限解放数を表示"
-        />
-      </div>
     </div>
   );
 };
-

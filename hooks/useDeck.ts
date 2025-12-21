@@ -4,6 +4,8 @@ import { Card } from '@/models/Card';
 import { Song } from '@/models/Song';
 import { DeckType } from '@/models/enums';
 import { DeckService } from '@/services/deckService';
+import { LiveGrandPrixService } from '@/services/liveGrandPrixService';
+import { LiveGrandPrixDetail } from '@/models/LiveGrandPrix';
 
 export const useDeck = () => {
   const {
@@ -17,6 +19,8 @@ export const useDeck = () => {
     setDeckType,
     setDeckName,
     setSong,
+    setLiveGrandPrix,
+    setLiveGrandPrixStage,
     setDeckMemo,
     saveDeckToLocal,
     loadDeckFromLocal,
@@ -102,32 +106,67 @@ export const useDeck = () => {
     saveDeckToLocal();
   };
 
-  const updateDeckType = (deckType: DeckType): boolean => {
-    // 同じデッキタイプの場合は何もしない
-    if (deck?.deckType === deckType) {
-      return true;
+  const updateDeckType = (newDeckType: DeckType): void => {
+    // バリデーション（ビジネスロジック）
+    const validation = DeckService.validateDeckTypeChange(deck, newDeckType);
+    
+    if (!validation.canChange) {
+      return;
     }
-
-    // デッキにカードが編成されているかチェック
-    if (DeckService.hasCards(deck)) {
-      const confirmed = window.confirm(
-        'デッキタイプを変更すると、現在編成されているカードがすべてリセットされます。\n変更してもよろしいですか？'
-      );
-      
+    
+    // 確認が必要な場合はダイアログ表示
+    if (validation.requiresConfirmation && validation.message) {
+      const confirmed = window.confirm(validation.message);
       if (!confirmed) {
-        return false;
+        return;
       }
     }
     
-    setDeckType(deckType);
+    setDeckType(newDeckType);
     saveDeckToLocal();
-    return true;
   };
 
   const updateSong = (song: Partial<Song>): void => {
     setSong(song);
     saveDeckToLocal();
   };
+
+  const updateLiveGrandPrix = (liveGrandPrixId: string, eventName: string): void => {
+    setLiveGrandPrix(
+      liveGrandPrixId || undefined,
+      eventName || undefined
+    );
+    saveDeckToLocal();
+  };
+
+  const updateLiveGrandPrixStage = (detail: LiveGrandPrixDetail | null): void => {
+    if (detail?.id && detail.stageName) {
+      // ステージに関連する楽曲情報を自動設定（ビジネスロジック）
+      const song = LiveGrandPrixService.transformStageDetailToSong(detail);
+      
+      // バリデーション（ビジネスロジック）
+      const validation = DeckService.validateStageChange(deck, song?.deckType);
+      
+      // 確認が必要な場合はダイアログ表示
+      if (validation.requiresConfirmation && validation.message) {
+        const confirmed = window.confirm(validation.message);
+        if (!confirmed) {
+          return;
+        }
+      }
+      
+      setLiveGrandPrixStage(
+        detail.id,
+        detail.stageName,
+        song
+      );
+    } else {
+      // クリア時
+      setLiveGrandPrixStage(undefined, undefined, undefined);
+    }
+    saveDeckToLocal();
+  };
+
 
   const updateDeckName = (name: string): void => {
     setDeckName(name);
@@ -155,6 +194,8 @@ export const useDeck = () => {
     updateDeckName,
     updateDeckMemo,
     updateSong,
+    updateLiveGrandPrix,
+    updateLiveGrandPrixStage,
     updateLimitBreakCount,
     clearAllCards,
     saveDeck,

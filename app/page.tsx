@@ -1,15 +1,10 @@
 'use client';
-import React, { useState } from 'react';
+import React from 'react';
 import { DeckBuilder } from '@/components/deck/DeckBuilder';
 import { DeckDashboard } from '@/components/deck/DeckDashboard';
 import { DeckTabs } from '@/components/deck/DeckTabs';
-import { Button } from '@/components/common/Button';
-import { useDeck } from '@/hooks/useDeck';
 
 export default function Home() {
-  const { clearAllCards, saveDeck } = useDeck();
-  const [showLimitBreak, setShowLimitBreak] = useState<boolean>(false);
-
   return (
     <div className="h-screen flex flex-col overflow-hidden">
       {/* TODO: DeckTabsにprops渡す */}
@@ -22,27 +17,13 @@ export default function Home() {
       >
         <div className="h-full flex gap-4 px-4 py-2 min-h-0">{" "}
           {/* 左側: デッキビルダー */}
-          <div className="w-3/5 min-h-0 flex items-start">
-            <DeckBuilder
-              showLimitBreak={showLimitBreak}
-            />
+          <div className="w-3/5 min-h-0 flex flex-col">
+            <DeckBuilder />
           </div>
 
-          {/* 右側: 今後使用するエリア + ボタン */}
-          <div className="flex-1 flex flex-col gap-4 pt-4">
-            {/* DeckDashboard */}
-            <DeckDashboard 
-              showLimitBreak={showLimitBreak}
-              onShowLimitBreakChange={setShowLimitBreak}
-            />
-            
-            {/* ボタン */}
-            <div className="flex flex-col gap-2">
-              <Button variant="secondary" onClick={clearAllCards}>
-                デッキをクリア
-              </Button>
-              <Button onClick={saveDeck}>保存</Button>
-            </div>
+          {/* 右側: DeckDashboard */}
+          <div className="flex-1 flex flex-col gap-4 py-2">
+            <DeckDashboard />
           </div>
         </div>
       </DeckTabs>

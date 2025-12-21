@@ -106,10 +106,10 @@ export const Dropdown = <T extends string = string>({
         onClick={handleToggle}
         disabled={disabled}
         className={`
-          w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg
+          w-full px-2 py-1.5 bg-white border border-gray-300 rounded-lg
           flex items-center justify-between gap-2
           transition-all duration-200
-          h-14
+          h-11
           ${disabled ? 'opacity-50 cursor-not-allowed bg-gray-50' : 'hover:border-gray-400 cursor-pointer'}
           ${isOpen ? 'ring-2 ring-blue-500 border-blue-500' : ''}
         `}
