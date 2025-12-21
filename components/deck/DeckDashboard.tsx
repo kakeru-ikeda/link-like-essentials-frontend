@@ -161,7 +161,7 @@ export const DeckDashboard: React.FC = () => {
           value={deck?.songId}
           onChange={handleSongChange}
           className="flex-1"
-          disabled={!!deck?.liveGrandPrixDetailId && !!deck?.liveAnalyzerImageUrl}
+          disabled={!!deck?.liveGrandPrixDetailId}
         />
       </div>
 

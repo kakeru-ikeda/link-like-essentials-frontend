@@ -22,8 +22,8 @@ interface DeckState {
   setDeckType: (deckType: DeckType) => void;
   setDeckName: (name: string) => void;
   setSong: (song: Partial<Song>) => void;
-  setLiveGrandPrix: (liveGrandPrixId: string, eventName: string) => void;
-  setLiveGrandPrixStage: (detailId: string, stageName: string, song?: Partial<Song>) => void;
+  setLiveGrandPrix: (liveGrandPrixId: string | undefined, eventName: string | undefined) => void;
+  setLiveGrandPrixStage: (detailId: string | undefined, stageName: string | undefined, song?: Partial<Song>) => void;
   setDeckMemo: (memo: string) => void;
   saveDeckToLocal: () => void;
   loadDeckFromLocal: () => void;

@@ -1,4 +1,4 @@
-import { LiveGrandPrix, LiveGrandPrixDetail, LiveGrandPrixStats } from '@/models/LiveGrandPrix';
+import { LiveGrandPrix, LiveGrandPrixDetail } from '@/models/LiveGrandPrix';
 import { Song } from '@/models/Song';
 import { DeckType } from '@/models/enums';
 

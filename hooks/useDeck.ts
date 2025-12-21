@@ -115,12 +115,19 @@ export const useDeck = () => {
   };
 
   const updateLiveGrandPrix = (liveGrandPrixId: string, eventName: string): void => {
-    setLiveGrandPrix(liveGrandPrixId, eventName);
+    setLiveGrandPrix(
+      liveGrandPrixId || undefined,
+      eventName || undefined
+    );
     saveDeckToLocal();
   };
 
   const updateLiveGrandPrixStage = (detailId: string, stageName: string, song?: Partial<Song>): void => {
-    setLiveGrandPrixStage(detailId, stageName, song);
+    setLiveGrandPrixStage(
+      detailId || undefined,
+      stageName || undefined,
+      song
+    );
     saveDeckToLocal();
   };
 
