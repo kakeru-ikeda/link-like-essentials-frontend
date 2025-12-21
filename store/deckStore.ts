@@ -37,7 +37,7 @@ interface DeckState {
   cloudError: string | null;
 }
 
-const createEmptyDeck = (deckType?: DeckType): Deck => {
+const createEmptyDeck = (deckType: DeckType = DeckType.TERM_105): Deck => {
   const mapping = getDeckSlotMapping(deckType);
   const slots: DeckSlot[] = mapping.map((m) => ({
     slotId: m.slotId,
@@ -281,7 +281,7 @@ export const useDeckStore = create<DeckState>()(
 
     initializeDeck: () =>
       set((state) => {
-        const currentDeckType = state.deck?.deckType;
+        const currentDeckType = state.deck?.deckType ?? DeckType.TERM_105;
         state.deck = createEmptyDeck(currentDeckType);
       }),
 
