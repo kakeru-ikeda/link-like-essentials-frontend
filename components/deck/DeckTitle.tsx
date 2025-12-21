@@ -74,15 +74,15 @@ export const DeckTitle: React.FC<DeckTitleProps> = ({ title, onTitleChange }) =>
           onKeyDown={handleKeyDown}
           onCompositionStart={handleCompositionStart}
           onCompositionEnd={handleCompositionEnd}
-          className="text-2xl font-bold text-gray-800 bg-transparent border-none outline-none focus:ring-0 p-0 -ml-0.5 w-full"
+          className="text-2xl font-bold text-gray-800 bg-transparent border-none outline-none focus:ring-0 p-0 -ml-0.5"
           placeholder="デッキ名を入力..."
         />
       ) : (
         <div 
           onClick={handleClick}
-          className="group flex items-center gap-2 cursor-text hover:bg-gray-100 rounded px-1 -ml-1 py-0.5 transition-colors w-full"
+          className="group flex items-center gap-2 cursor-text hover:bg-gray-100 rounded px-1 -ml-1 py-0.5 transition-colors"
         >
-          <h1 className="text-2xl font-bold text-gray-800 truncate flex-1">
+          <h1 className="text-2xl font-bold text-gray-800 truncate">
             {title}
           </h1>
           <HiPencil className="w-5 h-5 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />

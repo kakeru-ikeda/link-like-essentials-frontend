@@ -58,7 +58,7 @@ export const CharacterDeckGroup: React.FC<CharacterDeckGroupProps> = React.memo(
 
         {/* Card slots area */}
         <div
-          className="flex flex-col h-full gap-1 sm:gap-1.5 md:gap-2 p-2 sm:p-3 rounded-lg backdrop-blur-sm"
+          className="flex flex-col h-full justify-around gap-1 sm:gap-1.5 md:gap-2 p-2 sm:p-3 rounded-lg backdrop-blur-sm"
           style={{
             backgroundColor,
             boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06)',

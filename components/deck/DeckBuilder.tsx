@@ -2,6 +2,7 @@
 
 import React, { useState, useCallback } from 'react';
 import { useDeck } from '@/hooks/useDeck';
+import { Checkbox } from '@/components/common/Checkbox';
 import { CharacterDeckGroup } from '@/components/deck/CharacterDeckGroup';
 import { getDeckSlotMapping, getDeckFrame } from '@/constants/deckConfig';
 import { canPlaceCardInSlot } from '@/constants/deckRules';
@@ -21,13 +22,10 @@ import type { Card } from '@/models/Card';
 import { filterCardsBySlot, getAssignedCardsForSlot } from '@/services/deckFilterService';
 import { filterAvailableCards } from '@/services/characterFilterService';
 
-interface DeckBuilderProps {
-  showLimitBreak?: boolean;
-}
-
-export const DeckBuilder: React.FC<DeckBuilderProps> = ({ showLimitBreak = false }) => {
+export const DeckBuilder: React.FC = () => {
   const { deck, removeCard, toggleAceCard, swapCards, addCard, updateLimitBreakCount } = useDeck();
   const [draggingSlotId, setDraggingSlotId] = useState<number | null>(null);
+  const [showLimitBreak, setShowLimitBreak] = useState<boolean>(false);
 
   const sideModal = useSideModal();
   const { setActiveFilter } = useCardStore((state) => ({
@@ -179,9 +177,10 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({ showLimitBreak = false
   });
 
   return (
-    <>
-      <div className="w-full max-w-4xl h-full flex items-center py-2">
-        <div className="w-full grid grid-cols-3 gap-2 sm:gap-3 md:gap-4 lg:gap-5 auto-rows-fr">
+    <div className="h-full flex flex-col">
+      {/* デッキグリッド */}
+      <div className="flex-1 w-full max-w-4xl self-center flex items-center justify-center py-2 px-2">
+        <div className="w-full h-full grid grid-cols-3 gap-2 sm:gap-3 md:gap-4 lg:gap-5 auto-rows-fr">
           {characterGroups.map(({ character, slots }) => (
             <CharacterDeckGroup
               key={character}
@@ -204,6 +203,15 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({ showLimitBreak = false
             />
           ))}
         </div>
+      </div>
+
+      {/* ツールバー */}
+      <div className="w-full border-t border-gray-300 py-2 px-4 bg-gray-50 flex-shrink-0">
+        <Checkbox
+          checked={showLimitBreak}
+          onChange={setShowLimitBreak}
+          label="上限解放数を表示"
+        />
       </div>
 
       {/* Card search modal */}
@@ -281,6 +289,6 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({ showLimitBreak = false
         cardId={sideModal.selectedCardId} 
       />}
       </SideModal>
-    </>
+    </div>
   );
 };

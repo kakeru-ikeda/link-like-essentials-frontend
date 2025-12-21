@@ -4,9 +4,9 @@ import React, { useState, useEffect } from 'react';
 import { DeckTitle } from '@/components/deck/DeckTitle';
 import { DeckTypeSelect } from '@/components/deck/DeckTypeSelect';
 import { SongSelect } from '@/components/deck/SongSelect';
+import { Button } from '@/components/common/Button';
 import { CenterCardDisplay } from '@/components/deck/CenterCardDisplay';
 import { LRCardsList } from '@/components/deck/LRCardsList';
-import { Checkbox } from '@/components/common/Checkbox';
 import { TextAreaWithModal } from '@/components/common/TextAreaWithModal';
 import { ActiveEventBadge } from '@/components/common/ActiveEventBadge';
 import { Song } from '@/models/Song';
@@ -20,12 +20,7 @@ import { LiveGrandPrix, LiveGrandPrixDetail } from '@/models/LiveGrandPrix';
 import { ExpansionPanel } from '@/components/common/ExpansionPanel';
 import { EffectBadge } from '@/components/common/EffectBadge';
 
-interface DeckDashboardProps {
-  showLimitBreak: boolean;
-  onShowLimitBreakChange: (value: boolean) => void;
-}
-
-export const DeckDashboard: React.FC<DeckDashboardProps> = ({ showLimitBreak, onShowLimitBreakChange }) => {
+export const DeckDashboard: React.FC = () => {
   const { 
     deck, 
     updateDeckType, 
@@ -33,7 +28,9 @@ export const DeckDashboard: React.FC<DeckDashboardProps> = ({ showLimitBreak, on
     updateDeckMemo, 
     updateSong,
     updateLiveGrandPrix,
-    updateLiveGrandPrixStageWithConfirmation
+    updateLiveGrandPrixStageWithConfirmation,
+    clearAllCards,
+    saveDeck
   } = useDeck();
   
   const [selectedDeckType, setSelectedDeckType] = useState<DeckType | undefined>(deck?.deckType);
@@ -115,12 +112,29 @@ export const DeckDashboard: React.FC<DeckDashboardProps> = ({ showLimitBreak, on
     }
   };
 
+  const clearDeck = (): void => {
+    clearAllCards();
+  };
+
   return (
     <div className="flex-1 flex flex-col gap-4 p-4 border-2 border-gray-300 rounded-lg overflow-hidden">
-      <DeckTitle 
-        title={deck?.name || '新しいデッキ'}
-        onTitleChange={updateDeckName}
-      />
+      {/* タイトル＆ボタン */}
+      <div className="flex items-center gap-4">
+        <div className="flex-1">
+          <DeckTitle 
+            title={deck?.name || '新しいデッキ'}
+            onTitleChange={updateDeckName}
+          />
+        </div>
+        <div className="flex gap-2 flex-shrink-0">
+          <Button variant="secondary" onClick={clearDeck}>
+            クリア
+          </Button>
+          <Button onClick={saveDeck}>
+            公開
+          </Button>
+        </div>
+      </div>
       
       {/* デッキタイプ＆楽曲選択 */}
       <div className="flex gap-4">
@@ -220,15 +234,6 @@ export const DeckDashboard: React.FC<DeckDashboardProps> = ({ showLimitBreak, on
           modalTitle="チャート"
           modalRows={15}
           className="flex-1"
-        />
-      </div>
-
-      {/* 上限解放表示切替 - 最下部に固定 */}
-      <div className="border-t border-gray-200 pt-3 mt-auto">
-        <Checkbox
-          checked={showLimitBreak}
-          onChange={onShowLimitBreakChange}
-          label="上限解放数を表示"
         />
       </div>
     </div>
