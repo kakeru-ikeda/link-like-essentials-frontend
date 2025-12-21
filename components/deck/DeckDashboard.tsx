@@ -13,6 +13,7 @@ import { Song } from '@/models/Song';
 import { DeckType } from '@/models/enums';
 import { useDeck } from '@/hooks/useDeck';
 import { getCenterCard, getOtherLRCards } from '@/services/deckAnalysisService';
+import { LiveGrandPrixService } from '@/services/liveGrandPrixService';
 import { LiveGrandPrixSelect } from './LiveGrandPrixSelect';
 import { LiveGrandPrixStageSelect } from './LiveGrandPrixStageSelect';
 import { useLiveGrandPrixById, useActiveLiveGrandPrix } from '@/hooks/useLiveGrandPrix';
@@ -83,28 +84,17 @@ export const DeckDashboard: React.FC = () => {
     }
   };
 
-  const handleLiveGrandPrixStageChange = (detail: LiveGrandPrixDetail): void => {
-    if (detail.id && detail.stageName) {
-      // ステージに関連する楽曲情報を自動設定
-      // GraphQLレスポンスではcategoryフィールドとして来る
-      const songData = detail.song as any;
-      const deckType = songData?.category || songData?.deckType;
-      
-      const song = detail.song ? {
-        id: detail.song.id,
-        songName: detail.song.songName,
-        centerCharacter: detail.song.centerCharacter,
-        participations: detail.song.participations,
-        liveAnalyzerImageUrl: detail.song.liveAnalyzerImageUrl,
-        deckType: deckType,
-      } : undefined;
+  const handleLiveGrandPrixStageChange = (detail: LiveGrandPrixDetail | null): void => {
+    if (detail?.id && detail.stageName) {
+      // ステージに関連する楽曲情報を自動設定（ビジネスロジックはserviceに委譲）
+      const song = LiveGrandPrixService.transformStageDetailToSong(detail);
       
       // 確認付きで更新
       const success = updateLiveGrandPrixStageWithConfirmation(detail.id, detail.stageName, song);
       
       // デッキタイプも自動更新（確認がOKの場合のみ）
-      if (success && deckType) {
-        setSelectedDeckType(deckType);
+      if (success && song?.deckType) {
+        setSelectedDeckType(song.deckType);
       }
     } else {
       // クリア時

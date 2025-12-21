@@ -3,11 +3,12 @@
 import React, { useEffect } from 'react';
 import { Dropdown, DropdownOption } from '@/components/common/Dropdown';
 import { LiveGrandPrixDetail } from '@/models/LiveGrandPrix';
+import { LiveGrandPrixService } from '@/services/liveGrandPrixService';
 
 interface LiveGrandPrixStageSelectProps {
   details?: LiveGrandPrixDetail[];
   value?: string;
-  onChange: (detail: LiveGrandPrixDetail) => void;
+  onChange: (detail: LiveGrandPrixDetail | null) => void;
   disabled?: boolean;
   className?: string;
 }
@@ -26,10 +27,11 @@ export const LiveGrandPrixStageSelect: React.FC<LiveGrandPrixStageSelectProps> =
   // ライブグランプリが変更されたら選択をクリア
   useEffect(() => {
     if (details.length > 0 && value) {
-      const detailExists = details.some((detail) => detail.id === value);
+      // ビジネスロジックはserviceに委譲
+      const detailExists = LiveGrandPrixService.isStageDetailInList(value, details);
       if (!detailExists) {
-        // 選択がクリアされた場合、空のdetailを返す
-        onChange({} as LiveGrandPrixDetail);
+        // 選択がクリアされた場合、nullを返す
+        onChange(null);
       }
     }
   }, [details, value, onChange]);

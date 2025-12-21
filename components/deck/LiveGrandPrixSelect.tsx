@@ -6,6 +6,7 @@ import { LiveGrandPrix } from '@/models/LiveGrandPrix';
 import { useLiveGrandPrix } from '@/hooks/useLiveGrandPrix';
 import { Loading } from '@/components/common/Loading';
 import { DeckType } from '@/models/enums';
+import { LiveGrandPrixService } from '@/services/liveGrandPrixService';
 
 interface LiveGrandPrixSelectProps {
   deckType?: DeckType;
@@ -14,18 +15,6 @@ interface LiveGrandPrixSelectProps {
   disabled?: boolean;
   className?: string;
 }
-
-/**
- * deckTypeから期を判定する関数
- */
-const getYearTermFromDeckType = (deckType?: DeckType): string | undefined => {
-  if (!deckType) return undefined;
-  
-  // DeckTypeの値から期を抽出(例: '103期', '104期', '105期' など)
-  // ft.付きのデッキタイプも基本期に統一(例: '105期ft.梢' → '105期')
-  const match = deckType.match(/^(\d{3}期)/);
-  return match ? match[1] : undefined;
-};
 
 /**
  * ライブグランプリ選択コンポーネント
@@ -38,8 +27,8 @@ export const LiveGrandPrixSelect: React.FC<LiveGrandPrixSelectProps> = ({
   disabled = false,
   className = '',
 }) => {
-  // deckTypeから期を判定
-  const yearTerm = useMemo(() => getYearTermFromDeckType(deckType), [deckType]);
+  // deckTypeから期を判定（ビジネスロジックはserviceに委譲）
+  const yearTerm = useMemo(() => LiveGrandPrixService.extractYearTermFromDeckType(deckType), [deckType]);
   
   // 判定した期のライブグランプリを取得
   const { liveGrandPrix, loading, error } = useLiveGrandPrix(
@@ -50,8 +39,8 @@ export const LiveGrandPrixSelect: React.FC<LiveGrandPrixSelectProps> = ({
   // デッキタイプが変更されたら選択をクリア
   useEffect(() => {
     if (deckType && value) {
-      // 選択されたライブグランプリが現在の期に存在しない場合はクリア
-      const eventExists = liveGrandPrix.some((event) => event.id === value);
+      // 選択されたライブグランプリが現在の期に存在しない場合はクリア（ビジネスロジックはserviceに委譲）
+      const eventExists = LiveGrandPrixService.isEventInCurrentTerm(value, liveGrandPrix);
       if (!eventExists && liveGrandPrix.length > 0) {
         onChange({});
       }
@@ -74,19 +63,13 @@ export const LiveGrandPrixSelect: React.FC<LiveGrandPrixSelectProps> = ({
   };
 
   const eventOptions: DropdownOption[] = liveGrandPrix.map((event) => {
-    const startDate = new Date(event.startDate).toLocaleDateString('ja-JP', {
-      month: 'numeric',
-      day: 'numeric',
-    });
-    const endDate = new Date(event.endDate).toLocaleDateString('ja-JP', {
-      month: 'numeric',
-      day: 'numeric',
-    });
+    // 日付フォーマットはserviceに委譲
+    const dateRange = LiveGrandPrixService.formatEventDateRange(event.startDate, event.endDate);
 
     return {
       value: event.id,
       label: event.eventName,
-      description: `${event.yearTerm} (${startDate}～${endDate})`,
+      description: `${event.yearTerm} (${dateRange})`,
     };
   });
 
