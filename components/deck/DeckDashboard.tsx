@@ -229,7 +229,7 @@ export const DeckDashboard: React.FC = () => {
       </div>
 
       {/* チャート */}
-      <div className="flex-1 flex flex-col min-h-0 border-gray-200 ">
+      <div className="flex-1 flex flex-col min-h-0 border-gray-200">
         <TextAreaWithModal
           value={deck?.memo || ''}
           onChange={updateDeckMemo}
