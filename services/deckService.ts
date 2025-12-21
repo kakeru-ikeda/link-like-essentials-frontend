@@ -21,6 +21,27 @@ export interface CardSwapResult {
 }
 
 /**
+ * デッキタイプ変更の検証結果
+ */
+export interface DeckTypeChangeValidation {
+  canChange: boolean;
+  requiresConfirmation: boolean; // カードが存在する場合true
+  message?: string;
+}
+
+/**
+ * ライブグランプリステージ変更の検証結果
+ */
+export interface StageChangeValidation {
+  canChange: boolean;
+  requiresConfirmation: boolean; // デッキタイプが変更される場合true
+  deckTypeWillChange: boolean;
+  currentDeckType?: DeckType;
+  newDeckType?: DeckType;
+  message?: string;
+}
+
+/**
  * デッキ編成のビジネスロジックを提供するサービス
  */
 export class DeckService {
@@ -113,5 +134,86 @@ export class DeckService {
   static hasCardInSlot(deck: Deck | null, slotId: number): boolean {
     const slot = deck?.slots.find((s) => s.slotId === slotId);
     return slot?.card !== null;
+  }
+
+  /**
+   * デッキタイプ変更を検証
+   * 
+   * @param deck 現在のデッキ
+   * @param newDeckType 新しいデッキタイプ
+   * @returns 検証結果
+   */
+  static validateDeckTypeChange(
+    deck: Deck | null,
+    newDeckType: DeckType
+  ): DeckTypeChangeValidation {
+    // 同じデッキタイプの場合は確認不要
+    if (deck?.deckType === newDeckType) {
+      return {
+        canChange: true,
+        requiresConfirmation: false,
+      };
+    }
+
+    // カードが編成されている場合は確認が必要
+    if (this.hasCards(deck)) {
+      return {
+        canChange: true,
+        requiresConfirmation: true,
+        message: 'デッキタイプを変更すると、現在編成されているカードがすべてリセットされます。\n変更してもよろしいですか？',
+      };
+    }
+
+    // カードがない場合は確認不要
+    return {
+      canChange: true,
+      requiresConfirmation: false,
+    };
+  }
+
+  /**
+   * ライブグランプリステージ変更を検証
+   * 
+   * @param deck 現在のデッキ
+   * @param newDeckType 新しいデッキタイプ（楽曲から取得）
+   * @returns 検証結果
+   */
+  static validateStageChange(
+    deck: Deck | null,
+    newDeckType?: DeckType
+  ): StageChangeValidation {
+    // 新しいdeckTypeが存在し、現在のdeckTypeと異なる場合
+    const deckTypeWillChange = Boolean(
+      newDeckType && deck?.deckType && newDeckType !== deck.deckType
+    );
+
+    if (!deckTypeWillChange) {
+      return {
+        canChange: true,
+        requiresConfirmation: false,
+        deckTypeWillChange: false,
+      };
+    }
+
+    // デッキにカードが編成されている場合は確認が必要
+    if (this.hasCards(deck)) {
+      return {
+        canChange: true,
+        requiresConfirmation: true,
+        deckTypeWillChange: true,
+        currentDeckType: deck?.deckType,
+        newDeckType: newDeckType,
+        message: `ステージを変更するとデッキタイプが「${deck?.deckType}」から「${newDeckType}」に変更されます。\n現在編成されているカードがすべてリセットされます。\n変更してもよろしいですか？`,
+      };
+    }
+
+    // カードがない場合は確認不要
+    return {
+      canChange: true,
+      requiresConfirmation: false,
+      deckTypeWillChange: true,
+      currentDeckType: deck?.deckType,
+      newDeckType: newDeckType,
+    };
   }
 }

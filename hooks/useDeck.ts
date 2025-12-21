@@ -104,26 +104,9 @@ export const useDeck = () => {
     saveDeckToLocal();
   };
 
-  const updateDeckType = (deckType: DeckType): boolean => {
-    // 同じデッキタイプの場合は何もしない
-    if (deck?.deckType === deckType) {
-      return true;
-    }
-
-    // デッキにカードが編成されているかチェック
-    if (DeckService.hasCards(deck)) {
-      const confirmed = window.confirm(
-        'デッキタイプを変更すると、現在編成されているカードがすべてリセットされます。\n変更してもよろしいですか？'
-      );
-      
-      if (!confirmed) {
-        return false;
-      }
-    }
-    
+  const updateDeckType = (deckType: DeckType): void => {
     setDeckType(deckType);
     saveDeckToLocal();
-    return true;
   };
 
   const updateSong = (song: Partial<Song>): void => {
@@ -141,29 +124,6 @@ export const useDeck = () => {
     saveDeckToLocal();
   };
 
-  const updateLiveGrandPrixStageWithConfirmation = (
-    detailId: string,
-    stageName: string,
-    song?: Partial<Song>
-  ): boolean => {
-    // 新しいdeckTypeが存在し、現在のdeckTypeと異なる場合
-    if (song?.deckType && deck?.deckType && song.deckType !== deck.deckType) {
-      // デッキにカードが編成されているかチェック
-      if (DeckService.hasCards(deck)) {
-        const confirmed = window.confirm(
-          `ステージを変更するとデッキタイプが「${deck.deckType}」から「${song.deckType}」に変更されます。\n現在編成されているカードがすべてリセットされます。\n変更してもよろしいですか？`
-        );
-        
-        if (!confirmed) {
-          return false;
-        }
-      }
-    }
-    
-    setLiveGrandPrixStage(detailId, stageName, song);
-    saveDeckToLocal();
-    return true;
-  };
 
   const updateDeckName = (name: string): void => {
     setDeckName(name);
@@ -193,7 +153,6 @@ export const useDeck = () => {
     updateSong,
     updateLiveGrandPrix,
     updateLiveGrandPrixStage,
-    updateLiveGrandPrixStageWithConfirmation,
     updateLimitBreakCount,
     clearAllCards,
     saveDeck,

@@ -14,6 +14,7 @@ import { DeckType } from '@/models/enums';
 import { useDeck } from '@/hooks/useDeck';
 import { getCenterCard, getOtherLRCards } from '@/services/deckAnalysisService';
 import { LiveGrandPrixService } from '@/services/liveGrandPrixService';
+import { DeckService } from '@/services/deckService';
 import { LiveGrandPrixSelect } from './LiveGrandPrixSelect';
 import { LiveGrandPrixStageSelect } from './LiveGrandPrixStageSelect';
 import { useLiveGrandPrixById, useActiveLiveGrandPrix } from '@/hooks/useLiveGrandPrix';
@@ -29,7 +30,7 @@ export const DeckDashboard: React.FC = () => {
     updateDeckMemo, 
     updateSong,
     updateLiveGrandPrix,
-    updateLiveGrandPrixStageWithConfirmation,
+    updateLiveGrandPrixStage,
     clearAllCards,
     saveDeck
   } = useDeck();
@@ -63,12 +64,23 @@ export const DeckDashboard: React.FC = () => {
   }, [deck?.deckType]);
 
   const handleDeckTypeChange = (newDeckType: DeckType): void => {
-    const success = updateDeckType(newDeckType);
+    // バリデーション（ビジネスロジックはserviceに委譲）
+    const validation = DeckService.validateDeckTypeChange(deck, newDeckType);
     
-    if (success) {
-      setSelectedDeckType(newDeckType);
+    if (!validation.canChange) {
+      return;
     }
-    // キャンセルされた場合は元の値を保持（useEffectで同期される）
+    
+    // 確認が必要な場合はダイアログ表示（UI責務）
+    if (validation.requiresConfirmation && validation.message) {
+      const confirmed = window.confirm(validation.message);
+      if (!confirmed) {
+        return;
+      }
+    }
+    
+    updateDeckType(newDeckType);
+    setSelectedDeckType(newDeckType);
   };
 
   const handleSongChange = (song: Partial<Song>): void => {
@@ -89,16 +101,26 @@ export const DeckDashboard: React.FC = () => {
       // ステージに関連する楽曲情報を自動設定（ビジネスロジックはserviceに委譲）
       const song = LiveGrandPrixService.transformStageDetailToSong(detail);
       
-      // 確認付きで更新
-      const success = updateLiveGrandPrixStageWithConfirmation(detail.id, detail.stageName, song);
+      // バリデーション（ビジネスロジックはserviceに委譲）
+      const validation = DeckService.validateStageChange(deck, song?.deckType);
       
-      // デッキタイプも自動更新（確認がOKの場合のみ）
-      if (success && song?.deckType) {
+      // 確認が必要な場合はダイアログ表示（UI責務）
+      if (validation.requiresConfirmation && validation.message) {
+        const confirmed = window.confirm(validation.message);
+        if (!confirmed) {
+          return;
+        }
+      }
+      
+      updateLiveGrandPrixStage(detail.id, detail.stageName, song);
+      
+      // デッキタイプも自動更新
+      if (song?.deckType) {
         setSelectedDeckType(song.deckType);
       }
     } else {
       // クリア時
-      updateLiveGrandPrixStageWithConfirmation('', '');
+      updateLiveGrandPrixStage('', '');
     }
   };
 
