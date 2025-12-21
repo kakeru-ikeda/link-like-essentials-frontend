@@ -24,6 +24,7 @@ interface DeckState {
   setSong: (song: Partial<Song>) => void;
   setLiveGrandPrix: (liveGrandPrixId: string | undefined, eventName: string | undefined) => void;
   setLiveGrandPrixStage: (detailId: string | undefined, stageName: string | undefined, song?: Partial<Song>) => void;
+  setScore: (score: number | undefined) => void;
   setDeckMemo: (memo: string) => void;
   saveDeckToLocal: () => void;
   loadDeckFromLocal: () => void;
@@ -158,6 +159,7 @@ export const useDeckStore = create<DeckState>()(
           state.deck.liveGrandPrixDetailId = undefined;
           state.deck.liveGrandPrixEventName = undefined;
           state.deck.liveGrandPrixStageName = undefined;
+          state.deck.score = undefined;
           state.deck.memo = '';
           state.deck.updatedAt = new Date().toISOString();
         }
@@ -248,6 +250,14 @@ export const useDeckStore = create<DeckState>()(
               state.deck.deckType = song.deckType;
             }
           }
+          state.deck.updatedAt = new Date().toISOString();
+        }
+      }),
+
+    setScore: (score) =>
+      set((state) => {
+        if (state.deck) {
+          state.deck.score = score;
           state.deck.updatedAt = new Date().toISOString();
         }
       }),

@@ -21,6 +21,7 @@ export const useDeck = () => {
     setSong,
     setLiveGrandPrix,
     setLiveGrandPrixStage,
+    setScore,
     setDeckMemo,
     saveDeckToLocal,
     loadDeckFromLocal,
@@ -178,6 +179,11 @@ export const useDeck = () => {
     saveDeckToLocal();
   };
 
+  const updateScore = (score: number | undefined): void => {
+    setScore(score);
+    saveDeckToLocal();
+  };
+
   const updateLimitBreakCount = (slotId: number, count: number): void => {
     setLimitBreakCount(slotId, count);
     saveDeckToLocal();
@@ -193,6 +199,7 @@ export const useDeck = () => {
     updateDeckType,
     updateDeckName,
     updateDeckMemo,
+    updateScore,
     updateSong,
     updateLiveGrandPrix,
     updateLiveGrandPrixStage,

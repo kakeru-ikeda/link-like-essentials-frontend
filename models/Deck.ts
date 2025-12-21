@@ -30,6 +30,7 @@ export interface Deck {
   liveGrandPrixDetailId?: string;    // ライブグランプリ詳細ID（ステージ選択時のみ）
   liveGrandPrixEventName?: string;   // フロントエンド内部で使用（表示用、送信不要）
   liveGrandPrixStageName?: string;   // フロントエンド内部で使用（表示用、送信不要）
+  score?: number;                    // 参考スコア（兆単位）
   memo?: string;
   tags?: string[];                   // 検索用タグ（サーバーサイドで自動生成）
   viewCount?: number;                // 閲覧数（クラウド保存時のみ）
@@ -47,6 +48,7 @@ export type DeckForCloud = Pick<Deck,
   | 'songId'
   | 'liveGrandPrixId'
   | 'liveGrandPrixDetailId'
+  | 'score'
   | 'memo'
   | 'createdAt'
   | 'updatedAt'
@@ -63,6 +65,7 @@ export type DeckForCloudUpdate = Partial<Pick<Deck,
   | 'songId'
   | 'liveGrandPrixId'
   | 'liveGrandPrixDetailId'
+  | 'score'
   | 'memo'
   | 'updatedAt'
 >> & {
