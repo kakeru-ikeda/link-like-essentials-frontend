@@ -97,7 +97,7 @@ export class DeckService {
    * デッキにカードが編成されているかチェック
    */
   static hasCards(deck: Deck | null): boolean {
-    return deck?.slots.some((slot) => slot.card !== null) ?? false;
+    return deck?.slots.some((slot) => slot.card !== null || slot.cardId !== null) ?? false;
   }
 
   /**

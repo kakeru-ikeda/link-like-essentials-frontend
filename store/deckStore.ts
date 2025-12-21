@@ -22,6 +22,8 @@ interface DeckState {
   setDeckType: (deckType: DeckType) => void;
   setDeckName: (name: string) => void;
   setSong: (song: Partial<Song>) => void;
+  setLiveGrandPrix: (liveGrandPrixId: string, eventName: string) => void;
+  setLiveGrandPrixStage: (detailId: string, stageName: string, song?: Partial<Song>) => void;
   setDeckMemo: (memo: string) => void;
   saveDeckToLocal: () => void;
   loadDeckFromLocal: () => void;
@@ -152,6 +154,10 @@ export const useDeckStore = create<DeckState>()(
           state.deck.centerCharacter = undefined;
           state.deck.participations = undefined;
           state.deck.liveAnalyzerImageUrl = undefined;
+          state.deck.liveGrandPrixId = undefined;
+          state.deck.liveGrandPrixDetailId = undefined;
+          state.deck.liveGrandPrixEventName = undefined;
+          state.deck.liveGrandPrixStageName = undefined;
           state.deck.memo = '';
           state.deck.updatedAt = new Date().toISOString();
         }
@@ -189,6 +195,59 @@ export const useDeckStore = create<DeckState>()(
           state.deck.centerCharacter = song.centerCharacter;
           state.deck.participations = song.participations;
           state.deck.liveAnalyzerImageUrl = song.liveAnalyzerImageUrl;
+          state.deck.updatedAt = new Date().toISOString();
+        }
+      }),
+
+    setLiveGrandPrix: (liveGrandPrixId, eventName) =>
+      set((state) => {
+        if (state.deck) {
+          state.deck.liveGrandPrixId = liveGrandPrixId;
+          state.deck.liveGrandPrixEventName = eventName;
+          // ライブグランプリ変更時はステージ情報と楽曲情報をクリア
+          state.deck.liveGrandPrixDetailId = undefined;
+          state.deck.liveGrandPrixStageName = undefined;
+          state.deck.songId = undefined;
+          state.deck.songName = undefined;
+          state.deck.centerCharacter = undefined;
+          state.deck.participations = undefined;
+          state.deck.liveAnalyzerImageUrl = undefined;
+          state.deck.updatedAt = new Date().toISOString();
+        }
+      }),
+
+    setLiveGrandPrixStage: (detailId, stageName, song) =>
+      set((state) => {
+        if (state.deck) {
+          // デッキタイプが変更される場合、カードをクリア
+          const isDeckTypeChanging = song?.deckType && 
+                                     state.deck.deckType && 
+                                     song.deckType !== state.deck.deckType;
+          
+          if (isDeckTypeChanging) {
+            // カードをすべてクリア
+            state.deck.slots.forEach((slot) => {
+              slot.card = null;
+              slot.cardId = null;
+              slot.limitBreak = undefined;
+            });
+            state.deck.aceSlotId = null;
+          }
+          
+          state.deck.liveGrandPrixDetailId = detailId;
+          state.deck.liveGrandPrixStageName = stageName;
+          // 楽曲情報が提供されていれば自動設定
+          if (song) {
+            state.deck.songId = song.id;
+            state.deck.songName = song.songName;
+            state.deck.centerCharacter = song.centerCharacter;
+            state.deck.participations = song.participations;
+            state.deck.liveAnalyzerImageUrl = song.liveAnalyzerImageUrl;
+            // 楽曲のdeckTypeがあれば自動設定
+            if (song.deckType) {
+              state.deck.deckType = song.deckType;
+            }
+          }
           state.deck.updatedAt = new Date().toISOString();
         }
       }),

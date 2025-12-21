@@ -87,7 +87,9 @@ export const GET_LIVE_GRAND_PRIX_BY_ID = gql`
           attribute
           centerCharacter
           singers
+          participations
           jacketImageUrl
+          liveAnalyzerImageUrl
           moodProgressions {
             section
             progression
