@@ -17,6 +17,7 @@ import { LiveGrandPrixStageSelect } from './LiveGrandPrixStageSelect';
 import { useLiveGrandPrixById } from '@/hooks/useLiveGrandPrix';
 import { LiveGrandPrix, LiveGrandPrixDetail } from '@/models/LiveGrandPrix';
 import { ExpansionPanel } from '@/components/common/ExpansionPanel';
+import { EffectBadge } from '@/components/common/EffectBadge';
 
 interface DeckDashboardProps {
   showLimitBreak: boolean;
@@ -41,6 +42,12 @@ export const DeckDashboard: React.FC<DeckDashboardProps> = ({ showLimitBreak, on
     deck?.liveGrandPrixId || '',
     !deck?.liveGrandPrixId
   );
+
+  // 選択中のステージ詳細を取得
+  const selectedStageDetail = React.useMemo(() => {
+    if (!liveGrandPrix || !deck?.liveGrandPrixDetailId) return null;
+    return liveGrandPrix.details.find((detail) => detail.id === deck.liveGrandPrixDetailId) || null;
+  }, [liveGrandPrix, deck?.liveGrandPrixDetailId]);
 
   // センターカードを取得（ビジネスロジックはserviceに委譲）
   const centerCard = React.useMemo(() => getCenterCard(deck), [deck]);
@@ -150,9 +157,23 @@ export const DeckDashboard: React.FC<DeckDashboardProps> = ({ showLimitBreak, on
 
       {/* ライブアナライザ */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          ライブアナライザ
-        </label>
+        <div className="flex items-center gap-2 mb-1">
+          <label className="block text-sm font-medium text-gray-700">
+            ライブアナライザ
+          </label>
+          {selectedStageDetail && (
+            <div className="flex items-center gap-1">
+              <EffectBadge
+                type="stage"
+                specialEffect={selectedStageDetail.specialEffect}
+              />
+              <EffectBadge
+                type="section"
+                sectionEffects={selectedStageDetail.sectionEffects}
+              />
+            </div>
+          )}
+        </div>
         <div className="border border-gray-200 rounded-lg p-2">
           {deck?.liveAnalyzerImageUrl ? (
             <img
