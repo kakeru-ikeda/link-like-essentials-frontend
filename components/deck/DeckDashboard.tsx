@@ -8,13 +8,14 @@ import { CenterCardDisplay } from '@/components/deck/CenterCardDisplay';
 import { LRCardsList } from '@/components/deck/LRCardsList';
 import { Checkbox } from '@/components/common/Checkbox';
 import { TextAreaWithModal } from '@/components/common/TextAreaWithModal';
+import { ActiveEventBadge } from '@/components/common/ActiveEventBadge';
 import { Song } from '@/models/Song';
 import { DeckType } from '@/models/enums';
 import { useDeck } from '@/hooks/useDeck';
 import { getCenterCard, getOtherLRCards } from '@/services/deckAnalysisService';
 import { LiveGrandPrixSelect } from './LiveGrandPrixSelect';
 import { LiveGrandPrixStageSelect } from './LiveGrandPrixStageSelect';
-import { useLiveGrandPrixById } from '@/hooks/useLiveGrandPrix';
+import { useLiveGrandPrixById, useActiveLiveGrandPrix } from '@/hooks/useLiveGrandPrix';
 import { LiveGrandPrix, LiveGrandPrixDetail } from '@/models/LiveGrandPrix';
 import { ExpansionPanel } from '@/components/common/ExpansionPanel';
 import { EffectBadge } from '@/components/common/EffectBadge';
@@ -42,6 +43,9 @@ export const DeckDashboard: React.FC<DeckDashboardProps> = ({ showLimitBreak, on
     deck?.liveGrandPrixId || '',
     !deck?.liveGrandPrixId
   );
+
+  // 開催中のライブグランプリを取得
+  const { activeLiveGrandPrix } = useActiveLiveGrandPrix();
 
   // 選択中のステージ詳細を取得
   const selectedStageDetail = React.useMemo(() => {
@@ -136,7 +140,14 @@ export const DeckDashboard: React.FC<DeckDashboardProps> = ({ showLimitBreak, on
       </div>
 
       {/* ライブグランプリ選択 */}
-      <ExpansionPanel title="ライブグランプリ設定">
+      <ExpansionPanel 
+        title={
+          <div className="flex items-center gap-2">
+            <span>ライブグランプリ設定</span>
+            {activeLiveGrandPrix && <ActiveEventBadge />}
+          </div>
+        }
+      >
         <div className="flex gap-4">
           <LiveGrandPrixSelect
             deckType={deck?.deckType}

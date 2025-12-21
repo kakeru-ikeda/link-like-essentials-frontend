@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 
 interface ExpansionPanelProps {
-  title: string;
+  title: string | React.ReactNode;
   defaultExpanded?: boolean;
   children: React.ReactNode;
   className?: string;
