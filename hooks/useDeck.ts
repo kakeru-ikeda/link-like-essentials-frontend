@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useDeckStore } from '@/store/deckStore';
+import { useDeckTabsStore } from '@/store/deckTabsStore';
 import { Card } from '@/models/Card';
 import { Song } from '@/models/Song';
 import { DeckType } from '@/models/enums';
@@ -28,7 +29,17 @@ export const useDeck = () => {
     initializeDeck,
   } = useDeckStore();
 
+  const { updateCurrentTab, saveTabsToLocal } = useDeckTabsStore();
+
   const [lastError, setLastError] = useState<string | null>(null);
+
+  // deck変更時にタブ状態を自動同期
+  useEffect(() => {
+    if (deck) {
+      updateCurrentTab(deck);
+      saveTabsToLocal();
+    }
+  }, [deck, updateCurrentTab, saveTabsToLocal]);
 
   useEffect(() => {
     loadDeckFromLocal();
