@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import { Deck } from '@/models/Deck';
 import { DeckTabsService } from '@/services/deckTabsService';
+import { DeckTabsRepository } from '@/repositories/localStorage/deckTabsRepository';
 
 /**
  * デッキタブ管理専用ストア
@@ -83,9 +84,18 @@ export const useDeckTabsStore = create<DeckTabsState>()(
      */
     loadTabsFromLocal: () =>
       set((state) => {
-        const data = DeckTabsService.loadTabsFromLocal();
-        state.tabs = data.tabs;
-        state.activeTabId = data.activeTabId;
+        const saved = DeckTabsRepository.loadTabs();
+        
+        if (saved) {
+          state.tabs = saved.tabs;
+          state.activeTabId = saved.activeTabId;
+        } else {
+          // デフォルト: 初期タブを作成
+          const initialDeck = DeckTabsService.createEmptyDeck();
+          initialDeck.name = DeckTabsService.generateDeckName(0);
+          state.tabs = [initialDeck];
+          state.activeTabId = initialDeck.id;
+        }
       }),
 
     /**
@@ -93,7 +103,7 @@ export const useDeckTabsStore = create<DeckTabsState>()(
      */
     saveTabsToLocal: () => {
       const { tabs, activeTabId } = get();
-      DeckTabsService.saveTabsToLocal({ tabs, activeTabId });
+      DeckTabsRepository.saveTabs({ tabs, activeTabId });
     },
   }))
 );
