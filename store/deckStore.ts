@@ -4,9 +4,9 @@ import { Deck, DeckSlot } from '@/models/Deck';
 import { Card } from '@/models/Card';
 import { Song } from '@/models/Song';
 import { DeckType } from '@/models/enums';
-import { getDeckSlotMapping } from '@/constants/deckConfig';
 import { deckCloudService } from '@/services/deckCloudService';
 import { DeckRepository } from '@/repositories/localStorage/deckRepository';
+import { DeckService } from '@/services/deckService';
 
 /**
  * デッキストアの状態管理インターフェース
@@ -38,26 +38,6 @@ interface DeckState {
   isLoading: boolean;
   cloudError: string | null;
 }
-
-const createEmptyDeck = (deckType: DeckType = DeckType.TERM_105): Deck => {
-  const mapping = getDeckSlotMapping(deckType);
-  const slots: DeckSlot[] = mapping.map((m) => ({
-    slotId: m.slotId,
-    characterName: m.characterName,
-    cardId: null,
-  }));
-
-  return {
-    id: crypto.randomUUID(),
-    name: '新しいデッキ',
-    slots,
-    aceSlotId: null,
-    deckType,
-    memo: '',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
-};
 
 export const useDeckStore = create<DeckState>()(
   immer((set, get) => ({
@@ -144,7 +124,7 @@ export const useDeckStore = create<DeckState>()(
     clearDeck: () =>
       set((state) => {
         if (state.deck) {
-          state.deck.name = '新しいデッキ';
+          // デッキ名は外部から再設定される（useDeckフックで処理）
           state.deck.slots.forEach((slot) => {
             slot.card = null;
             slot.cardId = null;
@@ -170,7 +150,7 @@ export const useDeckStore = create<DeckState>()(
       set((state) => {
         if (state.deck) {
           // デッキタイプ変更時はスロット構成を再構築
-          const newDeck = createEmptyDeck(deckType);
+          const newDeck = DeckService.createEmptyDeck(state.deck.name, deckType);
           state.deck = {
             ...newDeck,
             id: state.deck.id,
@@ -284,14 +264,15 @@ export const useDeckStore = create<DeckState>()(
         if (savedDeck) {
           state.deck = savedDeck;
         } else {
-          state.deck = createEmptyDeck();
+          state.deck = DeckService.createEmptyDeck();
         }
       }),
 
     initializeDeck: () =>
       set((state) => {
         const currentDeckType = state.deck?.deckType ?? DeckType.TERM_105;
-        state.deck = createEmptyDeck(currentDeckType);
+        const currentDeckName = state.deck?.name ?? '新しいデッキ';
+        state.deck = DeckService.createEmptyDeck(currentDeckName, currentDeckType);
       }),
 
     // クラウド保存関連

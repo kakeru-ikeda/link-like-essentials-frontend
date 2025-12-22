@@ -90,7 +90,12 @@ export const useDeck = () => {
   };
 
   const clearAllCards = (): void => {
+    const { tabs, activeTabId } = useDeckTabsStore.getState();
+    const currentTabIndex = tabs.findIndex((tab) => tab.id === activeTabId);
+    const newDeckName = DeckService.generateDeckName(currentTabIndex >= 0 ? currentTabIndex : 0);
+    
     clearDeck();
+    setDeckName(newDeckName);
     saveDeckToLocal();
   };
 
