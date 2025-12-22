@@ -10,7 +10,10 @@ export class DeckTabsService {
   /**
    * 空のデッキを作成
    */
-  static createEmptyDeck(deckType: DeckType = DeckType.TERM_105): Deck {
+  static createEmptyDeck(
+    name: string = '新しいデッキ',
+    deckType: DeckType = DeckType.TERM_105
+  ): Deck {
     const mapping = getDeckSlotMapping(deckType);
     const slots = mapping.map((m) => ({
       slotId: m.slotId,
@@ -20,7 +23,7 @@ export class DeckTabsService {
 
     return {
       id: crypto.randomUUID(),
-      name: '新しいデッキ',
+      name,
       slots,
       aceSlotId: null,
       deckType,

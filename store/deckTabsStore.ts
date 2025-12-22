@@ -29,9 +29,8 @@ export const useDeckTabsStore = create<DeckTabsState>()(
      */
     addTab: () =>
       set((state) => {
-        const newDeck = DeckTabsService.createEmptyDeck();
-        // タブ配列を元にナンバリング
-        newDeck.name = DeckTabsService.generateDeckName(state.tabs.length);
+        const deckName = DeckTabsService.generateDeckName(state.tabs.length);
+        const newDeck = DeckTabsService.createEmptyDeck(deckName);
         state.tabs.push(newDeck);
         state.activeTabId = newDeck.id;
       }),
@@ -91,8 +90,8 @@ export const useDeckTabsStore = create<DeckTabsState>()(
           state.activeTabId = saved.activeTabId;
         } else {
           // デフォルト: 初期タブを作成
-          const initialDeck = DeckTabsService.createEmptyDeck();
-          initialDeck.name = DeckTabsService.generateDeckName(0);
+          const deckName = DeckTabsService.generateDeckName(0);
+          const initialDeck = DeckTabsService.createEmptyDeck(deckName);
           state.tabs = [initialDeck];
           state.activeTabId = initialDeck.id;
         }
