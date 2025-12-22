@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import { Deck } from '@/models/Deck';
-import { DeckTabsService } from '@/services/deckTabsService';
+import { DeckService } from '@/services/deckService';
 import { DeckTabsRepository } from '@/repositories/localStorage/deckTabsRepository';
 
 /**
@@ -29,8 +29,8 @@ export const useDeckTabsStore = create<DeckTabsState>()(
      */
     addTab: () =>
       set((state) => {
-        const deckName = DeckTabsService.generateDeckName(state.tabs.length);
-        const newDeck = DeckTabsService.createEmptyDeck(deckName);
+        const deckName = DeckService.generateDeckName(state.tabs.length);
+        const newDeck = DeckService.createEmptyDeck(deckName);
         state.tabs.push(newDeck);
         state.activeTabId = newDeck.id;
       }),
@@ -90,8 +90,8 @@ export const useDeckTabsStore = create<DeckTabsState>()(
           state.activeTabId = saved.activeTabId;
         } else {
           // デフォルト: 初期タブを作成
-          const deckName = DeckTabsService.generateDeckName(0);
-          const initialDeck = DeckTabsService.createEmptyDeck(deckName);
+          const deckName = DeckService.generateDeckName(0);
+          const initialDeck = DeckService.createEmptyDeck(deckName);
           state.tabs = [initialDeck];
           state.activeTabId = initialDeck.id;
         }
