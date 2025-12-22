@@ -1,8 +1,7 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import { Deck } from '@/models/Deck';
-import { DeckType } from '@/models/enums';
-import { getDeckSlotMapping } from '@/constants/deckConfig';
+import { DeckTabsService } from '@/services/deckTabsService';
 
 /**
  * デッキタブ管理専用ストア
@@ -19,29 +18,6 @@ interface DeckTabsState {
   saveTabsToLocal: () => void;
 }
 
-/**
- * 空のデッキを作成
- */
-const createEmptyDeck = (deckType: DeckType = DeckType.TERM_105): Deck => {
-  const mapping = getDeckSlotMapping(deckType);
-  const slots = mapping.map((m) => ({
-    slotId: m.slotId,
-    characterName: m.characterName,
-    cardId: null,
-  }));
-
-  return {
-    id: crypto.randomUUID(),
-    name: '新しいデッキ',
-    slots,
-    aceSlotId: null,
-    deckType,
-    memo: '',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
-};
-
 export const useDeckTabsStore = create<DeckTabsState>()(
   immer((set, get) => ({
     tabs: [],
@@ -52,10 +28,9 @@ export const useDeckTabsStore = create<DeckTabsState>()(
      */
     addTab: () =>
       set((state) => {
-        const newDeck = createEmptyDeck();
+        const newDeck = DeckTabsService.createEmptyDeck();
         // タブ配列を元にナンバリング
-        const deckNumber = state.tabs.length + 1;
-        newDeck.name = `デッキ${deckNumber}`;
+        newDeck.name = DeckTabsService.generateDeckName(state.tabs.length);
         state.tabs.push(newDeck);
         state.activeTabId = newDeck.id;
       }),
@@ -108,47 +83,9 @@ export const useDeckTabsStore = create<DeckTabsState>()(
      */
     loadTabsFromLocal: () =>
       set((state) => {
-        if (typeof window === 'undefined') return;
-
-        const saved = localStorage.getItem('deckTabs');
-        if (saved) {
-          try {
-            const parsed = JSON.parse(saved);
-            state.tabs = parsed.tabs ?? [];
-            state.activeTabId = parsed.activeTabId ?? '';
-
-            // タブが空の場合は初期タブを作成
-            if (state.tabs.length === 0) {
-              const initialDeck = createEmptyDeck();
-              state.tabs = [initialDeck];
-              state.activeTabId = initialDeck.id;
-            }
-          } catch (error) {
-            console.error('Failed to load deck tabs:', error);
-            // エラー時は初期タブを作成
-            const initialDeck = createEmptyDeck();
-            state.tabs = [initialDeck];
-            state.activeTabId = initialDeck.id;
-          }
-        } else {
-          // 初回起動時: 既存のdeckがあればそれを使用
-          const existingDeck = localStorage.getItem('deck');
-          if (existingDeck) {
-            try {
-              const deck = JSON.parse(existingDeck);
-              state.tabs = [deck];
-              state.activeTabId = deck.id;
-            } catch (error) {
-              const initialDeck = createEmptyDeck();
-              state.tabs = [initialDeck];
-              state.activeTabId = initialDeck.id;
-            }
-          } else {
-            const initialDeck = createEmptyDeck();
-            state.tabs = [initialDeck];
-            state.activeTabId = initialDeck.id;
-          }
-        }
+        const data = DeckTabsService.loadTabsFromLocal();
+        state.tabs = data.tabs;
+        state.activeTabId = data.activeTabId;
       }),
 
     /**
@@ -156,12 +93,7 @@ export const useDeckTabsStore = create<DeckTabsState>()(
      */
     saveTabsToLocal: () => {
       const { tabs, activeTabId } = get();
-      if (typeof window !== 'undefined') {
-        localStorage.setItem(
-          'deckTabs',
-          JSON.stringify({ tabs, activeTabId })
-        );
-      }
+      DeckTabsService.saveTabsToLocal({ tabs, activeTabId });
     },
   }))
 );
