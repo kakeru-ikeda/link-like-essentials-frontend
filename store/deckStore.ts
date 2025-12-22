@@ -6,6 +6,7 @@ import { Song } from '@/models/Song';
 import { DeckType } from '@/models/enums';
 import { getDeckSlotMapping } from '@/constants/deckConfig';
 import { deckCloudService } from '@/services/deckCloudService';
+import { DeckRepository } from '@/repositories/localStorage/deckRepository';
 
 /**
  * デッキストアの状態管理インターフェース
@@ -272,20 +273,18 @@ export const useDeckStore = create<DeckState>()(
 
     saveDeckToLocal: () =>
       set((state) => {
-        if (state.deck && typeof window !== 'undefined') {
-          localStorage.setItem('deck', JSON.stringify(state.deck));
+        if (state.deck) {
+          DeckRepository.saveDeck(state.deck);
         }
       }),
 
     loadDeckFromLocal: () =>
       set((state) => {
-        if (typeof window !== 'undefined') {
-          const savedDeck = localStorage.getItem('deck');
-          if (savedDeck) {
-            state.deck = JSON.parse(savedDeck);
-          } else {
-            state.deck = createEmptyDeck();
-          }
+        const savedDeck = DeckRepository.loadDeck();
+        if (savedDeck) {
+          state.deck = savedDeck;
+        } else {
+          state.deck = createEmptyDeck();
         }
       }),
 
