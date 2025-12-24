@@ -48,7 +48,7 @@ export function Sidebar({ children }: SidebarProps): JSX.Element {
           <div className="px-3 py-6 border-b border-gray-200">
             {isSidebarExpanded ? (
               <>
-                <h1 className="text-xl font-bold text-gray-900 whitespace-nowrap">
+                <h1 className="text-xl font-bold text-gray-900">
                   Link Like<br />Essentials
                 </h1>
                 <p className="text-sm text-gray-600 mt-1 whitespace-nowrap">デッキビルダー</p>
@@ -99,7 +99,7 @@ export function Sidebar({ children }: SidebarProps): JSX.Element {
 
       {/* メインコンテンツエリア */}
       <div className="flex-1 flex flex-col overflow-hidden md:ml-12">
-        {/* SP用ヘッダー(ハンバーガーメニュー) */}
+        {/* SP用ヘッダー（ハンバーガーメニュー） */}
         <header className="md:hidden bg-white border-b border-gray-200 px-4 py-3">
           <div className="flex items-center justify-between">
             <h1 className="text-lg font-bold text-gray-900">
