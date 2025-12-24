@@ -23,6 +23,7 @@ const NAV_ITEMS: NavItem[] = [
 
 export function Sidebar({ children }: SidebarProps): JSX.Element {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
   const pathname = usePathname();
 
   const toggleMobileMenu = (): void => {
@@ -35,19 +36,30 @@ export function Sidebar({ children }: SidebarProps): JSX.Element {
 
   return (
     <div className="flex h-screen overflow-hidden">
-      {/* PC用サイドバー - 常時表示 */}
-      <aside className="hidden md:flex md:flex-col md:w-64 bg-white border-r border-gray-200">
+      {/* PC用サイドバー - ホバーで展開 */}
+      <aside
+        className="hidden md:flex md:flex-col bg-white border-r border-gray-200 transition-all duration-300 ease-in-out fixed left-0 top-0 h-full z-50"
+        style={{ width: isSidebarExpanded ? '16rem' : '3rem' }}
+        onMouseEnter={() => setIsSidebarExpanded(true)}
+        onMouseLeave={() => setIsSidebarExpanded(false)}
+      >
         <div className="flex-1 flex flex-col overflow-y-auto">
           {/* ロゴ/タイトル */}
-          <div className="px-6 py-6 border-b border-gray-200">
-            <h1 className="text-xl font-bold text-gray-900">
-              Link Like<br />Essentials
-            </h1>
-            <p className="text-sm text-gray-600 mt-1">デッキビルダー</p>
+          <div className="px-3 py-6 border-b border-gray-200">
+            {isSidebarExpanded ? (
+              <>
+                <h1 className="text-xl font-bold text-gray-900 whitespace-nowrap">
+                  Link Like<br />Essentials
+                </h1>
+                <p className="text-sm text-gray-600 mt-1 whitespace-nowrap">デッキビルダー</p>
+              </>
+            ) : (
+              <div className="text-2xl text-center">🎴</div>
+            )}
           </div>
 
           {/* ナビゲーション */}
-          <nav className="flex-1 px-4 py-6 space-y-1">
+          <nav className="flex-1 px-2 py-6 space-y-1">
             {NAV_ITEMS.map((item) => {
               const isActive = pathname === item.href;
               return (
@@ -55,33 +67,39 @@ export function Sidebar({ children }: SidebarProps): JSX.Element {
                   key={item.href}
                   href={item.href}
                   className={`
-                    flex items-center px-4 py-3 rounded-lg transition-colors
+                    flex items-center px-3 py-3 rounded-lg transition-colors
                     ${
                       isActive
                         ? 'bg-blue-50 text-blue-700 font-semibold'
                         : 'text-gray-700 hover:bg-gray-100'
                     }
+                    ${isSidebarExpanded ? '' : 'justify-center'}
                   `}
+                  title={!isSidebarExpanded ? item.label : undefined}
                 >
-                  <span className="mr-3 text-xl">{item.icon}</span>
-                  <span>{item.label}</span>
+                  <span className={`text-xl ${isSidebarExpanded ? 'mr-3' : ''}`}>
+                    {item.icon}
+                  </span>
+                  {isSidebarExpanded && <span className="whitespace-nowrap">{item.label}</span>}
                 </Link>
               );
             })}
           </nav>
 
           {/* フッター情報 */}
-          <div className="px-6 py-4 border-t border-gray-200">
-            <p className="text-xs text-gray-500">
-              © 2025 Link Like Essentials
-            </p>
-          </div>
+          {isSidebarExpanded && (
+            <div className="px-6 py-4 border-t border-gray-200">
+              <p className="text-xs text-gray-500 whitespace-nowrap">
+                © 2025 Link Like Essentials
+              </p>
+            </div>
+          )}
         </div>
       </aside>
 
       {/* メインコンテンツエリア */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* SP用ヘッダー（ハンバーガーメニュー） */}
+      <div className="flex-1 flex flex-col overflow-hidden md:ml-12">
+        {/* SP用ヘッダー(ハンバーガーメニュー) */}
         <header className="md:hidden bg-white border-b border-gray-200 px-4 py-3">
           <div className="flex items-center justify-between">
             <h1 className="text-lg font-bold text-gray-900">
