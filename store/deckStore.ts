@@ -14,6 +14,7 @@ import { DeckService } from '@/services/deckService';
  */
 interface DeckState {
   deck: Deck | null;
+  isFriendSlotEnabled: boolean;
   setDeck: (deck: Deck) => void;
   setCardToSlot: (slotId: number, card: Card | null) => void;
   swapCardSlots: (slotId1: number, slotId2: number, removedSlots: number[]) => void;
@@ -27,6 +28,7 @@ interface DeckState {
   setLiveGrandPrixStage: (detailId: string | undefined, stageName: string | undefined, song?: Partial<Song>) => void;
   setScore: (score: number | undefined) => void;
   setDeckMemo: (memo: string) => void;
+  setFriendSlotEnabled: (enabled: boolean) => void;
   saveDeckToLocal: () => void;
   loadDeckFromLocal: () => void;
   initializeDeck: () => void;
@@ -42,6 +44,7 @@ interface DeckState {
 export const useDeckStore = create<DeckState>()(
   immer((set, get) => ({
     deck: null,
+    isFriendSlotEnabled: false,
 
     setDeck: (deck) =>
       set((state) => {
@@ -249,6 +252,11 @@ export const useDeckStore = create<DeckState>()(
           state.deck.memo = memo;
           state.deck.updatedAt = new Date().toISOString();
         }
+      }),
+
+    setFriendSlotEnabled: (enabled) =>
+      set((state) => {
+        state.isFriendSlotEnabled = enabled;
       }),
 
     saveDeckToLocal: () =>

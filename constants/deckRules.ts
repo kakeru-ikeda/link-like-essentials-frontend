@@ -115,6 +115,11 @@ export function canPlaceCardInSlot(
     return { allowed: true };
   }
 
+  // フレンド枠はすべてのカードが配置可能
+  if (slotCharacter === 'フレンド') {
+    return { allowed: true };
+  }
+
   // 基本ルール: 同じキャラクターのカードは配置可能
   if (cardInfo.characterName === slotCharacter) {
     return { allowed: true };

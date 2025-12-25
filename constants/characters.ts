@@ -16,7 +16,7 @@ export const CHARACTERS = [
   '大賀美沙知',
 ] as const;
 
-export type CharacterName = (typeof CHARACTERS)[number] | 'フリー';
+export type CharacterName = (typeof CHARACTERS)[number] | 'フリー' | 'フレンド';
 
 /**
  * キャラクターごとのテーマカラー定義
