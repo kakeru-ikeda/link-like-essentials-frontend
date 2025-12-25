@@ -4,11 +4,11 @@ import { DeckBuilder } from '@/components/deck/DeckBuilder';
 import { DeckDashboard } from '@/components/deck/DeckDashboard';
 import { DeckTabs } from '@/components/deck/DeckTabs';
 import { useDeckTabs } from '@/hooks/useDeckTabs';
-import { useDeckStore } from '@/store/deckStore';
+import { useDeck } from '@/hooks/useDeck';
 
 export default function Home() {
   const { tabs, activeTabId, addTab, deleteTab, switchTab } = useDeckTabs();
-  const isFriendSlotEnabled = useDeckStore((state) => state.isFriendSlotEnabled);
+  const { isFriendSlotEnabled } = useDeck();
 
   // DeckBuilderの必要幅を計算
   const deckBuilderWidth = React.useMemo(() => {

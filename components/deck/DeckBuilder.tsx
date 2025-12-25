@@ -2,7 +2,6 @@
 
 import React, { useState, useCallback } from 'react';
 import { useDeck } from '@/hooks/useDeck';
-import { useDeckStore } from '@/store/deckStore';
 import { Checkbox } from '@/components/common/Checkbox';
 import { CharacterDeckGroup } from '@/components/deck/CharacterDeckGroup';
 import { getDeckSlotMapping, getDeckFrame } from '@/constants/deckConfig';
@@ -24,11 +23,7 @@ import { filterCardsBySlot, getAssignedCardsForSlot } from '@/services/deckFilte
 import { filterAvailableCards } from '@/services/characterFilterService';
 
 export const DeckBuilder: React.FC = () => {
-  const { deck, removeCard, toggleAceCard, swapCards, addCard, updateLimitBreakCount } = useDeck();
-  const { isFriendSlotEnabled, setFriendSlotEnabled } = useDeckStore((state) => ({
-    isFriendSlotEnabled: state.isFriendSlotEnabled,
-    setFriendSlotEnabled: state.setFriendSlotEnabled,
-  }));
+  const { deck, removeCard, toggleAceCard, swapCards, addCard, updateLimitBreakCount, isFriendSlotEnabled, setFriendSlotEnabled } = useDeck();
   const [draggingSlotId, setDraggingSlotId] = useState<number | null>(null);
   const [showLimitBreak, setShowLimitBreak] = useState<boolean>(false);
 
