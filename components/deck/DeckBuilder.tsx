@@ -212,19 +212,19 @@ export const DeckBuilder: React.FC = () => {
                 <CharacterDeckGroup
                   character={character}
                   slots={slots}
-                aceSlotId={deck.aceSlotId}
-                draggingSlotId={draggingSlotId}
-                isCenter={deck?.centerCharacter === character}
-                isSinger={deck?.participations?.includes(character) || false}
-                showLimitBreak={showLimitBreak}
-                onSlotClick={handleSlotClick}
-                onRemoveCard={removeCard}
-                onToggleAce={toggleAceCard}
-                onShowDetail={handleShowDetail}
-                onLimitBreakChange={updateLimitBreakCount}
-                onDragStart={handleDragStart}
-                onDragEnd={handleDragEnd}
-                onDrop={handleDrop}
+                  aceSlotId={deck.aceSlotId}
+                  draggingSlotId={draggingSlotId}
+                  isCenter={deck?.centerCharacter === character}
+                  isSinger={deck?.participations?.includes(character) || false}
+                  showLimitBreak={showLimitBreak}
+                  onSlotClick={handleSlotClick}
+                  onRemoveCard={removeCard}
+                  onToggleAce={toggleAceCard}
+                  onShowDetail={handleShowDetail}
+                  onLimitBreakChange={updateLimitBreakCount}
+                  onDragStart={handleDragStart}
+                  onDragEnd={handleDragEnd}
+                  onDrop={handleDrop}
                   canDropToSlot={canDropToSlot}
                 />
               </div>
@@ -238,19 +238,19 @@ export const DeckBuilder: React.FC = () => {
                 <CharacterDeckGroup
                   character={character}
                   slots={slots}
-                aceSlotId={deck.aceSlotId}
-                draggingSlotId={draggingSlotId}
-                isCenter={deck?.centerCharacter === character}
-                isSinger={deck?.participations?.includes(character) || false}
-                showLimitBreak={showLimitBreak}
-                onSlotClick={handleSlotClick}
-                onRemoveCard={removeCard}
-                onToggleAce={toggleAceCard}
-                onShowDetail={handleShowDetail}
-                onLimitBreakChange={updateLimitBreakCount}
-                onDragStart={handleDragStart}
-                onDragEnd={handleDragEnd}
-                onDrop={handleDrop}
+                  aceSlotId={deck.aceSlotId}
+                  draggingSlotId={draggingSlotId}
+                  isCenter={deck?.centerCharacter === character}
+                  isSinger={deck?.participations?.includes(character) || false}
+                  showLimitBreak={showLimitBreak}
+                  onSlotClick={handleSlotClick}
+                  onRemoveCard={removeCard}
+                  onToggleAce={toggleAceCard}
+                  onShowDetail={handleShowDetail}
+                  onLimitBreakChange={updateLimitBreakCount}
+                  onDragStart={handleDragStart}
+                  onDragEnd={handleDragEnd}
+                  onDrop={handleDrop}
                   canDropToSlot={canDropToSlot}
                 />
               </div>
@@ -264,19 +264,19 @@ export const DeckBuilder: React.FC = () => {
                 <CharacterDeckGroup
                   character={character}
                   slots={slots}
-                aceSlotId={deck.aceSlotId}
-                draggingSlotId={draggingSlotId}
-                isCenter={deck?.centerCharacter === character}
-                isSinger={deck?.participations?.includes(character) || false}
-                showLimitBreak={showLimitBreak}
-                onSlotClick={handleSlotClick}
-                onRemoveCard={removeCard}
-                onToggleAce={toggleAceCard}
-                onShowDetail={handleShowDetail}
-                onLimitBreakChange={updateLimitBreakCount}
-                onDragStart={handleDragStart}
-                onDragEnd={handleDragEnd}
-                onDrop={handleDrop}
+                  aceSlotId={deck.aceSlotId}
+                  draggingSlotId={draggingSlotId}
+                  isCenter={deck?.centerCharacter === character}
+                  isSinger={deck?.participations?.includes(character) || false}
+                  showLimitBreak={showLimitBreak}
+                  onSlotClick={handleSlotClick}
+                  onRemoveCard={removeCard}
+                  onToggleAce={toggleAceCard}
+                  onShowDetail={handleShowDetail}
+                  onLimitBreakChange={updateLimitBreakCount}
+                  onDragStart={handleDragStart}
+                  onDragEnd={handleDragEnd}
+                  onDrop={handleDrop}
                   canDropToSlot={canDropToSlot}
                 />
               </div>

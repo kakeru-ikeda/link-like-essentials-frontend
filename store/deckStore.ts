@@ -43,7 +43,6 @@ interface DeckState {
 export const useDeckStore = create<DeckState>()(
   immer((set, get) => ({
     deck: null,
-    isFriendSlotEnabled: true,
 
     setDeck: (deck) =>
       set((state) => {
