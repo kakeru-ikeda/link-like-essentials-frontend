@@ -291,7 +291,7 @@ export const DeckBuilder: React.FC = () => {
           <Checkbox
             checked={isFriendSlotEnabled}
             onChange={setFriendSlotEnabled}
-            label="フレンドカード機能を有効化"
+            label="フレンドカード枠有効"
           />
           <Checkbox
             checked={showLimitBreak}
