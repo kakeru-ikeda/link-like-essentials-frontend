@@ -27,6 +27,7 @@ interface DeckState {
   setLiveGrandPrixStage: (detailId: string | undefined, stageName: string | undefined, song?: Partial<Song>) => void;
   setScore: (score: number | undefined) => void;
   setDeckMemo: (memo: string) => void;
+  setFriendSlotEnabled: (enabled: boolean) => void;
   saveDeckToLocal: () => void;
   loadDeckFromLocal: () => void;
   initializeDeck: () => void;
@@ -142,6 +143,7 @@ export const useDeckStore = create<DeckState>()(
           state.deck.liveGrandPrixStageName = undefined;
           state.deck.score = undefined;
           state.deck.memo = '';
+          state.deck.isFriendSlotEnabled = true;
           state.deck.updatedAt = new Date().toISOString();
         }
       }),
@@ -247,6 +249,25 @@ export const useDeckStore = create<DeckState>()(
       set((state) => {
         if (state.deck) {
           state.deck.memo = memo;
+          state.deck.updatedAt = new Date().toISOString();
+        }
+      }),
+
+    setFriendSlotEnabled: (enabled) =>
+      set((state) => {
+        if (state.deck) {
+          state.deck.isFriendSlotEnabled = enabled;
+          
+          // フレンドカード枠を無効化した場合、フレンドカード（slotId: 99）をクリア
+          if (!enabled) {
+            const friendSlot = state.deck.slots.find((s) => s.slotId === 99);
+            if (friendSlot) {
+              friendSlot.card = null;
+              friendSlot.cardId = null;
+              friendSlot.limitBreak = undefined;
+            }
+          }
+          
           state.deck.updatedAt = new Date().toISOString();
         }
       }),

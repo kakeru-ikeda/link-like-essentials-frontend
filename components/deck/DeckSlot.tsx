@@ -216,8 +216,8 @@ export const DeckSlot: React.FC<DeckSlotProps> = ({
             size={isMain ? 'large' : 'small'}
           />
 
-          {/* エースバッジ（ホバー時 or エース設定済みの場合のみ表示） */}
-          {(isHovered || isAce) && (
+          {/* エースバッジ（ホバー時 or エース設定済みの場合のみ表示、フレンドカードは除外） */}
+          {slot.slotId !== 99 && (isHovered || isAce) && (
             <AceBadge
               isAce={isAce}
               onToggle={() => onToggleAce?.(slot.slotId)}

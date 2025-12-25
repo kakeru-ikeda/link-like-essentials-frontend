@@ -27,6 +27,7 @@ export const useDeck = () => {
     saveDeckToLocal,
     loadDeckFromLocal,
     initializeDeck,
+    setFriendSlotEnabled,
   } = useDeckStore();
 
   const { updateCurrentTab, saveTabsToLocal } = useDeckTabsStore();
@@ -224,5 +225,10 @@ export const useDeck = () => {
     saveDeck,
     resetDeck,
     getLastError: () => lastError,
+    isFriendSlotEnabled: deck?.isFriendSlotEnabled ?? true,
+    setFriendSlotEnabled: (enabled: boolean) => {
+      setFriendSlotEnabled(enabled);
+      saveDeckToLocal();
+    },
   };
 };

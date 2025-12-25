@@ -32,6 +32,7 @@ export interface Deck {
   liveGrandPrixStageName?: string;   // フロントエンド内部で使用（表示用、送信不要）
   score?: number;                    // 参考スコア（兆単位）
   memo?: string;
+  isFriendSlotEnabled?: boolean;     // フレンドカード枠の有効化状態
   tags?: string[];                   // 検索用タグ（サーバーサイドで自動生成）
   viewCount?: number;                // 閲覧数（クラウド保存時のみ）
   likeCount?: number;                // いいね数（将来的に実装）
