@@ -66,6 +66,7 @@ export class DeckService {
       slots,
       aceSlotId: null,
       deckType,
+      isFriendSlotEnabled: true,
       memo: '',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),

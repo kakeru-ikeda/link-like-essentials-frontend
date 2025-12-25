@@ -14,7 +14,6 @@ import { DeckService } from '@/services/deckService';
  */
 interface DeckState {
   deck: Deck | null;
-  isFriendSlotEnabled: boolean;
   setDeck: (deck: Deck) => void;
   setCardToSlot: (slotId: number, card: Card | null) => void;
   swapCardSlots: (slotId1: number, slotId2: number, removedSlots: number[]) => void;
@@ -145,6 +144,7 @@ export const useDeckStore = create<DeckState>()(
           state.deck.liveGrandPrixStageName = undefined;
           state.deck.score = undefined;
           state.deck.memo = '';
+          state.deck.isFriendSlotEnabled = true;
           state.deck.updatedAt = new Date().toISOString();
         }
       }),
@@ -256,7 +256,21 @@ export const useDeckStore = create<DeckState>()(
 
     setFriendSlotEnabled: (enabled) =>
       set((state) => {
-        state.isFriendSlotEnabled = enabled;
+        if (state.deck) {
+          state.deck.isFriendSlotEnabled = enabled;
+          
+          // フレンドカード枠を無効化した場合、フレンドカード（slotId: 99）をクリア
+          if (!enabled) {
+            const friendSlot = state.deck.slots.find((s) => s.slotId === 99);
+            if (friendSlot) {
+              friendSlot.card = null;
+              friendSlot.cardId = null;
+              friendSlot.limitBreak = undefined;
+            }
+          }
+          
+          state.deck.updatedAt = new Date().toISOString();
+        }
       }),
 
     saveDeckToLocal: () =>
