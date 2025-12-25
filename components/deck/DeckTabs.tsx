@@ -22,9 +22,9 @@ export const DeckTabs: React.FC<DeckTabsProps> = ({
 }) => {
   
   return (
-    <div className="flex h-full">
+    <div className="flex h-full overflow-hidden">
       {/* メインコンテンツエリア */}
-      <div className="flex-1 h-full">
+      <div className="flex-1 h-full overflow-x-visible overflow-y-auto">
         {children}
       </div>
 

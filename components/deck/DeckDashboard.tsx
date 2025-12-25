@@ -101,10 +101,10 @@ export const DeckDashboard: React.FC = () => {
   };
 
   return (
-    <div className="flex-1 flex flex-col gap-4 p-4 border-2 border-gray-300 rounded-lg overflow-hidden">
+    <div className="flex-1 flex flex-col gap-4 p-4 border-2 border-gray-300 rounded-lg overflow-hidden min-w-0">
       {/* タイトル＆ボタン */}
-      <div className="flex items-center gap-4">
-        <div className="flex-1">
+      <div className="flex items-center gap-4 min-w-0">
+        <div className="flex-1 min-w-0">
           <DeckTitle 
             title={deck?.name || '新しいデッキ'}
             onTitleChange={updateDeckName}
@@ -121,18 +121,18 @@ export const DeckDashboard: React.FC = () => {
       </div>
       
       {/* デッキタイプ＆楽曲選択 */}
-      <div className="flex gap-4">
+      <div className="flex gap-4 min-w-0">
         <DeckTypeSelect
           value={selectedDeckType}
           onChange={handleDeckTypeChange}
-          className="w-40"
+          className="w-40 flex-shrink-0"
         />
 
         <SongSelect
           deckType={deck?.deckType}
           value={deck?.songId}
           onChange={handleSongChange}
-          className="flex-1"
+          className="flex-1 min-w-0"
           disabled={!!deck?.liveGrandPrixDetailId}
         />
       </div>
@@ -146,12 +146,12 @@ export const DeckDashboard: React.FC = () => {
           </div>
         }
       >
-        <div className="flex gap-4">
+        <div className="flex gap-4 min-w-0">
           <LiveGrandPrixSelect
             deckType={deck?.deckType}
             value={deck?.liveGrandPrixId}
             onChange={handleLiveGrandPrixChange}
-            className="flex-1"
+            className="flex-1 min-w-0"
           />
 
           <LiveGrandPrixStageSelect
@@ -159,7 +159,7 @@ export const DeckDashboard: React.FC = () => {
             value={deck?.liveGrandPrixDetailId}
             onChange={handleLiveGrandPrixStageChange}
             disabled={lgpLoading || !deck?.liveGrandPrixId}
-            className="w-48"
+            className="w-48 flex-shrink-0"
           />
         </div>
       </ExpansionPanel>
