@@ -4,6 +4,8 @@
 export interface UserProfile {
   /** ユーザーID (Firebase Auth UID) */
   uid: string;
+  /** Link Like ID (9桁の文字列) */
+  llid?: string;
   /** 表示名 */
   displayName: string;
   /** 自己紹介 */
@@ -20,6 +22,8 @@ export interface UserProfile {
  * プロフィール作成・更新時のリクエストデータ
  */
 export interface UserProfileInput {
+  /** Link Like ID (9桁の文字列) */
+  llid?: string;
   /** 表示名 */
   displayName: string;
   /** 自己紹介 */
