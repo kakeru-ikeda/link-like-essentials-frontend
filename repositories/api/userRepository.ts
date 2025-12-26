@@ -35,7 +35,7 @@ export const userRepository = {
     }
 
     const data = await response.json();
-    return data.profile;
+    return data;
   },
 
   /**
@@ -63,7 +63,7 @@ export const userRepository = {
     }
 
     const data = await response.json();
-    return data.profile;
+    return data;
   },
 
   /**
@@ -91,7 +91,7 @@ export const userRepository = {
     }
 
     const data = await response.json();
-    return data.profile;
+    return data;
   },
 
   /**
