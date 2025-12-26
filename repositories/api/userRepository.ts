@@ -4,15 +4,7 @@ import {
   AvatarUploadResponse,
 } from '@/models/User';
 import { USER_API_ENDPOINT } from '@/constants/apiEndpoints';
-import { auth } from '@/repositories/firebase/config';
-
-async function getAuthToken(): Promise<string> {
-  const user = auth.currentUser;
-  if (!user) {
-    throw new Error('認証されていません');
-  }
-  return await user.getIdToken();
-}
+import { getAuthToken } from './authUtils';
 
 export const userRepository = {
   /**
