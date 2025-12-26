@@ -1,5 +1,3 @@
-'use client';
-
 import React from 'react';
 import { Card } from '@/models/Card';
 import { CardGridItem } from './CardGridItem';
@@ -10,8 +8,11 @@ interface CardGridProps {
   onSelectCard: (card: Card) => void;
 }
 
-export const CardGrid: React.FC<CardGridProps> = ({ cards, loading, onSelectCard }) => {
-
+export const CardGrid: React.FC<CardGridProps> = ({
+  cards,
+  loading,
+  onSelectCard,
+}) => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -28,7 +29,9 @@ export const CardGrid: React.FC<CardGridProps> = ({ cards, loading, onSelectCard
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
           <p className="text-gray-500 text-lg">カードが見つかりませんでした</p>
-          <p className="text-gray-400 text-sm mt-2">フィルター条件を変更してください</p>
+          <p className="text-gray-400 text-sm mt-2">
+            フィルター条件を変更してください
+          </p>
         </div>
       </div>
     );
