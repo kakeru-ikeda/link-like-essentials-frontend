@@ -1,9 +1,6 @@
 import { Deck, DeckForCloud, DeckForCloudUpdate } from '@/models/Deck';
+import { DECK_API_ENDPOINT } from '@/constants/apiEndpoints';
 import { auth } from '@/repositories/firebase/config';
-
-const FUNCTIONS_BASE_URL =
-  process.env.NEXT_PUBLIC_FUNCTIONS_URL ||
-  'https://asia-northeast1-link-like-essentials.cloudfunctions.net/deckApi';
 
 async function getAuthToken(): Promise<string> {
   const user = auth.currentUser;
@@ -32,7 +29,7 @@ export const deckRepository = {
     if (params?.songId) queryParams.append('songId', params.songId);
     if (params?.tag) queryParams.append('tag', params.tag);
 
-    const url = `${FUNCTIONS_BASE_URL}/decks${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+    const url = `${DECK_API_ENDPOINT}/decks${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
 
     const response = await fetch(url, {
       headers: {
@@ -51,7 +48,7 @@ export const deckRepository = {
 
   async getDeck(deckId: string): Promise<Deck> {
     const token = await getAuthToken();
-    const response = await fetch(`${FUNCTIONS_BASE_URL}/decks/${deckId}`, {
+    const response = await fetch(`${DECK_API_ENDPOINT}/decks/${deckId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -69,7 +66,7 @@ export const deckRepository = {
   async createDeck(deckForCloud: DeckForCloud): Promise<Deck> {
     const token = await getAuthToken();
 
-    const response = await fetch(`${FUNCTIONS_BASE_URL}/decks`, {
+    const response = await fetch(`${DECK_API_ENDPOINT}/decks`, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -91,7 +88,7 @@ export const deckRepository = {
   async updateDeck(deckId: string, deckForCloud: DeckForCloudUpdate): Promise<Deck> {
     const token = await getAuthToken();
     
-    const response = await fetch(`${FUNCTIONS_BASE_URL}/decks/${deckId}`, {
+    const response = await fetch(`${DECK_API_ENDPOINT}/decks/${deckId}`, {
       method: 'PUT',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -111,7 +108,7 @@ export const deckRepository = {
 
   async deleteDeck(deckId: string): Promise<void> {
     const token = await getAuthToken();
-    const response = await fetch(`${FUNCTIONS_BASE_URL}/decks/${deckId}`, {
+    const response = await fetch(`${DECK_API_ENDPOINT}/decks/${deckId}`, {
       method: 'DELETE',
       headers: {
         Authorization: `Bearer ${token}`,
