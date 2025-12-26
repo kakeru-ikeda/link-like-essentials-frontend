@@ -69,7 +69,6 @@ export const deckRepository = {
 
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));
-      console.error('API エラーレスポンス:', error);
       throw new Error(error.error?.message || 'デッキの作成に失敗しました');
     }
 
