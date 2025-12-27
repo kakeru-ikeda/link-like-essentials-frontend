@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { CardFilter as CardFilterType } from '@/models/Filter';
-import { FilterButton } from '@/components/deck/FilterButton';
+import { FilterButton } from '@/components/common/FilterButton';
 import { Button } from '@/components/common/Button';
-import { ActiveFilters } from '@/components/deck/ActiveFilters';
-import { CardFilter } from '@/components/deck/CardFilter';
+import { ActiveFilters } from '@/components/common/ActiveFilters';
+import { CardFilter } from '@/components/common/CardFilter';
 
 interface CardGridFilterProps {
   activeFilterCount: number;
@@ -53,7 +53,6 @@ export const CardGridFilter: React.FC<CardGridFilterProps> = ({
         {hasActiveFilters && (
           <Button
             onClick={onFilterClear}
-            disabled={!hasActiveFilters}
             variant="secondary"
             className="!px-4 !py-2 text-sm"
           >
