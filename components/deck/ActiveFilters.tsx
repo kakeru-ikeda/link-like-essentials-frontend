@@ -1,5 +1,3 @@
-'use client';
-
 import React from 'react';
 import type { CardFilter } from '@/models/Filter';
 import {
@@ -31,14 +29,14 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
     (filter.limitedTypes && filter.limitedTypes.length > 0) ||
     (filter.skillEffects && filter.skillEffects.length > 0) ||
     (filter.skillSearchTargets && filter.skillSearchTargets.length > 0) ||
-    (filter.hasTokens !== undefined);
+    filter.hasTokens !== undefined;
 
   if (!hasActiveFilters) {
     return null;
   }
 
   return (
-    <div className="px-4 py-2 bg-gray-50 border-b border-gray-200">
+    <div className="px-4 py-2 bg-gray-50 border-gray-200">
       <div className="flex flex-wrap gap-2 items-center">
         <span className="text-xs font-medium text-gray-600">適用中:</span>
 
@@ -102,7 +100,9 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
         {/* 得意ムード */}
         {filter.favoriteModes && filter.favoriteModes.length > 0 && (
           <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full flex items-center gap-1">
-            {filter.favoriteModes.map((f) => FAVORITE_MODE_LABELS[f]).join(', ')}
+            {filter.favoriteModes
+              .map((f) => FAVORITE_MODE_LABELS[f])
+              .join(', ')}
             <button
               onClick={() => clearFilterKey('favoriteModes')}
               className="hover:bg-green-200 rounded-full p-0.5"
@@ -159,7 +159,9 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
         {/* スキル検索対象 */}
         {filter.skillSearchTargets && filter.skillSearchTargets.length > 0 && (
           <span className="px-2 py-1 bg-teal-100 text-teal-700 text-xs rounded-full flex items-center gap-1">
-            {filter.skillSearchTargets.map((t) => SKILL_SEARCH_TARGET_LABELS[t]).join(', ')}
+            {filter.skillSearchTargets
+              .map((t) => SKILL_SEARCH_TARGET_LABELS[t])
+              .join(', ')}
             <button
               onClick={() => clearFilterKey('skillSearchTargets')}
               className="hover:bg-teal-200 rounded-full p-0.5"
@@ -212,7 +214,6 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
             </button>
           </span>
         )}
-
       </div>
     </div>
   );
