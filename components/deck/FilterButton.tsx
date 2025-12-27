@@ -1,15 +1,16 @@
-'use client';
-
 import React from 'react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 
 interface FilterButtonProps {
   onClick: () => void;
   activeCount: number;
+  isExpanded?: boolean;
 }
 
 export const FilterButton: React.FC<FilterButtonProps> = ({
   onClick,
   activeCount,
+  isExpanded = undefined,
 }) => {
   return (
     <button
@@ -36,6 +37,12 @@ export const FilterButton: React.FC<FilterButtonProps> = ({
           {activeCount}
         </span>
       )}
+      {isExpanded !== undefined &&
+        (isExpanded ? (
+          <ChevronUp className="w-4 h-4 ml-1" />
+        ) : (
+          <ChevronDown className="w-4 h-4 ml-1" />
+        ))}
     </button>
   );
 };
