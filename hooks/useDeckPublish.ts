@@ -73,8 +73,7 @@ export const useDeckPublish = (
           setDisplayName('');
         });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen]);
+  }, [isOpen, getMyProfile]);
 
   // 画像アップロード処理
   const handleImageUpload = useCallback(
