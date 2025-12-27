@@ -5,8 +5,6 @@ export interface ApiExecuteOptions<T> {
   onSuccess?: (data: T) => void;
   /** エラー時のコールバック */
   onError?: (error: Error) => void;
-  /** 成功時のログメッセージ */
-  successMessage?: string;
   /** エラー時のログメッセージ */
   errorMessage?: string;
 }
@@ -16,7 +14,7 @@ export interface UseApiBaseReturn {
   execute: <T>(
     apiCall: () => Promise<T>,
     options?: ApiExecuteOptions<T>
-  ) => Promise<T | undefined>;
+  ) => Promise<T>;
   /** ローディング状態 */
   isLoading: boolean;
   /** エラーメッセージ */
@@ -38,7 +36,7 @@ export const useApiBase = (): UseApiBaseReturn => {
     async <T>(
       apiCall: () => Promise<T>,
       options?: ApiExecuteOptions<T>
-    ): Promise<T | undefined> => {
+    ): Promise<T> => {
       setIsLoading(true);
       setError(null);
 
