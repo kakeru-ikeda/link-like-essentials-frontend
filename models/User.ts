@@ -28,12 +28,6 @@ export interface UserProfileInput {
   displayName: string;
   /** 自己紹介 */
   bio?: string;
-}
-
-/**
- * アバター画像アップロード時のレスポンスデータ
- */
-export interface AvatarUploadResponse {
-  /** アップロードされた画像のURL */
-  avatarUrl: string;
+  /** アバター画像URL */
+  avatarUrl?: string;
 }
