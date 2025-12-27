@@ -14,7 +14,6 @@ components/ → services/ → repositories/
 
 ## 型定義ルール
 
-- 全関数に戻り値の型を明示
 - `any`禁止（必要なら`unknown`）
 - オブジェクト形状は`interface`、ユニオン型は`type`
 - Enum は`models/enums.ts`に集約
