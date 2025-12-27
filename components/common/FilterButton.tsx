@@ -10,7 +10,7 @@ interface FilterButtonProps {
 export const FilterButton: React.FC<FilterButtonProps> = ({
   onClick,
   activeCount,
-  isExpanded = undefined,
+  isExpanded,
 }) => {
   return (
     <button
