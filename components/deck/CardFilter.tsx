@@ -1,5 +1,3 @@
-'use client';
-
 import React from 'react';
 import type { CardFilter as CardFilterType } from '@/models/Filter';
 import { FilterMode } from '@/models/Filter';
@@ -34,7 +32,6 @@ export const CardFilter: React.FC<CardFilterProps> = ({
   currentSlotId,
   onApply,
 }) => {
-
   // 現在のスロットに配置可能なキャラクターのみを取得
   const selectableCharacters = React.useMemo(
     () => getSelectableCharactersForSlot(currentSlotId ?? null),
@@ -130,7 +127,9 @@ export const CardFilter: React.FC<CardFilterProps> = ({
             }`}
           >
             OR検索
-            <span className="block text-xs mt-1 opacity-90">いずれかに一致</span>
+            <span className="block text-xs mt-1 opacity-90">
+              いずれかに一致
+            </span>
           </button>
           <button
             onClick={() => updateFilter({ filterMode: FilterMode.AND })}
@@ -168,6 +167,31 @@ export const CardFilter: React.FC<CardFilterProps> = ({
         />
       </div>
 
+      {/* キャラクター */}
+      <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+        <label className="block text-sm font-medium text-gray-700 mb-3">
+          キャラクター
+        </label>
+        <div className="flex flex-wrap gap-2">
+          {selectableCharacters.map((character) => {
+            const isSelected = filter.characterNames?.includes(character);
+            return (
+              <button
+                key={character}
+                onClick={() => toggleCharacterName(character)}
+                className={`px-3 py-1 rounded-full text-sm font-medium transition ${
+                  isSelected
+                    ? 'bg-pink-500 text-white'
+                    : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
+                }`}
+              >
+                {character}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
       {/* レアリティ */}
       <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
         <label className="block text-sm font-medium text-gray-700 mb-3">
@@ -202,7 +226,7 @@ export const CardFilter: React.FC<CardFilterProps> = ({
               <button
                 key={favoriteMode}
                 onClick={() => toggleFavoriteMode(favoriteMode)}
-              className={`px-3 py-1 rounded-full text-sm font-medium transition ${
+                className={`px-3 py-1 rounded-full text-sm font-medium transition ${
                   filter.favoriteModes?.includes(favoriteMode)
                     ? 'bg-pink-500 text-white'
                     : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
@@ -214,37 +238,12 @@ export const CardFilter: React.FC<CardFilterProps> = ({
         </div>
       </div>
 
-      {/* キャラクター */}
-      <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-        <label className="block text-sm font-medium text-gray-700 mb-3">
-          キャラクター
-        </label>
-        <div className="flex flex-wrap gap-2">
-          {selectableCharacters.map((character) => {
-            const isSelected = filter.characterNames?.includes(character);
-            return (
-              <button
-                key={character}
-                onClick={() => toggleCharacterName(character)}
-                className={`px-3 py-1 rounded-full text-sm font-medium transition ${
-                  isSelected
-                    ? 'bg-pink-500 text-white'
-                    : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
-                }`}
-              >
-                {character}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
       {/* スキル効果 */}
       <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
         <label className="block text-sm font-medium text-gray-700 mb-3">
           スキル効果
         </label>
-        
+
         {/* スキル効果の選択 */}
         <div className="mb-4">
           <div className="flex flex-wrap gap-2">
@@ -252,7 +251,7 @@ export const CardFilter: React.FC<CardFilterProps> = ({
               <Tooltip
                 key={skillEffect}
                 content={SKILL_EFFECT_DESCRIPTIONS[skillEffect]}
-                position="left"
+                position="top"
               >
                 <button
                   onClick={() => toggleSkillEffect(skillEffect)}
@@ -279,7 +278,7 @@ export const CardFilter: React.FC<CardFilterProps> = ({
               <button
                 key={target}
                 onClick={() => toggleSkillSearchTarget(target)}
-              className={`px-3 py-1 rounded-full text-sm font-medium transition ${
+                className={`px-3 py-1 rounded-full text-sm font-medium transition ${
                   filter.skillSearchTargets?.includes(target)
                     ? 'bg-orange-500 text-white'
                     : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'

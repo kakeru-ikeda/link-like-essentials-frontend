@@ -1,5 +1,3 @@
-'use client';
-
 import React from 'react';
 import { Card } from '@/models/Card';
 import { CardListItem } from '@/components/deck/CardListItem';
@@ -31,11 +29,7 @@ export const CardList: React.FC<CardListProps> = ({
   return (
     <div className="flex flex-col px-2">
       {cards.map((card) => (
-        <CardListItem
-          key={card.id}
-          card={card}
-          onSelect={onSelectCard}
-        />
+        <CardListItem key={card.id} card={card} onSelect={onSelectCard} />
       ))}
     </div>
   );
