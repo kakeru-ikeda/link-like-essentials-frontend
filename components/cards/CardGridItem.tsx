@@ -53,9 +53,6 @@ export const CardGridItem: React.FC<CardGridItemProps> = ({
           <p className="text-xs text-white/90">{card.characterName}</p>
         </div>
       </div>
-
-      {/* ホバー時のオーバーレイ */}
-      <div className="absolute inset-0 bg-blue-500 bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-200 pointer-events-none" />
     </button>
   );
 };
