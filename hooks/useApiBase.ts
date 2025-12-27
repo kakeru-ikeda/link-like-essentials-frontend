@@ -45,11 +45,6 @@ export const useApiBase = (): UseApiBaseReturn => {
       try {
         const data = await apiCall();
 
-        // 成功ログ
-        if (options?.successMessage) {
-          console.log('✅', options.successMessage, data);
-        }
-
         // 成功コールバック
         options?.onSuccess?.(data);
 
@@ -61,9 +56,6 @@ export const useApiBase = (): UseApiBaseReturn => {
           (err instanceof Error ? err.message : 'エラーが発生しました');
 
         setError(errorMsg);
-
-        // エラーログ
-        console.error('❌', errorMsg, err);
 
         // エラーコールバック
         options?.onError?.(err as Error);

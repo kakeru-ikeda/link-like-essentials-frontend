@@ -1,5 +1,5 @@
 import { useApiBase } from './useApiBase';
-import { userRepository } from '@/repositories/api/userRepository';
+import { userService } from '@/services/userService';
 import type { UserProfile, UserProfileInput } from '@/models/User';
 
 export interface UseUserApiReturn {
@@ -25,39 +25,40 @@ export interface UseUserApiReturn {
  * User API操作用カスタムフック
  * 
  * useApiBaseを使用して共通のエラーハンドリングとローディング管理を提供
+ * ビジネスロジックはuserServiceに委譲
  */
 export const useUserApi = (): UseUserApiReturn => {
   const { execute, isLoading, error, reset } = useApiBase();
 
   const getMyProfile = () =>
-    execute(() => userRepository.getMyProfile(), {
+    execute(() => userService.getMyProfile(), {
       successMessage: 'プロフィール取得成功',
       errorMessage: 'プロフィールの取得に失敗しました',
     });
 
   const createProfile = (input: UserProfileInput) =>
-    execute(() => userRepository.createProfile(input), {
+    execute(() => userService.createProfile(input), {
       successMessage: 'プロフィール作成成功',
       errorMessage: 'プロフィールの作成に失敗しました',
     });
 
   const updateProfile = (input: UserProfileInput) =>
-    execute(() => userRepository.updateProfile(input), {
+    execute(() => userService.updateProfile(input), {
       successMessage: 'プロフィール更新成功',
       errorMessage: 'プロフィールの更新に失敗しました',
     });
 
   const deleteAvatar = () =>
-    execute(() => userRepository.deleteAvatar(), {
+    execute(() => userService.deleteAvatar(), {
       successMessage: 'アバター削除成功',
       errorMessage: 'アバター画像の削除に失敗しました',
-    }) as Promise<void>;
+    });
 
   const deleteUser = () =>
-    execute(() => userRepository.deleteUser(), {
+    execute(() => userService.deleteUser(), {
       successMessage: 'ユーザー削除成功',
       errorMessage: 'ユーザーの削除に失敗しました',
-    }) as Promise<void>;
+    });
 
   return {
     getMyProfile,
