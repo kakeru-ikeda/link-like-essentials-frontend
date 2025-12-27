@@ -17,6 +17,7 @@
     "@hookform/resolvers": "^3.9.1",
     "firebase": "^10.14.1",
     "graphql": "^16.9.0",
+    "html-to-image": "^1.11.13",
     "immer": "^10.1.1",
     "lucide-react": "^0.555.0",
     "next": "^14.2.18",
