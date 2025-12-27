@@ -18,6 +18,7 @@ export const CardGridItem: React.FC<CardGridItemProps> = ({
       onClick={() => onSelect(card)}
       className="group relative bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-200 overflow-hidden border-4"
       style={{ borderColor: characterColor }}
+      aria-label={`カード詳細を表示: ${card.cardName}`}
     >
       {/* カード画像 */}
       <div className="relative aspect-video bg-gray-100">

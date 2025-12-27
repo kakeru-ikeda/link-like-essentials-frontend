@@ -18,7 +18,8 @@ export default function CardsPage(): JSX.Element {
     countActiveFilters,
   } = useFilter();
   const { cards, loading, error } = useCards(filter);
-  const sideModal = useSideModal();
+  const { openCardDetail, closeCardDetail, selectedCardId, isCardDetailOpen } =
+    useSideModal();
 
   if (error) {
     return (
@@ -43,19 +44,17 @@ export default function CardsPage(): JSX.Element {
       <CardGrid
         cards={cards}
         loading={loading}
-        onSelectCard={(card) => sideModal.openCardDetail(card.id)}
+        onSelectCard={(card) => openCardDetail(card.id)}
       />
 
       {/* カード詳細サイドモーダル */}
       <SideModal
-        isOpen={sideModal.selectedCardId !== null}
-        onClose={sideModal.closeCardDetail}
+        isOpen={isCardDetailOpen}
+        onClose={closeCardDetail}
         title="カード詳細"
         width="md"
       >
-        {sideModal.selectedCardId && (
-          <CardDetailView cardId={sideModal.selectedCardId} />
-        )}
+        {selectedCardId && <CardDetailView cardId={selectedCardId} />}
       </SideModal>
     </div>
   );
