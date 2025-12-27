@@ -1,7 +1,6 @@
 import {
   UserProfile,
   UserProfileInput,
-  AvatarUploadResponse,
 } from '@/models/User';
 import { USER_API_ENDPOINT } from '@/constants/apiEndpoints';
 import { getAuthToken } from './authUtils';
@@ -27,7 +26,7 @@ export const userRepository = {
     }
 
     const data = await response.json();
-    return data;
+    return data.user;
   },
 
   /**
@@ -79,35 +78,6 @@ export const userRepository = {
       const error = await response.json().catch(() => ({}));
       throw new Error(
         error.error?.message || 'プロフィールの更新に失敗しました'
-      );
-    }
-
-    const data = await response.json();
-    return data;
-  },
-
-  /**
-   * アバター画像をアップロードする
-   * POST /users/me/avatar
-   * @param file - アップロードする画像ファイル (最大5MB, JPEG/PNG/WebP)
-   */
-  async uploadAvatar(file: File): Promise<AvatarUploadResponse> {
-    const token = await getAuthToken();
-    const formData = new FormData();
-    formData.append('avatar', file);
-
-    const response = await fetch(`${USER_API_ENDPOINT}/users/me/avatar`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: formData,
-    });
-
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({}));
-      throw new Error(
-        error.error?.message || 'アバター画像のアップロードに失敗しました'
       );
     }
 
