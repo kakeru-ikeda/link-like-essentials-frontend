@@ -6,13 +6,7 @@ import { ExportDeckBuilder } from './ExportDeckBuilder';
 import { ExportDashboard } from './ExportDashboard';
 import { useDeck } from '@/hooks/useDeck';
 
-interface DeckExportViewProps {
-  customWidth?: number;
-}
-
-export const DeckExportView: React.FC<DeckExportViewProps> = ({ 
-  customWidth = 1400 
-}) => {
+export const DeckExportView: React.FC = () => {
   const { deck } = useDeck();
   
   return (
@@ -22,7 +16,6 @@ export const DeckExportView: React.FC<DeckExportViewProps> = ({
         letterSpacing: '0',
         lineHeight: '1.5',
       }}
-      // style={{ width: `${customWidth}px` }}
     >
       <ExportHeader deckName={deck?.name} />
       

@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { useDeck } from '@/hooks/useDeck';
-import { getCenterCard, getOtherLRCards } from '@/services/deckAnalysisService';
 import { useLiveGrandPrixById } from '@/hooks/useLiveGrandPrix';
 
 export const ExportDashboard: React.FC = () => {
@@ -19,12 +18,6 @@ export const ExportDashboard: React.FC = () => {
     if (!liveGrandPrix || !deck?.liveGrandPrixDetailId) return null;
     return liveGrandPrix.details.find((detail) => detail.id === deck.liveGrandPrixDetailId) || null;
   }, [liveGrandPrix, deck?.liveGrandPrixDetailId]);
-
-  // センターカードを取得
-  const centerCard = React.useMemo(() => getCenterCard(deck), [deck]);
-
-  // センター以外のLRカードを取得
-  const otherLRCards = React.useMemo(() => getOtherLRCards(deck, centerCard), [deck, centerCard]);
 
   if (!deck) return null;
 

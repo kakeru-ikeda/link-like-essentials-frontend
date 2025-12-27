@@ -8,8 +8,15 @@ import { VerticalBadge } from '@/components/common/VerticalBadge';
 import { AceBadge } from '@/components/common/AceBadge';
 import type { DeckSlot } from '@/models/Deck';
 
-// 画像表示専用のカードスロットコンポーネント
-const ExportCardSlot: React.FC<{ slot: DeckSlot; isMain?: boolean; characterColor: string; isAce?: boolean }> = ({ 
+interface ExportCardSlotProps {
+  slot: DeckSlot;
+  isMain?: boolean;
+  characterColor: string;
+  isAce?: boolean;
+}
+
+// 画像表示専用のカードスロットコンポーネント(メモ化)
+const ExportCardSlot = React.memo<ExportCardSlotProps>(({
   slot, 
   isMain = false,
   characterColor,
@@ -61,7 +68,9 @@ const ExportCardSlot: React.FC<{ slot: DeckSlot; isMain?: boolean; characterColo
       </div>
     </div>
   );
-};
+});
+
+ExportCardSlot.displayName = 'ExportCardSlot';
 
 export const ExportDeckBuilder: React.FC = () => {
   const { deck, isFriendSlotEnabled } = useDeck();
