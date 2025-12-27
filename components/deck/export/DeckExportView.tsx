@@ -6,7 +6,11 @@ import { ExportDeckBuilder } from './ExportDeckBuilder';
 import { ExportDashboard } from './ExportDashboard';
 import { useDeck } from '@/hooks/useDeck';
 
-export const DeckExportView: React.FC = () => {
+interface DeckExportViewProps {
+  showLimitBreak?: boolean;
+}
+
+export const DeckExportView: React.FC<DeckExportViewProps> = ({ showLimitBreak = true }) => {
   const { deck } = useDeck();
   
   return (
@@ -20,7 +24,7 @@ export const DeckExportView: React.FC = () => {
       <ExportHeader deckName={deck?.name} />
       
       <div className="mb-8 bg-white rounded-lg shadow-lg p-6">
-        <ExportDeckBuilder />
+        <ExportDeckBuilder showLimitBreak={showLimitBreak} />
       </div>
       
       <div className="bg-white rounded-lg shadow-lg p-6">

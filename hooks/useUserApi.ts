@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { useApiBase } from './useApiBase';
 import { userService } from '@/services/userService';
 import type { UserProfile, UserProfileInput } from '@/models/User';
@@ -30,30 +31,45 @@ export interface UseUserApiReturn {
 export const useUserApi = (): UseUserApiReturn => {
   const { execute, isLoading, error, reset } = useApiBase();
 
-  const getMyProfile = () =>
-    execute(() => userService.getMyProfile(), {
-      errorMessage: 'プロフィールの取得に失敗しました',
-    });
+  const getMyProfile = useCallback(
+    () =>
+      execute(() => userService.getMyProfile(), {
+        errorMessage: 'プロフィールの取得に失敗しました',
+      }),
+    [execute]
+  );
 
-  const createProfile = (input: UserProfileInput) =>
-    execute(() => userService.createProfile(input), {
-      errorMessage: 'プロフィールの作成に失敗しました',
-    });
+  const createProfile = useCallback(
+    (input: UserProfileInput) =>
+      execute(() => userService.createProfile(input), {
+        errorMessage: 'プロフィールの作成に失敗しました',
+      }),
+    [execute]
+  );
 
-  const updateProfile = (input: UserProfileInput) =>
-    execute(() => userService.updateProfile(input), {
-      errorMessage: 'プロフィールの更新に失敗しました',
-    });
+  const updateProfile = useCallback(
+    (input: UserProfileInput) =>
+      execute(() => userService.updateProfile(input), {
+        errorMessage: 'プロフィールの更新に失敗しました',
+      }),
+    [execute]
+  );
 
-  const deleteAvatar = () =>
-    execute(() => userService.deleteAvatar(), {
-      errorMessage: 'アバター画像の削除に失敗しました',
-    });
+  const deleteAvatar = useCallback(
+    () =>
+      execute(() => userService.deleteAvatar(), {
+        errorMessage: 'アバター画像の削除に失敗しました',
+      }),
+    [execute]
+  );
 
-  const deleteUser = () =>
-    execute(() => userService.deleteUser(), {
-      errorMessage: 'ユーザーの削除に失敗しました',
-    });
+  const deleteUser = useCallback(
+    () =>
+      execute(() => userService.deleteUser(), {
+        errorMessage: 'ユーザーの削除に失敗しました',
+      }),
+    [execute]
+  );
 
   return {
     getMyProfile,

@@ -19,6 +19,8 @@ import { useLiveGrandPrixById, useActiveLiveGrandPrix } from '@/hooks/useLiveGra
 import { LiveGrandPrix, LiveGrandPrixDetail } from '@/models/LiveGrandPrix';
 import { ExpansionPanel } from '@/components/common/ExpansionPanel';
 import { EffectBadge } from '@/components/common/EffectBadge';
+import { DeckPublishModal } from '@/components/deck/DeckPublishModal';
+import { useModal } from '@/hooks/useModal';
 
 export const DeckDashboard: React.FC = () => {
   const { 
@@ -31,9 +33,9 @@ export const DeckDashboard: React.FC = () => {
     updateLiveGrandPrix,
     updateLiveGrandPrixStage,
     clearAllCards,
-    saveDeck
   } = useDeck();
   
+  const { isPublishModalOpen, openPublishModal, closePublishModal } = useModal();
   const [selectedDeckType, setSelectedDeckType] = useState<DeckType | undefined>(deck?.deckType);
 
   // ライブグランプリの詳細を取得（選択されている場合のみ）
@@ -114,8 +116,8 @@ export const DeckDashboard: React.FC = () => {
           <Button variant="secondary" onClick={clearDeck}>
             クリア
           </Button>
-          <Button onClick={saveDeck}>
-            公開
+          <Button onClick={openPublishModal} className="bg-green-600 hover:bg-green-700 disabled:bg-green-400">
+            共有
           </Button>
         </div>
       </div>
@@ -241,6 +243,12 @@ export const DeckDashboard: React.FC = () => {
           className="flex-1"
         />
       </div>
+
+      {/* 公開確認モーダル */}
+      <DeckPublishModal
+        isOpen={isPublishModalOpen}
+        onClose={closePublishModal}
+      />
     </div>
   );
 };

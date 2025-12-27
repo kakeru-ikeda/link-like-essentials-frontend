@@ -6,6 +6,7 @@ interface ModalProps {
   title?: string;
   children: React.ReactNode;
   closeOnBackdropClick?: boolean;
+  maxWidth?: string;
 }
 
 export const Modal: React.FC<ModalProps> = ({
@@ -14,6 +15,7 @@ export const Modal: React.FC<ModalProps> = ({
   title,
   children,
   closeOnBackdropClick = true,
+  maxWidth = 'max-w-2xl',
 }) => {
   if (!isOpen) return null;
 
@@ -29,7 +31,7 @@ export const Modal: React.FC<ModalProps> = ({
       onClick={handleBackdropClick}
     >
       <div
-        className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+        className={`bg-white rounded-lg shadow-xl ${maxWidth} w-full max-h-[90vh] overflow-y-auto`}
         onClick={(e) => e.stopPropagation()}
       >
         {title && (
