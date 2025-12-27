@@ -12,7 +12,7 @@ export function useScreenshot() {
     try {
       const dataUrl = await htmlToImage.toPng(element, {
         quality: 1.0,
-        pixelRatio: 2,
+        pixelRatio: 0.5,
         cacheBust: true,
         backgroundColor: '#ffffff',
         style: {

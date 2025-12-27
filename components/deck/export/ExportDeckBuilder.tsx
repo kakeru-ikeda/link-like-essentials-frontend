@@ -1,20 +1,19 @@
 'use client';
 
 import React from 'react';
-import Image from 'next/image';
 import { useDeck } from '@/hooks/useDeck';
 import { getDeckSlotMapping, getDeckFrame } from '@/constants/deckConfig';
 import { getCharacterBackgroundColor, getCharacterColor } from '@/constants/characters';
-import { RarityBadge } from '@/components/common/RarityBadge';
-import { ApBadge } from '@/components/common/ApBadge';
 import { VerticalBadge } from '@/components/common/VerticalBadge';
+import { AceBadge } from '@/components/common/AceBadge';
 import type { DeckSlot } from '@/models/Deck';
 
 // 画像表示専用のカードスロットコンポーネント
-const ExportCardSlot: React.FC<{ slot: DeckSlot; isMain?: boolean; characterColor: string }> = ({ 
+const ExportCardSlot: React.FC<{ slot: DeckSlot; isMain?: boolean; characterColor: string; isAce?: boolean }> = ({ 
   slot, 
   isMain = false,
-  characterColor 
+  characterColor,
+  isAce = false
 }) => {
   if (!slot.card) {
     return (
@@ -26,20 +25,14 @@ const ExportCardSlot: React.FC<{ slot: DeckSlot; isMain?: boolean; characterColo
 
   return (
     <div className={`relative w-full aspect-[17/11] border-4 rounded-2xl overflow-hidden`} style={{ borderColor: characterColor }}>
-      {/* AP表示 */}
-      {slot.card.detail?.skill?.ap && (
-        <ApBadge 
-          ap={slot.card.detail.skill.ap}
-          favoriteMode={slot.card.detail.favoriteMode}
-          size="large"
+      {/* エースバッジ（フレンドカードは除外） */}
+      {slot.slotId !== 99 && isAce && (
+        <AceBadge
+          isAce={true}
+          disabled={false}
+          size="xlarge"
         />
       )}
-
-      {/* レアリティ表示 */}
-      <RarityBadge 
-        rarity={slot.card.rarity}
-        size="large"
-      />
 
       {/* カード画像 */}
       {slot.card.detail?.awakeAfterStorageUrl ? (
@@ -54,6 +47,11 @@ const ExportCardSlot: React.FC<{ slot: DeckSlot; isMain?: boolean; characterColo
           <span className="text-gray-400 text-2xl">画像なし</span>
         </div>
       )}
+
+      {/* 上限解放数表示 */}
+      <div className="absolute top-2 left-2 z-30 bg-black/50 text-white font-black rounded-xl px-5 py-3 text-8xl tabular-nums shadow-2xl">
+        {(slot.limitBreak ?? 14).toString().padStart(2, '0')}
+      </div>
 
       {/* カード名 */}
       <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3">
@@ -101,32 +99,13 @@ export const ExportDeckBuilder: React.FC = () => {
     return { character, slots: charSlots };
   }).filter(({ slots }) => slots.length > 0); // 空のグループを除外
 
-  // センターカード取得
-  const centerCard = deck.slots.find((slot) => 
-    slot.card?.rarity === 'LR'
-  );
-
-  // 歌唱カード取得（センター以外のLRカード）
-  const singerCards = deck.slots.filter((slot) => 
-    slot.card?.rarity === 'LR' && slot.slotId !== centerCard?.slotId
-  );
-
   return (
     <div className="w-full">
-      {/* フレンドスロット表示 */}
-      {isFriendSlotEnabled && (
-        <div className="mb-8 text-center bg-blue-50 border-4 border-blue-200 rounded-2xl px-8 py-6">
-          <span className="text-3xl font-bold text-blue-700">
-            フレンドスロット有効
-          </span>
-        </div>
-      )}
-
       {/* デッキグリッド */}
       <div className="grid grid-cols-3 gap-8">
         {characterSlots.map(({ character, slots }) => {
-          const isCenter = centerCard && slots.some(slot => slot.slotId === centerCard.slotId);
-          const isSinger = singerCards.some(singer => slots.some(slot => slot.slotId === singer.slotId));
+          const isCenter = deck.centerCharacter === character;
+          const isSinger = deck.participations?.includes(character) || false;
           const backgroundColor = getCharacterBackgroundColor(character, 0.5);
           const characterColor = getCharacterColor(character);
 
@@ -149,25 +128,38 @@ export const ExportDeckBuilder: React.FC = () => {
                 }}
               >
                 {/* Character name header */}
-                <div className="text-center flex-shrink-0">
+                <div className="text-center flex-shrink-0 pt-4">
                   <h3 className="text-3xl font-bold text-gray-700">{character}</h3>
                 </div>
 
                 {/* Main slot */}
                 {slots[0] && (
-                  <ExportCardSlot slot={slots[0]} isMain={true} characterColor={characterColor} />
+                  <ExportCardSlot 
+                    slot={slots[0]} 
+                    isMain={true} 
+                    characterColor={characterColor}
+                    isAce={deck.aceSlotId === slots[0].slotId}
+                  />
                 )}
 
                 {/* Sub slots */}
                 <div className="flex gap-4">
                   {slots[1] && (
                     <div className="flex-1 max-w-[55%]">
-                      <ExportCardSlot slot={slots[1]} characterColor={characterColor} />
+                      <ExportCardSlot 
+                        slot={slots[1]} 
+                        characterColor={characterColor}
+                        isAce={deck.aceSlotId === slots[1].slotId}
+                      />
                     </div>
                   )}
                   {slots[2] && (
                     <div className="flex-1">
-                      <ExportCardSlot slot={slots[2]} characterColor={characterColor} />
+                      <ExportCardSlot 
+                        slot={slots[2]} 
+                        characterColor={characterColor}
+                        isAce={deck.aceSlotId === slots[2].slotId}
+                      />
                     </div>
                   )}
                 </div>

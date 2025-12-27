@@ -4,9 +4,9 @@ import React from 'react';
 
 interface AceBadgeProps {
   isAce: boolean;
-  onToggle: () => void;
+  onToggle?: () => void;
   disabled?: boolean;
-  size?: 'small' | 'large';
+  size?: 'small' | 'large' | 'xlarge';
 }
 
 export const AceBadge: React.FC<AceBadgeProps> = ({
@@ -15,14 +15,14 @@ export const AceBadge: React.FC<AceBadgeProps> = ({
   disabled = false,
   size = 'large'
 }) => {
-  const sizeClass = size === 'large' ? 'w-8 h-8' : 'w-6 h-6';
-  const iconSize = size === 'large' ? 'w-5 h-5' : 'w-4 h-4';
+  const sizeClass = size === 'xlarge' ? 'w-16 h-16' : size === 'large' ? 'w-8 h-8' : 'w-6 h-6';
+  const iconSize = size === 'xlarge' ? 'w-10 h-10' : size === 'large' ? 'w-5 h-5' : 'w-4 h-4';
   
   return (
     <button
       onClick={(e) => {
         e.stopPropagation();
-        if (!disabled) onToggle();
+        if (!disabled && onToggle) onToggle();
       }}
       disabled={disabled}
       className={`absolute bottom-1 right-1 z-20 ${sizeClass} rounded-full 

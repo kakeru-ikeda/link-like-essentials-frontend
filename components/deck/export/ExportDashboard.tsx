@@ -1,12 +1,8 @@
 'use client';
 
 import React from 'react';
-import Image from 'next/image';
 import { useDeck } from '@/hooks/useDeck';
 import { getCenterCard, getOtherLRCards } from '@/services/deckAnalysisService';
-import { CenterCardDisplay } from '@/components/deck/CenterCardDisplay';
-import { LRCardsList } from '@/components/deck/LRCardsList';
-import { EffectBadge } from '@/components/common/EffectBadge';
 import { useLiveGrandPrixById } from '@/hooks/useLiveGrandPrix';
 
 export const ExportDashboard: React.FC = () => {
@@ -35,11 +31,7 @@ export const ExportDashboard: React.FC = () => {
   return (
     <div className="w-full space-y-4">
       {/* デッキ情報 */}
-      <div className="grid grid-cols-2 gap-4 text-sm">
-        <div>
-          <span className="font-semibold text-slate-700">デッキタイプ: </span>
-          <span className="text-slate-600">{deck.deckType || '未設定'}</span>
-        </div>
+      <div className="grid grid-cols-2 gap-4 text-2xl">
         <div>
           <span className="font-semibold text-slate-700">楽曲: </span>
           <span className="text-slate-600">{deck.songName || '未設定'}</span>
@@ -49,15 +41,29 @@ export const ExportDashboard: React.FC = () => {
             <span className="font-semibold text-slate-700">ライブグランプリ: </span>
             <span className="text-slate-600">{deck.liveGrandPrixEventName}</span>
             {selectedStageDetail && (
-              <div className="mt-1 flex items-center gap-1">
-                <EffectBadge
-                  type="stage"
-                  specialEffect={selectedStageDetail.specialEffect}
-                />
-                <EffectBadge
-                  type="section"
-                  sectionEffects={selectedStageDetail.sectionEffects}
-                />
+              <div className="mt-3 space-y-2">
+                {selectedStageDetail.specialEffect && (
+                  <div className="bg-purple-50 border border-purple-200 rounded-lg px-3 py-2">
+                    <span className="font-semibold text-purple-800">ステージ効果: </span><br/>
+                    <span className="text-purple-700">{selectedStageDetail.specialEffect}</span>
+                  </div>
+                )}
+                {selectedStageDetail.sectionEffects.length > 0 && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg px-3 py-2">
+                    <div className="font-semibold text-blue-800 mb-1.5">セクション効果:</div>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedStageDetail.sectionEffects.map((section) => (
+                        <div
+                          key={section.id}
+                          className="bg-white border border-blue-300 rounded px-2 py-1 text-xl"
+                        >
+                          <span className="font-medium text-blue-900">{section.sectionName}: </span>
+                          <span className="text-blue-700">{section.effect}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -73,7 +79,7 @@ export const ExportDashboard: React.FC = () => {
       {/* ライブアナライザ */}
       {deck.liveAnalyzerImageUrl && (
         <div>
-          <h3 className="text-sm font-semibold text-slate-700 mb-2">ライブアナライザ</h3>
+          <h3 className="text-2xl font-semibold text-slate-700 mb-2">ライブアナライザ</h3>
           <img
             src={deck.liveAnalyzerImageUrl}
             alt="ライブアナライザ"
@@ -83,21 +89,12 @@ export const ExportDashboard: React.FC = () => {
         </div>
       )}
 
-      {/* LRカード情報 */}
-      <div>
-        <h3 className="text-sm font-semibold text-slate-700 mb-2">LRカード</h3>
-        <div className="border border-gray-200 rounded-lg p-3">
-          <CenterCardDisplay centerCard={centerCard} />
-          <LRCardsList lrCards={otherLRCards} />
-        </div>
-      </div>
-
       {/* チャート */}
       {deck.memo && (
         <div>
-          <h3 className="text-sm font-semibold text-slate-700 mb-2">チャート</h3>
+          <h3 className="text-2xl font-semibold text-slate-700 mb-2">チャート</h3>
           <div className="border border-gray-200 rounded-lg p-3 bg-gray-50">
-            <pre className="text-xs text-slate-600 whitespace-pre-wrap font-mono">
+            <pre className="text-lg text-slate-600 whitespace-pre-wrap font-mono">
               {deck.memo}
             </pre>
           </div>
