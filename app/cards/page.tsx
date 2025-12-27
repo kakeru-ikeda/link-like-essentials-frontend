@@ -17,8 +17,16 @@ export default function CardsPage(): JSX.Element {
     clearFilterKey,
     countActiveFilters,
   } = useFilter();
-  const { cards, loading } = useCards(filter);
+  const { cards, loading, error } = useCards(filter);
   const sideModal = useSideModal();
+
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-6">
+        <p className="text-red-500">カード取得にエラーが発生しました</p>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-6">
