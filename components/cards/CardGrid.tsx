@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card } from '@/models/Card';
-import { CardGridItem } from './CardGridItem';
+import { CardGridItem } from '@/components/cards/CardGridItem';
 
 interface CardGridProps {
   cards: Card[];
