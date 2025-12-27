@@ -4,7 +4,6 @@
  */
 
 const MAX_FILE_SIZE_MB = 5;
-const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
 
 // サポートする画像フォーマット
 export const SUPPORTED_IMAGE_FORMATS = [

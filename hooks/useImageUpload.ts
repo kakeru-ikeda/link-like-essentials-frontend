@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { uploadImageToStorage } from '@/repositories/firebase/storage';
-import { processImage, isImageFile, CropArea } from '@/utils/imageUtils';
+import { uploadImage as uploadImageService } from '@/services/imageUploadService';
+import { isImageFile, CropArea } from '@/utils/imageUtils';
 
 export interface UseImageUploadOptions {
   /** クリッピング機能を有効化 */
@@ -73,21 +73,15 @@ export const useImageUpload = (
         setError(null);
         setProgress(0);
 
-        // 画像を処理（リサイズ・クリッピング）
-        const processedBlob = await processImage(file, {
+        // サービス層を通じて画像をアップロード
+        const url = await uploadImageService(file, {
           maxSizeMB,
-          cropToSquare: autoSquareCrop && !cropArea,
+          autoSquareCrop: autoSquareCrop && !cropArea,
           cropArea,
-        });
-
-        // Firebase Storageにアップロード
-        const url = await uploadImageToStorage(
-          processedBlob,
-          file.name,
-          (uploadProgress) => {
+          onProgress: (uploadProgress) => {
             setProgress(uploadProgress);
-          }
-        );
+          },
+        });
 
         setProgress(100);
         return url;

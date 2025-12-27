@@ -198,7 +198,6 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
   const handleSizeChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const newSize = Number(e.target.value);
-      const maxSize = Math.min(imageSize.width, imageSize.height);
 
       // 中央を維持しながらサイズ変更
       const centerX = cropArea.x + cropArea.size / 2;
