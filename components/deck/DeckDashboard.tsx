@@ -116,7 +116,7 @@ export const DeckDashboard: React.FC = () => {
           <Button variant="secondary" onClick={clearDeck}>
             クリア
           </Button>
-          <Button onClick={openPublishModal} className='bg-green-600 hover:bg-green-700 disabled:bg-green-400'>
+          <Button onClick={openPublishModal} className="bg-green-600 hover:bg-green-700 disabled:bg-green-400">
             共有
           </Button>
         </div>

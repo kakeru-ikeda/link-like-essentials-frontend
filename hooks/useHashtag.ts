@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Deck } from '@/models/Deck';
 import { LiveGrandPrix } from '@/models/LiveGrandPrix';
 import {
@@ -39,6 +39,12 @@ export const useHashtag = (
   const [customHashtags, setCustomHashtags] = useState<string[]>([]);
   const [inputValue, setInputValue] = useState<string>('');
 
+  // 常に最新のonChangeコールバックを保持
+  const onChangeRef = useRef(onChange);
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  }, [onChange]);
+
   // 自動ハッシュタグの生成
   useEffect(() => {
     const tags = generateAutoHashtags(deck, liveGrandPrix);
@@ -48,8 +54,8 @@ export const useHashtag = (
   // ハッシュタグの変更を親に通知
   useEffect(() => {
     const allTags = combineHashtags(autoHashtags, customHashtags);
-    onChange(allTags);
-  }, [autoHashtags, customHashtags, onChange]);
+    onChangeRef.current(allTags);
+  }, [autoHashtags, customHashtags]);
 
   // カスタムハッシュタグの追加
   const handleAddCustomHashtag = useCallback((): void => {
@@ -67,7 +73,7 @@ export const useHashtag = (
   // Enterキーでタグを追加
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>): void => {
-      if (e.key === 'Enter') {
+      if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
         e.preventDefault();
         handleAddCustomHashtag();
       }

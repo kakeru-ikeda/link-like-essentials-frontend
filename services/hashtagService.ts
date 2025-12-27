@@ -59,7 +59,7 @@ export const generateAutoHashtags = (
 
   // センターキャラクターのカードIDが179の場合は#ジェネシス
   if (deck.centerCharacter !== null) {
-    const centerChar = CHARACTERS.find((c => c === deck.centerCharacter));
+    const centerChar = CHARACTERS.find(c => c === deck.centerCharacter);
     const slotMapping: DeckSlotMapping[] = getDeckSlotMapping(deck.deckType);
     const centerSlot = slotMapping.find(slot => slot.characterName === centerChar);
 
@@ -69,7 +69,7 @@ export const generateAutoHashtags = (
             tags.push('#ジェネシス');
         }
     }
-}
+  }
 
   return tags;
 };

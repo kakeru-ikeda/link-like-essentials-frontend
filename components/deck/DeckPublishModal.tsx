@@ -30,7 +30,6 @@ export const DeckPublishModal: React.FC<DeckPublishModalProps> = ({
     uploadedImageUrls,
     uploadingCount,
     uploadError,
-    hashtags,
     setHashtags,
     showLimitBreak,
     setShowLimitBreak,
@@ -153,7 +152,7 @@ export const DeckPublishModal: React.FC<DeckPublishModalProps> = ({
                 {uploadedImageUrls.length > 0 && (
                   <div className="grid grid-cols-3 gap-2">
                     {uploadedImageUrls.map((url, index) => (
-                      <div key={index} className="relative">
+                      <div key={url} className="relative">
                         <img
                           src={url}
                           alt={`アップロード画像 ${index + 1}`}
