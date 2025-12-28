@@ -8,6 +8,8 @@ interface TooltipProps {
   children: React.ReactNode;
   position?: 'top' | 'bottom' | 'left' | 'right';
   className?: string;
+  tooltipClassName?: string;
+  hideArrow?: boolean;
 }
 
 export const Tooltip: React.FC<TooltipProps> = ({
@@ -15,6 +17,8 @@ export const Tooltip: React.FC<TooltipProps> = ({
   children,
   position = 'top',
   className = '',
+  tooltipClassName = '',
+  hideArrow = false,
 }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 });
@@ -91,7 +95,10 @@ export const Tooltip: React.FC<TooltipProps> = ({
   const tooltipContent = isVisible && mounted ? (
     <div
       ref={tooltipRef}
-      className="fixed z-[9999] px-3 py-2 text-sm text-white bg-gray-900 rounded-md shadow-lg max-w-xs pointer-events-none"
+      className={
+        tooltipClassName ||
+        'fixed z-[9999] px-3 py-2 text-sm text-white bg-gray-900 rounded-md shadow-lg max-w-xs pointer-events-none'
+      }
       style={{
         top: `${tooltipPosition.top}px`,
         left: `${tooltipPosition.left}px`,
@@ -99,17 +106,19 @@ export const Tooltip: React.FC<TooltipProps> = ({
     >
       {content}
       {/* 矢印 */}
-      <div
-        className={`absolute w-2 h-2 bg-gray-900 transform rotate-45 ${
-          position === 'top'
-            ? 'bottom-[-4px] left-1/2 -translate-x-1/2'
-            : position === 'bottom'
-            ? 'top-[-4px] left-1/2 -translate-x-1/2'
-            : position === 'left'
-            ? 'right-[-4px] top-1/2 -translate-y-1/2'
-            : 'left-[-4px] top-1/2 -translate-y-1/2'
-        }`}
-      />
+      {!hideArrow && (
+        <div
+          className={`absolute w-2 h-2 bg-gray-900 transform rotate-45 ${
+            position === 'top'
+              ? 'bottom-[-4px] left-1/2 -translate-x-1/2'
+              : position === 'bottom'
+              ? 'top-[-4px] left-1/2 -translate-x-1/2'
+              : position === 'left'
+              ? 'right-[-4px] top-1/2 -translate-y-1/2'
+              : 'left-[-4px] top-1/2 -translate-y-1/2'
+          }`}
+        />
+      )}
     </div>
   ) : null;
 
