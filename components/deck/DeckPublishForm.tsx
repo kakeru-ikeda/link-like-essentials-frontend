@@ -84,7 +84,7 @@ export const DeckPublishForm: React.FC<DeckPublishFormProps> = ({
             onChange={(e) => setComment(e.target.value)}
             placeholder="デッキについてのコメントを入力..."
             rows={4}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none text-black"
           />
         </div>
 
