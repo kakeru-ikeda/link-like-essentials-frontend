@@ -34,17 +34,17 @@ export const useDeck = () => {
 
   const [lastError, setLastError] = useState<string | null>(null);
 
-  // deck変更時にタブ状態を自動同期
   useEffect(() => {
+    loadDeckFromLocal();
+  }, [loadDeckFromLocal]);
+
+  // タブ同期用のヘルパー関数
+  const syncCurrentTab = () => {
     if (deck) {
       updateCurrentTab(deck);
       saveTabsToLocal();
     }
-  }, [deck, updateCurrentTab, saveTabsToLocal]);
-
-  useEffect(() => {
-    loadDeckFromLocal();
-  }, [loadDeckFromLocal]);
+  };
 
   const addCard = (slotId: number, card: Card): boolean => {
     // バリデーション
@@ -59,6 +59,7 @@ export const useDeck = () => {
     setCardToSlot(slotId, card);
     setLastError(null);
     saveDeckToLocal();
+    syncCurrentTab();
     return true;
   };
 
@@ -69,6 +70,7 @@ export const useDeck = () => {
     }
     setCardToSlot(slotId, null);
     saveDeckToLocal();
+    syncCurrentTab();
   };
 
   const swapCards = (slotId1: number, slotId2: number): boolean => {
@@ -87,6 +89,7 @@ export const useDeck = () => {
 
     setLastError(null);
     saveDeckToLocal();
+    syncCurrentTab();
     return true;
   };
 
@@ -98,15 +101,18 @@ export const useDeck = () => {
     clearDeck();
     setDeckName(newDeckName);
     saveDeckToLocal();
+    syncCurrentTab();
   };
 
   const saveDeck = (): void => {
     saveDeckToLocal();
+    syncCurrentTab();
   };
 
   const resetDeck = (): void => {
     initializeDeck();
     saveDeckToLocal();
+    syncCurrentTab();
   };
 
   const toggleAceCard = (slotId: number): void => {
@@ -122,6 +128,7 @@ export const useDeck = () => {
       }
     }
     saveDeckToLocal();
+    syncCurrentTab();
   };
 
   const updateDeckType = (newDeckType: DeckType): void => {
@@ -142,11 +149,13 @@ export const useDeck = () => {
     
     setDeckType(newDeckType);
     saveDeckToLocal();
+    syncCurrentTab();
   };
 
   const updateSong = (song: Partial<Song>): void => {
     setSong(song);
     saveDeckToLocal();
+    syncCurrentTab();
   };
 
   const updateLiveGrandPrix = (liveGrandPrixId: string, eventName: string): void => {
@@ -155,6 +164,7 @@ export const useDeck = () => {
       eventName || undefined
     );
     saveDeckToLocal();
+    syncCurrentTab();
   };
 
   const updateLiveGrandPrixStage = (detail: LiveGrandPrixDetail | null): void => {
@@ -183,27 +193,32 @@ export const useDeck = () => {
       setLiveGrandPrixStage(undefined, undefined, undefined);
     }
     saveDeckToLocal();
+    syncCurrentTab();
   };
 
 
   const updateDeckName = (name: string): void => {
     setDeckName(name);
     saveDeckToLocal();
+    syncCurrentTab();
   };
 
   const updateDeckMemo = (memo: string): void => {
     setDeckMemo(memo);
     saveDeckToLocal();
+    syncCurrentTab();
   };
 
   const updateScore = (score: number | undefined): void => {
     setScore(score);
     saveDeckToLocal();
+    syncCurrentTab();
   };
 
   const updateLimitBreakCount = (slotId: number, count: number): void => {
     setLimitBreakCount(slotId, count);
     saveDeckToLocal();
+    syncCurrentTab();
   };
 
   return {
@@ -229,6 +244,7 @@ export const useDeck = () => {
     setFriendSlotEnabled: (enabled: boolean) => {
       setFriendSlotEnabled(enabled);
       saveDeckToLocal();
+      syncCurrentTab();
     },
   };
 };
