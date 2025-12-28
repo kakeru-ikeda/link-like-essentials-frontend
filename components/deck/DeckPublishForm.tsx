@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { Button } from '@/components/common/Button';
-import { Checkbox } from '@/components/common/Checkbox';
 import { HashtagInput } from '@/components/deck/HashtagInput';
 import { Deck } from '@/models/Deck';
 import { LiveGrandPrix } from '@/models/LiveGrandPrix';
@@ -18,8 +17,6 @@ interface DeckPublishFormProps {
   uploadingCount: number;
   uploadError: string;
   setHashtags: (hashtags: string[]) => void;
-  showLimitBreak: boolean;
-  setShowLimitBreak: (show: boolean) => void;
   handleImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleRemoveImage: (index: number) => void;
   handleDownloadImage: (
@@ -41,8 +38,6 @@ export const DeckPublishForm: React.FC<DeckPublishFormProps> = ({
   uploadingCount,
   uploadError,
   setHashtags,
-  showLimitBreak,
-  setShowLimitBreak,
   handleImageUpload,
   handleRemoveImage,
   handleDownloadImage,
@@ -73,15 +68,6 @@ export const DeckPublishForm: React.FC<DeckPublishFormProps> = ({
           liveGrandPrix={liveGrandPrix}
           onChange={setHashtags}
         />
-
-        {/* 表示オプション */}
-        <div>
-          <Checkbox
-            checked={showLimitBreak}
-            onChange={setShowLimitBreak}
-            label="上限解放数を表示"
-          />
-        </div>
 
         {/* コメント入力 */}
         <div>

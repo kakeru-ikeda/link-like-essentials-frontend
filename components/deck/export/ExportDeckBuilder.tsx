@@ -13,17 +13,17 @@ interface ExportCardSlotProps {
   isMain?: boolean;
   characterColor: string;
   isAce?: boolean;
-  showLimitBreak?: boolean;
 }
 
 // 画像表示専用のカードスロットコンポーネント(メモ化)
-const ExportCardSlot = React.memo<ExportCardSlotProps>(({
-  slot, 
-  isMain = false,
-  characterColor,
-  isAce = false,
-  showLimitBreak = true
-}) => {
+const ExportCardSlot = React.memo<ExportCardSlotProps>((
+  {
+    slot, 
+    isMain = false,
+    characterColor,
+    isAce = false
+  }
+) => {
   if (!slot.card) {
     return (
       <div className={`relative w-full aspect-[17/11] border-4 border-gray-300 rounded-2xl bg-gray-100 flex items-center justify-center`}>
@@ -58,11 +58,9 @@ const ExportCardSlot = React.memo<ExportCardSlotProps>(({
       )}
 
       {/* 上限解放数表示 */}
-      {showLimitBreak && (
-        <div className="absolute top-2 left-2 z-30 bg-black/50 text-white font-black rounded-xl px-5 py-3 text-8xl tabular-nums shadow-2xl">
-          {(slot.limitBreak ?? 14).toString().padStart(2, '0')}
-        </div>
-      )}
+      <div className="absolute top-2 left-2 z-30 bg-black/50 text-white font-black rounded-xl px-5 py-3 text-8xl tabular-nums shadow-2xl">
+        {(slot.limitBreak ?? 14).toString().padStart(2, '0')}
+      </div>
 
       {/* カード名 */}
       <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3">
@@ -76,11 +74,7 @@ const ExportCardSlot = React.memo<ExportCardSlotProps>(({
 
 ExportCardSlot.displayName = 'ExportCardSlot';
 
-interface ExportDeckBuilderProps {
-  showLimitBreak?: boolean;
-}
-
-export const ExportDeckBuilder: React.FC<ExportDeckBuilderProps> = ({ showLimitBreak = true }) => {
+export const ExportDeckBuilder: React.FC = () => {
   const { deck, isFriendSlotEnabled } = useDeck();
 
   if (!deck) return null;
@@ -156,7 +150,6 @@ export const ExportDeckBuilder: React.FC<ExportDeckBuilderProps> = ({ showLimitB
                     isMain={true} 
                     characterColor={characterColor}
                     isAce={deck.aceSlotId === slots[0].slotId}
-                    showLimitBreak={showLimitBreak}
                   />
                 )}
 
@@ -168,7 +161,6 @@ export const ExportDeckBuilder: React.FC<ExportDeckBuilderProps> = ({ showLimitB
                         slot={slots[1]} 
                         characterColor={characterColor}
                         isAce={deck.aceSlotId === slots[1].slotId}
-                        showLimitBreak={showLimitBreak}
                       />
                     </div>
                   )}
@@ -178,7 +170,6 @@ export const ExportDeckBuilder: React.FC<ExportDeckBuilderProps> = ({ showLimitB
                         slot={slots[2]} 
                         characterColor={characterColor}
                         isAce={deck.aceSlotId === slots[2].slotId}
-                        showLimitBreak={showLimitBreak}
                       />
                     </div>
                   )}

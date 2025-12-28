@@ -29,8 +29,6 @@ export const DeckPublishModal: React.FC<DeckPublishModalProps> = ({
     uploadingCount,
     uploadError,
     setHashtags,
-    showLimitBreak,
-    setShowLimitBreak,
     handleImageUpload,
     handleRemoveImage,
     handleDownloadImage,
@@ -54,7 +52,7 @@ export const DeckPublishModal: React.FC<DeckPublishModalProps> = ({
         {/* 左側: プレビュー */}
         <div className="flex-shrink-0 overflow-auto max-h-[70vh] relative">
           <div ref={exportViewRef} style={{ zoom: 0.5, maxWidth: '1400px' }}>
-            <DeckExportView showLimitBreak={showLimitBreak} />
+            <DeckExportView />
           </div>
           
           {/* キャプチャ中のマスク */}
@@ -80,8 +78,6 @@ export const DeckPublishModal: React.FC<DeckPublishModalProps> = ({
           uploadingCount={uploadingCount}
           uploadError={uploadError ?? ''}
           setHashtags={setHashtags}
-          showLimitBreak={showLimitBreak}
-          setShowLimitBreak={setShowLimitBreak}
           handleImageUpload={handleImageUpload}
           handleRemoveImage={handleRemoveImage}
           handleDownloadImage={handleDownloadImage}

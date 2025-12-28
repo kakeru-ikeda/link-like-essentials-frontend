@@ -25,10 +25,6 @@ export interface UseDeckPublishReturn {
   hashtags: string[];
   /** ハッシュタグを変更 */
   setHashtags: (hashtags: string[]) => void;
-  /** 上限解放数を表示 */
-  showLimitBreak: boolean;
-  /** 上限解放数表示を変更 */
-  setShowLimitBreak: (show: boolean) => void;
   /** 画像をアップロード */
   handleImageUpload: (event: React.ChangeEvent<HTMLInputElement>) => Promise<void>;
   /** 画像を削除 */
@@ -60,7 +56,6 @@ export const useDeckPublish = (
   const [uploadedImageUrls, setUploadedImageUrls] = useState<string[]>([]);
   const [uploadingCount, setUploadingCount] = useState<number>(0);
   const [hashtags, setHashtags] = useState<string[]>([]);
-  const [showLimitBreak, setShowLimitBreak] = useState<boolean>(true);
 
   // プロフィール取得
   useEffect(() => {
@@ -142,8 +137,6 @@ export const useDeckPublish = (
     uploadError,
     hashtags,
     setHashtags,
-    showLimitBreak,
-    setShowLimitBreak,
     handleImageUpload,
     handleRemoveImage,
     handleDownloadImage,
