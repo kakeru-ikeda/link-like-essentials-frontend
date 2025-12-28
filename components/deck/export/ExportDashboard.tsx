@@ -26,13 +26,16 @@ export const ExportDashboard: React.FC = () => {
       {/* デッキ情報 */}
       <div className="grid grid-cols-2 gap-4 text-2xl">
         <div>
-          <span className="font-semibold text-slate-700">楽曲: </span>
-          <span className="text-slate-600">{deck.songName || '未設定'}</span>
+          <span className="text-3xl font-semibold text-slate-700">楽曲: </span>
+          <span className="text-3xl text-slate-600">{deck.songName || '未設定'}</span>
         </div>
         {deck.liveGrandPrixEventName && (
           <div className="col-span-2">
-            <span className="font-semibold text-slate-700">ライブグランプリ: </span>
-            <span className="text-slate-600">{deck.liveGrandPrixEventName}</span>
+            <span className="text-3xl font-semibold text-slate-700">ライブグランプリ: </span>
+            <span className="text-3xl text-slate-600">
+              {deck.liveGrandPrixEventName}
+              {deck.liveGrandPrixStageName ? ` ステージ${deck.liveGrandPrixStageName}` : ''}
+            </span>
             {selectedStageDetail && (
               <div className="mt-3 space-y-2">
                 {selectedStageDetail.specialEffect && (
@@ -63,8 +66,8 @@ export const ExportDashboard: React.FC = () => {
         )}
         {deck.score && (
           <div>
-            <span className="font-semibold text-slate-700">参考スコア: </span>
-            <span className="text-slate-600">{deck.score} 兆</span>
+            <span className="text-3xl font-semibold text-slate-700">参考スコア: </span>
+            <span className="text-3xl text-slate-600">{deck.score} 兆</span>
           </div>
         )}
       </div>
@@ -72,7 +75,7 @@ export const ExportDashboard: React.FC = () => {
       {/* ライブアナライザ */}
       {deck.liveAnalyzerImageUrl && (
         <div>
-          <h3 className="text-2xl font-semibold text-slate-700 mb-2">ライブアナライザ</h3>
+          <h3 className="text-3xl font-semibold text-slate-700 mb-2">ライブアナライザ</h3>
           <img
             src={deck.liveAnalyzerImageUrl}
             alt="ライブアナライザ"
@@ -85,9 +88,9 @@ export const ExportDashboard: React.FC = () => {
       {/* チャート */}
       {deck.memo && (
         <div>
-          <h3 className="text-2xl font-semibold text-slate-700 mb-2">チャート</h3>
+          <h3 className="text-3xl font-semibold text-slate-700 mb-2">チャート</h3>
           <div className="border border-gray-200 rounded-lg p-3 bg-gray-50">
-            <pre className="text-lg text-slate-600 whitespace-pre-wrap font-mono">
+            <pre className="text-3xl text-slate-600 whitespace-pre-wrap font-mono">
               {deck.memo}
             </pre>
           </div>
