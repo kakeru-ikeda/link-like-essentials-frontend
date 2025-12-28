@@ -178,7 +178,7 @@ export const DeckPublishModal: React.FC<DeckPublishModalProps> = ({
             </div>
           </div>
 
-          {/* 固定ダウンロードボタン */}
+          {/* アクションボタン */}
           <div className="pt-4 border-t border-gray-200 mt-4">
             <div className="flex gap-3">
               <Button 
