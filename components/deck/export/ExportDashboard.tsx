@@ -32,7 +32,10 @@ export const ExportDashboard: React.FC = () => {
         {deck.liveGrandPrixEventName && (
           <div className="col-span-2">
             <span className="text-3xl font-semibold text-slate-700">ライブグランプリ: </span>
-            <span className="text-3xl text-slate-600">{deck.liveGrandPrixEventName} ステージ{deck.liveGrandPrixStageName}</span>
+            <span className="text-3xl text-slate-600">
+              {deck.liveGrandPrixEventName}
+              {deck.liveGrandPrixStageName ? ` ステージ${deck.liveGrandPrixStageName}` : ''}
+            </span>
             {selectedStageDetail && (
               <div className="mt-3 space-y-2">
                 {selectedStageDetail.specialEffect && (
