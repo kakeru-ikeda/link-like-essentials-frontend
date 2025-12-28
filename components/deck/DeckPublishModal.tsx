@@ -51,7 +51,7 @@ export const DeckPublishModal: React.FC<DeckPublishModalProps> = ({
       <div className="flex gap-6">
         {/* 左側: プレビュー */}
         <div className="flex-shrink-0 overflow-auto max-h-[70vh] relative">
-          <div ref={exportViewRef} style={{ zoom: 0.5, maxWidth: '1400px' }}>
+          <div ref={exportViewRef} style={{ zoom: 0.5, maxWidth: '1700px' }}>
             <DeckExportView />
           </div>
           

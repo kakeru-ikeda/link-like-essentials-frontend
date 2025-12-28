@@ -156,7 +156,7 @@ export const DeckPublishForm: React.FC<DeckPublishFormProps> = ({
             disabled={isCapturing}
             className="flex-1"
           >
-            {isCapturing ? 'ダウンロード中...' : '画像としてダウンロード'}
+            {isCapturing ? '保存中...' : '画像として保存'}
           </Button>
           <Button
             onClick={() => {
