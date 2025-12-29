@@ -8,6 +8,83 @@
 
 ## エンドポイント
 
+### 公開デッキ一覧を取得
+
+```
+GET /decks
+```
+
+**認証**: 必須（Bearer Token）
+
+#### クエリパラメータ
+
+| パラメータ | 型       | 必須 | 説明                                          |
+| ---------- | -------- | ---- | --------------------------------------------- |
+| `limit`    | `number` | NO   | 取得件数（デフォルト: 20、最大: 100）         |
+| `orderBy`  | `string` | NO   | ソート項目（createdAt, updatedAt, viewCount） |
+| `order`    | `string` | NO   | ソート順（asc, desc）デフォルト: desc         |
+| `userId`   | `string` | NO   | ユーザーIDでフィルタ                          |
+| `songId`   | `string` | NO   | 楽曲IDでフィルタ                              |
+| `tag`      | `string` | NO   | ハッシュタグでフィルタ                        |
+
+#### レスポンス
+
+```json
+{
+  "publishedDecks": [
+    {
+      "id": "V1StGXR8_Z5jdHi6B-myT",
+      "deck": { ... },
+      "userId": "firebase-auth-uid-12345",
+      "userName": "プレイヤー名",
+      "comment": "コメント",
+      "hashtags": ["#タグ1", "#タグ2"],
+      "imageUrls": ["https://..."],
+      "viewCount": 120,
+      "likeCount": 15,
+      "publishedAt": "2025-12-28T12:35:00.000Z"
+    }
+  ]
+}
+```
+
+---
+
+### 公開デッキを1件取得
+
+```
+GET /decks/{id}
+```
+
+**認証**: 必須（Bearer Token）
+
+#### パスパラメータ
+
+| パラメータ | 型       | 説明                                       |
+| ---------- | -------- | ------------------------------------------ |
+| `id`       | `string` | 公開ID（公開時に生成された21文字のnanoid） |
+
+#### レスポンス
+
+```json
+{
+  "publishedDeck": {
+    "id": "V1StGXR8_Z5jdHi6B-myT",
+    "deck": { ... },
+    "userId": "firebase-auth-uid-12345",
+    "userName": "プレイヤー名",
+    "comment": "コメント",
+    "hashtags": ["#タグ1", "#タグ2"],
+    "imageUrls": ["https://..."],
+    "viewCount": 120,
+    "likeCount": 15,
+    "publishedAt": "2025-12-28T12:35:00.000Z"
+  }
+}
+```
+
+---
+
 ### デッキを公開
 
 ```
@@ -71,6 +148,163 @@ DELETE /decks/{id}
 - 削除できるのは自分が公開したデッキのみ
 - 削除後は元に戻せない
 - 公開IDは再利用不可
+
+---
+
+### デッキにいいねする
+
+```
+POST /decks/{id}/like
+```
+
+**認証**: 必須（Bearer Token）
+
+#### パスパラメータ
+
+| パラメータ | 型       | 説明   |
+| ---------- | -------- | ------ |
+| `id`       | `string` | 公開ID |
+
+#### レスポンス
+
+```json
+{
+  "likeCount": 16
+}
+```
+
+---
+
+### デッキのいいねを取り消す
+
+```
+DELETE /decks/{id}/like
+```
+
+**認証**: 必須（Bearer Token）
+
+#### パスパラメータ
+
+| パラメータ | 型       | 説明   |
+| ---------- | -------- | ------ |
+| `id`       | `string` | 公開ID |
+
+#### レスポンス
+
+```json
+{
+  "likeCount": 15
+}
+```
+
+---
+
+### 閲覧数をカウント
+
+```
+POST /decks/{id}/view
+```
+
+**認証**: 必須（Bearer Token）
+
+#### パスパラメータ
+
+| パラメータ | 型       | 説明   |
+| ---------- | -------- | ------ |
+| `id`       | `string` | 公開ID |
+
+#### レスポンス
+
+```json
+{
+  "viewCount": 121
+}
+```
+
+**注記**:
+
+- 同一ユーザーの重複カウントはサーバー側で制御
+- 未認証でも閲覧可能
+
+---
+
+### デッキにコメントする
+
+```
+POST /decks/{id}/comments
+```
+
+**認証**: 必須（Bearer Token）
+
+#### パスパラメータ
+
+| パラメータ | 型       | 説明   |
+| ---------- | -------- | ------ |
+| `id`       | `string` | 公開ID |
+
+#### リクエストボディ
+
+```json
+{
+  "text": "参考になりました！"
+}
+```
+
+#### レスポンス
+
+```json
+{
+  "comment": {
+    "id": "comment-uuid-123",
+    "deckId": "V1StGXR8_Z5jdHi6B-myT",
+    "userId": "firebase-auth-uid-67890",
+    "userName": "コメント者",
+    "text": "参考になりました！",
+    "createdAt": "2025-12-29T10:00:00.000Z"
+  }
+}
+```
+
+---
+
+### デッキを通報する
+
+```
+POST /decks/{id}/report
+```
+
+**認証**: 必須（Bearer Token）
+
+#### パスパラメータ
+
+| パラメータ | 型       | 説明   |
+| ---------- | -------- | ------ |
+| `id`       | `string` | 公開ID |
+
+#### リクエストボディ
+
+```json
+{
+  "reason": "inappropriate_content",
+  "details": "不適切な画像が含まれています"
+}
+```
+
+**reason** の値:
+
+- `inappropriate_content`: 不適切なコンテンツ
+- `spam`: スパム
+- `copyright`: 著作権侵害
+- `other`: その他
+
+#### レスポンス
+
+```json
+{
+  "success": true,
+  "message": "通報を受け付けました"
+}
+```
 
 ---
 
@@ -361,13 +595,6 @@ Content-Type: application/json
 
 - フロントエンドで生成した `id` が既に存在する場合は 409 エラーを返す
 
-### 将来的な拡張
-
-- いいね機能: `POST /decks/{id}/like`, `DELETE /decks/{id}/like`
-- 閲覧数カウント: `POST /decks/{id}/view`
-- コメント機能: `POST /decks/{id}/comments`
-- レポート機能: `POST /decks/{id}/report`
-
 ---
 
 ## TypeScript型定義（参考）
@@ -444,14 +671,38 @@ interface PublishedDeck {
   /** 公開日時 */
   publishedAt: string;
 }
+
+/**
+ * デッキコメント型
+ */
+interface Comment {
+  /** コメントID */
+  id: string;
+
+  /** デッキID（公開ID） */
+  deckId: string;
+
+  /** コメント投稿者のAuthUID */
+  userId: string;
+
+  /** コメント投稿者の表示名 */
+  userName: string;
+
+  /** コメント本文 */
+  text: string;
+
+  /** コメント投稿日時 */
+  createdAt: string;
+}
 ```
 
 ---
 
 ## 変更履歴
 
-| 日付       | バージョン | 変更内容                                                           |
-| ---------- | ---------- | ------------------------------------------------------------------ |
-| 2025-12-28 | 1.0        | 初版作成                                                           |
-| 2025-12-28 | 1.1        | DELETE /decks/{id} エンドポイント仕様を追加                        |
-| 2025-12-29 | 1.2        | 実装に合わせて型定義を修正（PublishedDeck構造、isPublished削除等） |
+| 日付       | バージョン | 変更内容                                                             |
+| ---------- | ---------- | -------------------------------------------------------------------- |
+| 2025-12-28 | 1.0        | 初版作成                                                             |
+| 2025-12-28 | 1.1        | DELETE /decks/{id} エンドポイント仕様を追加                          |
+| 2025-12-29 | 1.2        | 実装に合わせて型定義を修正（PublishedDeck構造、isPublished削除等）   |
+| 2025-12-29 | 1.3        | GET系エンドポイント、いいね・閲覧・コメント・通報機能のAPI仕様を追加 |
