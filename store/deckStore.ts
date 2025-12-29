@@ -4,7 +4,6 @@ import { Deck, DeckSlot } from '@/models/Deck';
 import { Card } from '@/models/Card';
 import { Song } from '@/models/Song';
 import { DeckType } from '@/models/enums';
-import { deckCloudService } from '@/services/deckCloudService';
 import { DeckRepository } from '@/repositories/localStorage/deckRepository';
 import { DeckService } from '@/services/deckService';
 
@@ -31,13 +30,6 @@ interface DeckState {
   saveDeckToLocal: () => void;
   loadDeckFromLocal: () => void;
   initializeDeck: () => void;
-  
-  // クラウド保存関連
-  saveToCloud: () => Promise<void>;
-  loadFromCloud: (deckId: string) => Promise<void>;
-  isSaving: boolean;
-  isLoading: boolean;
-  cloudError: string | null;
 }
 
 export const useDeckStore = create<DeckState>()(
@@ -295,57 +287,5 @@ export const useDeckStore = create<DeckState>()(
         const currentDeckName = state.deck?.name ?? '新しいデッキ';
         state.deck = DeckService.createEmptyDeck(currentDeckName, currentDeckType);
       }),
-
-    // クラウド保存関連
-    isSaving: false,
-    isLoading: false,
-    cloudError: null,
-
-    saveToCloud: async () => {
-      const { deck } = get();
-      if (!deck) return;
-
-      set((state) => {
-        state.isSaving = true;
-        state.cloudError = null;
-      });
-
-      try {
-        const savedDeck = await deckCloudService.saveDeckToCloud(deck);
-        set((state) => {
-          state.deck = savedDeck;
-          state.isSaving = false;
-        });
-      } catch (error) {
-        set((state) => {
-          state.isSaving = false;
-          state.cloudError =
-            error instanceof Error ? error.message : '保存に失敗しました';
-        });
-        throw error;
-      }
-    },
-
-    loadFromCloud: async (deckId: string) => {
-      set((state) => {
-        state.isLoading = true;
-        state.cloudError = null;
-      });
-
-      try {
-        const loadedDeck = await deckCloudService.loadDeckFromCloud(deckId);
-        set((state) => {
-          state.deck = loadedDeck;
-          state.isLoading = false;
-        });
-      } catch (error) {
-        set((state) => {
-          state.isLoading = false;
-          state.cloudError =
-            error instanceof Error ? error.message : '読み込みに失敗しました';
-        });
-        throw error;
-      }
-    },
   }))
 );
