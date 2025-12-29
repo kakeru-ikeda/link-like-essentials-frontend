@@ -1,8 +1,13 @@
-import { Deck, DeckForCloud, DeckForCloudUpdate } from '@/models/Deck';
+import { DeckPublicationRequest, PublishedDeck } from '@/models/PublishedDeck';
 import { DECK_API_ENDPOINT } from '@/constants/apiEndpoints';
 import { getAuthToken } from './authUtils';
 
 export const deckRepository = {
+  /**
+   * 公開デッキ一覧を取得
+   * @param params - クエリパラメータ
+   * @returns 公開デッキ配列
+   */
   async getDecks(params?: {
     limit?: number;
     orderBy?: 'createdAt' | 'updatedAt' | 'viewCount';
@@ -10,7 +15,7 @@ export const deckRepository = {
     userId?: string;
     songId?: string;
     tag?: string;
-  }): Promise<Deck[]> {
+  }): Promise<PublishedDeck[]> {
     const token = await getAuthToken();
     const queryParams = new URLSearchParams();
 
@@ -35,10 +40,15 @@ export const deckRepository = {
     }
 
     const data = await response.json();
-    return data.decks;
+    return data.publishedDecks;
   },
 
-  async getDeck(deckId: string): Promise<Deck> {
+  /**
+   * 公開デッキを1件取得
+   * @param deckId - デッキID
+   * @returns 公開デッキ
+   */
+  async getDeck(deckId: string): Promise<PublishedDeck> {
     const token = await getAuthToken();
     const response = await fetch(`${DECK_API_ENDPOINT}/decks/${deckId}`, {
       headers: {
@@ -52,51 +62,13 @@ export const deckRepository = {
     }
 
     const data = await response.json();
-    return data.deck;
+    return data.publishedDeck;
   },
 
-  async createDeck(deckForCloud: DeckForCloud): Promise<Deck> {
-    const token = await getAuthToken();
-
-    const response = await fetch(`${DECK_API_ENDPOINT}/decks`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ deck: deckForCloud }),
-    });
-
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({}));
-      throw new Error(error.error?.message || 'デッキの作成に失敗しました');
-    }
-
-    const data = await response.json();
-    return data.deck;
-  },
-
-  async updateDeck(deckId: string, deckForCloud: DeckForCloudUpdate): Promise<Deck> {
-    const token = await getAuthToken();
-    
-    const response = await fetch(`${DECK_API_ENDPOINT}/decks/${deckId}`, {
-      method: 'PUT',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ deck: deckForCloud }),
-    });
-
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({}));
-      throw new Error(error.error?.message || 'デッキの更新に失敗しました');
-    }
-
-    const data = await response.json();
-    return data.deck;
-  },
-
+  /**
+   * 公開デッキを削除
+   * @param deckId - デッキID（公開ID）
+   */
   async deleteDeck(deckId: string): Promise<void> {
     const token = await getAuthToken();
     const response = await fetch(`${DECK_API_ENDPOINT}/decks/${deckId}`, {
@@ -110,5 +82,31 @@ export const deckRepository = {
       const error = await response.json().catch(() => ({}));
       throw new Error(error.error?.message || 'デッキの削除に失敗しました');
     }
+  },
+
+  /**
+   * デッキを公開する
+   * @param publication - 公開リクエストデータ（id, deck, comment, hashtags, imageUrls）
+   * @returns 公開済みデッキ
+   */
+  async publishDeck(publication: DeckPublicationRequest): Promise<PublishedDeck> {
+    const token = await getAuthToken();
+
+    const response = await fetch(`${DECK_API_ENDPOINT}/decks/publish`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(publication),
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.error?.message || 'デッキの公開に失敗しました');
+    }
+
+    const data = await response.json();
+    return data.publishedDeck;
   },
 };

@@ -33,6 +33,9 @@ export const DeckPublishModal: React.FC<DeckPublishModalProps> = ({
     handleRemoveImage,
     handleDownloadImage,
     isCapturing,
+    handlePublishDeck,
+    isPublishing,
+    publishError,
   } = useDeckPublish(isOpen, deck);
 
   // ライブグランプリ情報を取得（デッキに設定されている場合）
@@ -83,6 +86,9 @@ export const DeckPublishModal: React.FC<DeckPublishModalProps> = ({
           handleDownloadImage={handleDownloadImage}
           isCapturing={isCapturing}
           exportViewRef={exportViewRef}
+          handlePublishDeck={handlePublishDeck}
+          isPublishing={isPublishing}
+          publishError={publishError}
         />
       </div>
     </Modal>

@@ -2,9 +2,11 @@
 
 import { useState, useEffect, useCallback, RefObject } from 'react';
 import { Deck } from '@/models/Deck';
+import { PublishedDeck } from '@/models/PublishedDeck';
 import { useUserApi } from './useUserApi';
 import { useImageUpload } from './useImageUpload';
 import { useScreenshot } from './useScreenshot';
+import { deckPublishService } from '@/services/deckPublishService';
 
 export interface UseDeckPublishReturn {
   /** 表示名 */
@@ -36,6 +38,12 @@ export interface UseDeckPublishReturn {
   ) => Promise<void>;
   /** キャプチャ中かどうか */
   isCapturing: boolean;
+  /** デッキを公開 */
+  handlePublishDeck: () => Promise<void>;
+  /** 公開中かどうか */
+  isPublishing: boolean;
+  /** 公開エラー */
+  publishError: string | null;
 }
 
 /**
@@ -56,6 +64,8 @@ export const useDeckPublish = (
   const [uploadedImageUrls, setUploadedImageUrls] = useState<string[]>([]);
   const [uploadingCount, setUploadingCount] = useState<number>(0);
   const [hashtags, setHashtags] = useState<string[]>([]);
+  const [isPublishing, setIsPublishing] = useState<boolean>(false);
+  const [publishError, setPublishError] = useState<string | null>(null);
 
   // プロフィール取得
   useEffect(() => {
@@ -127,6 +137,41 @@ export const useDeckPublish = (
     [captureElement]
   );
 
+  // デッキ公開処理
+  const handlePublishDeck = useCallback(async (): Promise<void> => {
+    if (!deck) {
+      setPublishError('デッキが選択されていません');
+      return;
+    }
+
+    setIsPublishing(true);
+    setPublishError(null);
+
+    try {
+      const publishedDeck: PublishedDeck = await deckPublishService.publishDeck(
+        deck,
+        {
+          comment: comment || undefined,
+          hashtags,
+          imageUrls: uploadedImageUrls.length > 0 ? uploadedImageUrls : undefined,
+        }
+      );
+
+      // 公開成功
+      console.log('デッキ公開成功:', publishedDeck);
+      
+      // TODO: 成功通知やモーダルクローズ処理
+      // 親コンポーネントに公開成功を通知する仕組みが必要
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : 'デッキの公開に失敗しました';
+      setPublishError(errorMessage);
+      console.error('デッキ公開エラー:', err);
+    } finally {
+      setIsPublishing(false);
+    }
+  }, [deck, comment, hashtags, uploadedImageUrls]);
+
   return {
     displayName,
     isLoadingProfile,
@@ -141,5 +186,8 @@ export const useDeckPublish = (
     handleRemoveImage,
     handleDownloadImage,
     isCapturing,
+    handlePublishDeck,
+    isPublishing,
+    publishError,
   };
 };

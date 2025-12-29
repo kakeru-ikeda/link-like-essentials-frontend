@@ -26,6 +26,9 @@ interface DeckPublishFormProps {
   ) => void;
   isCapturing: boolean;
   exportViewRef: React.RefObject<HTMLDivElement>;
+  handlePublishDeck: () => void;
+  isPublishing: boolean;
+  publishError: string | null;
 }
 
 export const DeckPublishForm: React.FC<DeckPublishFormProps> = ({
@@ -44,6 +47,9 @@ export const DeckPublishForm: React.FC<DeckPublishFormProps> = ({
   handleDownloadImage,
   isCapturing,
   exportViewRef,
+  handlePublishDeck,
+  isPublishing,
+  publishError,
 }) => {
   return (
     <div className="flex-1 min-w-0 flex flex-col max-h-[70vh]">
@@ -163,24 +169,27 @@ export const DeckPublishForm: React.FC<DeckPublishFormProps> = ({
 
       {/* アクションボタン */}
       <div className="pt-4 border-t border-gray-200 mt-4">
+        {publishError && (
+          <div className="mb-3 p-3 bg-red-50 border border-red-200 rounded-md text-sm text-red-600">
+            {publishError}
+          </div>
+        )}
         <div className="flex gap-3">
           <Button
             onClick={() =>
               handleDownloadImage(exportViewRef, deck?.name || 'deck')
             }
-            disabled={isCapturing}
+            disabled={isCapturing || isPublishing}
             className="flex-1"
           >
             {isCapturing ? '保存中...' : '画像として保存'}
           </Button>
           <Button
-            onClick={() => {
-              /* TODO: 共有機能を実装 */
-            }}
-            disabled={isCapturing}
+            onClick={handlePublishDeck}
+            disabled={isCapturing || isPublishing}
             className="flex-1 bg-green-600 hover:bg-green-700 disabled:bg-green-400"
           >
-            共有
+            {isPublishing ? '公開中...' : '共有'}
           </Button>
         </div>
       </div>
