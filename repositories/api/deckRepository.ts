@@ -1,31 +1,28 @@
 import { DeckPublicationRequest, PublishedDeck } from '@/models/PublishedDeck';
 import { Comment } from '@/models/Comment';
+import { GetDecksParams } from '@/models/DeckQueryParams';
+import { PaginatedResponse } from '@/models/Pagination';
 import { DECK_API_ENDPOINT } from '@/constants/apiEndpoints';
 import { getAuthToken } from './authUtils';
 
 export const deckRepository = {
   /**
-   * 公開デッキ一覧を取得
+   * 公開デッキ一覧を取得（ページネーション対応）
    * @param params - クエリパラメータ
-   * @returns 公開デッキ配列
+   * @returns ページネーション付き公開デッキ配列
    */
-  async getDecks(params?: {
-    limit?: number;
-    orderBy?: 'createdAt' | 'updatedAt' | 'viewCount';
-    order?: 'asc' | 'desc';
-    userId?: string;
-    songId?: string;
-    tag?: string;
-  }): Promise<PublishedDeck[]> {
+  async getDecks(params?: GetDecksParams): Promise<PaginatedResponse<PublishedDeck>> {
     const token = await getAuthToken();
     const queryParams = new URLSearchParams();
 
-    if (params?.limit) queryParams.append('limit', params.limit.toString());
+    if (params?.page) queryParams.append('page', params.page.toString());
+    if (params?.perPage) queryParams.append('perPage', params.perPage.toString());
     if (params?.orderBy) queryParams.append('orderBy', params.orderBy);
     if (params?.order) queryParams.append('order', params.order);
     if (params?.userId) queryParams.append('userId', params.userId);
     if (params?.songId) queryParams.append('songId', params.songId);
     if (params?.tag) queryParams.append('tag', params.tag);
+    if (params?.keyword) queryParams.append('keyword', params.keyword);
 
     const url = `${DECK_API_ENDPOINT}/decks${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
 
@@ -41,7 +38,10 @@ export const deckRepository = {
     }
 
     const data = await response.json();
-    return data.publishedDecks;
+    return {
+      data: data.publishedDecks,
+      pageInfo: data.pageInfo,
+    };
   },
 
   /**
