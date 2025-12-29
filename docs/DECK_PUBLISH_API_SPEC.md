@@ -28,8 +28,8 @@ DELETE /decks/{id}
 
 #### パスパラメータ
 
-| パラメータ | 型       | 説明                             |
-| ---------- | -------- | -------------------------------- |
+| パラメータ | 型       | 説明                                       |
+| ---------- | -------- | ------------------------------------------ |
 | `id`       | `string` | 公開ID（公開時に生成された21文字のnanoid） |
 
 #### レスポンス
@@ -162,13 +162,13 @@ Content-Type: application/json
 
 ### 自動生成パラメータ
 
-| パラメータ名  | 型        | 説明                 | 生成ロジック         |
-| ------------- | --------- | -------------------- | -------------------- |
-| `userId`      | `string`  | 公開者のAuthUID      | 認証トークンから抽出 |
-| `userName`    | `string`  | 公開者の表示名       | ユーザー情報から取得 |
-| `viewCount`   | `number`  | 閲覧数               | 初期値: `0`          |
-| `likeCount`   | `number`  | いいね数             | 初期値: `0`          |
-| `publishedAt` | `string`  | 公開日時（ISO 8601） | サーバー現在時刻     |
+| パラメータ名  | 型       | 説明                 | 生成ロジック         |
+| ------------- | -------- | -------------------- | -------------------- |
+| `userId`      | `string` | 公開者のAuthUID      | 認証トークンから抽出 |
+| `userName`    | `string` | 公開者の表示名       | ユーザー情報から取得 |
+| `viewCount`   | `number` | 閲覧数               | 初期値: `0`          |
+| `likeCount`   | `number` | いいね数             | 初期値: `0`          |
+| `publishedAt` | `string` | 公開日時（ISO 8601） | サーバー現在時刻     |
 
 ### パラメータ詳細
 
@@ -231,7 +231,13 @@ Content-Type: application/json
     "userId": "firebase-auth-uid-12345",
     "userName": "プレイヤー名",
     "comment": "ライブグランプリで1500兆達成できました！",
-    "hashtags": ["#UR編成", "#高火力", "#ライブグランプリ", "#セラス", "#1500兆"],
+    "hashtags": [
+      "#UR編成",
+      "#高火力",
+      "#ライブグランプリ",
+      "#セラス",
+      "#1500兆"
+    ],
     "imageUrls": [
       "https://storage.example.com/deck-images/abc123.png",
       "https://storage.example.com/deck-images/def456.png"
@@ -301,22 +307,23 @@ Content-Type: application/json
 
 ### published_decks テーブル
 
-| カラム名                    | 型             | NULL | 説明                             |
-| --------------------------- | -------------- | ---- | -------------------------------- |
-| `id`                        | `VARCHAR(21)`  | NO   | 公開ID（PK、nanoid）             |
-| `user_id`                   | `VARCHAR(128)` | NO   | 公開者のAuthUID                  |
-| `user_name`                 | `VARCHAR(255)` | NO   | 公開者の表示名                   |
-| `deck_data`                 | `JSONB`        | NO   | デッキ情報全体（DeckForCloud）   |
-| `comment`                   | `TEXT`         | YES  | コメント                         |
-| `hashtags`                  | `TEXT[]`       | NO   | ハッシュタグ配列                 |
-| `image_urls`                | `TEXT[]`       | YES  | 画像URL配列                      |
-| `view_count`                | `INTEGER`      | NO   | 閲覧数（デフォルト: 0）          |
-| `like_count`                | `INTEGER`      | NO   | いいね数（デフォルト: 0）        |
-| `published_at`              | `TIMESTAMP`    | NO   | 公開日時                         |
-| `created_at`                | `TIMESTAMP`    | NO   | レコード作成日時                 |
-| `updated_at`                | `TIMESTAMP`    | NO   | レコード更新日時                 |
+| カラム名       | 型             | NULL | 説明                           |
+| -------------- | -------------- | ---- | ------------------------------ |
+| `id`           | `VARCHAR(21)`  | NO   | 公開ID（PK、nanoid）           |
+| `user_id`      | `VARCHAR(128)` | NO   | 公開者のAuthUID                |
+| `user_name`    | `VARCHAR(255)` | NO   | 公開者の表示名                 |
+| `deck_data`    | `JSONB`        | NO   | デッキ情報全体（DeckForCloud） |
+| `comment`      | `TEXT`         | YES  | コメント                       |
+| `hashtags`     | `TEXT[]`       | NO   | ハッシュタグ配列               |
+| `image_urls`   | `TEXT[]`       | YES  | 画像URL配列                    |
+| `view_count`   | `INTEGER`      | NO   | 閲覧数（デフォルト: 0）        |
+| `like_count`   | `INTEGER`      | NO   | いいね数（デフォルト: 0）      |
+| `published_at` | `TIMESTAMP`    | NO   | 公開日時                       |
+| `created_at`   | `TIMESTAMP`    | NO   | レコード作成日時               |
+| `updated_at`   | `TIMESTAMP`    | NO   | レコード更新日時               |
 
-**注記**: 
+**注記**:
+
 - `deck_data`にはDeckForCloud型のJSONが格納されます（id, name, slots, aceSlotId, deckType, songId, liveGrandPrixId, liveGrandPrixDetailId, score, memo, createdAt, updatedAt）
 - 個別カラム（deck_id, deck_name等）は検索・インデックス用に冗長化してもよい
 
@@ -446,5 +453,5 @@ interface PublishedDeck {
 | 日付       | バージョン | 変更内容                                                           |
 | ---------- | ---------- | ------------------------------------------------------------------ |
 | 2025-12-28 | 1.0        | 初版作成                                                           |
-| 2025-12-28 | 1.1        | DELETE /decks/{id} エンドポイント仕様を追加                       |
+| 2025-12-28 | 1.1        | DELETE /decks/{id} エンドポイント仕様を追加                        |
 | 2025-12-29 | 1.2        | 実装に合わせて型定義を修正（PublishedDeck構造、isPublished削除等） |
