@@ -18,14 +18,16 @@ GET /decks
 
 #### クエリパラメータ
 
-| パラメータ | 型       | 必須 | 説明                                          |
-| ---------- | -------- | ---- | --------------------------------------------- |
-| `limit`    | `number` | NO   | 取得件数（デフォルト: 20、最大: 100）         |
-| `orderBy`  | `string` | NO   | ソート項目（createdAt, updatedAt, viewCount） |
-| `order`    | `string` | NO   | ソート順（asc, desc）デフォルト: desc         |
-| `userId`   | `string` | NO   | ユーザーIDでフィルタ                          |
-| `songId`   | `string` | NO   | 楽曲IDでフィルタ                              |
-| `tag`      | `string` | NO   | ハッシュタグでフィルタ                        |
+| パラメータ | 型       | 必須 | 説明                                                     |
+| ---------- | -------- | ---- | -------------------------------------------------------- |
+| `page`     | `number` | NO   | ページ番号（デフォルト: 1）                              |
+| `perPage`  | `number` | NO   | 1ページあたりの件数（デフォルト: 20、最大: 100）         |
+| `orderBy`  | `string` | NO   | ソート項目（createdAt, updatedAt, viewCount, likeCount） |
+| `order`    | `string` | NO   | ソート順（asc, desc）デフォルト: desc                    |
+| `userId`   | `string` | NO   | ユーザーIDでフィルタ                                     |
+| `songId`   | `string` | NO   | 楽曲IDでフィルタ                                         |
+| `tag`      | `string` | NO   | ハッシュタグでフィルタ                                   |
+| `keyword`  | `string` | NO   | キーワード検索（デッキ名、コメント、ハッシュタグ）       |
 
 #### レスポンス
 
@@ -44,7 +46,15 @@ GET /decks
       "likeCount": 15,
       "publishedAt": "2025-12-28T12:35:00.000Z"
     }
-  ]
+  ],
+  "pageInfo": {
+    "currentPage": 1,
+    "perPage": 20,
+    "totalCount": 150,
+    "totalPages": 8,
+    "hasNextPage": true,
+    "hasPreviousPage": false
+  }
 }
 ```
 
@@ -693,6 +703,73 @@ interface Comment {
 
   /** コメント投稿日時 */
   createdAt: string;
+}
+```
+
+### ページネーション関連型
+
+```typescript
+/**
+ * ページネーション情報
+ */
+interface PageInfo {
+  /** 現在のページ番号 */
+  currentPage: number;
+
+  /** 1ページあたりのアイテム数 */
+  perPage: number;
+
+  /** 総アイテム数 */
+  totalCount: number;
+
+  /** 総ページ数 */
+  totalPages: number;
+
+  /** 次のページが存在するか */
+  hasNextPage: boolean;
+
+  /** 前のページが存在するか */
+  hasPreviousPage: boolean;
+}
+
+/**
+ * ページネーション付きレスポンス
+ */
+interface PaginatedResponse<T> {
+  /** データ配列 */
+  data: T[];
+
+  /** ページネーション情報 */
+  pageInfo: PageInfo;
+}
+
+/**
+ * デッキ一覧取得のクエリパラメータ
+ */
+interface GetDecksParams {
+  /** ページ番号（1から始まる） */
+  page?: number;
+
+  /** 1ページあたりのアイテム数（デフォルト: 20、最大: 100） */
+  perPage?: number;
+
+  /** ソート項目 */
+  orderBy?: 'createdAt' | 'updatedAt' | 'viewCount' | 'likeCount';
+
+  /** ソート順（デフォルト: desc） */
+  order?: 'asc' | 'desc';
+
+  /** ユーザーIDでフィルタ */
+  userId?: string;
+
+  /** 楽曲IDでフィルタ */
+  songId?: string;
+
+  /** ハッシュタグでフィルタ */
+  tag?: string;
+
+  /** キーワード検索（デッキ名、コメント、ハッシュタグを対象） */
+  keyword?: string;
 }
 ```
 
