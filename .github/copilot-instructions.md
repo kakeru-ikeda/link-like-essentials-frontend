@@ -1,5 +1,9 @@
 # Copilot Instructions
 
+## レビュー
+
+- **Copilotは日本語でレビューを行うこと**
+
 ## アーキテクチャ
 
 ```

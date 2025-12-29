@@ -13,7 +13,7 @@ function convertToDeckForCloud(deck: Deck): DeckForCloud {
     slots: deck.slots.map((slot): DeckSlotForCloud => ({
       slotId: slot.slotId,
       cardId: slot.cardId,
-      ...(slot.limitBreak && { limitBreak: slot.limitBreak }),
+      ...(slot.limitBreak !== undefined && { limitBreak: slot.limitBreak }),
     })),
     aceSlotId: deck.aceSlotId,
     deckType: deck.deckType,
