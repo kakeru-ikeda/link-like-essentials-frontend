@@ -205,7 +205,7 @@ DELETE /decks/{id}/like
 POST /decks/{id}/view
 ```
 
-**認証**: 任意（Bearer Token）
+**認証**: 必須（Bearer Token）
 
 #### パスパラメータ
 
