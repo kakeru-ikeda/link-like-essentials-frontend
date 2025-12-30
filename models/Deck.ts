@@ -46,8 +46,6 @@ export type DeckForCloud = Pick<Deck,
   | 'liveGrandPrixDetailId'
   | 'score'
   | 'memo'
-  | 'createdAt'
-  | 'updatedAt'
 > & {
   slots: DeckSlotForCloud[];
 };
@@ -62,7 +60,6 @@ export type DeckForCloudUpdate = Partial<Pick<Deck,
   | 'liveGrandPrixDetailId'
   | 'score'
   | 'memo'
-  | 'updatedAt'
 >> & {
   slots?: DeckSlotForCloud[];
 };

@@ -21,9 +21,7 @@ function convertToDeckForCloud(deck: Deck): DeckForCloud {
     liveGrandPrixId: deck.liveGrandPrixId,
     liveGrandPrixDetailId: deck.liveGrandPrixDetailId,
     score: deck.score,
-    memo: deck.memo,
-    createdAt: deck.createdAt,
-    updatedAt: deck.updatedAt,
+    memo: deck.memo
   };
 }
 
