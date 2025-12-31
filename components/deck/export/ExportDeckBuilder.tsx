@@ -8,11 +8,17 @@ import { VerticalBadge } from '@/components/common/VerticalBadge';
 import { AceBadge } from '@/components/common/AceBadge';
 import type { DeckSlot } from '@/models/Deck';
 
+interface ExportDeckBuilderProps {
+  captureRef?: React.Ref<HTMLDivElement>;
+  hideDecorations?: boolean;
+}
+
 interface ExportCardSlotProps {
   slot: DeckSlot;
   isMain?: boolean;
   characterColor: string;
   isAce?: boolean;
+  hideLimitBreak?: boolean;
 }
 
 // 画像表示専用のカードスロットコンポーネント(メモ化)
@@ -21,7 +27,8 @@ const ExportCardSlot = React.memo<ExportCardSlotProps>((
     slot, 
     isMain = false,
     characterColor,
-    isAce = false
+    isAce = false,
+    hideLimitBreak = false
   }
 ) => {
   if (!slot.card) {
@@ -58,13 +65,15 @@ const ExportCardSlot = React.memo<ExportCardSlotProps>((
       )}
 
       {/* 上限解放数表示 */}
-      <div className="absolute top-2 left-2 z-30 bg-black/50 text-white font-black rounded-xl px-5 py-3 text-8xl tabular-nums shadow-2xl">
-        {(slot.limitBreak ?? 14).toString().padStart(2, '0')}
-      </div>
+      {!hideLimitBreak && (
+        <div className="absolute top-2 left-2 z-30 bg-black/50 text-white font-black rounded-xl px-5 py-3 text-8xl tabular-nums shadow-2xl">
+          {(slot.limitBreak ?? 14).toString().padStart(2, '0')}
+        </div>
+      )}
 
       {/* カード名 */}
       <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3">
-        <p className={`text-white ${isMain ? 'text-xl' : 'text-base'} font-bold truncate`}>
+        <p className={`text-white ${isMain ? 'text-3xl' : 'text-xl'} font-bold truncate`}>
           {slot.card.cardName}
         </p>
       </div>
@@ -74,7 +83,7 @@ const ExportCardSlot = React.memo<ExportCardSlotProps>((
 
 ExportCardSlot.displayName = 'ExportCardSlot';
 
-export const ExportDeckBuilder: React.FC = () => {
+export const ExportDeckBuilder: React.FC<ExportDeckBuilderProps> = ({ captureRef, hideDecorations = false }) => {
   const { deck, isFriendSlotEnabled } = useDeck();
 
   if (!deck) return null;
@@ -111,7 +120,7 @@ export const ExportDeckBuilder: React.FC = () => {
   }).filter(({ slots }) => slots.length > 0); // 空のグループを除外
 
   return (
-    <div className="w-full">
+    <div className="w-full" ref={captureRef}>
       {/* デッキグリッド */}
       <div className="grid grid-cols-3 gap-8">
         {characterSlots.map(({ character, slots }) => {
@@ -123,7 +132,7 @@ export const ExportDeckBuilder: React.FC = () => {
           return (
             <div key={character} className="relative">
               {/* Left badge area */}
-              {(isCenter || isSinger) && (
+              {(isCenter || isSinger) && !hideDecorations && (
                 <div className="absolute -left-6 top-0 bottom-0 z-10 flex flex-col gap-3 pt-6">
                   {isCenter && <VerticalBadge text="センター" className="bg-gradient-to-b from-pink-400 to-pink-500" size="large" />}
                   {isSinger && !isCenter && <VerticalBadge text="歌唱" className="" size="large" />}
@@ -150,6 +159,7 @@ export const ExportDeckBuilder: React.FC = () => {
                     isMain={true} 
                     characterColor={characterColor}
                     isAce={deck.aceSlotId === slots[0].slotId}
+                    hideLimitBreak={hideDecorations}
                   />
                 )}
 
@@ -161,6 +171,7 @@ export const ExportDeckBuilder: React.FC = () => {
                         slot={slots[1]} 
                         characterColor={characterColor}
                         isAce={deck.aceSlotId === slots[1].slotId}
+                        hideLimitBreak={hideDecorations}
                       />
                     </div>
                   )}
@@ -170,6 +181,7 @@ export const ExportDeckBuilder: React.FC = () => {
                         slot={slots[2]} 
                         characterColor={characterColor}
                         isAce={deck.aceSlotId === slots[2].slotId}
+                        hideLimitBreak={hideDecorations}
                       />
                     </div>
                   )}
