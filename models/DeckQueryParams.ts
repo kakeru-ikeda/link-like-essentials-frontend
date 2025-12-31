@@ -22,7 +22,4 @@ export interface GetDecksParams {
 
   /** ハッシュタグでフィルタ */
   tag?: string;
-
-  /** キーワード検索（デッキ名、コメント、ハッシュタグを対象） */
-  keyword?: string;
 }
