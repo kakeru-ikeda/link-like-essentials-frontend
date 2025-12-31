@@ -19,6 +19,7 @@ export const DeckPublishModal: React.FC<DeckPublishModalProps> = ({
 }) => {
   const { deck } = useDeck();
   const exportViewRef = useRef<HTMLDivElement>(null);
+  const exportBuilderRef = useRef<HTMLDivElement>(null);
 
   const {
     displayName,
@@ -33,10 +34,11 @@ export const DeckPublishModal: React.FC<DeckPublishModalProps> = ({
     handleRemoveImage,
     handleDownloadImage,
     isCapturing,
+    isThumbnailCaptureMode,
     handlePublishDeck,
     isPublishing,
     publishError,
-  } = useDeckPublish(isOpen, deck);
+  } = useDeckPublish(isOpen, deck, exportViewRef, exportBuilderRef);
 
   // ライブグランプリ情報を取得（デッキに設定されている場合）
   const { liveGrandPrix } = useLiveGrandPrixById(
@@ -54,8 +56,12 @@ export const DeckPublishModal: React.FC<DeckPublishModalProps> = ({
       <div className="flex gap-6">
         {/* 左側: プレビュー */}
         <div className="flex-shrink-0 overflow-auto max-h-[70vh] relative">
-          <div ref={exportViewRef} style={{ zoom: 0.5, maxWidth: '1700px' }}>
-            <DeckExportView />
+          <div style={{ zoom: 0.5, maxWidth: '1700px' }}>
+            <DeckExportView
+              captureRef={exportViewRef}
+              builderCaptureRef={exportBuilderRef}
+              hideDecorations={isThumbnailCaptureMode}
+            />
           </div>
           
           {/* キャプチャ中のマスク */}

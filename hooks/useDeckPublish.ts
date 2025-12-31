@@ -38,6 +38,8 @@ export interface UseDeckPublishReturn {
   ) => Promise<void>;
   /** キャプチャ中かどうか */
   isCapturing: boolean;
+  /** サムネイル用の簡易表示モード */
+  isThumbnailCaptureMode: boolean;
   /** デッキを公開 */
   handlePublishDeck: () => Promise<void>;
   /** 公開中かどうか */
@@ -51,13 +53,15 @@ export interface UseDeckPublishReturn {
  */
 export const useDeckPublish = (
   isOpen: boolean,
-  deck: Deck | null
+  deck: Deck | null,
+  exportViewRef: RefObject<HTMLDivElement>,
+  exportBuilderRef: RefObject<HTMLDivElement>
 ): UseDeckPublishReturn => {
   const { getMyProfile, isLoading: isLoadingProfile } = useUserApi();
   const { uploadImage, error: uploadError } = useImageUpload({
     enableCropping: false,
   });
-  const { captureElement, isCapturing } = useScreenshot();
+  const { captureElement, captureElementAsDataUrl, isCapturing } = useScreenshot();
 
   const [displayName, setDisplayName] = useState<string>('');
   const [comment, setComment] = useState<string>('');
@@ -66,6 +70,7 @@ export const useDeckPublish = (
   const [hashtags, setHashtags] = useState<string[]>([]);
   const [isPublishing, setIsPublishing] = useState<boolean>(false);
   const [publishError, setPublishError] = useState<string | null>(null);
+  const [isThumbnailCaptureMode, setIsThumbnailCaptureMode] = useState<boolean>(false);
 
   // プロフィール取得
   useEffect(() => {
@@ -137,6 +142,30 @@ export const useDeckPublish = (
     [captureElement]
   );
 
+  const captureThumbnail = useCallback(async (): Promise<string> => {
+    if (!exportBuilderRef.current) {
+      throw new Error('プレビューの準備が完了していません');
+    }
+
+    const target = exportBuilderRef.current;
+    const originalZoom = target.style.zoom;
+    setIsThumbnailCaptureMode(true);
+    target.style.zoom = '1';
+
+    try {
+      const dataUrl = await captureElementAsDataUrl(target);
+      const response = await fetch(dataUrl);
+      const blob = await response.blob();
+      const fileName = `${deck?.name ?? 'deck'}-thumbnail.png`;
+      const file = new File([blob], fileName, { type: 'image/png' });
+      return await uploadImage(file);
+    } finally {
+      target.style.zoom = originalZoom;
+      setIsThumbnailCaptureMode(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [captureElementAsDataUrl, deck?.name, uploadImage]);
+
   // デッキ公開処理
   const handlePublishDeck = useCallback(async (): Promise<void> => {
     if (!deck) {
@@ -148,12 +177,26 @@ export const useDeckPublish = (
     setPublishError(null);
 
     try {
+      let thumbnailUrl: string | undefined;
+      try {
+        thumbnailUrl = await captureThumbnail();
+      } catch (captureError) {
+        const errorMessage =
+          captureError instanceof Error
+            ? captureError.message
+            : 'サムネイルの生成に失敗しました';
+        setPublishError(errorMessage);
+        setIsPublishing(false);
+        return;
+      }
+
       const publishedDeck: PublishedDeck = await deckPublishService.publishDeck(
         deck,
         {
           comment: comment || undefined,
           hashtags,
           imageUrls: uploadedImageUrls.length > 0 ? uploadedImageUrls : undefined,
+          thumbnail: thumbnailUrl,
         }
       );
 
@@ -170,7 +213,7 @@ export const useDeckPublish = (
     } finally {
       setIsPublishing(false);
     }
-  }, [deck, comment, hashtags, uploadedImageUrls]);
+  }, [captureThumbnail, comment, deck, hashtags, uploadedImageUrls]);
 
   return {
     displayName,
@@ -186,6 +229,7 @@ export const useDeckPublish = (
     handleRemoveImage,
     handleDownloadImage,
     isCapturing,
+    isThumbnailCaptureMode,
     handlePublishDeck,
     isPublishing,
     publishError,

@@ -4,13 +4,12 @@ import { useCallback, useState } from 'react';
 export function useScreenshot() {
   const [isCapturing, setIsCapturing] = useState<boolean>(false);
 
-  const captureElement = useCallback(async (
-    element: HTMLElement,
-    filename: string = 'deck-screenshot.png'
-  ): Promise<void> => {
+  const captureElementAsDataUrl = useCallback(async (
+    element: HTMLElement
+  ): Promise<string> => {
     setIsCapturing(true);
     try {
-      const dataUrl = await htmlToImage.toPng(element, {
+      return await htmlToImage.toPng(element, {
         quality: 1.0,
         pixelRatio: 0.5,
         cacheBust: true,
@@ -19,17 +18,25 @@ export function useScreenshot() {
           letterSpacing: 'normal',
         },
       });
+    } finally {
+      setIsCapturing(false);
+    }
+  }, []);
 
+  const captureElement = useCallback(async (
+    element: HTMLElement,
+    filename: string = 'deck-screenshot.png'
+  ): Promise<void> => {
+    try {
+      const dataUrl = await captureElementAsDataUrl(element);
       const link = document.createElement('a');
       link.download = filename;
       link.href = dataUrl;
       link.click();
     } catch (error) {
       console.error('スクリーンショット失敗:', error);
-    } finally {
-      setIsCapturing(false);
     }
-  }, []);
+  }, [captureElementAsDataUrl]);
 
-  return { captureElement, isCapturing };
+  return { captureElement, captureElementAsDataUrl, isCapturing };
 }

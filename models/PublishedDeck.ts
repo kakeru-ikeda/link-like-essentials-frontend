@@ -26,6 +26,9 @@ export interface PublishedDeck {
   /** アップロード画像URL配列 */
   imageUrls?: string[];
 
+  /** サムネイル画像URL */
+  thumbnail?: string;
+
   /** 閲覧数 */
   viewCount: number;
 
@@ -43,5 +46,5 @@ export interface PublishedDeck {
  */
 export type DeckPublicationRequest = Pick<
   PublishedDeck,
-  'id' | 'deck' | 'comment' | 'hashtags' | 'imageUrls'
+  'id' | 'deck' | 'comment' | 'hashtags' | 'imageUrls' | 'thumbnail'
 >;

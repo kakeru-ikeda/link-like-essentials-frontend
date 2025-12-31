@@ -42,6 +42,7 @@ export const deckPublishService = {
       comment?: string;
       hashtags: string[];
       imageUrls?: string[];
+      thumbnail?: string;
     }
   ): Promise<PublishedDeck> {
     // 公開IDを生成（短くURL-safeな21文字のID）
@@ -55,6 +56,7 @@ export const deckPublishService = {
       comment: options.comment,
       hashtags: options.hashtags,
       imageUrls: options.imageUrls,
+      thumbnail: options.thumbnail,
     };
 
     // Repositoryを通じて公開
