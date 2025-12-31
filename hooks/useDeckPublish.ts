@@ -163,7 +163,8 @@ export const useDeckPublish = (
       target.style.zoom = originalZoom;
       setIsThumbnailCaptureMode(false);
     }
-  }, [captureElementAsDataUrl, deck?.name, exportBuilderRef, uploadImage]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [captureElementAsDataUrl, deck?.name, uploadImage]);
 
   // デッキ公開処理
   const handlePublishDeck = useCallback(async (): Promise<void> => {
@@ -185,6 +186,7 @@ export const useDeckPublish = (
             ? captureError.message
             : 'サムネイルの生成に失敗しました';
         setPublishError(errorMessage);
+        setIsPublishing(false);
         return;
       }
 

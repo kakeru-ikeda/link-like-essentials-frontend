@@ -18,8 +18,6 @@ export function useScreenshot() {
           letterSpacing: 'normal',
         },
       });
-    } catch (error) {
-      throw error;
     } finally {
       setIsCapturing(false);
     }
