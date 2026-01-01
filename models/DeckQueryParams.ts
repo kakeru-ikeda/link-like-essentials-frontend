@@ -9,7 +9,7 @@ export interface GetDecksParams {
   perPage?: number;
 
   /** ソート項目 */
-  orderBy?: 'createdAt' | 'updatedAt' | 'viewCount' | 'likeCount';
+  orderBy?: 'publishedAt' | 'viewCount' | 'likeCount';
 
   /** ソート順（デフォルト: desc） */
   order?: 'asc' | 'desc';
@@ -22,7 +22,4 @@ export interface GetDecksParams {
 
   /** ハッシュタグでフィルタ */
   tag?: string;
-
-  /** キーワード検索（デッキ名、コメント、ハッシュタグを対象） */
-  keyword?: string;
 }

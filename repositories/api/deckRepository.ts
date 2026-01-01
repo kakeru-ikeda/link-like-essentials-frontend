@@ -22,7 +22,6 @@ export const deckRepository = {
     if (params?.userId) queryParams.append('userId', params.userId);
     if (params?.songId) queryParams.append('songId', params.songId);
     if (params?.tag) queryParams.append('tag', params.tag);
-    if (params?.keyword) queryParams.append('keyword', params.keyword);
 
     const url = `${DECK_API_ENDPOINT}/decks${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
 

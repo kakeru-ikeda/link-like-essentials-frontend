@@ -2,8 +2,8 @@
 
 import React from 'react';
 import { Button } from '@/components/common/Button';
-import { Tooltip } from '@/components/common/Tooltip';
 import { HashtagInput } from '@/components/deck/HashtagInput';
+import { ImagePreviewGrid } from '@/components/deck/ImagePreviewGrid';
 import { Deck } from '@/models/Deck';
 import { LiveGrandPrix } from '@/models/LiveGrandPrix';
 
@@ -125,38 +125,12 @@ export const DeckPublishForm: React.FC<DeckPublishFormProps> = ({
               <div className="text-sm text-red-600">{uploadError}</div>
             )}
             {uploadedImageUrls.length > 0 && (
-              <div className="grid grid-cols-3 gap-2">
-                {uploadedImageUrls.map((url, index) => (
-                  <div key={url} className="relative">
-                    <Tooltip
-                      content={
-                        <img
-                          src={url}
-                          alt={`アップロード画像 ${index + 1} プレビュー`}
-                          className="max-w-[500px] max-h-[500px] object-contain"
-                        />
-                      }
-                      position="right"
-                      className="block"
-                      tooltipClassName="fixed z-[9999] p-2 bg-white border-2 border-gray-300 rounded-lg shadow-2xl pointer-events-none"
-                      hideArrow={true}
-                    >
-                      <img
-                        src={url}
-                        alt={`アップロード画像 ${index + 1}`}
-                        className="w-full aspect-square object-cover rounded-md border border-gray-300 cursor-pointer hover:opacity-80 transition-opacity"
-                      />
-                    </Tooltip>
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveImage(index)}
-                      className="absolute top-1 right-1 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-700 z-10"
-                    >
-                      ×
-                    </button>
-                  </div>
-                ))}
-              </div>
+              <ImagePreviewGrid
+                imageUrls={uploadedImageUrls}
+                onRemove={handleRemoveImage}
+                columnCount={3}
+                tooltipPosition="right"
+              />
             )}
             {uploadedImageUrls.length >= 3 && (
               <div className="text-sm text-gray-500">

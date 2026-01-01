@@ -9,10 +9,9 @@ import { useDeck } from '@/hooks/useDeck';
 interface DeckExportViewProps {
   captureRef?: React.Ref<HTMLDivElement>;
   builderCaptureRef?: React.Ref<HTMLDivElement>;
-  hideDecorations?: boolean;
 }
 
-export const DeckExportView: React.FC<DeckExportViewProps> = ({ captureRef, builderCaptureRef, hideDecorations = false }) => {
+export const DeckExportView: React.FC<DeckExportViewProps> = ({ captureRef, builderCaptureRef }) => {
   const { deck } = useDeck();
   
   return (
@@ -27,7 +26,7 @@ export const DeckExportView: React.FC<DeckExportViewProps> = ({ captureRef, buil
       <ExportHeader deckName={deck?.name} />
       
       <div className="mb-8 bg-white rounded-lg shadow-lg p-6">
-        <ExportDeckBuilder captureRef={builderCaptureRef} hideDecorations={hideDecorations} />
+        <ExportDeckBuilder captureRef={builderCaptureRef} />
       </div>
       
       <div className="bg-white rounded-lg shadow-lg p-6">
