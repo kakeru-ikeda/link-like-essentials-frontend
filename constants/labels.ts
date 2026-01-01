@@ -40,6 +40,12 @@ export const FAVORITE_MODE_LABELS: Record<FavoriteMode, string> = {
   [FavoriteMode.MELLOW]: 'メロウ',
   [FavoriteMode.NEUTRAL]: 'ニュートラル',
 };
+export const FAVORITE_MODE_COLORS: Record<FavoriteMode, string> = {
+  [FavoriteMode.NONE]: '#9ca3af',      // gray-400
+  [FavoriteMode.HAPPY]: '#f472b6',    // pink-400
+  [FavoriteMode.MELLOW]: '#60a5fa',   // blue-400
+  [FavoriteMode.NEUTRAL]: '#34d399',  // green-400
+};
 
 export const SORT_FIELD_LABELS: Record<SortField, string> = {
   [SortField.CARD_NAME]: 'カード名',
