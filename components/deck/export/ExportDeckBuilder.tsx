@@ -10,7 +10,6 @@ import type { DeckSlot } from '@/models/Deck';
 
 interface ExportDeckBuilderProps {
   captureRef?: React.Ref<HTMLDivElement>;
-  hideDecorations?: boolean;
 }
 
 interface ExportCardSlotProps {
@@ -18,7 +17,6 @@ interface ExportCardSlotProps {
   isMain?: boolean;
   characterColor: string;
   isAce?: boolean;
-  hideLimitBreak?: boolean;
 }
 
 // 画像表示専用のカードスロットコンポーネント(メモ化)
@@ -27,8 +25,7 @@ const ExportCardSlot = React.memo<ExportCardSlotProps>((
     slot, 
     isMain = false,
     characterColor,
-    isAce = false,
-    hideLimitBreak = false
+    isAce = false
   }
 ) => {
   if (!slot.card) {
@@ -65,11 +62,9 @@ const ExportCardSlot = React.memo<ExportCardSlotProps>((
       )}
 
       {/* 上限解放数表示 */}
-      {!hideLimitBreak && (
-        <div className="absolute top-2 left-2 z-30 bg-black/50 text-white font-black rounded-xl px-5 py-3 text-8xl tabular-nums shadow-2xl">
-          {(slot.limitBreak ?? 14).toString().padStart(2, '0')}
-        </div>
-      )}
+      <div className="absolute top-2 left-2 z-30 bg-black/50 text-white font-black rounded-xl px-5 py-3 text-8xl tabular-nums shadow-2xl">
+        {(slot.limitBreak ?? 14).toString().padStart(2, '0')}
+      </div>
 
       {/* カード名 */}
       <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3">
@@ -83,7 +78,7 @@ const ExportCardSlot = React.memo<ExportCardSlotProps>((
 
 ExportCardSlot.displayName = 'ExportCardSlot';
 
-export const ExportDeckBuilder: React.FC<ExportDeckBuilderProps> = ({ captureRef, hideDecorations = false }) => {
+export const ExportDeckBuilder: React.FC<ExportDeckBuilderProps> = ({ captureRef }) => {
   const { deck, isFriendSlotEnabled } = useDeck();
 
   if (!deck) return null;
@@ -130,10 +125,10 @@ export const ExportDeckBuilder: React.FC<ExportDeckBuilderProps> = ({ captureRef
           const characterColor = getCharacterColor(character);
 
           return (
-            <div key={character} className="relative">
+            <div key={character} className="relative pl-6">
               {/* Left badge area */}
-              {(isCenter || isSinger) && !hideDecorations && (
-                <div className="absolute -left-6 top-0 bottom-0 z-10 flex flex-col gap-3 pt-6">
+              {(isCenter || isSinger) && (
+                <div className="absolute left-0 top-0 bottom-0 z-10 flex flex-col gap-3 pt-6">
                   {isCenter && <VerticalBadge text="センター" className="bg-gradient-to-b from-pink-400 to-pink-500" size="large" />}
                   {isSinger && !isCenter && <VerticalBadge text="歌唱" className="" size="large" />}
                 </div>
@@ -159,7 +154,6 @@ export const ExportDeckBuilder: React.FC<ExportDeckBuilderProps> = ({ captureRef
                     isMain={true} 
                     characterColor={characterColor}
                     isAce={deck.aceSlotId === slots[0].slotId}
-                    hideLimitBreak={hideDecorations}
                   />
                 )}
 
@@ -171,7 +165,6 @@ export const ExportDeckBuilder: React.FC<ExportDeckBuilderProps> = ({ captureRef
                         slot={slots[1]} 
                         characterColor={characterColor}
                         isAce={deck.aceSlotId === slots[1].slotId}
-                        hideLimitBreak={hideDecorations}
                       />
                     </div>
                   )}
@@ -181,7 +174,6 @@ export const ExportDeckBuilder: React.FC<ExportDeckBuilderProps> = ({ captureRef
                         slot={slots[2]} 
                         characterColor={characterColor}
                         isAce={deck.aceSlotId === slots[2].slotId}
-                        hideLimitBreak={hideDecorations}
                       />
                     </div>
                   )}

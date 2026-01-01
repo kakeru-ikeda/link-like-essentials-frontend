@@ -38,8 +38,6 @@ export interface UseDeckPublishReturn {
   ) => Promise<void>;
   /** キャプチャ中かどうか */
   isCapturing: boolean;
-  /** サムネイル用の簡易表示モード */
-  isThumbnailCaptureMode: boolean;
   /** デッキを公開 */
   handlePublishDeck: () => Promise<void>;
   /** 公開中かどうか */
@@ -70,7 +68,6 @@ export const useDeckPublish = (
   const [hashtags, setHashtags] = useState<string[]>([]);
   const [isPublishing, setIsPublishing] = useState<boolean>(false);
   const [publishError, setPublishError] = useState<string | null>(null);
-  const [isThumbnailCaptureMode, setIsThumbnailCaptureMode] = useState<boolean>(false);
 
   // プロフィール取得
   useEffect(() => {
@@ -149,7 +146,6 @@ export const useDeckPublish = (
 
     const target = exportBuilderRef.current;
     const originalZoom = target.style.zoom;
-    setIsThumbnailCaptureMode(true);
     target.style.zoom = '1';
 
     try {
@@ -161,7 +157,6 @@ export const useDeckPublish = (
       return await uploadImage(file);
     } finally {
       target.style.zoom = originalZoom;
-      setIsThumbnailCaptureMode(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [captureElementAsDataUrl, deck?.name, uploadImage]);
@@ -229,7 +224,6 @@ export const useDeckPublish = (
     handleRemoveImage,
     handleDownloadImage,
     isCapturing,
-    isThumbnailCaptureMode,
     handlePublishDeck,
     isPublishing,
     publishError,

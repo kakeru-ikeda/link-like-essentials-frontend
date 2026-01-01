@@ -34,7 +34,6 @@ export const DeckPublishModal: React.FC<DeckPublishModalProps> = ({
     handleRemoveImage,
     handleDownloadImage,
     isCapturing,
-    isThumbnailCaptureMode,
     handlePublishDeck,
     isPublishing,
     publishError,
@@ -60,7 +59,6 @@ export const DeckPublishModal: React.FC<DeckPublishModalProps> = ({
             <DeckExportView
               captureRef={exportViewRef}
               builderCaptureRef={exportBuilderRef}
-              hideDecorations={isThumbnailCaptureMode}
             />
           </div>
           
