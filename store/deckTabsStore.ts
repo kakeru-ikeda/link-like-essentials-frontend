@@ -12,6 +12,7 @@ interface DeckTabsState {
   tabs: Deck[];
   activeTabId: string;
   addTab: () => void;
+  addTabWithDeck: (deck: Deck) => void;
   deleteTab: (id: string) => void;
   switchTab: (id: string) => void;
   updateCurrentTab: (deck: Deck) => void;
@@ -33,6 +34,15 @@ export const useDeckTabsStore = create<DeckTabsState>()(
         const newDeck = DeckService.createEmptyDeck(deckName);
         state.tabs.push(newDeck);
         state.activeTabId = newDeck.id;
+      }),
+
+    /**
+     * 既存のデッキをタブとして追加
+     */
+    addTabWithDeck: (deck: Deck) =>
+      set((state) => {
+        state.tabs.push(deck);
+        state.activeTabId = deck.id;
       }),
 
     /**

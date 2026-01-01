@@ -35,6 +35,9 @@ export interface PublishedDeck {
   /** いいね数 */
   likeCount: number;
 
+  /** 現在のユーザーがいいね済みかどうか（任意フィールド） */
+  likedByCurrentUser?: boolean;
+
   /** 公開日時 */
   publishedAt: string;
 }
