@@ -4,6 +4,9 @@ import { FilterButton } from '@/components/common/FilterButton';
 import { Button } from '@/components/common/Button';
 import { ActiveFilters } from '@/components/common/ActiveFilters';
 import { CardFilter } from '@/components/common/CardFilter';
+import { KeywordSearchInput } from '../common/KeywordSearchInput';
+import { CharacterFilter } from '@/components/cards/filters/CharacterFilter';
+import { toggleFilterList } from '@/services/cardFilterService';
 
 interface CardGridFilterProps {
   activeFilterCount: number;
@@ -22,26 +25,28 @@ export const CardGridFilter: React.FC<CardGridFilterProps> = ({
 }) => {
   const [isFilterVisible, setIsFilterVisible] = useState(false);
 
-  const hasActiveFilters =
-    filter.keyword ||
-    (filter.rarities && filter.rarities.length > 0) ||
-    (filter.styleTypes && filter.styleTypes.length > 0) ||
-    (filter.limitedTypes && filter.limitedTypes.length > 0) ||
-    (filter.characterNames && filter.characterNames.length > 0) ||
-    (filter.favoriteModes && filter.favoriteModes.length > 0) ||
-    (filter.skillEffects && filter.skillEffects.length > 0) ||
-    (filter.skillSearchTargets && filter.skillSearchTargets.length > 0) ||
-    filter.hasTokens !== undefined;
+  const toggleCharacter = (characterName: string) => {
+    updateFilter(toggleFilterList(filter, 'characterNames', characterName));
+  };
 
   return (
-    <div className="bg-white rounded-lg shadow-md mb-6">
+    <div className="sticky top-4 z-10 bg-white rounded-lg shadow-md mb-6">
       <div className="flex flex-wrap items-center gap-2 p-4">
-        {/* フィルターボタン */}
-        <FilterButton
-          onClick={() => setIsFilterVisible(!isFilterVisible)}
-          activeCount={activeFilterCount}
-          isExpanded={isFilterVisible}
-        />
+        {/* キーワード検索入力 */}
+        <div className="flex w-full min-w-[200px] gap-2">
+          <div className="flex-1">
+            <KeywordSearchInput
+              value={filter.keyword || ''}
+              onChange={(keyword) => updateFilter({ keyword })}
+              placeholder="キーワードで検索"
+            />
+          </div>
+          <FilterButton
+            onClick={() => setIsFilterVisible(!isFilterVisible)}
+            activeCount={activeFilterCount}
+            isExpanded={isFilterVisible}
+          />
+        </div>
 
         {/* 適用中フィルター表示 */}
         <ActiveFilters filter={filter} clearFilterKey={clearFilterKey} />
@@ -50,7 +55,7 @@ export const CardGridFilter: React.FC<CardGridFilterProps> = ({
         <div className="flex-grow" />
 
         {/* クリアボタン */}
-        {hasActiveFilters && (
+        {activeFilterCount > 0 && (
           <Button
             onClick={onFilterClear}
             variant="secondary"
@@ -61,14 +66,32 @@ export const CardGridFilter: React.FC<CardGridFilterProps> = ({
         )}
       </div>
 
+      <CharacterFilter
+        selectedCharacters={filter.characterNames}
+        onToggle={toggleCharacter}
+        currentSlotId={null}
+      />
+
       {/* フィルター表示エリア */}
       {isFilterVisible && (
-        <CardFilter
-          filter={filter}
-          updateFilter={updateFilter}
-          currentSlotId={null}
-          onApply={() => setIsFilterVisible(false)}
-        />
+        <div className="max-h-[70vh] overflow-y-auto">
+          <CardFilter
+            filter={filter}
+            visibleFilters={[
+              'filterMode',
+              'favoriteModes',
+              'limitedTypes',
+              'rarities',
+              'skillEffects',
+              'skillSearchTargets',
+              'styleTypes',
+              'hasTokens',
+            ]}
+            updateFilter={updateFilter}
+            currentSlotId={null}
+            onApply={() => setIsFilterVisible(false)}
+          />
+        </div>
       )}
     </div>
   );
