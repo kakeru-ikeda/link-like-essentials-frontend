@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { GetDecksParams } from '@/models/DeckQueryParams';
 import { PublishedDeck } from '@/models/PublishedDeck';
 import { PageInfo } from '@/models/Pagination';
@@ -34,6 +34,19 @@ export const usePublishedDecks = (initialParams?: Partial<GetDecksParams>) => {
     ...initialParams,
   });
 
+  const requestParams: GetDecksParams = useMemo(
+    () => ({
+      page: params.page,
+      perPage: params.perPage,
+      orderBy: params.orderBy,
+      order: params.order,
+      tag: params.tag,
+      userId: params.userId,
+      songId: params.songId,
+    }),
+    [params.order, params.orderBy, params.page, params.perPage, params.songId, params.tag, params.userId]
+  );
+
   const fetchDecks = useCallback(async (nextParams: GetDecksParams) => {
     setState((prev) => ({ ...prev, loading: true, error: null }));
     try {
@@ -52,16 +65,16 @@ export const usePublishedDecks = (initialParams?: Partial<GetDecksParams>) => {
 
   useEffect(() => {
     if (!isAuthenticated) return;
-    fetchDecks(params);
-  }, [fetchDecks, isAuthenticated, params]);
+    fetchDecks(requestParams);
+  }, [fetchDecks, isAuthenticated, requestParams]);
 
   const goToPage = useCallback((page: number) => {
     setParams((prev) => ({ ...prev, page }));
   }, []);
 
   const refresh = useCallback(() => {
-    fetchDecks(params);
-  }, [fetchDecks, params]);
+    fetchDecks(requestParams);
+  }, [fetchDecks, requestParams]);
 
   return {
     decks,
