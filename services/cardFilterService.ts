@@ -2,11 +2,6 @@ import { Card } from '@/models/Card';
 import { CardFilter, FilterMode } from '@/models/Filter';
 import { FavoriteMode } from '@/models/enums';
 import { getSkillEffectKeyword, getSkillEffectKeywords, SkillEffectType, SkillSearchTarget } from '@/constants/skillEffects';
-import {
-  STYLE_TYPE_MAP,
-  FAVORITE_MODE_MAP,
-  LIMITED_TYPE_MAP,
-} from '@/constants/enumMappings';
 
 /**
  * クライアントサイドでカードをフィルタリング
@@ -314,3 +309,24 @@ export function buildSkillEffectSearchQuery(filter: CardFilter): string | undefi
   // 例: "スキルハートを獲得" OR "ハート上限を"
   return keywords.join(' OR ');
 }
+
+/**
+ * フィルターリストのトグル操作ユーティリティ
+ * 
+ * @param filter - 現在のカードフィルター
+ * @param key - フィルターのキー
+ * @param value - トグル対象の値
+ * @returns 更新後のフィルター部分オブジェクト
+ */
+export function toggleFilterList<T extends keyof CardFilter>(
+  filter: CardFilter,
+  key: T,
+  value: Extract<NonNullable<CardFilter[T]>, any[]>[number]
+): Partial<CardFilter> {
+  const list = (filter[key] as any[]) ?? [];
+  const next = list.includes(value)
+    ? list.filter((v) => v !== value)
+    : [...list, value];
+  return { [key]: next.length ? next : undefined } as Partial<CardFilter>;
+}
+
