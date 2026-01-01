@@ -35,11 +35,11 @@ export const PublishedDeckCard: React.FC<PublishedDeckCardProps> = ({ deck }) =>
 
       <div className="flex flex-1 flex-col gap-3 p-4">
         <div className="flex items-start justify-between gap-3">
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900 line-clamp-2">{baseDeck.name}</h3>
+          <div className="flex-1 min-w-0">
+            <h3 className="text-lg font-semibold text-gray-900 line-clamp-2 break-words">{baseDeck.name}</h3>
             <p className="text-sm text-gray-600">by {userName || '匿名ユーザー'}</p>
           </div>
-          <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700">
+          <span className="shrink-0 self-start rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700">
             {formatDeckType(baseDeck.deckType)}
           </span>
         </div>
