@@ -79,7 +79,7 @@ export const CardFilter: React.FC<CardFilterProps> = ({
       {/* キーワード検索 */}
       {isVisible('keyword') && (
         <FilterWrapper>
-          <div className=" p-4 ">
+          <div className="p-4">
             <label className="block text-sm font-medium text-gray-700 mb-3">
               キーワード検索
             </label>

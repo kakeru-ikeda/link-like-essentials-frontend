@@ -11,5 +11,3 @@ export const FilterWrapper: React.FC<FilterWrapperProps> = ({ children }) => {
     </div>
   );
 };
-
-export default FilterWrapper;
