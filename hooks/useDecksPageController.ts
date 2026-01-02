@@ -6,6 +6,19 @@ import { buildQueryString, parseQueryParams, QuerySchema } from '@/utils/queryPa
 
 type DeckQuerySyncParams = Pick<GetDecksParams, 'page' | 'orderBy' | 'order' | 'tag'>;
 
+const stripLeadingHash = (value?: string | null): string | undefined => {
+  if (!value) return undefined;
+  const trimmed = value.trim();
+  if (!trimmed) return undefined;
+  return trimmed.replace(/^#+/, '') || undefined;
+};
+
+const withLeadingHash = (value?: string | null): string | undefined => {
+  const stripped = stripLeadingHash(value);
+  if (!stripped) return undefined;
+  return `#${stripped}`;
+};
+
 const decksQuerySchema: QuerySchema<DeckQuerySyncParams> = {
   page: {
     defaultValue: 1,
@@ -36,10 +49,11 @@ const decksQuerySchema: QuerySchema<DeckQuerySyncParams> = {
     defaultValue: undefined,
     parse: (value) => {
       if (value === null) return undefined;
-      const trimmed = value.trim();
-      return trimmed.length > 0 ? trimmed : undefined;
+      return stripLeadingHash(value);
     },
-    serialize: (value) => (value ? value : null),
+    serialize: (value) => {
+      return value ?? null;
+    },
   },
 };
 
@@ -54,10 +68,10 @@ export const useDecksPageController = () => {
 
   const { decks, pageInfo, loading, error, goToPage, params, setParams } = usePublishedDecks(initialParams);
 
-  const [tagInput, setTagInput] = useState(initialParams.tag ?? '');
+  const [tagInput, setTagInput] = useState(withLeadingHash(initialParams.tag) ?? '');
 
   useEffect(() => {
-    setTagInput(params.tag ?? '');
+    setTagInput(withLeadingHash(params.tag) ?? '');
   }, [params.tag]);
 
   const handleSortChange = useCallback(
@@ -77,7 +91,9 @@ export const useDecksPageController = () => {
   const handleTagSubmit = useCallback(
     (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
-      setParams((prev) => ({ ...prev, tag: tagInput.trim() || undefined, page: 1 }));
+      const normalized = stripLeadingHash(tagInput);
+      setTagInput(withLeadingHash(normalized) ?? '');
+      setParams((prev) => ({ ...prev, tag: normalized, page: 1 }));
     },
     [setParams, tagInput]
   );
@@ -86,6 +102,15 @@ export const useDecksPageController = () => {
     setTagInput('');
     setParams((prev) => ({ ...prev, tag: undefined, page: 1 }));
   }, [setParams]);
+
+  const handleHashtagSelect = useCallback(
+    (selected: string) => {
+      const normalized = stripLeadingHash(selected);
+      setTagInput(withLeadingHash(normalized) ?? '');
+      setParams((prev) => ({ ...prev, tag: normalized, page: 1 }));
+    },
+    [setParams]
+  );
 
   useEffect(() => {
     const nextParams = parseQueryParams(searchParams, decksQuerySchema);
@@ -139,5 +164,6 @@ export const useDecksPageController = () => {
     handleOrderChange,
     handleTagSubmit,
     handleTagReset,
+    handleHashtagSelect,
   };
 };

@@ -1,9 +1,11 @@
 import Link from 'next/link';
 import { PublishedDeck } from '@/models/PublishedDeck';
 import { DeckType } from '@/models/enums';
+import { HashtagChips } from '@/components/deck/HashtagChips';
 
 interface PublishedDeckCardProps {
   deck: PublishedDeck;
+  onHashtagSelect?: (tag: string) => void;
 }
 
 const formatDate = (iso: string) => new Date(iso).toLocaleDateString('ja-JP');
@@ -13,7 +15,7 @@ const formatDeckType = (deckType?: DeckType) => {
   return deckType;
 };
 
-export const PublishedDeckCard: React.FC<PublishedDeckCardProps> = ({ deck }) => {
+export const PublishedDeckCard: React.FC<PublishedDeckCardProps> = ({ deck, onHashtagSelect }) => {
   const { id, deck: baseDeck, userName, likeCount, viewCount, hashtags, thumbnail, publishedAt } = deck;
 
   return (
@@ -51,11 +53,12 @@ export const PublishedDeckCard: React.FC<PublishedDeckCardProps> = ({ deck }) =>
         </div>
 
         {hashtags?.length > 0 && (
-          <div className="flex flex-wrap gap-1 text-xs text-slate-700">
-            {hashtags.map((tag) => (
-              <span key={tag} className="rounded-full bg-slate-100 px-2 py-1">{tag}</span>
-            ))}
-          </div>
+          <HashtagChips
+            tags={hashtags.map((tag) => ({ tag }))}
+            className="text-xs text-slate-700"
+            gapClassName="gap-1"
+            onSelect={onHashtagSelect}
+          />
         )}
 
         <Link

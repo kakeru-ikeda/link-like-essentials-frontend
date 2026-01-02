@@ -1,7 +1,9 @@
 "use client";
 
 import { PublishedDeckList } from '@/components/deck/PublishedDeckList';
+import { TagFilterBar } from '@/components/deck/TagFilterBar';
 import { useDecksPageController } from '@/hooks/useDecksPageController';
+import { usePopularHashtags } from '@/hooks/usePopularHashtags';
 
 export default function DecksPage() {
   const {
@@ -11,13 +13,23 @@ export default function DecksPage() {
     error,
     goToPage,
     params,
+    setParams,
     tagInput,
     setTagInput,
     handleSortChange,
     handleOrderChange,
     handleTagSubmit,
     handleTagReset,
+    handleHashtagSelect,
   } = useDecksPageController();
+
+  const {
+    hashtags,
+    aggregatedAt,
+    loading: hashtagsLoading,
+    error: hashtagsError,
+    refresh: refreshPopularHashtags,
+  } = usePopularHashtags();
 
   const handlePrev = () => {
     if (pageInfo?.hasPreviousPage) {
@@ -62,33 +74,18 @@ export default function DecksPage() {
         </div>
       </div>
 
-      <form onSubmit={handleTagSubmit} className="mb-4 flex flex-col gap-2 rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm sm:flex-row sm:items-center sm:justify-between">
-        <div className="text-sm font-medium text-slate-700">タグで絞り込み</div>
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-          <input
-            type="text"
-            value={tagInput}
-            onChange={(e) => setTagInput(e.target.value)}
-            placeholder="#タグ名を入力"
-            className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm shadow-sm sm:w-64 text-black"
-          />
-          <div className="flex gap-2">
-            <button
-              type="submit"
-              className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
-            >
-              適用
-            </button>
-            <button
-              type="button"
-              onClick={handleTagReset}
-              className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
-            >
-              クリア
-            </button>
-          </div>
-        </div>
-      </form>
+      <TagFilterBar
+        tagInput={tagInput}
+        onTagInputChange={setTagInput}
+        onSubmit={handleTagSubmit}
+        onReset={handleTagReset}
+        hashtags={hashtags}
+        aggregatedAt={aggregatedAt}
+        loading={hashtagsLoading}
+        error={hashtagsError}
+        onSelect={handleHashtagSelect}
+        onRetry={refreshPopularHashtags}
+      />
 
       {error && (
         <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
@@ -101,7 +98,7 @@ export default function DecksPage() {
           取得中...
         </div>
       ) : (
-        <PublishedDeckList decks={decks} />
+        <PublishedDeckList decks={decks} onHashtagSelect={handleHashtagSelect} />
       )}
 
       {pageInfo && (
