@@ -20,6 +20,7 @@
     "html-to-image": "^1.11.13",
     "immer": "^10.1.1",
     "lucide-react": "^0.555.0",
+    "microcms-js-sdk": "^3.2.0",
     "nanoid": "^5.1.6",
     "next": "^14.2.18",
     "react": "^18.3.1",
