@@ -1,9 +1,10 @@
-'use client';
+"use client";
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Deck } from '@/models/Deck';
 import { PublishedDeck } from '@/models/PublishedDeck';
 import { publishedDeckService } from '@/services/publishedDeckService';
+import { useDeckLike } from '@/hooks/useDeckLike';
 
 interface PublishedDeckActionsProps {
   deck: PublishedDeck;
@@ -24,13 +25,19 @@ export const PublishedDeckActions: React.FC<PublishedDeckActionsProps> = ({
   importError,
   compiling = false,
 }) => {
-  const [likeCount, setLikeCount] = useState(deck.likeCount);
   const [viewCount, setViewCount] = useState(deck.viewCount);
-  const [isLiked, setIsLiked] = useState(false);
-  const [likeLoading, setLikeLoading] = useState(false);
-  const [actionError, setActionError] = useState<string | null>(null);
 
-  const likeStorageKey = useMemo(() => `published-deck-liked-${deck.id}`, [deck.id]);
+  const {
+    liked,
+    likeCount,
+    loading: likeLoading,
+    error: likeError,
+    toggleLike,
+  } = useDeckLike({
+    deckId: deck.id,
+    initialLiked: deck.likedByCurrentUser ?? false,
+    initialLikeCount: deck.likeCount ?? 0,
+  });
   const canImport = !!compiledDeck && !!onImport && !importing && !compiling;
 
   const actionPillBase =
@@ -41,13 +48,8 @@ export const PublishedDeckActions: React.FC<PublishedDeckActionsProps> = ({
     'inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-white shadow-lg transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-slate-300 hover:-translate-y-0.5 hover:shadow-xl disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60';
 
   useEffect(() => {
-    setLikeCount(deck.likeCount);
     setViewCount(deck.viewCount);
-
-    const storedLike = typeof window !== 'undefined' ? localStorage.getItem(likeStorageKey) : null;
-    const initialLiked = storedLike === 'true' || deck.likedByCurrentUser === true;
-    setIsLiked(initialLiked);
-  }, [deck, likeStorageKey]);
+  }, [deck]);
 
   useEffect(() => {
     let cancelled = false;
@@ -73,32 +75,7 @@ export const PublishedDeckActions: React.FC<PublishedDeckActionsProps> = ({
 
   const handleToggleLike = async () => {
     if (likeLoading) return;
-
-    const nextLiked = !isLiked;
-    const previousCount = likeCount;
-
-    setActionError(null);
-    setIsLiked(nextLiked);
-    setLikeLoading(true);
-    setLikeCount(Math.max(0, nextLiked ? likeCount + 1 : likeCount - 1));
-
-    try {
-      const updated = nextLiked
-        ? await publishedDeckService.likeDeck(deck.id)
-        : await publishedDeckService.unlikeDeck(deck.id);
-
-      setLikeCount(updated);
-      if (typeof window !== 'undefined') {
-        localStorage.setItem(likeStorageKey, String(nextLiked));
-      }
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'いいねの更新に失敗しました';
-      setActionError(message);
-      setIsLiked(!nextLiked);
-      setLikeCount(previousCount);
-    } finally {
-      setLikeLoading(false);
-    }
+    await toggleLike();
   };
 
   const handleImport = async () => {
@@ -114,13 +91,13 @@ export const PublishedDeckActions: React.FC<PublishedDeckActionsProps> = ({
           onClick={handleToggleLike}
           disabled={likeLoading}
           className={`${actionPillBase} ${
-            isLiked
+            liked
               ? 'bg-rose-600 text-white shadow-[0_6px_20px_rgba(244,63,94,0.25)] hover:bg-rose-700'
               : 'bg-slate-900 text-white hover:bg-slate-800'
           }`}
-          aria-pressed={isLiked}
+          aria-pressed={liked}
         >
-          <span className="text-base">{isLiked ? '♥' : '♡'}</span>
+          <span className="text-base">{liked ? '♥' : '♡'}</span>
           <span>{formatNumber(likeCount)}</span>
           <span className="text-xs font-normal opacity-80">いいね</span>
         </button>
@@ -145,9 +122,9 @@ export const PublishedDeckActions: React.FC<PublishedDeckActionsProps> = ({
           <span>{importing ? 'インポート中...' : compiling ? 'コンパイル中...' : 'インポートして編集'}</span>
         </button>
 
-        {(actionError || importError) && (
+        {(likeError || importError) && (
           <div className="text-xs text-red-600" role="alert">
-            {actionError || importError}
+            {likeError || importError}
           </div>
         )}
       </div>
