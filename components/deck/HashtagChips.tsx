@@ -44,7 +44,7 @@ export const HashtagChips = ({
             <button
               key={item.tag}
               type="button"
-              onClick={() => onSelect(formatDisplayLabel(item.tag))}
+              onClick={() => onSelect(item.tag)}
               className="group flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-sm font-medium text-slate-800 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
             >
               <span>{label}</span>

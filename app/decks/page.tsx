@@ -13,7 +13,6 @@ export default function DecksPage() {
     error,
     goToPage,
     params,
-    setParams,
     tagInput,
     setTagInput,
     handleSortChange,

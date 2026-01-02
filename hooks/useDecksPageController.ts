@@ -109,7 +109,7 @@ export const useDecksPageController = () => {
       setTagInput(withLeadingHash(normalized) ?? '');
       setParams((prev) => ({ ...prev, tag: normalized, page: 1 }));
     },
-    [setParams]
+    [setParams, setTagInput]
   );
 
   useEffect(() => {

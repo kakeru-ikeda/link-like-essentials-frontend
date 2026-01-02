@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { PopularHashtagSummary } from '@/models/Hashtag';
 import { publishedDeckService } from '@/services/publishedDeckService';
 import { useAuth } from './useAuth';
@@ -31,15 +31,18 @@ export const usePopularHashtags = () => {
     }
   }, []);
 
+  const fetchPopularHashtagsRef = useRef(fetchPopularHashtags);
+  fetchPopularHashtagsRef.current = fetchPopularHashtags;
+
   useEffect(() => {
     if (!isAuthenticated) return;
-    fetchPopularHashtags();
-  }, [fetchPopularHashtags, isAuthenticated]);
+    fetchPopularHashtagsRef.current();
+  }, [isAuthenticated]);
 
   const refresh = useCallback(() => {
     if (!isAuthenticated) return;
-    fetchPopularHashtags();
-  }, [fetchPopularHashtags, isAuthenticated]);
+    fetchPopularHashtagsRef.current();
+  }, [isAuthenticated]);
 
   return {
     hashtags: state.hashtags,

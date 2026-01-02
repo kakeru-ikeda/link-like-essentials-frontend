@@ -1,3 +1,4 @@
+import { HashtagChips } from '@/components/deck/HashtagChips';
 import { PopularHashtag } from '@/models/Hashtag';
 
 interface PopularHashtagListProps {
@@ -47,23 +48,13 @@ export const PopularHashtagList = ({
       )}
 
       {!loading && !error && displayTags.length > 0 && (
-        <div className="flex flex-wrap gap-2">
-          {displayTags.map((item) => {
-            const label = item.hashtag.startsWith('#') ? item.hashtag : `#${item.hashtag}`;
-            return (
-              <button
-                key={item.hashtag}
-                type="button"
-                onClick={() => onSelect(item.hashtag)}
-                className="group flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-sm font-medium text-slate-800 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
-              >
-                <span>{label}</span>
-                <span className="rounded-full bg-white px-2 py-0.5 text-xs font-semibold text-blue-700 group-hover:bg-blue-700 group-hover:text-white">
-                  {item.count}
-                </span>
-              </button>
-            );
-          })}
+        <div className="mt-2">
+          <HashtagChips
+            tags={displayTags.map((item) => ({ tag: item.hashtag, count: item.count }))}
+            showCount
+            onSelect={onSelect}
+            gapClassName="gap-2"
+          />
         </div>
       )}
     </div>
