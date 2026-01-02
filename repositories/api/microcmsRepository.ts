@@ -5,11 +5,11 @@ const serviceDomain = process.env.MICROCMS_SERVICE_DOMAIN;
 const apiKey = process.env.MICROCMS_API_KEY;
 
 if (!serviceDomain) {
-  throw new Error('MICROCMS_SERVICE_DOMAIN is not set');
+  throw new Error('MICROCMS_SERVICE_DOMAINが設定されていません');
 }
 
 if (!apiKey) {
-  throw new Error('MICROCMS_API_KEY is not set');
+  throw new Error('MICROCMS_API_KEYが設定されていません');
 }
 
 const client = createClient({
@@ -33,6 +33,13 @@ function buildRequestInit(revalidateSeconds?: number): NextRequestInit {
   };
 }
 
+/**
+ * microCMS からオブジェクトを取得する
+ * @param endpoint - microCMS のエンドポイント
+ * @param queries - フィルターやリミットなどのクエリ
+ * @param revalidateSeconds - ISR の再検証秒数（省略時はデフォルト）
+ * @returns 取得したオブジェクト
+ */
 export async function getMicrocmsObject<T>({
   endpoint,
   queries,
@@ -45,6 +52,13 @@ export async function getMicrocmsObject<T>({
   });
 }
 
+/**
+ * microCMS からリストを取得する
+ * @param endpoint - microCMS のエンドポイント
+ * @param queries - フィルターやリミットなどのクエリ
+ * @param revalidateSeconds - ISR の再検証秒数（省略時はデフォルト）
+ * @returns microCMS のリストレスポンス
+ */
 export async function getMicrocmsList<T>({
   endpoint,
   queries,
