@@ -20,7 +20,7 @@ export const TokenCardFilter: React.FC<TokenCardFilterProps> = ({
         onChange={onChange}
         trueLabel="あり"
         falseLabel="なし"
-        color="cyan"
+        color="#06b6d4"
       />
     </div>
   );

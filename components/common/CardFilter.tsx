@@ -33,6 +33,10 @@ export const CardFilter: React.FC<CardFilterProps> = ({
     if (!visibleFilters) {
       return true;
     }
+    // skillSearchTargets は skillEffects とセットで表示
+    if (key === 'skillSearchTargets') {
+      return visibleFilters.includes('skillEffects');
+    }
     return visibleFilters.includes(key);
   };
 

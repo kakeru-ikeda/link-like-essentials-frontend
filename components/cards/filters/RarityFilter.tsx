@@ -22,7 +22,7 @@ export const RarityFilter: React.FC<RarityFilterProps> = ({
         selectedValues={selectedRarities}
         onToggle={onToggle}
         getLabel={(rarity) => RARITY_LABELS[rarity]}
-        color="purple"
+        color="#800080"
       />
     </div>
   );

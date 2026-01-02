@@ -34,7 +34,7 @@ export const SkillEffectFilter: React.FC<SkillEffectFilterProps> = ({
           selectedValues={selectedEffects}
           onToggle={onToggleEffect}
           getLabel={(effect) => SKILL_EFFECT_LABELS[effect]}
-          color="indigo"
+          color="#043c78"
           renderCustomButton={(effect, isSelected, label) => (
             <Tooltip
               key={effect}
@@ -66,7 +66,7 @@ export const SkillEffectFilter: React.FC<SkillEffectFilterProps> = ({
           selectedValues={selectedTargets}
           onToggle={onToggleTarget}
           getLabel={(target) => SKILL_SEARCH_TARGET_LABELS[target]}
-          color="orange"
+          color="#ee7800"
         />
       </div>
     </div>

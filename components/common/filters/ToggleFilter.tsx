@@ -5,7 +5,7 @@ interface ToggleFilterProps {
   onChange: (value: boolean | undefined) => void;
   trueLabel?: string;
   falseLabel?: string;
-  color?: string;
+  color: string;
 }
 
 export const ToggleFilter: React.FC<ToggleFilterProps> = ({
@@ -13,19 +13,22 @@ export const ToggleFilter: React.FC<ToggleFilterProps> = ({
   onChange,
   trueLabel = 'あり',
   falseLabel = 'なし',
-  color = 'cyan',
+  color = '#06b6d4', // cyan-500
 }) => {
-  const colorClass = `bg-${color}-500`;
-
   return (
     <div className="flex flex-wrap gap-2">
       <button
         onClick={() => onChange(value === true ? undefined : true)}
         className={`px-3 py-1 rounded-full text-sm font-medium transition ${
           value === true
-            ? `${colorClass} text-white`
+            ? ''
             : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
         }`}
+        style={
+          value === true
+            ? { backgroundColor: color, color: '#ffffff' }
+            : undefined
+        }
       >
         {trueLabel}
       </button>
@@ -33,9 +36,14 @@ export const ToggleFilter: React.FC<ToggleFilterProps> = ({
         onClick={() => onChange(value === false ? undefined : false)}
         className={`px-3 py-1 rounded-full text-sm font-medium transition ${
           value === false
-            ? `${colorClass} text-white`
+            ? ''
             : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
         }`}
+        style={
+          value === false
+            ? { backgroundColor: color, color: '#ffffff' }
+            : undefined
+        }
       >
         {falseLabel}
       </button>
