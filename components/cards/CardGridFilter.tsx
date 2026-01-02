@@ -4,7 +4,7 @@ import { FilterButton } from '@/components/common/FilterButton';
 import { Button } from '@/components/common/Button';
 import { ActiveFilters } from '@/components/common/ActiveFilters';
 import { CardFilter } from '@/components/common/CardFilter';
-import { KeywordSearchInput } from '../common/KeywordSearchInput';
+import { KeywordSearchInput } from '@/components/common/KeywordSearchInput';
 import { CharacterFilter } from '@/components/cards/filters/CharacterFilter';
 import { toggleFilterList } from '@/services/cardFilterService';
 
