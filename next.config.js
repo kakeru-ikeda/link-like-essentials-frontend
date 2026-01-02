@@ -1,5 +1,11 @@
+const { withSentryConfig } = require('@sentry/nextjs');
+const { sentryNextOptions, sentryWebpackPluginOptions } = require('./sentry.config');
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  experimental: {
+    instrumentationHook: true,
+  },
   images: {
     remotePatterns: [
       {
@@ -10,4 +16,4 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;
+module.exports = withSentryConfig(nextConfig, sentryWebpackPluginOptions, sentryNextOptions);
