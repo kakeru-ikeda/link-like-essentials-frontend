@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { publishedDeckService } from '@/services/publishedDeckService';
 import { useAuth } from './useAuth';
 
@@ -18,17 +18,14 @@ export const useDeckLike = ({ deckId, initialLiked = false, initialLikeCount = 0
   const [likeCount, setLikeCount] = useState<number>(initialLikeCount);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const loadingRef = useRef<boolean>(false);
 
   useEffect(() => {
-    setLiked(Boolean(initialLiked));
-  }, [initialLiked]);
-
-  useEffect(() => {
-    setLikeCount(initialLikeCount ?? 0);
-  }, [initialLikeCount]);
+    loadingRef.current = loading;
+  }, [loading]);
 
   const toggleLike = useCallback(async () => {
-    if (loading) return;
+    if (loadingRef.current) return;
     if (!isAuthenticated) {
       setError('いいねするにはログインが必要です');
       return;
@@ -42,6 +39,7 @@ export const useDeckLike = ({ deckId, initialLiked = false, initialLikeCount = 0
 
     setLiked(optimisticLiked);
     setLikeCount((prev) => Math.max(0, prev + delta));
+    loadingRef.current = true;
     setLoading(true);
 
     try {
@@ -55,9 +53,10 @@ export const useDeckLike = ({ deckId, initialLiked = false, initialLikeCount = 0
       const message = err instanceof Error ? err.message : 'いいねの更新に失敗しました';
       setError(message);
     } finally {
+      loadingRef.current = false;
       setLoading(false);
     }
-  }, [deckId, isAuthenticated, liked, loading]);
+  }, [deckId, isAuthenticated, liked]);
 
   return {
     liked,

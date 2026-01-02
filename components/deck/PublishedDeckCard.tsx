@@ -103,8 +103,6 @@ export const PublishedDeckCard: React.FC<PublishedDeckCardProps> = ({ deck, onHa
           </div>
         </div>
 
-
-
         {hashtags?.length > 0 && (
           <HashtagChips
             tags={hashtags.map((tag) => ({ tag }))}
