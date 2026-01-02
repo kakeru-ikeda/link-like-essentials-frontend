@@ -20,6 +20,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'マイデッキ', href: '/decks', icon: '📚' },
   { label: 'カード一覧', href: '/cards', icon: '🔍' },
   { label: '統計情報', href: '/stats', icon: '📊' },
+  { label: 'お知らせ', href: '/news', icon: '📰' },
 ];
 
 export function Sidebar({ children }: SidebarProps): JSX.Element {
