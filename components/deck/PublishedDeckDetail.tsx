@@ -2,6 +2,7 @@ import { PublishedDeck } from '@/models/PublishedDeck';
 import { Deck } from '@/models/Deck';
 import { ExportDashboard } from '@/components/deck/export/ExportDashboard';
 import { ImagePreviewGrid } from '@/components/deck/ImagePreviewGrid';
+import { HashtagChips } from '@/components/deck/HashtagChips';
 
 interface PublishedDeckDetailProps {
   deck: PublishedDeck;
@@ -9,7 +10,6 @@ interface PublishedDeckDetailProps {
 }
 
 const formatDate = (iso: string) => new Date(iso).toLocaleDateString('ja-JP');
-const normalizeTag = (tag: string) => tag.replace(/^#+/, '');
 
 export const PublishedDeckDetail: React.FC<PublishedDeckDetailProps> = ({ deck, compiledDeck }) => {
   const { deck: baseDeck, userName, hashtags, thumbnail, publishedAt, comment, imageUrls } = deck;
@@ -49,14 +49,11 @@ export const PublishedDeckDetail: React.FC<PublishedDeckDetailProps> = ({ deck, 
           </div>
 
           {hashtags?.length > 0 && (
-            <div className="flex flex-wrap gap-2 text-xs text-slate-700">
-              {hashtags.map((tag) => {
-                const displayTag = normalizeTag(tag);
-                return (
-                  <span key={tag} className="rounded-full bg-slate-100 px-2 py-1">#{displayTag}</span>
-                );
-              })}
-            </div>
+            <HashtagChips
+              tags={hashtags.map((tag) => ({ tag }))}
+              className="text-xs text-slate-700"
+              gapClassName="gap-2"
+            />
           )}
 
           {(comment || (imageUrls && imageUrls.length > 0)) && (

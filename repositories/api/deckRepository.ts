@@ -2,6 +2,7 @@ import { DeckPublicationRequest, PublishedDeck } from '@/models/PublishedDeck';
 import { Comment } from '@/models/Comment';
 import { GetDecksParams } from '@/models/DeckQueryParams';
 import { PaginatedResponse } from '@/models/Pagination';
+import { PopularHashtagSummary } from '@/models/Hashtag';
 import { DECK_API_ENDPOINT } from '@/constants/apiEndpoints';
 import { getAuthToken } from './authUtils';
 
@@ -234,5 +235,29 @@ export const deckRepository = {
 
     const data = await response.json();
     return data;
+  },
+
+  /**
+   * 人気ハッシュタグを取得
+   * @returns 人気ハッシュタグ一覧と集計日時
+   */
+  async getPopularHashtags(): Promise<PopularHashtagSummary> {
+    const token = await getAuthToken();
+    const response = await fetch(`${DECK_API_ENDPOINT}/decks/hashtags`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.error?.message || '人気ハッシュタグの取得に失敗しました');
+    }
+
+    const data = await response.json();
+    return {
+      hashtags: data.hashtags ?? [],
+      aggregatedAt: data.aggregatedAt ?? null,
+    };
   },
 };
