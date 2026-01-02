@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 
 interface MultiSelectFilterProps<T extends string | number> {
@@ -5,7 +7,7 @@ interface MultiSelectFilterProps<T extends string | number> {
   selectedValues: T[] | undefined;
   onToggle: (value: T) => void;
   getLabel: (value: T) => string;
-  color: string | ((value: T) => string);
+  color?: string | ((value: T) => string);
   renderCustomButton?: (
     value: T,
     isSelected: boolean,

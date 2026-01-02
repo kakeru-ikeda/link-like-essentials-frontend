@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { ToggleFilter } from '@/components/common/filters/ToggleFilter';
 
@@ -15,6 +17,7 @@ export const TokenCardFilter: React.FC<TokenCardFilterProps> = ({
       <label className="block text-sm font-medium text-gray-700 mb-3">
         トークンカード
       </label>
+
       <ToggleFilter
         value={hasTokens}
         onChange={onChange}

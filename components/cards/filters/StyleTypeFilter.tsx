@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { StyleType } from '@/models/enums';
 import { STYLE_TYPE_COLORS, STYLE_TYPE_LABELS } from '@/constants/labels';

@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { FavoriteMode } from '@/models/enums';
 import { FAVORITE_MODE_COLORS, FAVORITE_MODE_LABELS } from '@/constants/labels';

@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { LimitedType } from '@/models/enums';
 import { LIMITED_TYPE_COLORS, LIMITED_TYPE_LABELS } from '@/constants/labels';

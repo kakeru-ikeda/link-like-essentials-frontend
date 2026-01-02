@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { MultiSelectFilter } from '@/components/common/filters/MultiSelectFilter';
 import { Tooltip } from '@/components/common/Tooltip';
@@ -34,7 +36,7 @@ export const SkillEffectFilter: React.FC<SkillEffectFilterProps> = ({
           selectedValues={selectedEffects}
           onToggle={onToggleEffect}
           getLabel={(effect) => SKILL_EFFECT_LABELS[effect]}
-          color="#043c78"
+          color="#10b981" // emerald-500
           renderCustomButton={(effect, isSelected, label) => (
             <Tooltip
               key={effect}
@@ -45,9 +47,14 @@ export const SkillEffectFilter: React.FC<SkillEffectFilterProps> = ({
                 onClick={() => onToggleEffect(effect)}
                 className={`px-3 py-1 rounded-full text-sm font-medium transition ${
                   isSelected
-                    ? 'bg-indigo-500 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    ? ''
+                    : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
                 }`}
+                style={
+                  isSelected
+                    ? { backgroundColor: '#6366f1', color: '#ffffff' }
+                    : undefined
+                }
               >
                 {label}
               </button>
@@ -66,7 +73,7 @@ export const SkillEffectFilter: React.FC<SkillEffectFilterProps> = ({
           selectedValues={selectedTargets}
           onToggle={onToggleTarget}
           getLabel={(target) => SKILL_SEARCH_TARGET_LABELS[target]}
-          color="#ee7800"
+          color="#f97316" // orange-500
         />
       </div>
     </div>

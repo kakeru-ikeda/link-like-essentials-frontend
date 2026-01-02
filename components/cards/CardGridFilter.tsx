@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from 'react';
 import { CardFilter as CardFilterType } from '@/models/Filter';
 import { FilterButton } from '@/components/common/FilterButton';
@@ -7,6 +9,7 @@ import { CardFilter } from '@/components/common/CardFilter';
 import { KeywordSearchInput } from '@/components/common/KeywordSearchInput';
 import { CharacterFilter } from '@/components/cards/filters/CharacterFilter';
 import { toggleFilterList } from '@/services/cardFilterService';
+import { FilterWrapper } from '../common/filters/FilterWrapper';
 
 interface CardGridFilterProps {
   activeFilterCount: number;
@@ -37,7 +40,9 @@ export const CardGridFilter: React.FC<CardGridFilterProps> = ({
           <div className="flex-1">
             <KeywordSearchInput
               value={filter.keyword || ''}
-              onChange={(keyword) => updateFilter({ keyword })}
+              onChange={(keyword) =>
+                updateFilter({ keyword: keyword || undefined })
+              }
               placeholder="キーワードで検索"
             />
           </div>

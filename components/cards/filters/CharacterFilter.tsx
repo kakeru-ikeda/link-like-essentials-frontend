@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { MultiSelectFilter } from '@/components/common/filters/MultiSelectFilter';
 import { getSelectableCharactersForSlot } from '@/services/characterFilterService';

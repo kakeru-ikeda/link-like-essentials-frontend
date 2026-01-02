@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { Card } from '@/models/Card';
 import { CardGridItem } from '@/components/cards/CardGridItem';

@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import type { CardFilter as CardFilterType } from '@/models/Filter';
 import { Rarity, StyleType, LimitedType, FavoriteMode } from '@/models/enums';

@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { Rarity } from '@/models/enums';
 import { RARITY_LABELS } from '@/constants/labels';
