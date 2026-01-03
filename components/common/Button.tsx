@@ -27,7 +27,7 @@ export const Button: React.FC<ButtonProps> = ({
     danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
   };
 
-  const disabledStyles = 'opacity-50 cursor-not-allowed';
+  const disabledStyles = 'opacity-50';
 
   return (
     <button

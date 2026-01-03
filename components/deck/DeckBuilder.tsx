@@ -11,15 +11,18 @@ import { CardList } from '@/components/deck/CardList';
 import { CurrentCardDisplay } from '@/components/deck/CurrentCardDisplay';
 import { InProgressCardDisplay } from '@/components/deck/InProgressCardDisplay';
 import { CardDetailView } from '@/components/deck/CardDetailView';
-import { CardFilter } from '@/components/deck/CardFilter';
-import { FilterButton } from '@/components/deck/FilterButton';
-import { ActiveFilters } from '@/components/deck/ActiveFilters';
+import { CardFilter } from '@/components/common/CardFilter';
+import { FilterButton } from '@/components/common/FilterButton';
+import { ActiveFilters } from '@/components/common/ActiveFilters';
 import { useCards } from '@/hooks/useCards';
 import { useCardStore } from '@/store/cardStore';
 import { useSideModal } from '@/hooks/useSideModal';
 import { useFilter } from '@/hooks/useFilter';
 import type { Card } from '@/models/Card';
-import { filterCardsBySlot, getAssignedCardsForSlot } from '@/services/deckFilterService';
+import {
+  filterCardsBySlot,
+  getAssignedCardsForSlot,
+} from '@/services/deckFilterService';
 import { filterAvailableCards } from '@/services/characterFilterService';
 
 export const DeckBuilder: React.FC = () => {
@@ -32,111 +35,169 @@ export const DeckBuilder: React.FC = () => {
     setActiveFilter: state.setActiveFilter,
   }));
 
-  const { filter, updateFilter, setFilter, resetFilter, clearFilterKey, countActiveFilters } = useFilter();
+  const {
+    filter,
+    updateFilter,
+    setFilter,
+    resetFilter,
+    clearFilterKey,
+    countActiveFilters,
+  } = useFilter();
 
   React.useEffect(() => {
     setActiveFilter(filter);
   }, [filter, setActiveFilter]);
 
-  const handleDragStart = useCallback((slotId: number): void => {
-    const slot = deck?.slots.find((s) => s.slotId === slotId);
-    if (slot?.card) {
-      setDraggingSlotId(slotId);
-    }
-  }, [deck?.slots]);
+  const handleDragStart = useCallback(
+    (slotId: number): void => {
+      const slot = deck?.slots.find((s) => s.slotId === slotId);
+      if (slot?.card) {
+        setDraggingSlotId(slotId);
+      }
+    },
+    [deck?.slots]
+  );
 
   const handleDragEnd = useCallback((): void => setDraggingSlotId(null), []);
 
-  const handleDrop = useCallback((targetSlotId: number): void => {
-    if (draggingSlotId !== null && draggingSlotId !== targetSlotId) swapCards(draggingSlotId, targetSlotId);
-    setDraggingSlotId(null);
-  }, [draggingSlotId, swapCards]);
+  const handleDrop = useCallback(
+    (targetSlotId: number): void => {
+      if (draggingSlotId !== null && draggingSlotId !== targetSlotId)
+        swapCards(draggingSlotId, targetSlotId);
+      setDraggingSlotId(null);
+    },
+    [draggingSlotId, swapCards]
+  );
 
-  const canDropToSlot = useCallback((targetSlotId: number): boolean => {
-    if (draggingSlotId === null || draggingSlotId === targetSlotId) { 
-      return false;
-    }
-    const draggingSlot = deck?.slots.find((s) => s.slotId === draggingSlotId);
-    if (!draggingSlot?.card) {
-      return false;
-    }
-    const result = canPlaceCardInSlot(
-      { characterName: draggingSlot.card.characterName, rarity: draggingSlot.card.rarity },
-      targetSlotId,
-      deck?.deckType
-    );
-    return result.allowed;
-  }, [draggingSlotId, deck?.slots, deck?.deckType]);
+  const canDropToSlot = useCallback(
+    (targetSlotId: number): boolean => {
+      if (draggingSlotId === null || draggingSlotId === targetSlotId) {
+        return false;
+      }
+      const draggingSlot = deck?.slots.find((s) => s.slotId === draggingSlotId);
+      if (!draggingSlot?.card) {
+        return false;
+      }
+      const result = canPlaceCardInSlot(
+        {
+          characterName: draggingSlot.card.characterName,
+          rarity: draggingSlot.card.rarity,
+        },
+        targetSlotId,
+        deck?.deckType
+      );
+      return result.allowed;
+    },
+    [draggingSlotId, deck?.slots, deck?.deckType]
+  );
 
-  const { currentSlotCard, currentCharacterName, currentSlotType } = React.useMemo(() => {
-    if (sideModal.currentSlotId === null || !deck) {
-      return { 
-        currentSlotCard: null,
-        currentCharacterName: undefined,
-        currentSlotType: undefined
+  const { currentSlotCard, currentCharacterName, currentSlotType } =
+    React.useMemo(() => {
+      if (sideModal.currentSlotId === null || !deck) {
+        return {
+          currentSlotCard: null,
+          currentCharacterName: undefined,
+          currentSlotType: undefined,
+        };
+      }
+      const slot = deck.slots.find((s) => s.slotId === sideModal.currentSlotId);
+      const mapping = getDeckSlotMapping(deck.deckType);
+      const slotMapping = mapping.find(
+        (m) => m.slotId === sideModal.currentSlotId
+      );
+      return {
+        currentSlotCard: slot?.card || null,
+        currentCharacterName: slot?.characterName,
+        currentSlotType: slotMapping?.slotType,
       };
-    }
-    const slot = deck.slots.find((s) => s.slotId === sideModal.currentSlotId);
-    const mapping = getDeckSlotMapping(deck.deckType);
-    const slotMapping = mapping.find((m) => m.slotId === sideModal.currentSlotId);
-    return { 
-      currentSlotCard: slot?.card || null,
-      currentCharacterName: slot?.characterName,
-      currentSlotType: slotMapping?.slotType
-    };
-  }, [sideModal.currentSlotId, deck]);
+    }, [sideModal.currentSlotId, deck]);
 
   const assignedCardIds = React.useMemo(() => {
     if (!deck) return [];
-    return deck.slots.filter((slot) => slot.slotId !== sideModal.currentSlotId && slot.card).map((slot) => slot.card!.id);
+    return deck.slots
+      .filter((slot) => slot.slotId !== sideModal.currentSlotId && slot.card)
+      .map((slot) => slot.card!.id);
   }, [deck, sideModal.currentSlotId]);
 
   const assignedCards = React.useMemo(() => {
-  if (!deck || sideModal.currentSlotId === null) return [];
-  return getAssignedCardsForSlot(deck.slots, sideModal.currentSlotId, deck.deckType);
-}, [deck, sideModal.currentSlotId]);
+    if (!deck || sideModal.currentSlotId === null) return [];
+    return getAssignedCardsForSlot(
+      deck.slots,
+      sideModal.currentSlotId,
+      deck.deckType
+    );
+  }, [deck, sideModal.currentSlotId]);
 
   const filterForQuery = React.useMemo(() => {
     if (sideModal.currentSlotId === null) return undefined;
     return filter;
   }, [sideModal.currentSlotId, filter]);
 
-  const { cards, loading } = useCards(filterForQuery, sideModal.currentSlotId === null);
+  const { cards, loading } = useCards(
+    filterForQuery,
+    sideModal.currentSlotId === null
+  );
 
   const filteredCards = React.useMemo(() => {
     if (sideModal.currentSlotId === null) return [];
-    const availableCards = filterAvailableCards(cards, currentSlotCard?.id, assignedCardIds);
-    return filterCardsBySlot(availableCards, sideModal.currentSlotId, deck?.deckType);
-  }, [cards, currentSlotCard, assignedCardIds, sideModal.currentSlotId, deck?.deckType]);
+    const availableCards = filterAvailableCards(
+      cards,
+      currentSlotCard?.id,
+      assignedCardIds
+    );
+    return filterCardsBySlot(
+      availableCards,
+      sideModal.currentSlotId,
+      deck?.deckType
+    );
+  }, [
+    cards,
+    currentSlotCard,
+    assignedCardIds,
+    sideModal.currentSlotId,
+    deck?.deckType,
+  ]);
 
-  const handleSlotClick = useCallback((slotId: number): void => {
-    sideModal.openCardSearch(slotId);
-    // キャラクター名を除外して初期化
-    const { characterNames, ...filterWithoutCharacter } = filter;
-    setFilter(filterWithoutCharacter);
-  }, [sideModal, filter, setFilter]);
+  const handleSlotClick = useCallback(
+    (slotId: number): void => {
+      sideModal.openCardSearch(slotId);
+      // キャラクター名を除外して初期化
+      const { characterNames, ...filterWithoutCharacter } = filter;
+      setFilter(filterWithoutCharacter);
+    },
+    [sideModal, filter, setFilter]
+  );
 
-  const handleShowDetail = useCallback((cardId: string): void => {
-    sideModal.openCardDetail(cardId);
-  }, [sideModal]);
+  const handleShowDetail = useCallback(
+    (cardId: string): void => {
+      sideModal.openCardDetail(cardId);
+    },
+    [sideModal]
+  );
 
-  const handleSelectCard = useCallback((card: Card): void => {
-    if (sideModal.currentSlotId !== null) {
-      const assignedSlot = deck?.slots.find((slot) => slot.card?.id === card.id && slot.slotId !== sideModal.currentSlotId);
-      if (assignedSlot) {
-        swapCards(sideModal.currentSlotId, assignedSlot.slotId);
-        sideModal.closeCardSearch();
-      } else {
-        const success = addCard(sideModal.currentSlotId, card);
-        if (success) {
+  const handleSelectCard = useCallback(
+    (card: Card): void => {
+      if (sideModal.currentSlotId !== null) {
+        const assignedSlot = deck?.slots.find(
+          (slot) =>
+            slot.card?.id === card.id && slot.slotId !== sideModal.currentSlotId
+        );
+        if (assignedSlot) {
+          swapCards(sideModal.currentSlotId, assignedSlot.slotId);
           sideModal.closeCardSearch();
         } else {
-          const errorMessage = '編成できませんでした';
-          alert(errorMessage);
+          const success = addCard(sideModal.currentSlotId, card);
+          if (success) {
+            sideModal.closeCardSearch();
+          } else {
+            const errorMessage = '編成できませんでした';
+            alert(errorMessage);
+          }
         }
       }
-    }
-  }, [sideModal, deck?.slots, swapCards, addCard]);
+    },
+    [sideModal, deck?.slots, swapCards, addCard]
+  );
 
   const handleRemoveCurrentCard = useCallback((): void => {
     if (sideModal.currentSlotId !== null) {
@@ -149,13 +210,16 @@ export const DeckBuilder: React.FC = () => {
     sideModal.closeCardSearch();
   }, [sideModal]);
 
-  const handleApplyAndCloseFilter = useCallback((): void => { 
+  const handleApplyAndCloseFilter = useCallback((): void => {
     sideModal.closeFilter();
   }, [sideModal]);
 
-  const handleKeywordChange = useCallback((value: string): void => {
-    updateFilter({ keyword: value || undefined });
-  }, [updateFilter]);
+  const handleKeywordChange = useCallback(
+    (value: string): void => {
+      updateFilter({ keyword: value || undefined });
+    },
+    [updateFilter]
+  );
 
   if (!deck) {
     return (
@@ -315,9 +379,17 @@ export const DeckBuilder: React.FC = () => {
         headerActions={
           <div className="flex items-center gap-2">
             {countActiveFilters() > 0 && (
-              <button onClick={resetFilter} className="px-3 py-1.5 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition font-medium">リセット</button>
+              <button
+                onClick={resetFilter}
+                className="px-3 py-1.5 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition font-medium"
+              >
+                リセット
+              </button>
             )}
-            <FilterButton activeCount={countActiveFilters()} onClick={() => sideModal.openFilter()} />
+            <FilterButton
+              activeCount={countActiveFilters()}
+              onClick={() => sideModal.openFilter()}
+            />
           </div>
         }
       >
@@ -325,56 +397,70 @@ export const DeckBuilder: React.FC = () => {
           <ActiveFilters filter={filter} clearFilterKey={clearFilterKey} />
           <div className="flex-1 overflow-y-auto">
             {currentSlotCard && currentCharacterName && (
-              <CurrentCardDisplay card={currentSlotCard} characterName={currentCharacterName} onRemove={handleRemoveCurrentCard} />
+              <CurrentCardDisplay
+                card={currentSlotCard}
+                characterName={currentCharacterName}
+                onRemove={handleRemoveCurrentCard}
+              />
             )}
             {assignedCards.length > 0 && (
-              <InProgressCardDisplay cards={assignedCards} onSelectCard={handleSelectCard} />
+              <InProgressCardDisplay
+                cards={assignedCards}
+                onSelectCard={handleSelectCard}
+              />
             )}
-            <CardList cards={filteredCards} loading={loading} onSelectCard={handleSelectCard} />
+            <CardList
+              cards={filteredCards}
+              loading={loading}
+              onSelectCard={handleSelectCard}
+            />
           </div>
         </div>
       </SideModal>
 
       {/* Filter modal */}
-      <SideModal 
-        isOpen={sideModal.isFilterOpen} 
-        onClose={handleApplyAndCloseFilter} 
-        title="絞り込み" 
-        width="sm" 
-        hideCloseButton={true} 
-        zIndex={60} 
+      <SideModal
+        isOpen={sideModal.isFilterOpen}
+        onClose={handleApplyAndCloseFilter}
+        title="絞り込み"
+        width="sm"
+        hideCloseButton={true}
+        zIndex={60}
         headerActions={
           <div className="flex gap-2">
-            <button 
-              onClick={resetFilter} 
+            <button
+              onClick={resetFilter}
               className="px-3 py-1.5 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition font-medium"
-              >リセット
+            >
+              リセット
             </button>
-            <button 
-              onClick={handleApplyAndCloseFilter} 
+            <button
+              onClick={handleApplyAndCloseFilter}
               className="px-3 py-1.5 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded-md transition font-medium"
-              >閉じる
+            >
+              閉じる
             </button>
           </div>
-        }>
-        <CardFilter 
+        }
+      >
+        <CardFilter
           filter={filter}
           updateFilter={updateFilter}
-          currentSlotId={sideModal.currentSlotId} 
-          onApply={handleApplyAndCloseFilter} 
+          currentSlotId={sideModal.currentSlotId}
+          onApply={handleApplyAndCloseFilter}
         />
       </SideModal>
 
       {/* Card detail modal */}
-      <SideModal 
-        isOpen={sideModal.isCardDetailOpen} 
-        onClose={sideModal.closeCardDetail} 
-        title="カード詳細" width="md"
+      <SideModal
+        isOpen={sideModal.isCardDetailOpen}
+        onClose={sideModal.closeCardDetail}
+        title="カード詳細"
+        width="md"
       >
-      {sideModal.selectedCardId && 
-      <CardDetailView 
-        cardId={sideModal.selectedCardId} 
-      />}
+        {sideModal.selectedCardId && (
+          <CardDetailView cardId={sideModal.selectedCardId} />
+        )}
       </SideModal>
     </div>
   );

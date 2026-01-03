@@ -2,11 +2,6 @@ import { Card } from '@/models/Card';
 import { CardFilter, FilterMode } from '@/models/Filter';
 import { FavoriteMode } from '@/models/enums';
 import { getSkillEffectKeyword, getSkillEffectKeywords, SkillEffectType, SkillSearchTarget } from '@/constants/skillEffects';
-import {
-  STYLE_TYPE_MAP,
-  FAVORITE_MODE_MAP,
-  LIMITED_TYPE_MAP,
-} from '@/constants/enumMappings';
 
 /**
  * クライアントサイドでカードをフィルタリング
@@ -314,3 +309,48 @@ export function buildSkillEffectSearchQuery(filter: CardFilter): string | undefi
   // 例: "スキルハートを獲得" OR "ハート上限を"
   return keywords.join(' OR ');
 }
+
+/**
+ * 配列型フィルターの値をトグル（追加/削除）するユーティリティ関数
+ * 
+ * @param currentList 現在の配列（undefined も可）
+ * @param value トグル対象の値
+ * @returns 更新後の配列、または undefined（空の場合）
+ */
+function toggleArrayValue<T>(currentList: T[] | undefined, value: T): T[] | undefined {
+  const list = currentList ?? []; // undefined の場合は空配列として扱う
+  
+  if (list.includes(value)) {
+    // 値が含まれている → 削除
+    const filtered = list.filter((item) => item !== value);
+    return filtered.length > 0 ? filtered : undefined;
+  } else {
+    // 値が含まれていない → 追加
+    return [...list, value];
+  }
+}
+
+/**
+ * 配列型フィルターの値をトグルする部分フィルターオブジェクトを生成
+ * 
+ * @param filter 現在のカードフィルター
+ * @param key フィルターのキー（配列型のプロパティ）
+ * @param value トグル対象の値
+ * @returns 更新用の部分フィルターオブジェクト
+ */
+export function toggleFilterList<T extends keyof CardFilter>(
+  filter: CardFilter,
+  key: T,
+  value: NonNullable<CardFilter[T]> extends Array<infer U> ? U : never
+): Partial<CardFilter> {
+  // 現在選択されている値の配列を取得
+  const currentList = filter[key] as NonNullable<CardFilter[T]> extends Array<infer U> ? U[] | undefined : never;
+  
+  // トグル処理（追加 or 削除）
+  const updatedList = toggleArrayValue(currentList, value);
+  
+  // { rarities: [...] } のような形式で返す
+  return { [key]: updatedList } as Partial<CardFilter>;
+}
+
+

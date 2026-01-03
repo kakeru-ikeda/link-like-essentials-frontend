@@ -22,16 +22,18 @@ export const StyleTypeBadge: React.FC<StyleTypeBadgeProps> = ({
   // スタイルタイプに応じた背景色を取得
   const getStyleTypeColor = (type: StyleType | string): string => {
     const typeStr = typeof type === 'string' ? type.toUpperCase() : type;
-    return STYLE_TYPE_COLORS[typeStr as StyleType] || 'bg-gray-500 text-white';
+    return STYLE_TYPE_COLORS[typeStr as StyleType] || '#6b7280'; // デフォルトは gray-500
   };
 
-  const sizeClasses = size === 'large'
-    ? 'px-2 py-1 text-xs'
-    : 'px-1.5 py-0.5 text-[10px]';
+  const sizeClasses =
+    size === 'large' ? 'px-2 py-1 text-xs' : 'px-1.5 py-0.5 text-[10px]';
+
+  const backgroundColor = getStyleTypeColor(styleType);
 
   return (
     <span
-      className={`${sizeClasses} ${getStyleTypeColor(styleType)} font-medium rounded shadow-sm inline-block`}
+      className={`${sizeClasses} font-medium rounded shadow-sm inline-block text-white`}
+      style={{ backgroundColor }}
     >
       {getJapaneseStyleType(styleType)}
     </span>

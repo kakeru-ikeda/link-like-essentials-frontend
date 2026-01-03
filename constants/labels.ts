@@ -40,6 +40,12 @@ export const FAVORITE_MODE_LABELS: Record<FavoriteMode, string> = {
   [FavoriteMode.MELLOW]: 'メロウ',
   [FavoriteMode.NEUTRAL]: 'ニュートラル',
 };
+export const FAVORITE_MODE_COLORS: Record<FavoriteMode, string> = {
+  [FavoriteMode.NONE]: '#9ca3af',
+  [FavoriteMode.HAPPY]: '#f472b6',
+  [FavoriteMode.MELLOW]: '#60a5fa',
+  [FavoriteMode.NEUTRAL]: '#34d399',
+};
 
 export const SORT_FIELD_LABELS: Record<SortField, string> = {
   [SortField.CARD_NAME]: 'カード名',
@@ -55,26 +61,26 @@ export const SORT_FIELD_LABELS: Record<SortField, string> = {
 
 // スタイルタイプの色定義
 export const STYLE_TYPE_COLORS: Record<StyleType, string> = {
-  [StyleType.PERFORMER]: 'bg-red-500 text-white',
-  [StyleType.MOODMAKER]: 'bg-yellow-500 text-white',
-  [StyleType.CHEERLEADER]: 'bg-green-500 text-white',
-  [StyleType.TRICKSTER]: 'bg-purple-500 text-white',
+  [StyleType.PERFORMER]: '#ef4444',
+  [StyleType.MOODMAKER]: '#eab308',
+  [StyleType.CHEERLEADER]: '#22c55e',
+  [StyleType.TRICKSTER]: '#a855f7',
 };
 
 // 入手方法の色定義
 export const LIMITED_TYPE_COLORS: Record<LimitedType, string> = {
-  [LimitedType.PERMANENT]: 'bg-gray-500 text-white',
-  [LimitedType.LIMITED]: 'bg-amber-500 text-white',
-  [LimitedType.BIRTHDAY_LIMITED]: 'bg-pink-500 text-white',
-  [LimitedType.SPRING_LIMITED]: 'bg-green-400 text-white',
-  [LimitedType.SUMMER_LIMITED]: 'bg-blue-400 text-white',
-  [LimitedType.AUTUMN_LIMITED]: 'bg-orange-500 text-white',
-  [LimitedType.WINTER_LIMITED]: 'bg-cyan-400 text-white',
-  [LimitedType.LEG_LIMITED]: 'bg-purple-500 text-white',
-  [LimitedType.BATTLE_LIMITED]: 'bg-red-600 text-white',
-  [LimitedType.PARTY_LIMITED]: 'bg-red-400 text-white',
-  [LimitedType.ACTIVITY_LIMITED]: 'bg-teal-500 text-white',
-  [LimitedType.GRADUATE_LIMITED]: 'bg-indigo-500 text-white',
-  [LimitedType.LOGIN_BONUS]: 'bg-emerald-500 text-white',
-  [LimitedType.REWARD]: 'bg-yellow-600 text-white',
+  [LimitedType.PERMANENT]: '#6b7280',
+  [LimitedType.LIMITED]: '#f59e0b',
+  [LimitedType.BIRTHDAY_LIMITED]: '#ec4899',
+  [LimitedType.SPRING_LIMITED]: '#4ade80',
+  [LimitedType.SUMMER_LIMITED]: '#60a5fa',
+  [LimitedType.AUTUMN_LIMITED]: '#f97316',
+  [LimitedType.WINTER_LIMITED]: '#22d3ee',
+  [LimitedType.LEG_LIMITED]: '#a855f7',
+  [LimitedType.BATTLE_LIMITED]: '#dc2626',
+  [LimitedType.PARTY_LIMITED]: '#f87171',
+  [LimitedType.ACTIVITY_LIMITED]: '#14b8a6',
+  [LimitedType.GRADUATE_LIMITED]: '#6366f1',
+  [LimitedType.LOGIN_BONUS]: '#10b981',
+  [LimitedType.REWARD]: '#ca8a04',
 };

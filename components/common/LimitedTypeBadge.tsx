@@ -18,16 +18,16 @@ export const LimitedTypeBadge: React.FC<LimitedTypeBadgeProps> = ({
     return null;
   }
 
-  const sizeClasses = size === 'large'
-    ? 'px-2 py-1 text-xs'
-    : 'px-1.5 py-0.5 text-[10px]';
+  const sizeClasses =
+    size === 'large' ? 'px-2 py-1 text-xs' : 'px-1.5 py-0.5 text-[10px]';
 
-  const colorClass = LIMITED_TYPE_COLORS[limitedType] || 'bg-gray-500 text-white';
+  const backgroundColor = LIMITED_TYPE_COLORS[limitedType] || '#9ca3af';
   const label = LIMITED_TYPE_LABELS[limitedType] || limitedType;
 
   return (
     <span
-      className={`${sizeClasses} ${colorClass} font-medium rounded shadow-sm inline-block`}
+      className={`${sizeClasses} font-medium rounded shadow-sm inline-block text-white`}
+      style={{ backgroundColor }}
     >
       {label}
     </span>
