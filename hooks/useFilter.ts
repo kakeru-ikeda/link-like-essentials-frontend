@@ -54,6 +54,7 @@ export function useFilter(): UseFilterReturn {
     if (filter.characterNames && filter.characterNames.length > 0) count += filter.characterNames.length;
     if (filter.skillEffects && filter.skillEffects.length > 0) count += filter.skillEffects.length;
     if (filter.skillSearchTargets && filter.skillSearchTargets.length > 0) count += filter.skillSearchTargets.length;
+    if (filter.hasTokens !== undefined) count++;
     return count;
   }, [filter]);
 
