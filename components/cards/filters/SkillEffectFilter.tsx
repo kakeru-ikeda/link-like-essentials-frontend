@@ -24,6 +24,13 @@ export const SkillEffectFilter: React.FC<SkillEffectFilterProps> = ({
   onToggleEffect,
   onToggleTarget,
 }) => {
+  const skillEffectLabel = (effect: SkillEffectType) =>
+    SKILL_EFFECT_LABELS[effect];
+  const skillSearchTargetLabel = (skillSearchTarget: SkillSearchTarget) =>
+    SKILL_SEARCH_TARGET_LABELS[skillSearchTarget];
+  const skillEffectTooltip = (effect: SkillEffectType) =>
+    SKILL_EFFECT_DESCRIPTIONS[effect];
+
   return (
     <div className="p-4">
       <label className="block text-sm font-medium text-gray-700 mb-3">
@@ -35,31 +42,9 @@ export const SkillEffectFilter: React.FC<SkillEffectFilterProps> = ({
           values={Object.values(SkillEffectType)}
           selectedValues={selectedEffects}
           onToggle={onToggleEffect}
-          getLabel={(effect) => SKILL_EFFECT_LABELS[effect]}
+          label={skillEffectLabel}
           color="#10b981" // emerald-500
-          renderCustomButton={(effect, isSelected, label) => (
-            <Tooltip
-              key={effect}
-              content={SKILL_EFFECT_DESCRIPTIONS[effect]}
-              position="top"
-            >
-              <button
-                onClick={() => onToggleEffect(effect)}
-                className={`px-3 py-1 rounded-full text-sm font-medium transition ${
-                  isSelected
-                    ? ''
-                    : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
-                }`}
-                style={
-                  isSelected
-                    ? { backgroundColor: '#6366f1', color: '#ffffff' }
-                    : undefined
-                }
-              >
-                {label}
-              </button>
-            </Tooltip>
-          )}
+          skillEffectTooltip={skillEffectTooltip}
         />
       </div>
 
@@ -72,7 +57,7 @@ export const SkillEffectFilter: React.FC<SkillEffectFilterProps> = ({
           values={Object.values(SkillSearchTarget)}
           selectedValues={selectedTargets}
           onToggle={onToggleTarget}
-          getLabel={(target) => SKILL_SEARCH_TARGET_LABELS[target]}
+          label={skillSearchTargetLabel}
           color="#f97316" // orange-500
         />
       </div>

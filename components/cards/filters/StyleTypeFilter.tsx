@@ -14,6 +14,9 @@ export const StyleTypeFilter: React.FC<StyleTypeFilterProps> = ({
   selectedStyleTypes,
   onToggle,
 }) => {
+  const styleTypeLabel = (styleType: StyleType) => STYLE_TYPE_LABELS[styleType];
+  const styleTypeColor = (styleType: StyleType) => STYLE_TYPE_COLORS[styleType];
+
   return (
     <div className="p-4">
       <label className="block text-sm font-medium text-gray-700 mb-3">
@@ -23,8 +26,8 @@ export const StyleTypeFilter: React.FC<StyleTypeFilterProps> = ({
         values={Object.values(StyleType)}
         selectedValues={selectedStyleTypes}
         onToggle={onToggle}
-        getLabel={(styleType) => STYLE_TYPE_LABELS[styleType]}
-        color={(styleType) => STYLE_TYPE_COLORS[styleType]}
+        label={styleTypeLabel}
+        color={styleTypeColor}
       />
     </div>
   );

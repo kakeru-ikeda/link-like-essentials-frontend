@@ -14,6 +14,8 @@ export const RarityFilter: React.FC<RarityFilterProps> = ({
   selectedRarities,
   onToggle,
 }) => {
+  const rarityLabel = (rarity: Rarity) => RARITY_LABELS[rarity];
+
   return (
     <div className="p-4">
       <label className="block text-sm font-medium text-gray-700 mb-3">
@@ -23,7 +25,7 @@ export const RarityFilter: React.FC<RarityFilterProps> = ({
         values={Object.values(Rarity)}
         selectedValues={selectedRarities}
         onToggle={onToggle}
-        getLabel={(rarity) => RARITY_LABELS[rarity]}
+        label={rarityLabel}
         color="#800080"
       />
     </div>

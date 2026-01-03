@@ -21,6 +21,9 @@ export const CharacterFilter: React.FC<CharacterFilterProps> = ({
     [currentSlotId]
   );
 
+  const characterLabel = (character: string) => character;
+  const characterColor = (character: string) => getCharacterColor(character);
+
   return (
     <div className="p-4">
       <label className="block text-sm font-medium text-gray-700 mb-3">
@@ -30,8 +33,8 @@ export const CharacterFilter: React.FC<CharacterFilterProps> = ({
         values={selectableCharacters}
         selectedValues={selectedCharacters}
         onToggle={onToggle}
-        getLabel={(character) => character}
-        color={(character) => getCharacterColor(character)}
+        label={characterLabel}
+        color={characterColor}
       />
     </div>
   );
