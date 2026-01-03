@@ -3,6 +3,7 @@
 import React, { useState, useRef } from 'react';
 import { HiArrowsPointingOut } from 'react-icons/hi2';
 import { Modal } from '@/components/common/Modal';
+import { useSimpleModal } from '@/hooks/useModal';
 
 interface TextAreaWithModalProps {
   value: string;
@@ -27,7 +28,7 @@ export const TextAreaWithModal: React.FC<TextAreaWithModalProps> = ({
   modalRows = 15,
   className = '',
 }) => {
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const { isOpen, open, close } = useSimpleModal();
   const [modalValue, setModalValue] = useState<string>(value);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -37,7 +38,7 @@ export const TextAreaWithModal: React.FC<TextAreaWithModalProps> = ({
 
   const handleExpandClick = (): void => {
     setModalValue(value);
-    setIsModalOpen(true);
+    open();
   };
 
   const handleModalChange = (e: React.ChangeEvent<HTMLTextAreaElement>): void => {
@@ -49,7 +50,7 @@ export const TextAreaWithModal: React.FC<TextAreaWithModalProps> = ({
 
   const handleModalClose = (): void => {
     onBlur?.();
-    setIsModalOpen(false);
+    close();
   };
 
   return (
@@ -82,7 +83,7 @@ export const TextAreaWithModal: React.FC<TextAreaWithModalProps> = ({
       </div>
 
       <Modal
-        isOpen={isModalOpen}
+        isOpen={isOpen}
         onClose={handleModalClose}
         title={modalTitle}
       >

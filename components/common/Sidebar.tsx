@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 
 interface SidebarProps {
@@ -16,9 +17,10 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   { label: 'デッキビルダー', href: '/', icon: '🎴' },
-  { label: 'マイデッキ', href: '/my-decks', icon: '📚' },
+  { label: 'マイデッキ', href: '/decks', icon: '📚' },
   { label: 'カード一覧', href: '/cards', icon: '🔍' },
   { label: '統計情報', href: '/stats', icon: '📊' },
+  { label: 'お知らせ', href: '/news', icon: '📰' },
 ];
 
 export function Sidebar({ children }: SidebarProps): JSX.Element {
@@ -45,21 +47,32 @@ export function Sidebar({ children }: SidebarProps): JSX.Element {
       >
         <div className="flex-1 flex flex-col overflow-y-auto">
           {/* ロゴ/タイトル */}
-          <div className="px-3 py-6 border-b border-gray-200">
-            {isSidebarExpanded ? (
-              <>
-                <h1 className="text-xl font-bold text-gray-900">
-                  Link Like<br />Essentials
-                </h1>
-                <p className="text-sm text-gray-600 mt-1 whitespace-nowrap">デッキビルダー</p>
-              </>
-            ) : (
-              <div className="text-2xl text-center">🎴</div>
-            )}
+          <div className="px-3 py-4 border-b border-gray-200 flex justify-center">
+            <Link href="/" aria-label="ホームに戻る">
+              {isSidebarExpanded ? (
+                <Image
+                  src="/images/logo.png"
+                  alt="Link Like Essentials"
+                  width={200}
+                  height={70}
+                  className="h-16 w-auto"
+                  priority
+                />
+              ) : (
+                <Image
+                  src="/images/logo_square.png"
+                  alt="Link Like Essentials"
+                  width={40}
+                  height={40}
+                  className="w-8"
+                  priority
+                />
+              )}
+            </Link>
           </div>
 
           {/* ナビゲーション */}
-          <nav className="flex-1 px-2 py-6 space-y-1">
+          <nav className="flex-1 px-2 py-5 space-y-1">
             {NAV_ITEMS.map((item) => {
               const isActive = pathname === item.href;
               return (
@@ -149,15 +162,21 @@ export function Sidebar({ children }: SidebarProps): JSX.Element {
             <aside className="md:hidden fixed inset-y-0 left-0 w-64 bg-white z-50 shadow-xl">
               <div className="flex flex-col h-full">
                 {/* ロゴ/タイトル */}
-                <div className="px-6 py-6 border-b border-gray-200">
-                  <h1 className="text-xl font-bold text-gray-900">
-                    Link Like<br />Essentials
-                  </h1>
-                  <p className="text-sm text-gray-600 mt-1">デッキビルダー</p>
+                <div className="px-6 py-4 border-b border-gray-200">
+                  <Link href="/" onClick={closeMobileMenu} aria-label="ホームに戻る">
+                    <Image
+                      src="/images/logo.png"
+                      alt="Link Like Essentials"
+                      width={200}
+                      height={70}
+                      className="h-12 w-auto"
+                      priority
+                    />
+                  </Link>
                 </div>
 
                 {/* ナビゲーション */}
-                <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
+                <nav className="flex-1 px-4 py-5 space-y-1 overflow-y-auto">
                   {NAV_ITEMS.map((item) => {
                     const isActive = pathname === item.href;
                     return (
@@ -193,7 +212,7 @@ export function Sidebar({ children }: SidebarProps): JSX.Element {
         )}
 
         {/* メインコンテンツ */}
-        <main className="flex-1 overflow-auto bg-gray-50">
+        <main className="flex-1 overflow-y-auto overflow-x-visible bg-gray-50">
           {children}
         </main>
       </div>

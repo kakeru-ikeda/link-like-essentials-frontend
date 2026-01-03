@@ -61,7 +61,23 @@ NEXT_PUBLIC_FIREBASE_PROJECT_ID=your-project-id
 NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your-storage-bucket
 NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your-sender-id
 NEXT_PUBLIC_FIREBASE_APP_ID=your-app-id
+
+# microCMS設定（サーバーサイド専用）
+MICROCMS_SERVICE_DOMAIN=your-service-domain
+MICROCMS_API_KEY=your-api-key
+
+# Sentry
+NEXT_PUBLIC_SENTRY_DSN=https://your-sentry-dsn
+SENTRY_AUTH_TOKEN=your-auth-token
+SENTRY_ORG=link-like-essentials
+SENTRY_PROJECT=lles-frontend
 ```
+
+### Sentry 動作確認
+
+- `NEXT_PUBLIC_SENTRY_DSN` と `SENTRY_AUTH_TOKEN` を `.env` に設定し、`npm run dev` を起動
+- 任意のページで意図的に例外を発生させ、Sentry ダッシュボードでイベントを確認
+- ビルド時にソースマップをアップロードする場合は `SENTRY_ORG`、`SENTRY_PROJECT`、`SENTRY_AUTH_TOKEN` を CI/Vercel 環境変数に登録
 
 ### 開発サーバー起動
 

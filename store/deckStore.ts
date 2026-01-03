@@ -4,7 +4,6 @@ import { Deck, DeckSlot } from '@/models/Deck';
 import { Card } from '@/models/Card';
 import { Song } from '@/models/Song';
 import { DeckType } from '@/models/enums';
-import { deckCloudService } from '@/services/deckCloudService';
 import { DeckRepository } from '@/repositories/localStorage/deckRepository';
 import { DeckService } from '@/services/deckService';
 
@@ -27,16 +26,10 @@ interface DeckState {
   setLiveGrandPrixStage: (detailId: string | undefined, stageName: string | undefined, song?: Partial<Song>) => void;
   setScore: (score: number | undefined) => void;
   setDeckMemo: (memo: string) => void;
+  setFriendSlotEnabled: (enabled: boolean) => void;
   saveDeckToLocal: () => void;
   loadDeckFromLocal: () => void;
   initializeDeck: () => void;
-  
-  // クラウド保存関連
-  saveToCloud: () => Promise<void>;
-  loadFromCloud: (deckId: string) => Promise<void>;
-  isSaving: boolean;
-  isLoading: boolean;
-  cloudError: string | null;
 }
 
 export const useDeckStore = create<DeckState>()(
@@ -142,6 +135,7 @@ export const useDeckStore = create<DeckState>()(
           state.deck.liveGrandPrixStageName = undefined;
           state.deck.score = undefined;
           state.deck.memo = '';
+          state.deck.isFriendSlotEnabled = true;
           state.deck.updatedAt = new Date().toISOString();
         }
       }),
@@ -251,6 +245,25 @@ export const useDeckStore = create<DeckState>()(
         }
       }),
 
+    setFriendSlotEnabled: (enabled) =>
+      set((state) => {
+        if (state.deck) {
+          state.deck.isFriendSlotEnabled = enabled;
+          
+          // フレンドカード枠を無効化した場合、フレンドカード（slotId: 99）をクリア
+          if (!enabled) {
+            const friendSlot = state.deck.slots.find((s) => s.slotId === 99);
+            if (friendSlot) {
+              friendSlot.card = null;
+              friendSlot.cardId = null;
+              friendSlot.limitBreak = undefined;
+            }
+          }
+          
+          state.deck.updatedAt = new Date().toISOString();
+        }
+      }),
+
     saveDeckToLocal: () =>
       set((state) => {
         if (state.deck) {
@@ -274,57 +287,5 @@ export const useDeckStore = create<DeckState>()(
         const currentDeckName = state.deck?.name ?? '新しいデッキ';
         state.deck = DeckService.createEmptyDeck(currentDeckName, currentDeckType);
       }),
-
-    // クラウド保存関連
-    isSaving: false,
-    isLoading: false,
-    cloudError: null,
-
-    saveToCloud: async () => {
-      const { deck } = get();
-      if (!deck) return;
-
-      set((state) => {
-        state.isSaving = true;
-        state.cloudError = null;
-      });
-
-      try {
-        const savedDeck = await deckCloudService.saveDeckToCloud(deck);
-        set((state) => {
-          state.deck = savedDeck;
-          state.isSaving = false;
-        });
-      } catch (error) {
-        set((state) => {
-          state.isSaving = false;
-          state.cloudError =
-            error instanceof Error ? error.message : '保存に失敗しました';
-        });
-        throw error;
-      }
-    },
-
-    loadFromCloud: async (deckId: string) => {
-      set((state) => {
-        state.isLoading = true;
-        state.cloudError = null;
-      });
-
-      try {
-        const loadedDeck = await deckCloudService.loadDeckFromCloud(deckId);
-        set((state) => {
-          state.deck = loadedDeck;
-          state.isLoading = false;
-        });
-      } catch (error) {
-        set((state) => {
-          state.isLoading = false;
-          state.cloudError =
-            error instanceof Error ? error.message : '読み込みに失敗しました';
-        });
-        throw error;
-      }
-    },
   }))
 );

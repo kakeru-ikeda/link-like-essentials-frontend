@@ -9,6 +9,9 @@ const inter = Inter({ subsets: ['latin'] });
 export const metadata: Metadata = {
   title: 'Link Like Essentials - デッキビルダー',
   description: 'Link! Like! ラブライブ! のカードデッキビルダー',
+  icons: {
+    icon: '/favicon.ico',
+  },
 };
 
 export default function RootLayout({

@@ -19,6 +19,8 @@ import { useLiveGrandPrixById, useActiveLiveGrandPrix } from '@/hooks/useLiveGra
 import { LiveGrandPrix, LiveGrandPrixDetail } from '@/models/LiveGrandPrix';
 import { ExpansionPanel } from '@/components/common/ExpansionPanel';
 import { EffectBadge } from '@/components/common/EffectBadge';
+import { DeckPublishModal } from '@/components/deck/DeckPublishModal';
+import { useModal } from '@/hooks/useModal';
 
 export const DeckDashboard: React.FC = () => {
   const { 
@@ -31,9 +33,9 @@ export const DeckDashboard: React.FC = () => {
     updateLiveGrandPrix,
     updateLiveGrandPrixStage,
     clearAllCards,
-    saveDeck
   } = useDeck();
   
+  const { isPublishModalOpen, openPublishModal, closePublishModal } = useModal();
   const [selectedDeckType, setSelectedDeckType] = useState<DeckType | undefined>(deck?.deckType);
 
   // ライブグランプリの詳細を取得（選択されている場合のみ）
@@ -101,10 +103,10 @@ export const DeckDashboard: React.FC = () => {
   };
 
   return (
-    <div className="flex-1 flex flex-col gap-4 p-4 border-2 border-gray-300 rounded-lg overflow-hidden">
+    <div className="flex-1 flex flex-col gap-4 p-4 border-2 border-gray-300 rounded-lg overflow-hidden min-w-0">
       {/* タイトル＆ボタン */}
-      <div className="flex items-center gap-4">
-        <div className="flex-1">
+      <div className="flex items-center gap-4 min-w-0">
+        <div className="flex-1 min-w-0">
           <DeckTitle 
             title={deck?.name || '新しいデッキ'}
             onTitleChange={updateDeckName}
@@ -114,25 +116,25 @@ export const DeckDashboard: React.FC = () => {
           <Button variant="secondary" onClick={clearDeck}>
             クリア
           </Button>
-          <Button onClick={saveDeck}>
-            公開
+          <Button onClick={openPublishModal} className="bg-green-600 hover:bg-green-700 disabled:bg-green-400">
+            共有
           </Button>
         </div>
       </div>
       
       {/* デッキタイプ＆楽曲選択 */}
-      <div className="flex gap-4">
+      <div className="flex gap-4 min-w-0">
         <DeckTypeSelect
           value={selectedDeckType}
           onChange={handleDeckTypeChange}
-          className="w-40"
+          className="w-40 flex-shrink-0"
         />
 
         <SongSelect
           deckType={deck?.deckType}
           value={deck?.songId}
           onChange={handleSongChange}
-          className="flex-1"
+          className="flex-1 min-w-0"
           disabled={!!deck?.liveGrandPrixDetailId}
         />
       </div>
@@ -146,12 +148,12 @@ export const DeckDashboard: React.FC = () => {
           </div>
         }
       >
-        <div className="flex gap-4">
+        <div className="flex gap-4 min-w-0">
           <LiveGrandPrixSelect
             deckType={deck?.deckType}
             value={deck?.liveGrandPrixId}
             onChange={handleLiveGrandPrixChange}
-            className="flex-1"
+            className="flex-1 min-w-0"
           />
 
           <LiveGrandPrixStageSelect
@@ -159,7 +161,7 @@ export const DeckDashboard: React.FC = () => {
             value={deck?.liveGrandPrixDetailId}
             onChange={handleLiveGrandPrixStageChange}
             disabled={lgpLoading || !deck?.liveGrandPrixId}
-            className="w-48"
+            className="w-48 flex-shrink-0"
           />
         </div>
       </ExpansionPanel>
@@ -241,6 +243,12 @@ export const DeckDashboard: React.FC = () => {
           className="flex-1"
         />
       </div>
+
+      {/* 公開確認モーダル */}
+      <DeckPublishModal
+        isOpen={isPublishModalOpen}
+        onClose={closePublishModal}
+      />
     </div>
   );
 };

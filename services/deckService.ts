@@ -1,8 +1,13 @@
 import { Card } from '@/models/Card';
-import { Deck, DeckSlot } from '@/models/Deck';
+import { Deck, DeckSlot, DeckForCloud } from '@/models/Deck';
 import { DeckType } from '@/models/enums';
 import { canPlaceCardInSlot } from '@/constants/deckRules';
 import { getDeckSlotMapping } from '@/constants/deckConfig';
+import { PublishedDeck } from '@/models/PublishedDeck';
+import { cardCatalogService } from '@/services/cardCatalogService';
+import { CharacterName } from '@/constants/characters';
+import { songCatalogService } from '@/services/songCatalogService';
+import { liveGrandPrixCatalogService } from '@/services/liveGrandPrixCatalogService';
 
 /**
  * カード配置の結果
@@ -47,6 +52,65 @@ export interface StageChangeValidation {
  */
 export class DeckService {
   /**
+   * PublishedDeck(DeckForCloud)をDeck型へ復元
+   * - スロットのcardIdを元にGraphQLからカード詳細を取得し、slot.cardへ補完
+   * - slotのcharacterNameはdeckTypeに応じたマッピングから復元
+   */
+  static async compilePublishedDeck(publishedDeck: PublishedDeck): Promise<Deck> {
+    const baseDeck: DeckForCloud = publishedDeck.deck;
+    const song = await songCatalogService.getSongById(baseDeck.songId);
+    const liveGp = await liveGrandPrixCatalogService.getById(baseDeck.liveGrandPrixId);
+    const stageDetail = liveGp?.details?.find((d) => d.id === baseDeck.liveGrandPrixDetailId);
+    const deckType = baseDeck.deckType ?? song?.deckType ?? DeckType.TERM_105;
+    const slotMapping = getDeckSlotMapping(deckType);
+    const mappingById = new Map<number, CharacterName | 'フレンド' | 'フリー'>();
+    slotMapping.forEach((m) => mappingById.set(m.slotId, m.characterName));
+
+    const cardIds = baseDeck.slots
+      .map((slot) => slot.cardId)
+      .filter((id): id is string => Boolean(id));
+    const cards = await cardCatalogService.getCardsByIds(cardIds);
+    const cardMap = new Map(cards.map((c) => [c.id, c] as const));
+
+    const slots: DeckSlot[] = baseDeck.slots.map((slot) => {
+      const characterName = mappingById.get(slot.slotId) ?? 'フリー';
+      const card = slot.cardId ? cardMap.get(slot.cardId) ?? null : null;
+
+      return {
+        slotId: slot.slotId,
+        characterName,
+        cardId: slot.cardId,
+        limitBreak: slot.limitBreak,
+        card,
+      };
+    });
+
+    const now = publishedDeck.publishedAt ?? new Date().toISOString();
+
+    return {
+      id: baseDeck.id,
+      name: baseDeck.name,
+      slots,
+      aceSlotId: baseDeck.aceSlotId ?? null,
+      deckType,
+      songId: baseDeck.songId,
+      songName: song?.songName,
+      centerCharacter: song?.centerCharacter,
+      participations: song?.participations,
+      liveAnalyzerImageUrl: song?.liveAnalyzerImageUrl,
+      liveGrandPrixId: baseDeck.liveGrandPrixId,
+      liveGrandPrixDetailId: baseDeck.liveGrandPrixDetailId,
+      liveGrandPrixEventName: liveGp?.eventName,
+      liveGrandPrixStageName: stageDetail?.stageName,
+      score: baseDeck.score,
+      memo: baseDeck.memo,
+      createdAt: now,
+      updatedAt: now,
+      isFriendSlotEnabled: true,
+    };
+  }
+
+  /**
    * 空のデッキを作成
    */
   static createEmptyDeck(
@@ -66,6 +130,7 @@ export class DeckService {
       slots,
       aceSlotId: null,
       deckType,
+      isFriendSlotEnabled: true,
       memo: '',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
