@@ -7,13 +7,13 @@ import { CardGridItem } from '@/components/cards/CardGridItem';
 interface CardGridProps {
   cards: Card[];
   loading: boolean;
-  onSelectCard: (card: Card) => void;
+  onClickCard: (card: Card) => void;
 }
 
 export const CardGrid: React.FC<CardGridProps> = ({
   cards,
   loading,
-  onSelectCard,
+  onClickCard,
 }) => {
   if (loading) {
     return (
@@ -42,7 +42,7 @@ export const CardGrid: React.FC<CardGridProps> = ({
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
       {cards.map((card) => (
-        <CardGridItem key={card.id} card={card} onSelect={onSelectCard} />
+        <CardGridItem key={card.id} card={card} onClick={onClickCard} />
       ))}
     </div>
   );

@@ -44,7 +44,7 @@ export default function CardsPage(): JSX.Element {
       <CardGrid
         cards={cards}
         loading={loading}
-        onSelectCard={(card) => openCardDetail(card.id)}
+        onClickCard={(card) => openCardDetail(card.id)}
       />
 
       {/* カード詳細サイドモーダル */}

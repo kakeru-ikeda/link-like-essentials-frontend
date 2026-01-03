@@ -6,18 +6,18 @@ import { getCharacterColor } from '@/constants/characters';
 
 interface CardGridItemProps {
   card: Card;
-  onSelect: (card: Card) => void;
+  onClick: (card: Card) => void;
 }
 
 export const CardGridItem: React.FC<CardGridItemProps> = ({
   card,
-  onSelect,
+  onClick,
 }) => {
   const characterColor = getCharacterColor(card.characterName);
 
   return (
     <button
-      onClick={() => onSelect(card)}
+      onClick={() => onClick(card)}
       className="group relative bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-200 overflow-hidden border-4"
       style={{ borderColor: characterColor }}
       aria-label={`カード: ${card.cardName}`}
