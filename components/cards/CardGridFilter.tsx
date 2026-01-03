@@ -19,6 +19,17 @@ interface CardGridFilterProps {
   onFilterClear: () => void;
 }
 
+const VISIBLE_FILTERS: (keyof CardFilterType)[] = [
+  'filterMode',
+  'favoriteModes',
+  'limitedTypes',
+  'rarities',
+  'skillEffects',
+  'skillSearchTargets',
+  'styleTypes',
+  'hasTokens',
+];
+
 export const CardGridFilter: React.FC<CardGridFilterProps> = ({
   activeFilterCount,
   filter,
@@ -82,16 +93,7 @@ export const CardGridFilter: React.FC<CardGridFilterProps> = ({
         <div className="max-h-[70vh] overflow-y-auto">
           <CardFilter
             filter={filter}
-            visibleFilters={[
-              'filterMode',
-              'favoriteModes',
-              'limitedTypes',
-              'rarities',
-              'skillEffects',
-              'skillSearchTargets',
-              'styleTypes',
-              'hasTokens',
-            ]}
+            visibleFilters={VISIBLE_FILTERS}
             updateFilter={updateFilter}
             currentSlotId={null}
             onApply={() => setIsFilterVisible(false)}
