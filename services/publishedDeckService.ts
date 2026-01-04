@@ -1,4 +1,4 @@
-import { GetDecksParams } from '@/models/DeckQueryParams';
+import { GetDecksParams, GetLikedDecksParams } from '@/models/DeckQueryParams';
 import { PublishedDeck } from '@/models/PublishedDeck';
 import { PaginatedResponse } from '@/models/Pagination';
 import { PopularHashtagSummary } from '@/models/Hashtag';
@@ -10,6 +10,14 @@ import { deckRepository } from '@/repositories/api/deckRepository';
 export const publishedDeckService = {
   async getDecks(params?: GetDecksParams): Promise<PaginatedResponse<PublishedDeck>> {
     return deckRepository.getDecks(params);
+  },
+
+  async getMyDecks(params?: GetDecksParams): Promise<PaginatedResponse<PublishedDeck>> {
+    return deckRepository.getMyDecks(params);
+  },
+
+  async getLikedDecks(params?: GetLikedDecksParams): Promise<PaginatedResponse<PublishedDeck>> {
+    return deckRepository.getLikedDecks(params);
   },
 
   async getDeck(deckId: string): Promise<PublishedDeck> {

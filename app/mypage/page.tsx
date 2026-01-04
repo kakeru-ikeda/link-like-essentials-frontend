@@ -5,10 +5,30 @@ import { useRouter } from 'next/navigation';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { ProfileCard } from '@/components/profile/ProfileCard';
 import { Button } from '@/components/common/Button';
+import { useMyDecks } from '@/hooks/useMyDecks';
+import { useLikedDecks } from '@/hooks/useLikedDecks';
+import { PublishedDeckList } from '@/components/deck/PublishedDeckList';
 
 export default function MyPage() {
   const router = useRouter();
   const { profile, isLoadingProfile, error, fetchProfile } = useUserProfile();
+  const {
+    decks: myDecks,
+    pageInfo: myDecksPageInfo,
+    loading: isLoadingMyDecks,
+    error: myDecksError,
+    goToPage: goToMyDecksPage,
+    refresh: refreshMyDecks,
+  } = useMyDecks();
+
+  const {
+    decks: likedDecks,
+    pageInfo: likedDecksPageInfo,
+    loading: isLoadingLikedDecks,
+    error: likedDecksError,
+    goToPage: goToLikedDecksPage,
+    refresh: refreshLikedDecks,
+  } = useLikedDecks();
 
   useEffect(() => {
     fetchProfile();
@@ -74,6 +94,128 @@ export default function MyPage() {
       </div>
 
       <ProfileCard profile={profile} showEditButton={true} />
+
+      <section className="mt-10 space-y-4">
+        <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="text-2xl font-semibold text-gray-900">投稿したデッキ</h2>
+            <p className="text-sm text-gray-600">自分が公開したデッキの一覧です。</p>
+          </div>
+          {myDecksPageInfo && (
+            <div className="text-sm text-gray-700">
+              ページ {myDecksPageInfo.currentPage} / {myDecksPageInfo.totalPages}（全 {myDecksPageInfo.totalCount} 件）
+            </div>
+          )}
+        </div>
+
+        {myDecksError && (
+          <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            <div className="flex items-center justify-between gap-3">
+              <span>{myDecksError}</span>
+              <Button onClick={refreshMyDecks} className="bg-blue-500 hover:bg-blue-600">
+                再取得
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {isLoadingMyDecks ? (
+          <div className="rounded-lg border border-slate-200 bg-white p-8 text-center text-slate-600">取得中...</div>
+        ) : (
+          <PublishedDeckList decks={myDecks} />
+        )}
+
+        {myDecksPageInfo && (
+          <div className="flex items-center justify-between rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700">
+            <div>
+              ページ {myDecksPageInfo.currentPage} / {myDecksPageInfo.totalPages}
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() =>
+                  myDecksPageInfo.hasPreviousPage &&
+                  goToMyDecksPage((myDecksPageInfo.currentPage ?? 1) - 1)
+                }
+                disabled={!myDecksPageInfo.hasPreviousPage}
+                className="rounded-lg border px-3 py-2 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                前へ
+              </button>
+              <button
+                onClick={() =>
+                  myDecksPageInfo.hasNextPage &&
+                  goToMyDecksPage((myDecksPageInfo.currentPage ?? 1) + 1)
+                }
+                disabled={!myDecksPageInfo.hasNextPage}
+                className="rounded-lg border px-3 py-2 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                次へ
+              </button>
+            </div>
+          </div>
+        )}
+      </section>
+
+      <section className="mt-10 space-y-4">
+        <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="text-2xl font-semibold text-gray-900">いいねしたデッキ</h2>
+            <p className="text-sm text-gray-600">いいね済みのデッキ一覧です。</p>
+          </div>
+          {likedDecksPageInfo && (
+            <div className="text-sm text-gray-700">
+              ページ {likedDecksPageInfo.currentPage} / {likedDecksPageInfo.totalPages}（全 {likedDecksPageInfo.totalCount} 件）
+            </div>
+          )}
+        </div>
+
+        {likedDecksError && (
+          <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            <div className="flex items-center justify-between gap-3">
+              <span>{likedDecksError}</span>
+              <Button onClick={refreshLikedDecks} className="bg-blue-500 hover:bg-blue-600">
+                再取得
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {isLoadingLikedDecks ? (
+          <div className="rounded-lg border border-slate-200 bg-white p-8 text-center text-slate-600">取得中...</div>
+        ) : (
+          <PublishedDeckList decks={likedDecks} />
+        )}
+
+        {likedDecksPageInfo && (
+          <div className="flex items-center justify-between rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700">
+            <div>
+              ページ {likedDecksPageInfo.currentPage} / {likedDecksPageInfo.totalPages}
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() =>
+                  likedDecksPageInfo.hasPreviousPage &&
+                  goToLikedDecksPage((likedDecksPageInfo.currentPage ?? 1) - 1)
+                }
+                disabled={!likedDecksPageInfo.hasPreviousPage}
+                className="rounded-lg border px-3 py-2 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                前へ
+              </button>
+              <button
+                onClick={() =>
+                  likedDecksPageInfo.hasNextPage &&
+                  goToLikedDecksPage((likedDecksPageInfo.currentPage ?? 1) + 1)
+                }
+                disabled={!likedDecksPageInfo.hasNextPage}
+                className="rounded-lg border px-3 py-2 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                次へ
+              </button>
+            </div>
+          </div>
+        )}
+      </section>
     </div>
   );
 }
