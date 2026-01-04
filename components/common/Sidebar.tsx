@@ -18,9 +18,9 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   { label: 'デッキビルダー', href: '/', icon: '🎴' },
+  { label: 'マイページ', href: '/mypage', icon: '🙋' },
   { label: 'マイデッキ', href: '/decks', icon: '📚' },
   { label: 'カード一覧', href: '/cards', icon: '🔍' },
-  { label: 'マイページ', href: '/mypage', icon: '🙋' },
   { label: '統計情報', href: '/stats', icon: '📊' },
   { label: 'お知らせ', href: '/news', icon: '📰' },
 ];
