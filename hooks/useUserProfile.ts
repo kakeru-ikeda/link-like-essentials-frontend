@@ -4,6 +4,7 @@ import { useState, useCallback } from 'react';
 import { useUserApi } from './useUserApi';
 import { useImageUpload } from './useImageUpload';
 import type { UserProfile, UserProfileInput } from '@/models/User';
+import { useUserProfileStore } from '@/store/userProfileStore';
 
 export interface UseUserProfileReturn {
   /** プロフィール情報 */
@@ -47,7 +48,7 @@ export interface UseUserProfileReturn {
  * アバター画像のアップロード・削除を統合管理
  */
 export const useUserProfile = (): UseUserProfileReturn => {
-  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const { profile, setProfile, clearProfile } = useUserProfileStore();
   const [isLoadingProfile, setIsLoadingProfile] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -92,7 +93,7 @@ export const useUserProfile = (): UseUserProfileReturn => {
     } finally {
       setIsLoadingProfile(false);
     }
-  }, [getMyProfile]);
+  }, [getMyProfile, setProfile]);
 
   /**
    * プロフィールを作成
@@ -113,7 +114,7 @@ export const useUserProfile = (): UseUserProfileReturn => {
         setIsUpdating(false);
       }
     },
-    [createProfileApi]
+    [createProfileApi, setProfile]
   );
 
   /**
@@ -135,7 +136,7 @@ export const useUserProfile = (): UseUserProfileReturn => {
         setIsUpdating(false);
       }
     },
-    [updateProfileApi]
+    [updateProfileApi, setProfile]
   );
 
   /**
@@ -176,7 +177,7 @@ export const useUserProfile = (): UseUserProfileReturn => {
     } finally {
       setIsUpdating(false);
     }
-  }, [deleteAvatarApi, profile]);
+  }, [deleteAvatarApi, profile, setProfile]);
 
   /**
    * ユーザーを削除
@@ -186,7 +187,7 @@ export const useUserProfile = (): UseUserProfileReturn => {
       setIsUpdating(true);
       setError(null);
       await deleteUserApi();
-      setProfile(null);
+      clearProfile();
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : 'ユーザーの削除に失敗しました';
@@ -195,17 +196,17 @@ export const useUserProfile = (): UseUserProfileReturn => {
     } finally {
       setIsUpdating(false);
     }
-  }, [deleteUserApi]);
+  }, [clearProfile, deleteUserApi]);
 
   /**
    * 状態をリセット
    */
   const reset = useCallback(() => {
     setError(null);
-    setProfile(null);
+    clearProfile();
     resetImageUpload();
     resetUserApi();
-  }, [resetImageUpload, resetUserApi]);
+  }, [clearProfile, resetImageUpload, resetUserApi]);
 
   return {
     profile,
