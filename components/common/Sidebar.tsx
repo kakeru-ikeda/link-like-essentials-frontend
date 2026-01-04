@@ -13,16 +13,63 @@ interface SidebarProps {
 interface NavItem {
   label: string;
   href: string;
-  icon?: string;
+  icon?: React.ReactNode;
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { label: 'デッキビルダー', href: '/', icon: '🎴' },
+  {
+    label: 'デッキビルダー',
+    href: '/',
+    icon: (
+      <Image
+        src="/images/icons/builder.png"
+        alt="デッキビルダー"
+        width={24}
+        height={24}
+        className="w-6 h-6"
+      />
+    ),
+  },
   { label: 'マイページ', href: '/mypage', icon: '🙋' },
-  { label: 'マイデッキ', href: '/decks', icon: '📚' },
-  { label: 'カード一覧', href: '/cards', icon: '🔍' },
-  { label: '統計情報', href: '/stats', icon: '📊' },
-  { label: 'お知らせ', href: '/news', icon: '📰' },
+  {
+    label: '投稿デッキ',
+    href: '/decks',
+    icon: (
+      <Image
+        src="/images/icons/decks.png"
+        alt="投稿デッキ"
+        width={24}
+        height={24}
+        className="w-6 h-6"
+      />
+    ),
+  },
+  {
+    label: 'カード一覧',
+    href: '/cards',
+    icon: (
+      <Image
+        src="/images/icons/search.png"
+        alt="カード一覧"
+        width={24}
+        height={24}
+        className="w-6 h-6"
+      />
+    ),
+  },
+  {
+    label: 'お知らせ',
+    href: '/news',
+    icon: (
+      <Image
+        src="/images/icons/news.png"
+        alt="お知らせ"
+        width={24}
+        height={24}
+        className="w-6 h-6"
+      />
+    ),
+  },
 ];
 
 export function Sidebar({ children }: SidebarProps): JSX.Element {
@@ -56,7 +103,7 @@ export function Sidebar({ children }: SidebarProps): JSX.Element {
       {/* PC用サイドバー - ホバーで展開 */}
       <aside
         className="hidden md:flex md:flex-col bg-white border-r border-gray-200 transition-all duration-300 ease-in-out fixed left-0 top-0 h-full z-50"
-        style={{ width: isSidebarExpanded ? '16rem' : '3rem' }}
+        style={{ width: isSidebarExpanded ? '16rem' : '3.5rem' }}
         onMouseEnter={() => setIsSidebarExpanded(true)}
         onMouseLeave={() => setIsSidebarExpanded(false)}
       >
@@ -96,18 +143,18 @@ export function Sidebar({ children }: SidebarProps): JSX.Element {
                   key={item.href}
                   href={item.href}
                   className={`
-                    flex items-center px-3 py-3 rounded-lg transition-colors
+                    flex items-center py-3 rounded-lg transition-colors
                     ${
                       isActive
                         ? 'bg-blue-50 text-blue-700 font-semibold'
                         : 'text-gray-700 hover:bg-gray-100'
                     }
-                    ${isSidebarExpanded ? '' : 'justify-center'}
+                    ${isSidebarExpanded ? 'px-3' : 'px-2 justify-center'}
                   `}
                   title={!isSidebarExpanded ? item.label : undefined}
                 >
                   <span
-                    className={`flex items-center justify-center ${
+                    className={`flex items-center justify-center shrink-0 ${
                       isSidebarExpanded ? 'mr-3' : ''
                     }`}
                   >
