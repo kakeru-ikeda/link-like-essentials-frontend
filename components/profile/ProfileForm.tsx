@@ -91,7 +91,7 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
 
     const data: UserProfileInput = {
       displayName: displayName.trim(),
-      bio: bio.trim() || undefined,
+      bio: bio.trim(),
       // avatarUrlが変更された場合のみ含める
       ...(avatarChanged && { avatarUrl: avatarUrl || undefined }),
     };
