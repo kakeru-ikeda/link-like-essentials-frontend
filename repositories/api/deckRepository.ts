@@ -1,6 +1,6 @@
 import { DeckPublicationRequest, PublishedDeck } from '@/models/PublishedDeck';
 import { Comment } from '@/models/Comment';
-import { GetDecksParams } from '@/models/DeckQueryParams';
+import { GetDecksParams, GetLikedDecksParams } from '@/models/DeckQueryParams';
 import { PaginatedResponse } from '@/models/Pagination';
 import { PopularHashtagSummary } from '@/models/Hashtag';
 import { DECK_API_ENDPOINT } from '@/constants/apiEndpoints';
@@ -35,6 +35,74 @@ export const deckRepository = {
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));
       throw new Error(error.error?.message || 'デッキ一覧の取得に失敗しました');
+    }
+
+    const data = await response.json();
+    return {
+      data: data.publishedDecks,
+      pageInfo: data.pageInfo,
+    };
+  },
+
+  /**
+   * 自分が投稿したデッキ一覧を取得（ページネーション対応）
+   * @param params - クエリパラメータ（userIdは無視される）
+   * @returns ページネーション付き公開デッキ配列
+   */
+  async getMyDecks(params?: GetDecksParams): Promise<PaginatedResponse<PublishedDeck>> {
+    const token = await getAuthToken();
+    const queryParams = new URLSearchParams();
+
+    if (params?.page) queryParams.append('page', params.page.toString());
+    if (params?.perPage) queryParams.append('perPage', params.perPage.toString());
+    if (params?.orderBy) queryParams.append('orderBy', params.orderBy);
+    if (params?.order) queryParams.append('order', params.order);
+    if (params?.songId) queryParams.append('songId', params.songId);
+    if (params?.tag) queryParams.append('tag', params.tag);
+
+    const url = `${DECK_API_ENDPOINT}/decks/me${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.error?.message || '投稿デッキ一覧の取得に失敗しました');
+    }
+
+    const data = await response.json();
+    return {
+      data: data.publishedDecks,
+      pageInfo: data.pageInfo,
+    };
+  },
+
+  /**
+   * いいねしたデッキ一覧を取得（ページネーション対応）
+   * @param params - クエリパラメータ
+   * @returns ページネーション付き公開デッキ配列
+   */
+  async getLikedDecks(params?: GetLikedDecksParams): Promise<PaginatedResponse<PublishedDeck>> {
+    const token = await getAuthToken();
+    const queryParams = new URLSearchParams();
+
+    if (params?.page) queryParams.append('page', params.page.toString());
+    if (params?.perPage) queryParams.append('perPage', params.perPage.toString());
+
+    const url = `${DECK_API_ENDPOINT}/decks/me/likes${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.error?.message || 'いいねしたデッキ一覧の取得に失敗しました');
     }
 
     const data = await response.json();

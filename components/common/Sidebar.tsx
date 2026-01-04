@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
+import { useUserProfile } from '@/hooks/useUserProfile';
 
 interface SidebarProps {
   children?: React.ReactNode;
@@ -17,6 +18,7 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   { label: 'デッキビルダー', href: '/', icon: '🎴' },
+  { label: 'マイページ', href: '/mypage', icon: '🙋' },
   { label: 'マイデッキ', href: '/decks', icon: '📚' },
   { label: 'カード一覧', href: '/cards', icon: '🔍' },
   { label: '統計情報', href: '/stats', icon: '📊' },
@@ -27,6 +29,19 @@ export function Sidebar({ children }: SidebarProps): JSX.Element {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
   const pathname = usePathname();
+  const { profile, fetchProfile } = useUserProfile();
+
+  useEffect(() => {
+    if (!profile) {
+      fetchProfile();
+    }
+  }, [profile, fetchProfile]);
+
+  const avatarSrc = profile?.avatarUrl
+    ? `${profile.avatarUrl}${profile.avatarUrl.includes('?') ? '&' : '?'}v=${encodeURIComponent(
+        profile.updatedAt
+      )}`
+    : null;
 
   const toggleMobileMenu = (): void => {
     setIsMobileMenuOpen((prev) => !prev);
@@ -75,6 +90,7 @@ export function Sidebar({ children }: SidebarProps): JSX.Element {
           <nav className="flex-1 px-2 py-5 space-y-1">
             {NAV_ITEMS.map((item) => {
               const isActive = pathname === item.href;
+              const isMyPage = item.href === '/mypage';
               return (
                 <Link
                   key={item.href}
@@ -90,8 +106,23 @@ export function Sidebar({ children }: SidebarProps): JSX.Element {
                   `}
                   title={!isSidebarExpanded ? item.label : undefined}
                 >
-                  <span className={`text-xl ${isSidebarExpanded ? 'mr-3' : ''}`}>
-                    {item.icon}
+                  <span
+                    className={`flex items-center justify-center ${
+                      isSidebarExpanded ? 'mr-3' : ''
+                    }`}
+                  >
+                    {isMyPage && avatarSrc ? (
+                      <span className="inline-flex items-center justify-center w-6 h-6 rounded-full overflow-hidden shrink-0">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={avatarSrc}
+                          alt="マイアバター"
+                          className="w-full h-full object-cover"
+                        />
+                      </span>
+                    ) : (
+                      item.icon
+                    )}
                   </span>
                   {isSidebarExpanded && <span className="whitespace-nowrap">{item.label}</span>}
                 </Link>
@@ -179,6 +210,7 @@ export function Sidebar({ children }: SidebarProps): JSX.Element {
                 <nav className="flex-1 px-4 py-5 space-y-1 overflow-y-auto">
                   {NAV_ITEMS.map((item) => {
                     const isActive = pathname === item.href;
+                    const isMyPage = item.href === '/mypage';
                     return (
                       <Link
                         key={item.href}
@@ -193,7 +225,20 @@ export function Sidebar({ children }: SidebarProps): JSX.Element {
                           }
                         `}
                       >
-                        <span className="mr-3 text-xl">{item.icon}</span>
+                        <span className="mr-3 flex items-center justify-center">
+                          {isMyPage && avatarSrc ? (
+                            <span className="inline-flex items-center justify-center w-7 h-7 rounded-full overflow-hidden shrink-0">
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img
+                                src={avatarSrc}
+                                alt="マイアバター"
+                                className="w-full h-full object-cover"
+                              />
+                            </span>
+                          ) : (
+                            item.icon
+                          )}
+                        </span>
                         <span>{item.label}</span>
                       </Link>
                     );

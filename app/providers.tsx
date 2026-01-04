@@ -4,6 +4,8 @@ import React, { useEffect, useState } from 'react';
 import { ApolloProvider } from '@apollo/client';
 import { apolloClient } from '@/repositories/graphql/client';
 import { signInAnonymous, onAuthStateChange } from '@/repositories/firebase/auth';
+import { userService } from '@/services/userService';
+import { useAuthStore } from '@/store/authStore';
 import { Loading } from '@/components/common/Loading';
 
 interface ProvidersProps {
@@ -12,26 +14,35 @@ interface ProvidersProps {
 
 export const Providers: React.FC<ProvidersProps> = ({ children }) => {
   const [isAuthReady, setIsAuthReady] = useState(false);
+  const { setUser, setToken } = useAuthStore();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChange(async (firebaseUser) => {
       if (firebaseUser) {
+        setUser(firebaseUser);
+        const token = await firebaseUser.getIdToken();
+        setToken(token);
+
+        try {
+          await userService.createProfile({ displayName: 'ゲスト' });
+        } catch (error) {
+          console.error('ユーザー作成エラー:', error);
+        }
+
         setIsAuthReady(true);
       } else {
-        // ログインしていない場合は匿名ログイン
         try {
           await signInAnonymous();
-          setIsAuthReady(true);
         } catch (error) {
           console.error('匿名ログインエラー:', error);
+          setIsAuthReady(true);
         }
       }
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [setUser, setToken]);
 
-  // 認証が完了するまでローディング表示
   if (!isAuthReady) {
     return <Loading fullScreen message="Loading..." />;
   }

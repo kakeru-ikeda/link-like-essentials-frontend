@@ -23,3 +23,14 @@ export interface GetDecksParams {
   /** ハッシュタグでフィルタ */
   tag?: string;
 }
+
+/**
+ * いいねしたデッキ一覧取得のクエリパラメータ
+ */
+export interface GetLikedDecksParams {
+  /** ページ番号（1から始まる） */
+  page?: number;
+
+  /** 1ページあたりのアイテム数（デフォルト: 20、最大: 100） */
+  perPage?: number;
+}
