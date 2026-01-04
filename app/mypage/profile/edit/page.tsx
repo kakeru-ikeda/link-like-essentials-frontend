@@ -29,11 +29,15 @@ export default function ProfileEditPage() {
 
   useEffect(() => {
     const init = async () => {
-      await fetchProfile();
+      if (!profile && !isLoadingProfile) {
+        await fetchProfile();
+      }
       setIsInitialized(true);
     };
-    init();
-  }, [fetchProfile]);
+
+    void init();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSubmit = async (data: UserProfileInput) => {
     try {

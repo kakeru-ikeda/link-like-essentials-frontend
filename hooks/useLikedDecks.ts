@@ -60,15 +60,22 @@ export const useLikedDecks = (initialParams?: Partial<GetLikedDecksParams>) => {
   useEffect(() => {
     if (!isAuthenticated) return;
     fetchDecks(requestParams);
-  }, [fetchDecks, isAuthenticated, requestParams]);
+  }, [isAuthenticated, requestParams]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const goToPage = useCallback((page: number) => {
     setParams((prev) => ({ ...prev, page }));
   }, []);
 
   const refresh = useCallback(() => {
-    fetchDecks(requestParams);
-  }, [fetchDecks, requestParams]);
+    setParams((prev) => {
+      const nextParams: GetLikedDecksParams = {
+        page: prev.page,
+        perPage: prev.perPage,
+      };
+      void fetchDecks(nextParams);
+      return prev;
+    });
+  }, [fetchDecks]);
 
   return {
     decks,

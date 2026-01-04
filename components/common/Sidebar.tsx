@@ -32,8 +32,10 @@ export function Sidebar({ children }: SidebarProps): JSX.Element {
   const { profile, fetchProfile } = useUserProfile();
 
   useEffect(() => {
-    fetchProfile();
-  }, [fetchProfile]);
+    if (!profile) {
+      fetchProfile();
+    }
+  }, [profile, fetchProfile]);
 
   const avatarSrc = profile?.avatarUrl
     ? `${profile.avatarUrl}${profile.avatarUrl.includes('?') ? '&' : '?'}v=${encodeURIComponent(

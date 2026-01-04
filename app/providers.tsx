@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { ApolloProvider } from '@apollo/client';
 import { apolloClient } from '@/repositories/graphql/client';
 import { signInAnonymous, onAuthStateChange } from '@/repositories/firebase/auth';
-import { userRepository } from '@/repositories/api/userRepository';
+import { userService } from '@/services/userService';
 import { useAuthStore } from '@/store/authStore';
 import { Loading } from '@/components/common/Loading';
 
@@ -24,7 +24,7 @@ export const Providers: React.FC<ProvidersProps> = ({ children }) => {
         setToken(token);
 
         try {
-          await userRepository.createProfile({ displayName: 'ゲスト' });
+          await userService.createProfile({ displayName: 'ゲスト' });
         } catch (error) {
           console.error('ユーザー作成エラー:', error);
         }

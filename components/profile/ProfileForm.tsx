@@ -64,14 +64,16 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
    */
   const validate = (): boolean => {
     const newErrors: { [key: string]: string } = {};
+    const trimmedDisplayName = displayName.trim();
+    const trimmedBio = bio.trim();
 
-    if (!displayName.trim()) {
+    if (!trimmedDisplayName) {
       newErrors.displayName = '表示名は必須です';
-    } else if (displayName.length > 50) {
+    } else if (trimmedDisplayName.length > 50) {
       newErrors.displayName = '表示名は50文字以内で入力してください';
     }
 
-    if (bio && bio.length > 500) {
+    if (trimmedBio.length > 500) {
       newErrors.bio = '自己紹介は500文字以内で入力してください';
     }
 
@@ -162,6 +164,7 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
                   className="w-16 h-16 text-gray-400"
                   fill="currentColor"
                   viewBox="0 0 20 20"
+                  aria-hidden="true"
                 >
                   <path
                     fillRule="evenodd"

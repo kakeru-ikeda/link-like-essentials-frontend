@@ -66,7 +66,7 @@ export const useMyDecks = (initialParams?: Partial<GetDecksParams>) => {
   useEffect(() => {
     if (!isAuthenticated) return;
     fetchDecks(requestParams);
-  }, [fetchDecks, isAuthenticated, requestParams]);
+  }, [isAuthenticated, requestParams]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const goToPage = useCallback((page: number) => {
     setParams((prev) => ({ ...prev, page }));
@@ -74,7 +74,7 @@ export const useMyDecks = (initialParams?: Partial<GetDecksParams>) => {
 
   const refresh = useCallback(() => {
     fetchDecks(requestParams);
-  }, [fetchDecks, requestParams]);
+  }, [requestParams]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return {
     decks,
