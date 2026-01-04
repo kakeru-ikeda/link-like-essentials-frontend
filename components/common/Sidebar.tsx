@@ -13,17 +13,77 @@ interface SidebarProps {
 interface NavItem {
   label: string;
   href: string;
-  icon?: string;
+  icon?: React.ReactNode;
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { label: 'デッキビルダー', href: '/', icon: '🎴' },
-  { label: 'マイページ', href: '/mypage', icon: '🙋' },
-  { label: 'マイデッキ', href: '/decks', icon: '📚' },
-  { label: 'カード一覧', href: '/cards', icon: '🔍' },
-  { label: '統計情報', href: '/stats', icon: '📊' },
-  { label: 'お知らせ', href: '/news', icon: '📰' },
+  {
+    label: 'デッキビルダー',
+    href: '/',
+    icon: (
+      <Image
+        src="/images/icons/builder.png"
+        alt="デッキビルダー"
+        width={24}
+        height={24}
+        className="w-6 h-6"
+      />
+    ),
+  },
+  {
+    label: '投稿デッキ',
+    href: '/decks',
+    icon: (
+      <Image
+        src="/images/icons/decks.png"
+        alt="投稿デッキ"
+        width={24}
+        height={24}
+        className="w-6 h-6"
+      />
+    ),
+  },
+  {
+    label: 'カード一覧',
+    href: '/cards',
+    icon: (
+      <Image
+        src="/images/icons/search.png"
+        alt="カード一覧"
+        width={24}
+        height={24}
+        className="w-6 h-6"
+      />
+    ),
+  },
+  {
+    label: 'お知らせ',
+    href: '/news',
+    icon: (
+      <Image
+        src="/images/icons/news.png"
+        alt="お知らせ"
+        width={24}
+        height={24}
+        className="w-6 h-6"
+      />
+    ),
+  },
 ];
+
+const MY_PAGE_ITEM: NavItem = {
+  label: 'マイページ',
+  href: '/mypage',
+  icon: (
+    <Image
+      src="/images/icons/people.png"
+      alt="マイページ"
+      width={24}
+      height={24}
+      className="w-6 h-6"
+    />
+  )
+};
 
 export function Sidebar({ children }: SidebarProps): JSX.Element {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -56,7 +116,7 @@ export function Sidebar({ children }: SidebarProps): JSX.Element {
       {/* PC用サイドバー - ホバーで展開 */}
       <aside
         className="hidden md:flex md:flex-col bg-white border-r border-gray-200 transition-all duration-300 ease-in-out fixed left-0 top-0 h-full z-50"
-        style={{ width: isSidebarExpanded ? '16rem' : '3rem' }}
+        style={{ width: isSidebarExpanded ? '16rem' : '3.5rem' }}
         onMouseEnter={() => setIsSidebarExpanded(true)}
         onMouseLeave={() => setIsSidebarExpanded(false)}
       >
@@ -90,45 +150,70 @@ export function Sidebar({ children }: SidebarProps): JSX.Element {
           <nav className="flex-1 px-2 py-5 space-y-1">
             {NAV_ITEMS.map((item) => {
               const isActive = pathname === item.href;
-              const isMyPage = item.href === '/mypage';
               return (
                 <Link
                   key={item.href}
                   href={item.href}
                   className={`
-                    flex items-center px-3 py-3 rounded-lg transition-colors
+                    flex items-center py-3 rounded-lg transition-colors
                     ${
                       isActive
                         ? 'bg-blue-50 text-blue-700 font-semibold'
                         : 'text-gray-700 hover:bg-gray-100'
                     }
-                    ${isSidebarExpanded ? '' : 'justify-center'}
+                    ${isSidebarExpanded ? 'px-3' : 'px-2 justify-center'}
                   `}
                   title={!isSidebarExpanded ? item.label : undefined}
                 >
                   <span
-                    className={`flex items-center justify-center ${
+                    className={`flex items-center justify-center shrink-0 ${
                       isSidebarExpanded ? 'mr-3' : ''
                     }`}
                   >
-                    {isMyPage && avatarSrc ? (
-                      <span className="inline-flex items-center justify-center w-6 h-6 rounded-full overflow-hidden shrink-0">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={avatarSrc}
-                          alt="マイアバター"
-                          className="w-full h-full object-cover"
-                        />
-                      </span>
-                    ) : (
-                      item.icon
-                    )}
+                    {item.icon}
                   </span>
                   {isSidebarExpanded && <span className="whitespace-nowrap">{item.label}</span>}
                 </Link>
               );
             })}
           </nav>
+
+          {/* マイページ（最下部固定） */}
+          <div className="px-2 pb-5">
+            <Link
+              href={MY_PAGE_ITEM.href}
+              className={`
+                flex items-center py-3 rounded-lg transition-colors
+                ${
+                  pathname === MY_PAGE_ITEM.href
+                    ? 'bg-blue-50 text-blue-700 font-semibold'
+                    : 'text-gray-700 hover:bg-gray-100'
+                }
+                ${isSidebarExpanded ? 'px-3' : 'px-2 justify-center'}
+              `}
+              title={!isSidebarExpanded ? MY_PAGE_ITEM.label : undefined}
+            >
+              <span
+                className={`flex items-center justify-center shrink-0 ${
+                  isSidebarExpanded ? 'mr-3' : ''
+                }`}
+              >
+                {avatarSrc ? (
+                  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full overflow-hidden shrink-0">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={avatarSrc}
+                      alt="マイアバター"
+                      className="w-full h-full object-cover"
+                    />
+                  </span>
+                ) : (
+                  MY_PAGE_ITEM.icon
+                )}
+              </span>
+              {isSidebarExpanded && <span className="whitespace-nowrap">{MY_PAGE_ITEM.label}</span>}
+            </Link>
+          </div>
 
           {/* フッター情報 */}
           {isSidebarExpanded && (
@@ -210,7 +295,6 @@ export function Sidebar({ children }: SidebarProps): JSX.Element {
                 <nav className="flex-1 px-4 py-5 space-y-1 overflow-y-auto">
                   {NAV_ITEMS.map((item) => {
                     const isActive = pathname === item.href;
-                    const isMyPage = item.href === '/mypage';
                     return (
                       <Link
                         key={item.href}
@@ -226,24 +310,45 @@ export function Sidebar({ children }: SidebarProps): JSX.Element {
                         `}
                       >
                         <span className="mr-3 flex items-center justify-center">
-                          {isMyPage && avatarSrc ? (
-                            <span className="inline-flex items-center justify-center w-7 h-7 rounded-full overflow-hidden shrink-0">
-                              {/* eslint-disable-next-line @next/next/no-img-element */}
-                              <img
-                                src={avatarSrc}
-                                alt="マイアバター"
-                                className="w-full h-full object-cover"
-                              />
-                            </span>
-                          ) : (
-                            item.icon
-                          )}
+                          {item.icon}
                         </span>
                         <span>{item.label}</span>
                       </Link>
                     );
                   })}
                 </nav>
+
+                {/* マイページ（モバイル下部固定） */}
+                <div className="px-4 pb-5">
+                  <Link
+                    href={MY_PAGE_ITEM.href}
+                    onClick={closeMobileMenu}
+                    className={`
+                      flex items-center px-4 py-3 rounded-lg transition-colors
+                      ${
+                        pathname === MY_PAGE_ITEM.href
+                          ? 'bg-blue-50 text-blue-700 font-semibold'
+                          : 'text-gray-700 hover:bg-gray-100'
+                      }
+                    `}
+                  >
+                    <span className="mr-3 flex items-center justify-center">
+                      {avatarSrc ? (
+                        <span className="inline-flex items-center justify-center w-7 h-7 rounded-full overflow-hidden shrink-0">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={avatarSrc}
+                            alt="マイアバター"
+                            className="w-full h-full object-cover"
+                          />
+                        </span>
+                      ) : (
+                        MY_PAGE_ITEM.icon
+                      )}
+                    </span>
+                    <span>{MY_PAGE_ITEM.label}</span>
+                  </Link>
+                </div>
 
                 {/* フッター情報 */}
                 <div className="px-6 py-4 border-t border-gray-200">
