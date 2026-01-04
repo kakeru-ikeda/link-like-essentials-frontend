@@ -3,10 +3,10 @@
 import { useState, useEffect, useCallback, RefObject } from 'react';
 import { Deck } from '@/models/Deck';
 import { PublishedDeck } from '@/models/PublishedDeck';
-import { useUserApi } from './useUserApi';
 import { useImageUpload } from './useImageUpload';
 import { useScreenshot } from './useScreenshot';
 import { deckPublishService } from '@/services/deckPublishService';
+import { useUserProfile } from './useUserProfile';
 
 export interface UseDeckPublishReturn {
   /** 表示名 */
@@ -55,7 +55,7 @@ export const useDeckPublish = (
   exportViewRef: RefObject<HTMLDivElement>,
   exportBuilderRef: RefObject<HTMLDivElement>
 ): UseDeckPublishReturn => {
-  const { getMyProfile, isLoading: isLoadingProfile } = useUserApi();
+  const { profile, isLoadingProfile, fetchProfile } = useUserProfile();
   const { uploadImage, error: uploadError } = useImageUpload({
     enableCropping: false,
   });
@@ -69,18 +69,22 @@ export const useDeckPublish = (
   const [isPublishing, setIsPublishing] = useState<boolean>(false);
   const [publishError, setPublishError] = useState<string | null>(null);
 
-  // プロフィール取得
+  // プロフィール未取得時のみフェッチ
   useEffect(() => {
-    if (isOpen) {
-      getMyProfile()
-        .then((profile) => {
-          setDisplayName(profile.displayName);
-        })
-        .catch(() => {
-          setDisplayName('');
-        });
+    if (!isOpen || profile) return;
+
+    fetchProfile().catch(() => {
+      setDisplayName('');
+    });
+  }, [fetchProfile, isOpen, profile]);
+
+  // プロフィールが揃ったら表示名を反映
+  useEffect(() => {
+    if (!isOpen) return;
+    if (profile?.displayName) {
+      setDisplayName(profile.displayName);
     }
-  }, [isOpen, getMyProfile]);
+  }, [isOpen, profile?.displayName]);
 
   // 画像アップロード処理
   const handleImageUpload = useCallback(
