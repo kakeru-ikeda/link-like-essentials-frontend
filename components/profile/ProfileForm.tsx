@@ -222,7 +222,7 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
             value={displayName}
             onChange={(e) => setDisplayName(e.target.value)}
             disabled={isDisabled}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed text-black"
             placeholder="表示名を入力"
             maxLength={50}
           />
@@ -247,7 +247,7 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
             value={bio}
             onChange={(e) => setBio(e.target.value)}
             disabled={isDisabled}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed resize-none"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed resize-none text-black"
             placeholder="自己紹介を入力"
             rows={5}
             maxLength={500}
