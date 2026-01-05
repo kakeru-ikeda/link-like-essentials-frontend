@@ -65,7 +65,11 @@ export const CardGridFilter: React.FC<CardGridFilterProps> = ({
         </div>
 
         {/* 適用中フィルター表示 */}
-        <ActiveFilters filter={filter} clearFilterKey={clearFilterKey} />
+        <ActiveFilters
+          filter={filter}
+          clearFilterKey={clearFilterKey}
+          updateFilter={updateFilter}
+        />
 
         {/* スペーサー */}
         <div className="flex-grow" />
