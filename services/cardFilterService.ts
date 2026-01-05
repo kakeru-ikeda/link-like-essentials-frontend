@@ -358,7 +358,7 @@ export function toggleFilterList<T extends keyof CardFilter>(
  * 
  * @param filter 現在のカードフィルター
  * @param key フィルターのキー（配列型のプロパティ）
- * @param valueToRemove 削除対象の値
+ * @param value 削除対象の値
  * @returns 更新用の部分フィルターオブジェクト
  */
 export function removeFromFilterList<T extends keyof CardFilter>(

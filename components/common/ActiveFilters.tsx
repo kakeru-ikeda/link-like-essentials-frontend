@@ -25,7 +25,6 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
   clearFilterKey,
   updateFilter,
 }) => {
-
   const hasActiveFilters =
     filter.keyword ||
     (filter.rarities && filter.rarities.length > 0) ||
