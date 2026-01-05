@@ -394,7 +394,11 @@ export const DeckBuilder: React.FC = () => {
         }
       >
         <div className="flex flex-col h-full">
-          <ActiveFilters filter={filter} clearFilterKey={clearFilterKey} />
+          <ActiveFilters
+            filter={filter}
+            clearFilterKey={clearFilterKey}
+            updateFilter={updateFilter}
+          />
           <div className="flex-1 overflow-y-auto">
             {currentSlotCard && currentCharacterName && (
               <CurrentCardDisplay
