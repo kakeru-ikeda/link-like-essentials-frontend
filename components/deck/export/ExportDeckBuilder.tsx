@@ -6,6 +6,7 @@ import { getDeckSlotMapping, getDeckFrame } from '@/constants/deckConfig';
 import { getCharacterBackgroundColor, getCharacterColor } from '@/constants/characters';
 import { VerticalBadge } from '@/components/common/VerticalBadge';
 import { AceBadge } from '@/components/common/AceBadge';
+import { LimitBreakBadge } from '@/components/deck/LimitBreakBadge';
 import type { DeckSlot } from '@/models/Deck';
 
 interface ExportDeckBuilderProps {
@@ -62,9 +63,12 @@ const ExportCardSlot = React.memo<ExportCardSlotProps>((
       )}
 
       {/* 上限解放数表示 */}
-      <div className="absolute top-2 left-2 z-30 bg-black/50 text-white font-black rounded-xl px-5 py-3 text-8xl tabular-nums shadow-2xl">
-        {(slot.limitBreak ?? 14).toString().padStart(2, '0')}
-      </div>
+      <LimitBreakBadge
+        value={slot.limitBreak ?? 14}
+        variant="export"
+        isMain={isMain}
+        className="absolute top-2 left-2 z-30"
+      />
 
       {/* カード名 */}
       <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3">

@@ -2,11 +2,11 @@
 
 import React, { useState } from 'react';
 import { DeckSlot as DeckSlotType } from '@/models/Deck';
-import { Card } from '@/models/Card';
 import { getCharacterColor } from '@/constants/characters';
 import { ApBadge } from '@/components/common/ApBadge';
 import { RarityBadge } from '@/components/common/RarityBadge';
 import { AceBadge } from '@/components/common/AceBadge';
+import { LimitBreakBadge } from '@/components/deck/LimitBreakBadge';
 
 interface DeckSlotProps {
   slot: DeckSlotType;
@@ -136,85 +136,34 @@ export const DeckSlot: React.FC<DeckSlotProps> = ({
     >
       {slot.card ? (
         <div className="w-full h-full relative">
-          {/* 上限解放数表示（カード中央に大きく表示） */}
-          {showLimitBreak && (
-            <div 
-              className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none"
-            >
-              <div className="relative">
-                {/* 数値表示（中央固定） */}
-                <div className={`${isMain ? 'text-8xl' : 'text-5xl'} font-black text-white drop-shadow-[0_4px_8px_rgba(0,0,0,0.9)] select-none tabular-nums`}>
-                  {limitBreakCount.toString().padStart(2, '0')}
-                </div>
-
-                {/* ホバー時のボタングループ */}
-                {isHovered && (
-                  <div className="absolute left-full top-1/2 -translate-y-1/2 flex flex-col gap-1 ml-2 pointer-events-auto">
-                    {/* 上ボタン */}
-                    <button
-                      type="button"
-                      onClick={handleLimitIncrease}
-                      disabled={limitBreakCount >= 14}
-                      className="bg-white/90 hover:bg-white disabled:bg-gray-400 disabled:cursor-not-allowed text-gray-800 rounded-full p-0.5 transition-colors shadow-lg"
-                      aria-label="上限解放数を増やす"
-                    >
-                      <svg
-                        className="w-3 h-3"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={3}
-                          d="M5 15l7-7 7 7"
-                        />
-                      </svg>
-                    </button>
-
-                    {/* 下ボタン */}
-                    <button
-                      type="button"
-                      onClick={handleLimitDecrease}
-                      disabled={limitBreakCount <= 1}
-                      className="bg-white/90 hover:bg-white disabled:bg-gray-400 disabled:cursor-not-allowed text-gray-800 rounded-full p-0.5 transition-colors shadow-lg"
-                      aria-label="上限解放数を減らす"
-                    >
-                      <svg
-                        className="w-3 h-3"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={3}
-                          d="M19 9l-7 7-7-7"
-                        />
-                      </svg>
-                    </button>
-                  </div>
+          {/* 上部の表示エリア: 上限解放表示 or バッジ群 */}
+          <div className="absolute top-1 left-1 z-20 flex items-center gap-1 pointer-events-none">
+            {showLimitBreak ? (
+              <LimitBreakBadge
+                value={limitBreakCount}
+                isMain={isMain}
+                showControls={isHovered}
+                onIncrease={handleLimitIncrease}
+                onDecrease={handleLimitDecrease}
+                min={10}
+                max={14}
+              />
+            ) : (
+              <>
+                {slot.card.detail?.skill?.ap && (
+                  <ApBadge 
+                    ap={slot.card.detail.skill.ap}
+                    favoriteMode={slot.card.detail.favoriteMode}
+                    size={isMain ? 'large' : 'small'}
+                  />
                 )}
-              </div>
-            </div>
-          )}
-
-          {/* AP表示 */}
-          {slot.card.detail?.skill?.ap && (
-            <ApBadge 
-              ap={slot.card.detail.skill.ap}
-              favoriteMode={slot.card.detail.favoriteMode}
-              size={isMain ? 'large' : 'small'}
-            />
-          )}
-
-          {/* レアリティ表示 */}
-          <RarityBadge 
-            rarity={slot.card.rarity}
-            size={isMain ? 'large' : 'small'}
-          />
+                <RarityBadge 
+                  rarity={slot.card.rarity}
+                  size={isMain ? 'large' : 'small'}
+                />
+              </>
+            )}
+          </div>
 
           {/* エースバッジ（ホバー時 or エース設定済みの場合のみ表示、フレンドカードは除外） */}
           {slot.slotId !== 99 && (isHovered || isAce) && (
