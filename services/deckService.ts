@@ -1,11 +1,11 @@
 import { Card } from '@/models/Card';
 import { Deck, DeckSlot, DeckForCloud } from '@/models/Deck';
 import { DeckType } from '@/models/enums';
-import { canPlaceCardInSlot } from '@/constants/deckRules';
-import { getDeckSlotMapping } from '@/constants/deckConfig';
+import { canPlaceCardInSlot } from '@/services/deckRulesService';
+import { getDeckSlotMapping } from '@/services/deckConfigService';
 import { PublishedDeck } from '@/models/PublishedDeck';
 import { cardCatalogService } from '@/services/cardCatalogService';
-import { CharacterName } from '@/constants/characters';
+import { CharacterName } from '@/config/characters';
 import { songCatalogService } from '@/services/songCatalogService';
 import { liveGrandPrixCatalogService } from '@/services/liveGrandPrixCatalogService';
 

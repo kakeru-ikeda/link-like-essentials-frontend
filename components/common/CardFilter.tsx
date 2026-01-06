@@ -2,8 +2,7 @@
 
 import React from 'react';
 import type { CardFilter as CardFilterType } from '@/models/Filter';
-import { Rarity, StyleType, LimitedType, FavoriteMode } from '@/models/enums';
-import { SkillEffectType, SkillSearchTarget } from '@/constants/skillEffects';
+import { Rarity, StyleType, LimitedType, FavoriteMode, SkillEffectType, SkillSearchTarget } from '@/models/enums';
 import { SearchModeFilter } from '@/components/common/filters/SearchModeFilter';
 import { KeywordSearchInput } from '@/components/common/KeywordSearchInput';
 import { CharacterFilter } from '@/components/cards/filters/CharacterFilter';

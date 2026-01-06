@@ -3,7 +3,7 @@ import { Comment } from '@/models/Comment';
 import { GetDecksParams, GetLikedDecksParams } from '@/models/DeckQueryParams';
 import { PaginatedResponse } from '@/models/Pagination';
 import { PopularHashtagSummary } from '@/models/Hashtag';
-import { DECK_API_ENDPOINT } from '@/constants/apiEndpoints';
+import { DECK_API_ENDPOINT } from '@/config/api';
 import { getAuthToken } from './authUtils';
 
 export const deckRepository = {

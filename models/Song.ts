@@ -1,5 +1,5 @@
 import { DeckType, SongAttribute } from './enums';
-import { CharacterName } from '@/constants/characters';
+import { CharacterName } from '@/config/characters';
 
 /**
  * ムード推移のセクション

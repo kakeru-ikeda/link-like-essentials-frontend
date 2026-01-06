@@ -4,9 +4,9 @@
  * スロットに配置可能なキャラクターのみを表示するためのロジックを提供します。
  */
 
-import { CHARACTERS } from '@/constants/characters';
-import { canPlaceCardInSlot, getCharacterGeneration } from '@/constants/deckRules';
-import { getDeckSlotMapping } from '@/constants/deckConfig';
+import { CHARACTERS } from '@/config/characters';
+import { canPlaceCardInSlot, getCharacterGeneration } from '@/services/deckRulesService';
+import { getDeckSlotMapping } from '@/services/deckConfigService';
 import { Card } from '@/models/Card';
 import { DeckType } from '@/models/enums';
 

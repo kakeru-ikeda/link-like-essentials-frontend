@@ -3,7 +3,7 @@
 import React from 'react';
 import { DeckSlot } from '@/components/deck/DeckSlot';
 import { DeckSlot as DeckSlotType } from '@/models/Deck';
-import { getCharacterBackgroundColor } from '@/constants/characters';
+import { getCharacterBackgroundColor } from '@/utils/colorUtils';
 import { VerticalBadge } from '@/components/common/VerticalBadge';
 
 interface CharacterDeckGroupProps {

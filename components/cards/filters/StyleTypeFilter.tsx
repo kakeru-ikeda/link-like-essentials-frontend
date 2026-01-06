@@ -2,7 +2,8 @@
 
 import React from 'react';
 import { StyleType } from '@/models/enums';
-import { STYLE_TYPE_COLORS, STYLE_TYPE_LABELS } from '@/constants/labels';
+import { STYLE_TYPE_LABELS } from '@/mappers/enumMappers';
+import { STYLE_TYPE_COLORS } from '@/styles/colors';
 import { MultiSelectFilter } from '@/components/common/filters/MultiSelectFilter';
 
 interface StyleTypeFilterProps {
