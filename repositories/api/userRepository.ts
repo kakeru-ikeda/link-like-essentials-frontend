@@ -2,7 +2,7 @@ import {
   UserProfile,
   UserProfileInput,
 } from '@/models/User';
-import { USER_API_ENDPOINT } from '@/constants/apiEndpoints';
+import { USER_API_ENDPOINT } from '@/config/api';
 import { getAuthToken } from './authUtils';
 
 export const userRepository = {

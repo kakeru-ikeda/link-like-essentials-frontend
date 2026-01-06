@@ -2,7 +2,8 @@
 
 import React from 'react';
 import { StyleType } from '@/models/enums';
-import { STYLE_TYPE_LABELS, STYLE_TYPE_COLORS } from '@/constants/labels';
+import { STYLE_TYPE_LABELS } from '@/mappers/enumMappers';
+import { STYLE_TYPE_COLORS } from '@/styles/colors';
 
 interface StyleTypeBadgeProps {
   styleType: StyleType | string;

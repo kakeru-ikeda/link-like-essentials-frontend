@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Card } from '@/models/Card';
-import { getCharacterBackgroundColor } from '@/constants/characters';
+import { getCharacterBackgroundColor } from '@/utils/colorUtils';
 
 interface CenterCardDisplayProps {
   centerCard: Card | null;

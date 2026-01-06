@@ -3,13 +3,12 @@
 import React from 'react';
 import { MultiSelectFilter } from '@/components/common/filters/MultiSelectFilter';
 import { Tooltip } from '@/components/common/Tooltip';
+import { SkillEffectType, SkillSearchTarget } from '@/models/enums';
 import {
-  SkillEffectType,
-  SkillSearchTarget,
   SKILL_EFFECT_LABELS,
   SKILL_SEARCH_TARGET_LABELS,
-  SKILL_EFFECT_DESCRIPTIONS,
-} from '@/constants/skillEffects';
+} from '@/mappers/enumMappers';
+import { SKILL_EFFECT_DESCRIPTIONS } from '@/config/skillEffects';
 
 interface SkillEffectFilterProps {
   selectedEffects: SkillEffectType[] | undefined;

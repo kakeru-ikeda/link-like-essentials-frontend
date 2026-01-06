@@ -1,7 +1,11 @@
-import { CharacterName } from '@/constants/characters';
-import { DeckType } from '@/models/enums';
+import { CharacterName } from '@/config/characters';
 
 export const DECK_SLOT_COUNT = 18;
+
+/**
+ * フレンドスロットの固定ID
+ */
+export const FRIEND_SLOT_ID = 99;
 
 /**
  * デッキスロットタイプ
@@ -26,7 +30,7 @@ export const DECK_SLOT_MAPPING_105: DeckSlotMapping[] = [
   { slotId: 3, characterName: '桂城泉', slotType: 'side', row: 0, col: 4 },
   { slotId: 4, characterName: 'フリー', slotType: 'main', row: 0, col: 5 },
   { slotId: 5, characterName: 'フリー', slotType: 'main', row: 0, col: 6 },
-  { slotId: 99, characterName: 'フレンド', slotType: 'side', row: 0, col: 0 },
+  { slotId: FRIEND_SLOT_ID, characterName: 'フレンド', slotType: 'side', row: 0, col: 0 },
 
   // 中段（104期生）
   { slotId: 6, characterName: '百生吟子', slotType: 'main', row: 1, col: 0 },
@@ -53,7 +57,7 @@ export const DECK_SLOT_MAPPING_104: DeckSlotMapping[] = [
   { slotId: 3, characterName: '徒町小鈴', slotType: 'side', row: 0, col: 4 },
   { slotId: 4, characterName: '安養寺姫芽', slotType: 'main', row: 0, col: 5 },
   { slotId: 5, characterName: '安養寺姫芽', slotType: 'side', row: 0, col: 6 },
-  { slotId: 99, characterName: 'フレンド', slotType: 'main', row: 0, col: 0 },
+  { slotId: FRIEND_SLOT_ID, characterName: 'フレンド', slotType: 'main', row: 0, col: 0 },
 
   // 中段（103期生）
   { slotId: 6, characterName: '日野下花帆', slotType: 'main', row: 1, col: 0 },
@@ -83,7 +87,7 @@ export const DECK_SLOT_MAPPING_103: DeckSlotMapping[] = [
   { slotId: 6, characterName: '大沢瑠璃乃', slotType: 'main', row: 0, col: 7 },
   { slotId: 7, characterName: '大沢瑠璃乃', slotType: 'side', row: 0, col: 8 },
   { slotId: 8, characterName: '大沢瑠璃乃', slotType: 'side', row: 0, col: 9 },
-  { slotId: 99, characterName: 'フレンド', slotType: 'main', row: 0, col: 0 },
+  { slotId: FRIEND_SLOT_ID, characterName: 'フレンド', slotType: 'main', row: 0, col: 0 },
 
   // 下段 （102期生）
   { slotId: 9, characterName: '乙宗梢', slotType: 'main', row: 2, col: 0 },
@@ -105,7 +109,7 @@ export const DECK_SLOT_MAPPING_105_FT_KOZUE: DeckSlotMapping[] = [
   { slotId: 3, characterName: 'セラス', slotType: 'side', row: 0, col: 4 },
   { slotId: 4, characterName: '桂城泉', slotType: 'main', row: 0, col: 5 },
   { slotId: 5, characterName: '桂城泉', slotType: 'side', row: 0, col: 6 },
-  { slotId: 99, characterName: 'フレンド', slotType: 'main', row: 0, col: 0 },
+  { slotId: FRIEND_SLOT_ID, characterName: 'フレンド', slotType: 'main', row: 0, col: 0 },
 
   // 中段（104期生）
   { slotId: 6, characterName: '百生吟子', slotType: 'main', row: 1, col: 0 },
@@ -132,7 +136,7 @@ export const DECK_SLOT_MAPPING_105_FT_TSUZURI: DeckSlotMapping[] = [
   { slotId: 3, characterName: 'セラス', slotType: 'side', row: 0, col: 4 },
   { slotId: 4, characterName: '桂城泉', slotType: 'main', row: 0, col: 5 },
   { slotId: 5, characterName: '桂城泉', slotType: 'side', row: 0, col: 6 },
-  { slotId: 99, characterName: 'フレンド', slotType: 'main', row: 0, col: 0 },
+  { slotId: FRIEND_SLOT_ID, characterName: 'フレンド', slotType: 'main', row: 0, col: 0 },
 
   // 中段（104期生）
   { slotId: 6, characterName: '百生吟子', slotType: 'main', row: 1, col: 0 },
@@ -159,7 +163,7 @@ export const DECK_SLOT_MAPPING_105_FT_MEGUMI: DeckSlotMapping[] = [
   { slotId: 3, characterName: 'セラス', slotType: 'side', row: 0, col: 4 },
   { slotId: 4, characterName: '桂城泉', slotType: 'main', row: 0, col: 5 },
   { slotId: 5, characterName: '桂城泉', slotType: 'side', row: 0, col: 6 },
-  { slotId: 99, characterName: 'フレンド', slotType: 'main', row: 0, col: 0 },
+  { slotId: FRIEND_SLOT_ID, characterName: 'フレンド', slotType: 'main', row: 0, col: 0 },
 
   // 中段（104期生）
   { slotId: 6, characterName: '百生吟子', slotType: 'main', row: 1, col: 0 },
@@ -177,55 +181,3 @@ export const DECK_SLOT_MAPPING_105_FT_MEGUMI: DeckSlotMapping[] = [
   { slotId: 16, characterName: '大沢瑠璃乃', slotType: 'main', row: 2, col: 4 },
   { slotId: 17, characterName: '大沢瑠璃乃', slotType: 'side', row: 2, col: 5 },
 ];
-
-/**
- * デッキタイプに応じたスロットマッピングを取得
- */
-export function getDeckSlotMapping(deckType?: DeckType): DeckSlotMapping[] {
-  if (!deckType) {
-    return DECK_SLOT_MAPPING_105; // デフォルトは105期
-  }
-
-  switch (deckType) {
-    case DeckType.TERM_103:
-      return DECK_SLOT_MAPPING_103;
-    case DeckType.TERM_104:
-      return DECK_SLOT_MAPPING_104;
-    case DeckType.TERM_105:
-      return DECK_SLOT_MAPPING_105;
-    case DeckType.TERM_105_FT_KOZUE:
-      return DECK_SLOT_MAPPING_105_FT_KOZUE;
-    case DeckType.TERM_105_FT_TSUZURI:
-      return DECK_SLOT_MAPPING_105_FT_TSUZURI;
-    case DeckType.TERM_105_FT_MEGUMI:
-      return DECK_SLOT_MAPPING_105_FT_MEGUMI;
-    default:
-      return DECK_SLOT_MAPPING_105;
-  }
-}
-
-/**
- * デッキタイプに応じたキャラクターフレーム（表示順）を取得
- */
-export function getDeckFrame(deckType?: DeckType): (CharacterName | 'フリー' | 'フレンド')[] {
-  if (!deckType) {
-    return ['セラス', '桂城泉', 'フリー', 'フレンド', '百生吟子', '徒町小鈴', '安養寺姫芽', '日野下花帆', '村野さやか', '大沢瑠璃乃'];
-  }
-
-  switch (deckType) {
-    case DeckType.TERM_103:
-      return ['日野下花帆', '村野さやか', '大沢瑠璃乃', 'フレンド', '乙宗梢', '夕霧綴理', '藤島慈'];
-    case DeckType.TERM_104:
-      return ['百生吟子', '徒町小鈴', '安養寺姫芽', 'フレンド', '日野下花帆', '村野さやか', '大沢瑠璃乃', '乙宗梢', '夕霧綴理', '藤島慈'];
-    case DeckType.TERM_105:
-      return ['セラス', '桂城泉', 'フリー', 'フレンド', '百生吟子', '徒町小鈴', '安養寺姫芽', '日野下花帆', '村野さやか', '大沢瑠璃乃'];
-    case DeckType.TERM_105_FT_KOZUE:
-      return ['乙宗梢', 'セラス', '桂城泉', 'フレンド', '百生吟子', '徒町小鈴', '安養寺姫芽', '日野下花帆', '村野さやか', '大沢瑠璃乃'];
-    case DeckType.TERM_105_FT_TSUZURI:
-      return ['夕霧綴理', 'セラス', '桂城泉', 'フレンド', '百生吟子', '徒町小鈴', '安養寺姫芽', '日野下花帆', '村野さやか', '大沢瑠璃乃'];
-    case DeckType.TERM_105_FT_MEGUMI:
-      return ['藤島慈', 'セラス', '桂城泉', 'フレンド', '百生吟子', '徒町小鈴', '安養寺姫芽', '日野下花帆', '村野さやか', '大沢瑠璃乃'];
-    default:
-      return ['セラス', '桂城泉', 'フリー', 'フレンド', '百生吟子', '徒町小鈴', '安養寺姫芽', '日野下花帆', '村野さやか', '大沢瑠璃乃'];
-  }
-}

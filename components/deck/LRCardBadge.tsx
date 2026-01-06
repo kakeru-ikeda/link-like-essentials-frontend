@@ -3,7 +3,7 @@
 import React from 'react';
 import { Card } from '@/models/Card';
 import { Tooltip } from '@/components/common/Tooltip';
-import { getCharacterBackgroundColor } from '@/constants/characters';
+import { getCharacterBackgroundColor } from '@/utils/colorUtils';
 
 interface LRCardBadgeProps {
   card: Card;

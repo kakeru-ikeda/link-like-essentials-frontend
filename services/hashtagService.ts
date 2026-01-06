@@ -1,7 +1,8 @@
-import { CHARACTERS } from '@/constants/characters';
+import { CHARACTERS } from '@/config/characters';
 import { Deck } from '@/models/Deck';
 import { LiveGrandPrix } from '@/models/LiveGrandPrix';
-import { DeckSlotMapping, getDeckSlotMapping } from '@/constants/deckConfig';
+import { getDeckSlotMapping } from '@/services/deckConfigService';
+import type { DeckSlotMapping } from '@/config/deckSlots';
 
 /**
  * ハッシュタグを正規化（#を自動追加）

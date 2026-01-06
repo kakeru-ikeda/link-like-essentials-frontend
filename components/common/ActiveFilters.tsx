@@ -7,11 +7,9 @@ import {
   STYLE_TYPE_LABELS,
   LIMITED_TYPE_LABELS,
   FAVORITE_MODE_LABELS,
-} from '@/constants/labels';
-import {
   SKILL_EFFECT_LABELS,
   SKILL_SEARCH_TARGET_LABELS,
-} from '@/constants/skillEffects';
+} from '@/mappers/enumMappers';
 import { removeFromFilterList } from '@/services/cardFilterService';
 
 interface ActiveFiltersProps {

@@ -1,6 +1,5 @@
-import { Rarity, StyleType, LimitedType, FavoriteMode, DeckType, SongAttribute } from './enums';
-import { CharacterName } from '@/constants/characters';
-import { SkillEffectType, SkillSearchTarget } from '@/constants/skillEffects';
+import { Rarity, StyleType, LimitedType, FavoriteMode, DeckType, SongAttribute, SkillEffectType, SkillSearchTarget } from './enums';
+import { CharacterName } from '@/config/characters';
 
 /**
  * フィルター条件の結合モード
