@@ -1,5 +1,5 @@
 import { Card } from './Card';
-import { CharacterName } from '../constants/characters';
+import { CharacterName } from '@/config/characters';
 import { DeckType } from './enums';
 
 export interface DeckSlot {
