@@ -39,12 +39,13 @@ export const RarityBadge: React.FC<RarityBadgeProps> = ({
     : 'px-1.5 py-0.5 text-[10px]';
 
   const positionClasses = position === 'absolute'
-    ? 'absolute top-8 left-1 z-20 pointer-events-none'
+    ? 'absolute left-1 z-20 pointer-events-none'
     : 'inline-block';
 
   return (
     <span 
       className={`${sizeClasses} ${positionClasses} ${getRarityStyle(rarity)} font-bold rounded shadow-sm`}
+      style={size === 'large' ? { top: '32px' } : { top: '25px' }}
     >
       {rarity}
     </span>
