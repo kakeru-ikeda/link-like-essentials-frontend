@@ -30,7 +30,7 @@ export const MultiSelectFilter = <T extends string | number>({
           <button
             key={value}
             onClick={() => onToggle(value)}
-            className={`px-3 py-1 rounded-full text-sm font-medium transition${
+            className={`px-3 py-1 rounded-full text-sm font-medium transition ${
               isSelected
                 ? ''
                 : 'bg-white text-gray-700 hover:bg-gray-100'
