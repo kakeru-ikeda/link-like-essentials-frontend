@@ -182,7 +182,7 @@ export const CardDetailSections: React.FC<CardDetailSectionsProps> = ({
       )}
 
       {/* 実装日 */}
-      {card.releaseDate && (
+      {showAcquisition && card.releaseDate && (
         <div className={sectionClass}>
           <h4 className={`${baseTitleClass} text-gray-700`}>実装日</h4>
           <p className="text-sm text-gray-600">{new Date(card.releaseDate).toLocaleDateString()}</p>
