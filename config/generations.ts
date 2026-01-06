@@ -10,6 +10,17 @@ export const GENERATION_MEMBERS = {
 } as const;
 
 /**
+ * 期の数値定数
+ */
+export const GENERATION = {
+  TERM_101: 101,
+  TERM_102: 102,
+  TERM_103: 103,
+  TERM_104: 104,
+  TERM_105: 105,
+} as const;
+
+/**
  * ユニット別所属キャラクター
  */
 export const UNIT_MEMBERS = {
