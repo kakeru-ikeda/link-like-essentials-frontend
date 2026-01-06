@@ -30,16 +30,20 @@ export const MultiSelectFilter = <T extends string | number>({
           <button
             key={value}
             onClick={() => onToggle(value)}
-            className={`px-3 py-1 rounded-full text-sm font-medium transition ${
+            className={`px-3 py-1 rounded-full text-sm font-medium transition${
               isSelected
                 ? ''
-                : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
+                : 'bg-white text-gray-700 hover:bg-gray-100'
             }`}
-            style={
-              isSelected
-                ? { backgroundColor: colorValue, color: '#ffffff' }
-                : undefined
-            }
+            style={{
+              border: `1.5px solid ${colorValue}`,
+              backgroundColor: `${colorValue}10`,
+              ...(isSelected && {
+                backgroundColor: colorValue,
+                color: '#ffffff',
+              }
+            ),
+            }}
           >
             {label(value)}
           </button>
