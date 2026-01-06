@@ -10,6 +10,15 @@ export const RARITY_LABELS: Record<Rarity, string> = {
   [Rarity.LR]: 'LR',
 };
 
+export const RARITY_COLORS: Record<Rarity, string> = {
+  [Rarity.UR]: '#f59e0b',
+  [Rarity.SR]: '#8b5cf6',
+  [Rarity.R]: '#3b82f6',
+  [Rarity.DR]: '#ec4899',
+  [Rarity.BR]: '#ef4444',
+  [Rarity.LR]: '#06b6d4',
+};
+
 export const STYLE_TYPE_LABELS: Record<StyleType, string> = {
   [StyleType.CHEERLEADER]: 'チアリーダー',
   [StyleType.TRICKSTER]: 'トリックスター',

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Rarity } from '@/models/enums';
-import { RARITY_LABELS } from '@/constants/labels';
+import { RARITY_COLORS, RARITY_LABELS } from '@/constants/labels';
 import { MultiSelectFilter } from '@/components/common/filters/MultiSelectFilter';
 
 interface RarityFilterProps {
@@ -16,6 +16,8 @@ export const RarityFilter: React.FC<RarityFilterProps> = ({
 }) => {
   const rarityLabel = (rarity: Rarity) => RARITY_LABELS[rarity];
 
+  const rarityColor = (rarity: Rarity) => RARITY_COLORS[rarity];
+
   return (
     <div className="p-4">
       <label className="block text-sm font-medium text-gray-700 mb-3">
@@ -26,7 +28,7 @@ export const RarityFilter: React.FC<RarityFilterProps> = ({
         selectedValues={selectedRarities}
         onToggle={onToggle}
         label={rarityLabel}
-        color="#800080"
+        color={rarityColor}
       />
     </div>
   );

@@ -22,30 +22,32 @@ export const ToggleFilter: React.FC<ToggleFilterProps> = ({
       <button
         onClick={() => onChange(value === true ? undefined : true)}
         className={`px-3 py-1 rounded-full text-sm font-medium transition ${
-          value === true
-            ? ''
-            : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
+          value === true ? '' : 'bg-white text-gray-700 hover:bg-gray-100'
         }`}
-        style={
-          value === true
-            ? { backgroundColor: color, color: '#ffffff' }
-            : undefined
-        }
+        style={{
+          border: `1.5px solid ${color}`,
+          backgroundColor: `${color}10`,
+          ...(value === true && {
+            backgroundColor: color,
+            color: '#ffffff',
+          }),
+        }}
       >
         {trueLabel}
       </button>
       <button
         onClick={() => onChange(value === false ? undefined : false)}
         className={`px-3 py-1 rounded-full text-sm font-medium transition ${
-          value === false
-            ? ''
-            : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
+          value === false ? '' : 'bg-white text-gray-700 hover:bg-gray-100'
         }`}
-        style={
-          value === false
-            ? { backgroundColor: color, color: '#ffffff' }
-            : undefined
-        }
+        style={{
+          border: `1.5px solid ${color}`,
+          backgroundColor: `${color}10`,
+          ...(value === false && {
+            backgroundColor: color,
+            color: '#ffffff',
+          }),
+        }}
       >
         {falseLabel}
       </button>
