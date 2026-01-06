@@ -5,7 +5,7 @@ import { HiArrowsPointingOut } from 'react-icons/hi2';
 import { Modal } from '@/components/common/Modal';
 import { useSimpleModal } from '@/hooks/useModal';
 
-interface TextAreaWithModalProps {
+interface ExpandableTextAreaProps {
   value: string;
   onChange: (value: string) => void;
   onBlur?: () => void;
@@ -18,7 +18,7 @@ interface TextAreaWithModalProps {
   template?: string;
 }
 
-export const TextAreaWithModal: React.FC<TextAreaWithModalProps> = ({
+export const ExpandableTextArea: React.FC<ExpandableTextAreaProps> = ({
   value,
   onChange,
   onBlur,

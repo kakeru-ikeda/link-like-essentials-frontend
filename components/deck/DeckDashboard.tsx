@@ -7,7 +7,7 @@ import { SongSelect } from '@/components/deck/SongSelect';
 import { Button } from '@/components/common/Button';
 import { CenterCardDisplay } from '@/components/deck/CenterCardDisplay';
 import { LRCardsList } from '@/components/deck/LRCardsList';
-import { TextAreaWithModal } from '@/components/common/TextAreaWithModal';
+import { ExpandableTextArea } from '@/components/common/ExpandableTextArea';
 import { ActiveEventBadge } from '@/components/common/ActiveEventBadge';
 import { Song } from '@/models/Song';
 import { DeckType } from '@/models/enums';
@@ -232,7 +232,7 @@ export const DeckDashboard: React.FC = () => {
 
       {/* チャート */}
       <div className="flex-1 flex flex-col min-h-0 border-gray-200">
-        <TextAreaWithModal
+        <ExpandableTextArea
           value={deck?.memo || ''}
           onChange={updateDeckMemo}
           label="チャート"
@@ -241,6 +241,7 @@ export const DeckDashboard: React.FC = () => {
           modalTitle="チャート"
           modalRows={15}
           className="flex-1"
+          template={`[1セク]\n\n[2セク]\n\n[3セク]\n\n[4セク]\n\n[5セク]\n`}
         />
       </div>
 
