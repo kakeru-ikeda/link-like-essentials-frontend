@@ -353,4 +353,33 @@ export function toggleFilterList<T extends keyof CardFilter>(
   return { [key]: updatedList } as Partial<CardFilter>;
 }
 
+/**
+ * 配列型フィルターから特定の値を削除する部分フィルターオブジェクトを生成
+ * 
+ * @param filter 現在のカードフィルター
+ * @param key フィルターのキー（配列型のプロパティ）
+ * @param value 削除対象の値
+ * @returns 更新用の部分フィルターオブジェクト
+ */
+export function removeFromFilterList<T extends keyof CardFilter>(
+  filter: CardFilter,
+  key: T,
+  value: NonNullable<CardFilter[T]> extends Array<infer U> ? U : never
+): Partial<CardFilter> {
+  // 現在選択されている値の配列を取得
+  const currentList = filter[key] as NonNullable<CardFilter[T]> extends Array<infer U> ? U[] | undefined : never;
+  
+  if (!currentList) {
+    // 配列が存在しない場合は何もしない
+    return {};
+  }
+  
+  // 指定された値を除外
+  const updatedList = currentList.filter((item) => item !== value);
+  
+  // 空配列になった場合は undefined を設定（フィルターをクリア）
+  // { rarities: [...] } のような形式で返す
+  return { [key]: updatedList.length > 0 ? updatedList : undefined } as Partial<CardFilter>;
+}
+
 
