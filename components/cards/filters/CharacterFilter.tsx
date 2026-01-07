@@ -3,7 +3,7 @@
 import React from 'react';
 import { MultiSelectFilter } from '@/components/common/filters/MultiSelectFilter';
 import { getSelectableCharactersForSlot } from '@/services/characterFilterService';
-import { getCharacterColor } from '@/constants/characters';
+import { getCharacterColor } from '@/utils/colorUtils';
 
 interface CharacterFilterProps {
   selectedCharacters: string[] | undefined;

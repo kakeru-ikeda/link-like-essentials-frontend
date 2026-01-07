@@ -2,7 +2,8 @@
 
 import React from 'react';
 import { LimitedType } from '@/models/enums';
-import { LIMITED_TYPE_COLORS, LIMITED_TYPE_LABELS } from '@/constants/labels';
+import { LIMITED_TYPE_LABELS } from '@/mappers/enumMappers';
+import { LIMITED_TYPE_COLORS } from '@/styles/colors';
 import { MultiSelectFilter } from '@/components/common/filters/MultiSelectFilter';
 
 interface LimitedTypeFilterProps {

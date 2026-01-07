@@ -2,8 +2,8 @@
 
 import React from 'react';
 import { useDeck } from '@/hooks/useDeck';
-import { getDeckSlotMapping, getDeckFrame } from '@/constants/deckConfig';
-import { getCharacterBackgroundColor, getCharacterColor } from '@/constants/characters';
+import { getDeckSlotMapping, getDeckFrame } from '@/services/deckConfigService';
+import { getCharacterBackgroundColor, getCharacterColor } from '@/utils/colorUtils';
 import { VerticalBadge } from '@/components/common/VerticalBadge';
 import { AceBadge } from '@/components/common/AceBadge';
 import { LimitBreakBadge } from '@/components/deck/LimitBreakBadge';

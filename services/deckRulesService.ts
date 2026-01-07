@@ -6,29 +6,10 @@
  * - 例外ルール: 特定条件下で他のキャラクター・期のカードも編成可能
  */
 
-import { getDeckSlotMapping } from './deckConfig';
 import { DeckType } from '@/models/enums';
-
-/**
- * 期別所属キャラクター
- */
-export const GENERATION_MEMBERS = {
-  101: ['大賀美沙知'],
-  102: ['乙宗梢', '夕霧綴理', '藤島慈'],
-  103: ['日野下花帆', '村野さやか', '大沢瑠璃乃'],
-  104: ['徒町小鈴', '百生吟子', '安養寺姫芽'],
-  105: ['桂城泉', 'セラス'],
-} as const;
-
-/**
- * ユニット別所属キャラクター
- */
-export const UNIT_MEMBERS = {
-  'Cerise Bouquet': ['乙宗梢', '日野下花帆', '百生吟子'],
-  DOLLCHESTRA: ['夕霧綴理', '村野さやか', '徒町小鈴'],
-  'Mira Cra Park': ['藤島慈', '大沢瑠璃乃', '安養寺姫芽'],
-  'Edel Note': ['桂城泉', 'セラス'],
-} as const;
+import { getDeckSlotMapping } from '@/services/deckConfigService';
+import { GENERATION_MEMBERS, GENERATION } from '@/config/generations';
+import { UNIT_MEMBERS } from '@/config/characters';
 
 /**
  * キャラクター名から所属期を取得
@@ -128,11 +109,12 @@ export function canPlaceCardInSlot(
   // --- 以下、例外ルール ---
 
   // 102期生LRカードの特殊ルール
-  if (cardGeneration === 102 && cardInfo.rarity === 'LR') {
+  if (cardGeneration === GENERATION.TERM_102 && cardInfo.rarity === 'LR') {
     const slotGeneration = getCharacterGeneration(slotCharacter);
 
     // 102期・103期・104期のサイドに配置可能
-    if (slotGeneration && [102, 103, 104].includes(slotGeneration) && slotType === 'side') {
+    const allowedGenerations: number[] = [GENERATION.TERM_102, GENERATION.TERM_103, GENERATION.TERM_104];
+    if (slotGeneration && allowedGenerations.includes(slotGeneration) && slotType === 'side') {
       return { allowed: true };
     }
   }
@@ -142,7 +124,8 @@ export function canPlaceCardInSlot(
     const slotGeneration = getCharacterGeneration(slotCharacter);
     
     // 102期・103期のサイドのみ配置可能
-    if (slotGeneration && [102, 103].includes(slotGeneration) && slotType === 'side') {
+    const allowedGenerations: number[] = [GENERATION.TERM_102, GENERATION.TERM_103];
+    if (slotGeneration && allowedGenerations.includes(slotGeneration) && slotType === 'side') {
       return { allowed: true };
     }
     
@@ -153,11 +136,12 @@ export function canPlaceCardInSlot(
   }
 
   // 102期生＆カード（乙宗梢＆夕霧綴理＆藤島慈）
-  if (cardGeneration === 102 && cardInfo.characterName.includes('＆')) {
+  if (cardGeneration === GENERATION.TERM_102 && cardInfo.characterName.includes('＆')) {
     const slotGeneration = getCharacterGeneration(slotCharacter);
     
     // 102期・103期・104期のサイドのみ配置可能
-    if (slotGeneration && [102, 103, 104].includes(slotGeneration) && slotType === 'side') {
+    const allowedGenerations: number[] = [GENERATION.TERM_102, GENERATION.TERM_103, GENERATION.TERM_104];
+    if (slotGeneration && allowedGenerations.includes(slotGeneration) && slotType === 'side') {
       return { allowed: true };
     }
     

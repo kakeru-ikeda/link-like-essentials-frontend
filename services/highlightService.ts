@@ -1,5 +1,5 @@
 import { CardFilter } from '@/models/Filter';
-import { getSkillEffectKeywords } from '@/constants/skillEffects';
+import { getSkillEffectKeywords } from '@/services/skillEffectService';
 
 /**
  * アクティブフィルタからハイライト用のキーワードを抽出

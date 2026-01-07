@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { DeckSlot as DeckSlotType } from '@/models/Deck';
-import { getCharacterColor } from '@/constants/characters';
+import { getCharacterColor } from '@/utils/colorUtils';
 import { ApBadge } from '@/components/common/ApBadge';
 import { RarityBadge } from '@/components/common/RarityBadge';
 import { AceBadge } from '@/components/common/AceBadge';

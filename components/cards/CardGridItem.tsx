@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Card } from '@/models/Card';
-import { getCharacterColor } from '@/constants/characters';
+import { getCharacterColor } from '@/utils/colorUtils';
 
 interface CardGridItemProps {
   card: Card;

@@ -5,7 +5,7 @@
  */
 
 import { Card } from '@/models/Card';
-import { canPlaceCardInSlot } from '@/constants/deckRules';
+import { canPlaceCardInSlot } from '@/services/deckRulesService';
 import { DeckSlot } from '@/models/Deck';
 import { DeckType } from '@/models/enums';
 

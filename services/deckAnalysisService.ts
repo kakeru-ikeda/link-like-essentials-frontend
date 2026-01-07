@@ -1,6 +1,6 @@
 import { Deck } from '@/models/Deck';
 import { Card } from '@/models/Card';
-import { getDeckSlotMapping } from '@/constants/deckConfig';
+import { getDeckSlotMapping } from '@/services/deckConfigService';
 
 /**
  * デッキ分析サービス
