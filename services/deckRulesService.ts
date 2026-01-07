@@ -8,7 +8,8 @@
 
 import { DeckType } from '@/models/enums';
 import { getDeckSlotMapping } from '@/services/deckConfigService';
-import { GENERATION_MEMBERS, GENERATION, UNIT_MEMBERS } from '@/config/generations';
+import { GENERATION_MEMBERS, GENERATION } from '@/config/generations';
+import { UNIT_MEMBERS } from '@/config/characters';
 
 /**
  * キャラクター名から所属期を取得

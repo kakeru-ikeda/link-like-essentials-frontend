@@ -19,13 +19,3 @@ export const GENERATION = {
   TERM_104: 104,
   TERM_105: 105,
 } as const;
-
-/**
- * ユニット別所属キャラクター
- */
-export const UNIT_MEMBERS = {
-  'Cerise Bouquet': ['乙宗梢', '日野下花帆', '百生吟子'],
-  DOLLCHESTRA: ['夕霧綴理', '村野さやか', '徒町小鈴'],
-  'Mira Cra Park': ['藤島慈', '大沢瑠璃乃', '安養寺姫芽'],
-  'Edel Note': ['桂城泉', 'セラス'],
-} as const;
