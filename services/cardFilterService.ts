@@ -1,7 +1,7 @@
 import { Card } from '@/models/Card';
 import { CardFilter, FilterMode } from '@/models/Filter';
 import { FavoriteMode, SkillEffectType, SkillSearchTarget } from '@/models/enums';
-import { getSkillEffectKeyword, getSkillEffectKeywords } from '@/utils/skillEffectUtils';
+import { getSkillEffectKeyword, getSkillEffectKeywords } from '@/services/skillEffectService';
 
 /**
  * クライアントサイドでカードをフィルタリング
