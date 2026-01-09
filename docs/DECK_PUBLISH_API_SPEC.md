@@ -354,6 +354,7 @@ Content-Type: application/json
   },
   "comment": string,         // コメント（任意、最大1000文字程度）
   "hashtags": string[],      // ハッシュタグ配列（自動生成 + カスタム）
+  "isUnlisted": boolean,     // 非公開リスト（任意、デフォルト: false）
   "imageUrls": string[]      // 画像URL配列（任意、最大3枚）
 }
 ```
@@ -391,6 +392,7 @@ Content-Type: application/json
   },
   "comment": "ライブグランプリで1500兆達成できました！エース枠の選択が重要です。",
   "hashtags": ["#UR編成", "#高火力", "#ライブグランプリ", "#セラス", "#1500兆"],
+  "isUnlisted": false,
   "imageUrls": [
     "https://storage.example.com/deck-images/abc123.png",
     "https://storage.example.com/deck-images/def456.png"
@@ -482,6 +484,7 @@ Content-Type: application/json
       "#セラス",
       "#1500兆"
     ],
+    "isUnlisted": false,
     "imageUrls": [
       "https://storage.example.com/deck-images/abc123.png",
       "https://storage.example.com/deck-images/def456.png"
@@ -551,20 +554,21 @@ Content-Type: application/json
 
 ### published_decks テーブル
 
-| カラム名       | 型             | NULL | 説明                           |
-| -------------- | -------------- | ---- | ------------------------------ |
-| `id`           | `VARCHAR(21)`  | NO   | 公開ID（PK、nanoid）           |
-| `user_id`      | `VARCHAR(128)` | NO   | 公開者のAuthUID                |
-| `user_name`    | `VARCHAR(255)` | NO   | 公開者の表示名                 |
-| `deck_data`    | `JSONB`        | NO   | デッキ情報全体（DeckForCloud） |
-| `comment`      | `TEXT`         | YES  | コメント                       |
-| `hashtags`     | `TEXT[]`       | NO   | ハッシュタグ配列               |
-| `image_urls`   | `TEXT[]`       | YES  | 画像URL配列                    |
-| `view_count`   | `INTEGER`      | NO   | 閲覧数（デフォルト: 0）        |
-| `like_count`   | `INTEGER`      | NO   | いいね数（デフォルト: 0）      |
-| `published_at` | `TIMESTAMP`    | NO   | 公開日時                       |
-| `created_at`   | `TIMESTAMP`    | NO   | レコード作成日時               |
-| `updated_at`   | `TIMESTAMP`    | NO   | レコード更新日時               |
+| カラム名       | 型             | NULL | 説明                                                      |
+| -------------- | -------------- | ---- | --------------------------------------------------------- |
+| `id`           | `VARCHAR(21)`  | NO   | 公開ID（PK、nanoid）                                      |
+| `user_id`      | `VARCHAR(128)` | NO   | 公開者のAuthUID                                           |
+| `user_name`    | `VARCHAR(255)` | NO   | 公開者の表示名                                            |
+| `deck_data`    | `JSONB`        | NO   | デッキ情報全体（DeckForCloud）                            |
+| `comment`      | `TEXT`         | YES  | コメント                                                  |
+| `hashtags`     | `TEXT[]`       | NO   | ハッシュタグ配列                                          |
+| `image_urls`   | `TEXT[]`       | YES  | 画像URL配列                                               |
+| `is_unlisted`  | `BOOLEAN`      | NO   | 非公開リスト扱い（リンク共有のみ閲覧、デフォルト: false） |
+| `view_count`   | `INTEGER`      | NO   | 閲覧数（デフォルト: 0）                                   |
+| `like_count`   | `INTEGER`      | NO   | いいね数（デフォルト: 0）                                 |
+| `published_at` | `TIMESTAMP`    | NO   | 公開日時                                                  |
+| `created_at`   | `TIMESTAMP`    | NO   | レコード作成日時                                          |
+| `updated_at`   | `TIMESTAMP`    | NO   | レコード更新日時                                          |
 
 **注記**:
 
@@ -587,6 +591,7 @@ Content-Type: application/json
 
 - `comment`: 最大1000文字
 - `imageUrls`: 配列、最大3要素
+- `isUnlisted`: 真の場合は非公開リストとして扱う（デフォルト: false）
 - その他 `deck` 内のパラメータ
 
 ### バリデーションエラー例
@@ -618,7 +623,13 @@ Content-Type: application/json
  */
 type DeckPublicationRequest = Pick<
   PublishedDeck,
-  'id' | 'deck' | 'comment' | 'hashtags' | 'imageUrls'
+  | 'id'
+  | 'deck'
+  | 'comment'
+  | 'hashtags'
+  | 'isUnlisted'
+  | 'imageUrls'
+  | 'thumbnail'
 >;
 
 interface DeckForCloud {
@@ -669,8 +680,14 @@ interface PublishedDeck {
   /** ハッシュタグ配列 */
   hashtags: string[];
 
+  /** 非公開リスト（URL共有で閲覧可） */
+  isUnlisted: boolean;
+
   /** アップロード画像URL配列 */
   imageUrls?: string[];
+
+  /** サムネイル画像URL */
+  thumbnail?: string;
 
   /** 閲覧数 */
   viewCount: number;

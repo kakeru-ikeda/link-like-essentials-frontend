@@ -30,6 +30,8 @@ export const DeckPublishModal: React.FC<DeckPublishModalProps> = ({
     uploadingCount,
     uploadError,
     setHashtags,
+    isUnlisted,
+    setIsUnlisted,
     handleImageUpload,
     handleRemoveImage,
     handleDownloadImage,
@@ -85,6 +87,8 @@ export const DeckPublishModal: React.FC<DeckPublishModalProps> = ({
           uploadingCount={uploadingCount}
           uploadError={uploadError ?? ''}
           setHashtags={setHashtags}
+          isUnlisted={isUnlisted}
+          setIsUnlisted={setIsUnlisted}
           handleImageUpload={handleImageUpload}
           handleRemoveImage={handleRemoveImage}
           handleDownloadImage={handleDownloadImage}
