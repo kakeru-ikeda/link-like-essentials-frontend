@@ -355,6 +355,7 @@ Content-Type: application/json
   "comment": string,         // コメント（任意、最大1000文字程度）
   "hashtags": string[],      // ハッシュタグ配列（自動生成 + カスタム）
   "isUnlisted": boolean,     // 非公開リスト（任意、デフォルト: false）
+  "thumbnail": string,       // サムネイル画像URL（任意）
   "imageUrls": string[]      // 画像URL配列（任意、最大3枚）
 }
 ```
@@ -563,6 +564,7 @@ Content-Type: application/json
 | `comment`      | `TEXT`         | YES  | コメント                                                  |
 | `hashtags`     | `TEXT[]`       | NO   | ハッシュタグ配列                                          |
 | `image_urls`   | `TEXT[]`       | YES  | 画像URL配列                                               |
+| `thumbnail`    | `TEXT`         | YES  | サムネイル画像URL                                         |
 | `is_unlisted`  | `BOOLEAN`      | NO   | 非公開リスト扱い（リンク共有のみ閲覧、デフォルト: false） |
 | `view_count`   | `INTEGER`      | NO   | 閲覧数（デフォルト: 0）                                   |
 | `like_count`   | `INTEGER`      | NO   | いいね数（デフォルト: 0）                                 |
