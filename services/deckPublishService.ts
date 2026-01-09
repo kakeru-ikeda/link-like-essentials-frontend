@@ -43,6 +43,7 @@ export const deckPublishService = {
       hashtags: string[];
       imageUrls?: string[];
       thumbnail?: string;
+      isUnlisted?: boolean;
     }
   ): Promise<PublishedDeck> {
     // 公開IDを生成（短くURL-safeな21文字のID）
@@ -55,6 +56,7 @@ export const deckPublishService = {
       deck: convertToDeckForCloud(deck),
       comment: options.comment,
       hashtags: options.hashtags,
+      isUnlisted: options.isUnlisted ?? false,
       imageUrls: options.imageUrls,
       thumbnail: options.thumbnail,
     };

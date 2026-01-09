@@ -18,6 +18,8 @@ interface DeckPublishFormProps {
   uploadingCount: number;
   uploadError: string;
   setHashtags: (hashtags: string[]) => void;
+  isUnlisted: boolean;
+  setIsUnlisted: (value: boolean) => void;
   handleImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleRemoveImage: (index: number) => void;
   handleDownloadImage: (
@@ -42,6 +44,8 @@ export const DeckPublishForm: React.FC<DeckPublishFormProps> = ({
   uploadingCount,
   uploadError,
   setHashtags,
+  isUnlisted,
+  setIsUnlisted,
   handleImageUpload,
   handleRemoveImage,
   handleDownloadImage,
@@ -75,6 +79,25 @@ export const DeckPublishForm: React.FC<DeckPublishFormProps> = ({
           liveGrandPrix={liveGrandPrix}
           onChange={setHashtags}
         />
+
+        {/* 限定公開切り替え */}
+        <div className="flex items-start gap-3">
+          <input
+            id="is-unlisted"
+            type="checkbox"
+            checked={isUnlisted}
+            onChange={(e) => setIsUnlisted(e.target.checked)}
+            className="mt-1 h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+          />
+          <div>
+            <label htmlFor="is-unlisted" className="block text-sm font-medium text-gray-700">
+              限定公開にする
+            </label>
+            <p className="text-sm text-gray-500">
+              リンクを知っている人だけが閲覧できます。公開デッキ一覧には表示されません。
+            </p>
+          </div>
+        </div>
 
         {/* コメント入力 */}
         <div>

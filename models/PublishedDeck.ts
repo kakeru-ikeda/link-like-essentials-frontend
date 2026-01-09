@@ -23,6 +23,9 @@ export interface PublishedDeck {
   /** ハッシュタグ配列 */
   hashtags: string[];
 
+  /** 非公開リスト（URL共有で閲覧可） */
+  isUnlisted: boolean;
+
   /** アップロード画像URL配列 */
   imageUrls?: string[];
 
@@ -49,5 +52,5 @@ export interface PublishedDeck {
  */
 export type DeckPublicationRequest = Pick<
   PublishedDeck,
-  'id' | 'deck' | 'comment' | 'hashtags' | 'imageUrls' | 'thumbnail'
+  'id' | 'deck' | 'comment' | 'hashtags' | 'isUnlisted' | 'imageUrls' | 'thumbnail'
 >;

@@ -27,6 +27,10 @@ export interface UseDeckPublishReturn {
   hashtags: string[];
   /** ハッシュタグを変更 */
   setHashtags: (hashtags: string[]) => void;
+  /** 非公開リスト指定 */
+  isUnlisted: boolean;
+  /** 非公開リストを切り替え */
+  setIsUnlisted: (value: boolean) => void;
   /** 画像をアップロード */
   handleImageUpload: (event: React.ChangeEvent<HTMLInputElement>) => Promise<void>;
   /** 画像を削除 */
@@ -66,6 +70,7 @@ export const useDeckPublish = (
   const [uploadedImageUrls, setUploadedImageUrls] = useState<string[]>([]);
   const [uploadingCount, setUploadingCount] = useState<number>(0);
   const [hashtags, setHashtags] = useState<string[]>([]);
+  const [isUnlisted, setIsUnlisted] = useState<boolean>(false);
   const [isPublishing, setIsPublishing] = useState<boolean>(false);
   const [publishError, setPublishError] = useState<string | null>(null);
 
@@ -194,6 +199,7 @@ export const useDeckPublish = (
         {
           comment: comment || undefined,
           hashtags,
+          isUnlisted,
           imageUrls: uploadedImageUrls.length > 0 ? uploadedImageUrls : undefined,
           thumbnail: thumbnailUrl,
         }
@@ -212,7 +218,7 @@ export const useDeckPublish = (
     } finally {
       setIsPublishing(false);
     }
-  }, [captureThumbnail, comment, deck, hashtags, uploadedImageUrls]);
+  }, [captureThumbnail, comment, deck, hashtags, isUnlisted, uploadedImageUrls]);
 
   return {
     displayName,
@@ -224,6 +230,8 @@ export const useDeckPublish = (
     uploadError,
     hashtags,
     setHashtags,
+    isUnlisted,
+    setIsUnlisted,
     handleImageUpload,
     handleRemoveImage,
     handleDownloadImage,
