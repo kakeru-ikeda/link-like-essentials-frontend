@@ -80,7 +80,7 @@ export const DeckPublishForm: React.FC<DeckPublishFormProps> = ({
           onChange={setHashtags}
         />
 
-        {/* 非公開リスト切り替え */}
+        {/* 限定公開切り替え */}
         <div className="flex items-start gap-3">
           <input
             id="is-unlisted"
@@ -91,10 +91,10 @@ export const DeckPublishForm: React.FC<DeckPublishFormProps> = ({
           />
           <div>
             <label htmlFor="is-unlisted" className="block text-sm font-medium text-gray-700">
-              非公開リストにする
+              限定公開にする
             </label>
             <p className="text-sm text-gray-500">
-              リンクを知っている人だけが閲覧できます。公開一覧には表示されません。
+              リンクを知っている人だけが閲覧できます。公開デッキ一覧には表示されません。
             </p>
           </div>
         </div>
