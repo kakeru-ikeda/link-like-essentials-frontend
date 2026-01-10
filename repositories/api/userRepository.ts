@@ -2,8 +2,14 @@ import {
   UserProfile,
   UserProfileInput,
 } from '@/models/User';
+import { UserRole } from '@/models/enums';
 import { USER_API_ENDPOINT } from '@/config/api';
 import { getAuthToken } from './authUtils';
+
+const withRoleFallback = (profile: UserProfile): UserProfile => ({
+  ...profile,
+  role: profile.role ?? UserRole.ANONYMOUS,
+});
 
 export const userRepository = {
   /**
@@ -26,7 +32,7 @@ export const userRepository = {
     }
 
     const data = await response.json();
-    return data.user;
+    return withRoleFallback(data.user);
   },
 
   /**
@@ -54,7 +60,7 @@ export const userRepository = {
     }
 
     const data = await response.json();
-    return data;
+    return withRoleFallback(data.user ?? data);
   },
 
   /**
@@ -82,7 +88,7 @@ export const userRepository = {
     }
 
     const data = await response.json();
-    return data;
+    return withRoleFallback(data.user ?? data);
   },
 
   /**

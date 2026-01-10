@@ -8,6 +8,7 @@ import { Button } from '@/components/common/Button';
 import { useMyDecks } from '@/hooks/useMyDecks';
 import { useLikedDecks } from '@/hooks/useLikedDecks';
 import { PublishedDeckList } from '@/components/deck/PublishedDeckList';
+import { UserRole } from '@/models/enums';
 
 export default function MyPage() {
   const router = useRouter();
@@ -94,6 +95,23 @@ export default function MyPage() {
       </div>
 
       <ProfileCard profile={profile} showEditButton={true} />
+
+      {profile.role === UserRole.ANONYMOUS && (
+        <div className="mt-6 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 shadow-sm">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-base font-semibold text-amber-900">メールアドレスを登録してアカウントを保存できます</p>
+              <p className="text-sm text-amber-800">別端末でも同じデータを利用できるように、メールとパスワードを設定してください。</p>
+            </div>
+            <Button
+              onClick={() => router.push('/login')}
+              className="bg-amber-500 hover:bg-amber-600 text-white"
+            >
+              メールでログイン/登録
+            </Button>
+          </div>
+        </div>
+      )}
 
       <section className="mt-10 space-y-4">
         <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">

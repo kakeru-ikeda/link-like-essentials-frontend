@@ -1,5 +1,6 @@
 import {
   signInAnonymously,
+  signInWithEmailAndPassword,
   onAuthStateChanged,
   User,
   UserCredential,
@@ -20,6 +21,14 @@ export const onAuthStateChange = (
   callback: (user: User | null) => void
 ): (() => void) => {
   return onAuthStateChanged(auth, callback);
+};
+
+export const signInWithEmail = async (
+  email: string,
+  password: string
+): Promise<User> => {
+  const credential = await signInWithEmailAndPassword(auth, email, password);
+  return credential.user;
 };
 
 export const getCurrentUser = (): User | null => {
