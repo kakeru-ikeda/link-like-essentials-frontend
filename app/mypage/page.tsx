@@ -124,8 +124,12 @@ export default function MyPage() {
         <div className="mt-6 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 shadow-sm">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p className="text-base font-semibold text-amber-900">メールアドレスを登録してアカウントを保存できます</p>
-              <p className="text-sm text-amber-800">別端末でも同じデータを利用できるように、メールとパスワードを設定してください。</p>
+              <p className="text-base font-semibold text-amber-900">メールアドレスを登録してアカウントを認証してください</p>
+              <p className="text-sm text-amber-800">
+                コメントや通報機能はメール認証済みのアカウントでのみ利用可能です。<br/>
+                別端末でも「投稿したデッキ」や「いいねしたデッキ」のデータを利用できるように、メールとパスワードを設定してください。<br/>
+                ※ 公開デッキの情報のみ引き継がれます。デッキスロットは端末固有の情報として引き継がれませんのでご注意ください。
+              </p>
             </div>
             <Button
               onClick={() => router.push('/login')}

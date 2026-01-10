@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/common/Button';
 import type { UserProfile } from '@/models/User';
 import { formatDate } from '@/utils/dateUtils';
+import { VerifiedBadge } from '@/components/common/VerifiedBadge';
 
 interface ProfileCardProps {
   /** プロフィール情報 */
@@ -37,7 +38,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 max-w-2xl mx-auto">
+    <div className="bg-white rounded-lg shadow-md p-6 mx-auto">
       {/* ヘッダー部分 */}
       <div className="flex items-start justify-between mb-6">
         <div className="flex items-center gap-4">
@@ -69,9 +70,12 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
 
           {/* 表示名とUID */}
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">
-              {profile.displayName}
-            </h2>
+            <div className="flex items-center gap-2">
+              <h2 className="text-2xl font-bold text-gray-900">
+                {profile.displayName}
+              </h2>
+              <VerifiedBadge role={profile.role} label='認証済み' anonymousLabel='未認証' hideAnonymous={false} />
+            </div>
             {profile.uid && (
               <p className="text-sm text-gray-400 mt-1">ID: {profile.uid}</p>
             )}
