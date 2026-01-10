@@ -9,6 +9,7 @@ import { useUserProfileStore } from '@/store/userProfileStore';
 import { useAuthUpgrade } from '@/hooks/useAuthUpgrade';
 import { Button } from '@/components/common/Button';
 import { UserRole } from '@/models/enums';
+import { authErrorService } from '@/services/authErrorService';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -55,8 +56,7 @@ export default function LoginPage() {
         await fetchAndStoreProfile();
         router.push('/mypage');
       } catch (error) {
-        const message = error instanceof Error ? error.message : 'メールログインに失敗しました';
-        setLoginError(message);
+        setLoginError(authErrorService.mapLoginErrorMessage(error));
       } finally {
         setIsLoggingIn(false);
       }
