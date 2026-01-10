@@ -1,5 +1,6 @@
 import {
   signInAnonymously,
+  signOut,
   signInWithEmailAndPassword,
   onAuthStateChanged,
   User,
@@ -29,6 +30,10 @@ export const signInWithEmail = async (
 ): Promise<User> => {
   const credential = await signInWithEmailAndPassword(auth, email, password);
   return credential.user;
+};
+
+export const signOutUser = async (): Promise<void> => {
+  await signOut(auth);
 };
 
 export const getCurrentUser = (): User | null => {

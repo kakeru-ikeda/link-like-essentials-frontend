@@ -9,6 +9,9 @@ import { useMyDecks } from '@/hooks/useMyDecks';
 import { useLikedDecks } from '@/hooks/useLikedDecks';
 import { PublishedDeckList } from '@/components/deck/PublishedDeckList';
 import { UserRole } from '@/models/enums';
+import { useAuth } from '@/hooks/useAuth';
+import { useUserProfileStore } from '@/store/userProfileStore';
+import { signOutUser } from '@/repositories/firebase/auth';
 
 export default function MyPage() {
   const router = useRouter();
@@ -30,6 +33,15 @@ export default function MyPage() {
     goToPage: goToLikedDecksPage,
     refresh: refreshLikedDecks,
   } = useLikedDecks();
+  const { logout } = useAuth();
+  const { clearProfile } = useUserProfileStore();
+
+  const handleLogout = async () => {
+    await signOutUser();
+    logout();
+    clearProfile();
+    router.push('/');
+  };
 
   useEffect(() => {
     fetchProfile();
@@ -90,8 +102,20 @@ export default function MyPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="mb-6">
+      <div
+        className={`mb-6 flex items-center gap-4 ${
+          profile.role !== UserRole.ANONYMOUS ? 'justify-between' : 'justify-start'
+        }`}
+      >
         <h1 className="text-3xl font-bold text-gray-900">マイページ</h1>
+        {profile.role !== UserRole.ANONYMOUS && (
+          <Button
+            onClick={handleLogout}
+            className="bg-slate-700 hover:bg-slate-800"
+          >
+            ログアウト
+          </Button>
+        )}
       </div>
 
       <ProfileCard profile={profile} showEditButton={true} />
