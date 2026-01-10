@@ -28,7 +28,7 @@ interface DeckPublishFormProps {
   ) => void;
   isCapturing: boolean;
   exportViewRef: React.RefObject<HTMLDivElement>;
-  handlePublishDeck: () => void;
+  onRequestPublish: () => void;
   isPublishing: boolean;
   publishError: string | null;
 }
@@ -51,7 +51,7 @@ export const DeckPublishForm: React.FC<DeckPublishFormProps> = ({
   handleDownloadImage,
   isCapturing,
   exportViewRef,
-  handlePublishDeck,
+  onRequestPublish,
   isPublishing,
   publishError,
 }) => {
@@ -182,11 +182,11 @@ export const DeckPublishForm: React.FC<DeckPublishFormProps> = ({
             {isCapturing ? '保存中...' : '画像として保存'}
           </Button>
           <Button
-            onClick={handlePublishDeck}
+            onClick={onRequestPublish}
             disabled={isCapturing || isPublishing}
             className="flex-1 bg-green-600 hover:bg-green-700 disabled:bg-green-400"
           >
-            {isPublishing ? '公開中...' : '共有'}
+            {isPublishing ? '公開中...' : '公開'}
           </Button>
         </div>
       </div>
