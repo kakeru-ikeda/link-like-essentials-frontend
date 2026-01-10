@@ -42,7 +42,6 @@ export const DeckDashboard: React.FC = () => {
   const [publishSuccessLink, setPublishSuccessLink] = useState<string | null>(null);
   const [publishSuccessUnlisted, setPublishSuccessUnlisted] = useState<boolean>(false);
   const [publishSuccessName, setPublishSuccessName] = useState<string | null>(null);
-  const [publishSuccessHashtags, setPublishSuccessHashtags] = useState<string[]>([]);
   const [isSuccessDialogOpen, setSuccessDialogOpen] = useState<boolean>(false);
 
   // ライブグランプリの詳細を取得（選択されている場合のみ）
@@ -110,10 +109,12 @@ export const DeckDashboard: React.FC = () => {
   };
 
   const handlePublished = (publishedDeck: PublishedDeck): void => {
-    setPublishSuccessLink(`https://link-like-essentials.vercel.app/decks/${publishedDeck.id}`);
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL;
+    const deckPath = `/decks/${publishedDeck.id}`;
+    const fullUrl = baseUrl ? `${baseUrl}${deckPath}` : deckPath;
+    setPublishSuccessLink(fullUrl);
     setPublishSuccessUnlisted(publishedDeck.isUnlisted);
     setPublishSuccessName(publishedDeck.deck.name);
-    setPublishSuccessHashtags(publishedDeck.hashtags ?? []);
     setSuccessDialogOpen(true);
   };
 
@@ -122,7 +123,6 @@ export const DeckDashboard: React.FC = () => {
     setPublishSuccessLink(null);
     setPublishSuccessUnlisted(false);
     setPublishSuccessName(null);
-    setPublishSuccessHashtags([]);
   };
 
   return (
@@ -280,7 +280,6 @@ export const DeckDashboard: React.FC = () => {
         shareUrl={publishSuccessLink}
         isUnlisted={publishSuccessUnlisted}
         deckName={publishSuccessName}
-        hashtags={publishSuccessHashtags}
         onClose={handleCloseSuccessDialog}
       />
     </div>

@@ -39,7 +39,6 @@ export const DeckPublishModal: React.FC<DeckPublishModalProps> = ({
     uploadedImageUrls,
     uploadingCount,
     uploadError,
-    hashtags,
     setHashtags,
     isUnlisted,
     setIsUnlisted,

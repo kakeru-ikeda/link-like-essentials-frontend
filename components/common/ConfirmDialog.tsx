@@ -52,7 +52,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
             onClick={onConfirm}
             disabled={isLocked}
           >
-            {isLocked ? '処理中...' : confirmLabel}
+            {confirmLabel}
           </Button>
         </div>
       </div>

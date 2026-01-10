@@ -7,7 +7,6 @@ interface DeckPublishSuccessDialogProps {
   shareUrl: string | null;
   isUnlisted: boolean;
   deckName: string | null;
-  hashtags: string[];
   onClose: () => void;
 }
 
@@ -40,7 +39,7 @@ export const DeckPublishSuccessDialog: React.FC<DeckPublishSuccessDialogProps> =
 
     // X(Twitter)向けインテント。x.com/intent/postが推奨
     const intentUrl = `https://x.com/intent/post?text=${encodeURIComponent(shareText)}`;
-    window.open(intentUrl, '_blank', 'noopener');
+    window.open(intentUrl, '_blank', 'noopener,noreferrer');
   }, [deckName, isUnlisted, shareUrl]);
 
   const handleCopy = useCallback(async (): Promise<void> => {
@@ -97,7 +96,7 @@ export const DeckPublishSuccessDialog: React.FC<DeckPublishSuccessDialogProps> =
           {shareUrl && (
             <Button
               variant="secondary"
-              onClick={() => window.open(shareUrl, '_blank', 'noopener')}
+              onClick={() => window.location.assign(shareUrl)}
               className="min-w-[140px]"
             >
               公開したデッキを見る
