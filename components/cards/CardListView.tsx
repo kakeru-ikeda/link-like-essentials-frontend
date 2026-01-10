@@ -8,13 +8,13 @@ import { FavoriteModeBadge } from '@/components/common/FavoriteModeBadge';
 import { LimitedTypeBadge } from '@/components/common/LimitedTypeBadge';
 import { getCharacterColor } from '@/utils/colorUtils';
 
-interface CardListProps {
+interface CardListViewProps {
   cards: Card[];
   loading: boolean;
   onClickCard: (card: Card) => void;
 }
 
-export const CardList: React.FC<CardListProps> = ({ cards, loading, onClickCard }) => {
+export const CardListView: React.FC<CardListViewProps> = ({ cards, loading, onClickCard }) => {
   const [errorMap, setErrorMap] = useState<Record<string, boolean>>({});
 
   if (loading) {

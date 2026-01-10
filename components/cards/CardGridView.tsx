@@ -4,13 +4,13 @@ import React from 'react';
 import { Card } from '@/models/Card';
 import { CardGridItem } from '@/components/cards/CardGridItem';
 
-interface CardGridProps {
+interface CardGridViewProps {
   cards: Card[];
   loading: boolean;
   onClickCard: (card: Card) => void;
 }
 
-export const CardGrid: React.FC<CardGridProps> = ({
+export const CardGridView: React.FC<CardGridViewProps> = ({
   cards,
   loading,
   onClickCard,

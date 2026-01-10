@@ -3,8 +3,8 @@
 import React, { useState } from 'react';
 import { useCards } from '@/hooks/useCards';
 import { useFilter } from '@/hooks/useFilter';
-import { CardGrid } from '@/components/cards/CardGrid';
-import { CardList } from '@/components/cards/CardList';
+import { CardGridView } from '@/components/cards/CardGridView';
+import { CardListView } from '@/components/cards/CardListView';
 import { CardDetailView } from '@/components/deck/CardDetailView';
 import { CardGridFilter } from '@/components/cards/CardGridFilter';
 import { SideModal } from '@/components/common/SideModal';
@@ -34,31 +34,31 @@ export default function CardsPage(): JSX.Element {
 
   return (
     <div className="container mx-auto px-4 py-6">
-      <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <div className="space-y-1">
+      <div className="mb-6 flex flex-col gap-2">
+        <div className="flex items-center justify-between gap-2">
           <h1 className="text-3xl font-bold text-gray-900">カード一覧</h1>
-          <p className="text-sm text-gray-600">カードを検索・閲覧できます。</p>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setViewMode('grid')}
+              className={`p-2 rounded-lg border transition-colors shadow-sm ${viewMode === 'grid' ? 'bg-blue-50 text-blue-700 border-blue-200' : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'}`}
+              aria-label="グリッド表示"
+              aria-pressed={viewMode === 'grid'}
+            >
+              <LayoutGrid className="w-5 h-5" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode('list')}
+              className={`p-2 rounded-lg border transition-colors shadow-sm ${viewMode === 'list' ? 'bg-blue-50 text-blue-700 border-blue-200' : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'}`}
+              aria-label="リスト表示"
+              aria-pressed={viewMode === 'list'}
+            >
+              <List className="w-5 h-5" />
+            </button>
+          </div>
         </div>
-        <div className="flex items-center gap-2 self-start sm:self-center">
-          <button
-            type="button"
-            onClick={() => setViewMode('grid')}
-            className={`p-2 rounded-lg border transition-colors shadow-sm ${viewMode === 'grid' ? 'bg-blue-50 text-blue-700 border-blue-200' : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'}`}
-            aria-label="グリッド表示"
-            aria-pressed={viewMode === 'grid'}
-          >
-            <LayoutGrid className="w-5 h-5" />
-          </button>
-          <button
-            type="button"
-            onClick={() => setViewMode('list')}
-            className={`p-2 rounded-lg border transition-colors shadow-sm ${viewMode === 'list' ? 'bg-blue-50 text-blue-700 border-blue-200' : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'}`}
-            aria-label="リスト表示"
-            aria-pressed={viewMode === 'list'}
-          >
-            <List className="w-5 h-5" />
-          </button>
-        </div>
+        <p className="text-sm text-gray-600">カードを検索・閲覧できます。</p>
       </div>
 
       {/* フィルター */}
@@ -72,13 +72,13 @@ export default function CardsPage(): JSX.Element {
 
       {/* カード表示エリア */}
       {viewMode === 'grid' ? (
-        <CardGrid
+        <CardGridView
           cards={cards}
           loading={loading}
           onClickCard={(card) => openCardDetail(card.id)}
         />
       ) : (
-        <CardList
+        <CardListView
           cards={cards}
           loading={loading}
           onClickCard={(card) => openCardDetail(card.id)}
