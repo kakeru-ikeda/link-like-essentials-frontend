@@ -45,7 +45,7 @@ export const CardGridFilter: React.FC<CardGridFilterProps> = ({
 
   return (
     <div className="sticky top-4 z-10 bg-white rounded-lg shadow-md mb-6">
-      <div className="flex flex-wrap items-center gap-2 p-4">
+      <div className="flex flex-wrap items-center gap-2 pt-4 px-4">
         {/* キーワード検索入力 */}
         <div className="flex w-full min-w-[200px] gap-2">
           <div className="flex-1">
@@ -64,33 +64,46 @@ export const CardGridFilter: React.FC<CardGridFilterProps> = ({
           />
         </div>
 
-        {/* 適用中フィルター表示 */}
-        <ActiveFilters
-          filter={filter}
-          clearFilterKey={clearFilterKey}
-          updateFilter={updateFilter}
-        />
-
         {/* スペーサー */}
         <div className="flex-grow" />
-
-        {/* クリアボタン */}
-        {activeFilterCount > 0 && (
-          <Button
-            onClick={onFilterClear}
-            variant="secondary"
-            className="!px-4 !py-2 text-sm"
-          >
-            条件クリア
-          </Button>
-        )}
       </div>
 
-      <CharacterFilter
-        selectedCharacters={filter.characterNames}
-        onToggle={toggleCharacter}
-        currentSlotId={null}
-      />
+      {/* キャラクターフィルター */}
+      <div className="px-4 pt-2 pb-4">
+        <CharacterFilter
+          selectedCharacters={filter.characterNames}
+          onToggle={toggleCharacter}
+          currentSlotId={null}
+          isLabelHidden={true}
+          paddingDisabled={true}
+        />
+      </div>
+      
+
+      {/* 適用中フィルター表示 */}
+      <div className={activeFilterCount > 0 ? 'px-4 pb-4' : 'hidden'}>
+        <div className="flex flex-wrap items-start gap-3">
+          <div className="flex-1 min-w-[200px]">
+            <ActiveFilters
+              filter={filter}
+              clearFilterKey={clearFilterKey}
+              updateFilter={updateFilter}
+            />
+          </div>
+
+          {activeFilterCount > 0 && (
+            <div className="flex items-center justify-end">
+              <Button
+                onClick={onFilterClear}
+                variant="secondary"
+                className="!px-4 !py-2 text-sm"
+              >
+                条件クリア
+              </Button>
+            </div>
+          )}
+        </div>
+      </div>
 
       {/* フィルター表示エリア */}
       {isFilterVisible && (

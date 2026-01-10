@@ -9,12 +9,16 @@ interface CharacterFilterProps {
   selectedCharacters: string[] | undefined;
   onToggle: (characterName: string) => void;
   currentSlotId?: number | null;
+  isLabelHidden?: boolean;
+  paddingDisabled?: boolean;
 }
 
 export const CharacterFilter: React.FC<CharacterFilterProps> = ({
   selectedCharacters,
   onToggle,
   currentSlotId,
+  isLabelHidden = false,
+  paddingDisabled = false,
 }) => {
   const selectableCharacters = React.useMemo(
     () => getSelectableCharactersForSlot(currentSlotId ?? null),
@@ -25,10 +29,12 @@ export const CharacterFilter: React.FC<CharacterFilterProps> = ({
   const characterColor = (character: string) => getCharacterColor(character);
 
   return (
-    <div className="p-4">
-      <label className="block text-sm font-medium text-gray-700 mb-3">
-        キャラクター
-      </label>
+    <div className={paddingDisabled ? '' : 'p-4'}>
+      {!isLabelHidden && (
+        <label className="block text-sm font-medium text-gray-700 mb-3">
+          キャラクター
+        </label>
+      )}
       <MultiSelectFilter
         values={selectableCharacters}
         selectedValues={selectedCharacters}
