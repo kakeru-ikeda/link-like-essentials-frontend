@@ -51,6 +51,9 @@ cp .env.example .env.local
 `.env.local` に以下の環境変数を設定してください:
 
 ```bash
+# アプリケーションの基本URL
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+
 # GraphQL APIエンドポイント
 NEXT_PUBLIC_GRAPHQL_ENDPOINT=http://localhost:4000/graphql
 
