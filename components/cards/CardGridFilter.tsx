@@ -78,7 +78,6 @@ export const CardGridFilter: React.FC<CardGridFilterProps> = ({
           paddingDisabled={true}
         />
       </div>
-      
 
       {/* 適用中フィルター表示 */}
       <div className={activeFilterCount > 0 ? 'px-4 pb-4' : 'hidden'}>

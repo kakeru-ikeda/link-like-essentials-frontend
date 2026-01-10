@@ -81,7 +81,7 @@ export const CardListView: React.FC<CardListViewProps> = ({ cards, loading, onCl
                 )}
               </div>
 
-              <div className="flex-1 p-3 sm:p-3 flex flex-col gap-1">
+              <div className="flex-1 p-3 flex flex-col gap-1">
                 <div className="flex items-center gap-1 flex-wrap">
                   <RarityBadge rarity={card.rarity} position="inline" size="small" />
                   {card.styleType && <StyleTypeBadge styleType={card.styleType} size="small" />}
@@ -92,7 +92,7 @@ export const CardListView: React.FC<CardListViewProps> = ({ cards, loading, onCl
                 </div>
                 <div className="space-y-0.5">
                   <p className="text-sm sm:text-base font-bold text-gray-900 line-clamp-1">{card.cardName}</p>
-                  <p className="text-xs sm:text-xs text-gray-600">{card.characterName}</p>
+                  <p className="text-xs text-gray-600">{card.characterName}</p>
                 </div>
               </div>
             </div>
