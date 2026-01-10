@@ -57,7 +57,8 @@ export const useDeckPublish = (
   isOpen: boolean,
   deck: Deck | null,
   exportViewRef: RefObject<HTMLDivElement>,
-  exportBuilderRef: RefObject<HTMLDivElement>
+  exportBuilderRef: RefObject<HTMLDivElement>,
+  onPublished?: (publishedDeck: PublishedDeck) => void
 ): UseDeckPublishReturn => {
   const { profile, isLoadingProfile, fetchProfile } = useUserProfile();
   const { uploadImage, error: uploadError } = useImageUpload({
@@ -207,6 +208,7 @@ export const useDeckPublish = (
 
       // 公開成功
       console.log('デッキ公開成功:', publishedDeck);
+      onPublished?.(publishedDeck);
       
       // TODO: 成功通知やモーダルクローズ処理
       // 親コンポーネントに公開成功を通知する仕組みが必要
@@ -218,7 +220,7 @@ export const useDeckPublish = (
     } finally {
       setIsPublishing(false);
     }
-  }, [captureThumbnail, comment, deck, hashtags, isUnlisted, uploadedImageUrls]);
+  }, [captureThumbnail, comment, deck, hashtags, isUnlisted, onPublished, uploadedImageUrls]);
 
   return {
     displayName,

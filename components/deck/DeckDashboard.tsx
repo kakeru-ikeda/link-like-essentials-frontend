@@ -20,7 +20,9 @@ import { LiveGrandPrix, LiveGrandPrixDetail } from '@/models/LiveGrandPrix';
 import { ExpansionPanel } from '@/components/common/ExpansionPanel';
 import { EffectBadge } from '@/components/common/EffectBadge';
 import { DeckPublishModal } from '@/components/deck/DeckPublishModal';
+import { DeckPublishSuccessDialog } from '@/components/deck/DeckPublishSuccessDialog';
 import { useModal } from '@/hooks/useModal';
+import { PublishedDeck } from '@/models/PublishedDeck';
 
 export const DeckDashboard: React.FC = () => {
   const { 
@@ -37,6 +39,10 @@ export const DeckDashboard: React.FC = () => {
   
   const { isPublishModalOpen, openPublishModal, closePublishModal } = useModal();
   const [selectedDeckType, setSelectedDeckType] = useState<DeckType | undefined>(deck?.deckType);
+  const [publishSuccessLink, setPublishSuccessLink] = useState<string | null>(null);
+  const [publishSuccessUnlisted, setPublishSuccessUnlisted] = useState<boolean>(false);
+  const [publishSuccessName, setPublishSuccessName] = useState<string | null>(null);
+  const [isSuccessDialogOpen, setSuccessDialogOpen] = useState<boolean>(false);
 
   // ライブグランプリの詳細を取得（選択されている場合のみ）
   const { liveGrandPrix, loading: lgpLoading } = useLiveGrandPrixById(
@@ -102,6 +108,23 @@ export const DeckDashboard: React.FC = () => {
     clearAllCards();
   };
 
+  const handlePublished = (publishedDeck: PublishedDeck): void => {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL;
+    const deckPath = `/decks/${publishedDeck.id}`;
+    const fullUrl = baseUrl ? `${baseUrl}${deckPath}` : deckPath;
+    setPublishSuccessLink(fullUrl);
+    setPublishSuccessUnlisted(publishedDeck.isUnlisted);
+    setPublishSuccessName(publishedDeck.deck.name);
+    setSuccessDialogOpen(true);
+  };
+
+  const handleCloseSuccessDialog = (): void => {
+    setSuccessDialogOpen(false);
+    setPublishSuccessLink(null);
+    setPublishSuccessUnlisted(false);
+    setPublishSuccessName(null);
+  };
+
   return (
     <div className="flex-1 flex flex-col gap-4 p-4 border-2 border-gray-300 rounded-lg overflow-hidden min-w-0">
       {/* タイトル＆ボタン */}
@@ -117,7 +140,7 @@ export const DeckDashboard: React.FC = () => {
             クリア
           </Button>
           <Button onClick={openPublishModal} className="bg-green-600 hover:bg-green-700 disabled:bg-green-400">
-            共有
+            公開
           </Button>
         </div>
       </div>
@@ -249,6 +272,15 @@ export const DeckDashboard: React.FC = () => {
       <DeckPublishModal
         isOpen={isPublishModalOpen}
         onClose={closePublishModal}
+        onPublished={handlePublished}
+      />
+
+      <DeckPublishSuccessDialog
+        isOpen={isSuccessDialogOpen}
+        shareUrl={publishSuccessLink}
+        isUnlisted={publishSuccessUnlisted}
+        deckName={publishSuccessName}
+        onClose={handleCloseSuccessDialog}
       />
     </div>
   );
