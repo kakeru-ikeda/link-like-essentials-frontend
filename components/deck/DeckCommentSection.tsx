@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { Comment } from '@/models/Comment';
 import { UserProfile } from '@/models/User';
 import { MAX_COMMENT_LENGTH } from '@/hooks/useDeckComments';
 import { UserAvatar } from '@/components/common/UserAvatar';
+import { ConfirmDialog } from '@/components/common/ConfirmDialog';
 
 interface DeckCommentSectionProps {
   comments: Comment[];
@@ -53,8 +55,41 @@ export const DeckCommentSection: React.FC<DeckCommentSectionProps> = ({
   onLoadMore,
   totalCount,
 }) => {
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+
+  const handleSubmitClick = () => {
+    if (commentText.trim().length === 0 || !canPost || posting) return;
+    setIsConfirmOpen(true);
+  };
+
+  const handleConfirm = async () => {
+    setIsConfirmOpen(false);
+    onSubmit();
+  };
+
+  const handleCancel = () => {
+    setIsConfirmOpen(false);
+  };
+
   return (
-    <section className="mt-10 rounded-xl border border-slate-200 bg-white shadow-sm">
+    <>
+      <ConfirmDialog
+        isOpen={isConfirmOpen}
+        title="コメントを投稿しますか?"
+        description="投稿したコメントは他のユーザーに公開されます。公序良俗に反する内容や個人情報の記載はお控えください。"
+        confirmLabel="投稿する"
+        cancelLabel="キャンセル"
+        onConfirm={handleConfirm}
+        onCancel={handleCancel}
+        confirmVariant="primary"
+      >
+        <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+          <p className="mb-1 text-xs font-semibold text-slate-600">投稿内容のプレビュー:</p>
+          <p className="whitespace-pre-wrap text-sm text-slate-900">{commentText}</p>
+        </div>
+      </ConfirmDialog>
+
+      <section className="mt-10 rounded-xl border border-slate-200 bg-white shadow-sm">
       <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3">
         <div>
           <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Community</p>
@@ -166,7 +201,7 @@ export const DeckCommentSection: React.FC<DeckCommentSectionProps> = ({
           <div className="flex justify-end">
             <button
               type="button"
-              onClick={onSubmit}
+              onClick={handleSubmitClick}
               disabled={!canPost || posting || commentText.trim().length === 0}
               className="inline-flex items-center justify-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-slate-300"
             >
@@ -176,5 +211,6 @@ export const DeckCommentSection: React.FC<DeckCommentSectionProps> = ({
         </div>
       </div>
     </section>
+    </>
   );
 };

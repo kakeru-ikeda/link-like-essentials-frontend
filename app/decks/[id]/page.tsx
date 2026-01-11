@@ -102,7 +102,7 @@ export default function DeckDetailPage() {
       )}
 
       {!publishedDeckLoading && publishedDeck && (
-        <div className="space-y-8">
+        <div>
           <PublishedDeckDetail deck={publishedDeck} compiledDeck={compiledDeck} />
           <DeckCommentSection
             comments={comments}
