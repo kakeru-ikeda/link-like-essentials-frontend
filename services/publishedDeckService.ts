@@ -4,6 +4,7 @@ import { Comment } from '@/models/Comment';
 import { PaginatedResponse } from '@/models/Pagination';
 import { PopularHashtagSummary } from '@/models/Hashtag';
 import { deckRepository } from '@/repositories/api/deckRepository';
+import { ReportReason } from './deckCommentService';
 
 /**
  * 公開デッキの取得・操作をまとめたサービス
@@ -47,5 +48,9 @@ export const publishedDeckService = {
 
   async getPopularHashtags(): Promise<PopularHashtagSummary> {
     return deckRepository.getPopularHashtags();
+  },
+
+  async reportDeck(deckId: string, reason: ReportReason, details?: string): Promise<{ success: boolean; message: string }> {
+    return deckRepository.reportDeck(deckId, reason, details);
   },
 };

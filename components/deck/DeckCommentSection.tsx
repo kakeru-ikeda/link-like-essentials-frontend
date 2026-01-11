@@ -4,6 +4,8 @@ import { UserProfile } from '@/models/User';
 import { MAX_COMMENT_LENGTH } from '@/hooks/useDeckComments';
 import { UserAvatar } from '@/components/common/UserAvatar';
 import { ConfirmDialog } from '@/components/common/ConfirmDialog';
+import { ReportModal } from '@/components/common/ReportModal';
+import { ReportReason } from '@/services/deckCommentService';
 
 interface DeckCommentSectionProps {
   comments: Comment[];
@@ -23,6 +25,9 @@ interface DeckCommentSectionProps {
   hasMore: boolean;
   onLoadMore: () => void;
   totalCount: number;
+  currentUserId?: string;
+  onDeleteComment?: (commentId: string) => Promise<void>;
+  onReportComment?: (commentId: string, reason: ReportReason, details?: string) => Promise<void>;
 }
 
 const formatDateTime = (iso: string) => {
@@ -54,8 +59,20 @@ export const DeckCommentSection: React.FC<DeckCommentSectionProps> = ({
   hasMore,
   onLoadMore,
   totalCount,
+  currentUserId,
+  onDeleteComment,
+  onReportComment,
 }) => {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [reportModalState, setReportModalState] = useState<{ isOpen: boolean; commentId: string | null; commentUserName: string }>({
+    isOpen: false,
+    commentId: null,
+    commentUserName: '',
+  });
+  const [deleteConfirmState, setDeleteConfirmState] = useState<{ isOpen: boolean; commentId: string | null }>({
+    isOpen: false,
+    commentId: null,
+  });
 
   const handleSubmitClick = () => {
     if (commentText.trim().length === 0 || !canPost || posting) return;
@@ -69,6 +86,31 @@ export const DeckCommentSection: React.FC<DeckCommentSectionProps> = ({
 
   const handleCancel = () => {
     setIsConfirmOpen(false);
+  };
+
+  const handleReportClick = (commentId: string, commentUserName: string) => {
+    setReportModalState({ isOpen: true, commentId, commentUserName });
+  };
+
+  const handleReportSubmit = async (reason: ReportReason, details?: string) => {
+    if (!reportModalState.commentId || !onReportComment) return;
+    await onReportComment(reportModalState.commentId, reason, details);
+    setReportModalState({ isOpen: false, commentId: null, commentUserName: '' });
+  };
+
+  const handleDeleteClick = (commentId: string) => {
+    setDeleteConfirmState({ isOpen: true, commentId });
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteConfirmState.commentId || !onDeleteComment) return;
+    try {
+      await onDeleteComment(deleteConfirmState.commentId);
+      setDeleteConfirmState({ isOpen: false, commentId: null });
+    } catch (err) {
+      // エラーはフック側で処理される
+      setDeleteConfirmState({ isOpen: false, commentId: null });
+    }
   };
 
   return (
@@ -88,6 +130,25 @@ export const DeckCommentSection: React.FC<DeckCommentSectionProps> = ({
           <p className="whitespace-pre-wrap text-sm text-slate-900">{commentText}</p>
         </div>
       </ConfirmDialog>
+
+      <ConfirmDialog
+        isOpen={deleteConfirmState.isOpen}
+        title="コメントを削除しますか?"
+        description="削除したコメントは復元できません。本当に削除してもよろしいですか?"
+        confirmLabel="削除する"
+        cancelLabel="キャンセル"
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setDeleteConfirmState({ isOpen: false, commentId: null })}
+        confirmVariant="danger"
+      />
+
+      <ReportModal
+        isOpen={reportModalState.isOpen}
+        onClose={() => setReportModalState({ isOpen: false, commentId: null, commentUserName: '' })}
+        onSubmit={handleReportSubmit}
+        title="コメントを通報"
+        targetName={reportModalState.commentUserName}
+      />
 
       <section className="mt-10 rounded-xl border border-slate-200 bg-white shadow-sm">
       <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3">
@@ -127,6 +188,7 @@ export const DeckCommentSection: React.FC<DeckCommentSectionProps> = ({
               {comments.map((comment) => {
                 const userProfile = userProfiles.get(comment.userId);
                 const avatarUrl = userProfile?.avatarUrl;
+                const isOwnComment = currentUserId === comment.userId;
 
                 return (
                   <li key={comment.id} className="rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm">
@@ -144,6 +206,31 @@ export const DeckCommentSection: React.FC<DeckCommentSectionProps> = ({
                             <p className="text-sm font-semibold text-slate-900">{comment.userName || '匿名ユーザー'}</p>
                             <p className="text-xs text-slate-500">{formatDateTime(comment.createdAt)}</p>
                           </div>
+                          {currentUserId && (
+                            <div className="flex gap-2">
+                              {isOwnComment ? (
+                                onDeleteComment && (
+                                  <button
+                                    type="button"
+                                    onClick={() => handleDeleteClick(comment.id)}
+                                    className="text-xs text-slate-500 hover:text-red-600"
+                                  >
+                                    削除
+                                  </button>
+                                )
+                              ) : (
+                                onReportComment && (
+                                  <button
+                                    type="button"
+                                    onClick={() => handleReportClick(comment.id, comment.userName)}
+                                    className="text-xs text-slate-500 hover:text-red-600"
+                                  >
+                                    通報
+                                  </button>
+                                )
+                              )}
+                            </div>
+                          )}
                         </div>
                         <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-slate-800">{comment.text}</p>
                       </div>
