@@ -5,6 +5,10 @@ import {
 import { USER_API_ENDPOINT } from '@/config/api';
 import { getAuthToken } from './authUtils';
 
+interface RepositoryError extends Error {
+  status?: number;
+}
+
 export const userRepository = {
   /**
    * 自分のプロフィールを取得する
@@ -19,10 +23,12 @@ export const userRepository = {
     });
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({}));
-      throw new Error(
-        error.error?.message || 'プロフィールの取得に失敗しました'
+      const errorBody = await response.json().catch(() => ({}));
+      const error: RepositoryError = new Error(
+        errorBody.error?.message || 'プロフィールの取得に失敗しました'
       );
+      error.status = response.status;
+      throw error;
     }
 
     const data = await response.json();

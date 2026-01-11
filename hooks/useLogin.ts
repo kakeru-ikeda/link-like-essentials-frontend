@@ -40,7 +40,7 @@ export const useLogin = () => {
         setProfile(profile);
         router.push('/mypage');
       } catch (error) {
-        setLoginError(authErrorService.mapLoginErrorMessage(error));
+        setLoginError(authErrorService.mapEmailAuthErrorMessage(error));
       } finally {
         setIsLoggingIn(false);
       }

@@ -64,7 +64,7 @@ export const VerifiedBadge: React.FC<VerifiedBadgeProps> = ({
     .join(' ');
 
   return (
-    <span className={combinedClassName} aria-label={roleStyle.aria} title={roleStyle.aria}>
+    <span className={combinedClassName} aria-label={roleStyle.aria}>
       <span className={`flex h-5 w-5 items-center justify-center rounded-full shadow-sm ${roleStyle.icon}`}>
         <svg
           className="h-3.5 w-3.5"

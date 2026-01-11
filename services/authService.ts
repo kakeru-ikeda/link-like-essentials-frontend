@@ -36,8 +36,12 @@ export const authService = {
   async fetchOrCreateProfile(): Promise<UserProfile> {
     try {
       return await userService.getMyProfile();
-    } catch {
-      return await userService.createProfile({ displayName: 'ゲスト' });
+    } catch (error) {
+      const status = (error as { status?: number })?.status;
+      if (status === 404) {
+        return await userService.createProfile({ displayName: 'ゲスト' });
+      }
+      throw error;
     }
   },
   async signOutUser() {

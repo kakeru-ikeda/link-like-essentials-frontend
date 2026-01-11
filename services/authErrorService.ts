@@ -1,7 +1,7 @@
 import { FirebaseError } from 'firebase/app';
 
 export const authErrorService = {
-  mapLoginErrorMessage(error: unknown): string {
+  mapEmailAuthErrorMessage(error: unknown): string {
     if (error instanceof FirebaseError) {
       switch (error.code) {
         case 'auth/invalid-credential':
@@ -17,6 +17,6 @@ export const authErrorService = {
       }
     }
 
-    return 'メールログインに失敗しました。';
+    return 'メールログインに失敗しました。時間をおいて再度お試しください。';
   },
 };
