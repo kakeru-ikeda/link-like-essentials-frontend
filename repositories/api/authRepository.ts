@@ -14,11 +14,6 @@ export interface UpgradeAnonymousResponse {
   verificationLink?: string;
 }
 
-const withRoleFallback = (user: UserProfile): UserProfile => ({
-  ...user,
-  role: user.role ?? UserRole.ANONYMOUS,
-});
-
 export const authRepository = {
   async upgradeAnonymousToEmail(
     payload: UpgradeAnonymousRequest
@@ -40,7 +35,7 @@ export const authRepository = {
 
     const data = (await response.json()) as UpgradeAnonymousResponse;
     return {
-      user: withRoleFallback(data.user),
+      user: data.user,
       verificationLink: data.verificationLink,
     };
   },
