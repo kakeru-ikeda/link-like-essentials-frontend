@@ -278,16 +278,20 @@ export const deckRepository = {
   /**
    * デッキのコメント一覧を取得
    * @param deckId - デッキID（公開ID）
-   * @returns コメント配列
+   * @param page - ページ番号（デフォルト: 1）
+   * @param perPage - 1ページあたりの件数（デフォルト: 20）
+   * @returns ページネーション付きコメント配列
    */
-  async getComments(deckId: string): Promise<Comment[]> {
-    const token = await getAuthToken();
-    const response = await fetch(`${DECK_API_ENDPOINT}/decks/${deckId}/comments`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      }
+  async getComments(deckId: string, page: number = 1, perPage: number = 20): Promise<PaginatedResponse<Comment>> {
+    const token = auth?.currentUser ? await auth.currentUser.getIdToken() : null;
+    const headers: HeadersInit = token ? { Authorization: `Bearer ${token}` } : {};
+    
+    const queryParams = new URLSearchParams();
+    queryParams.append('page', page.toString());
+    queryParams.append('perPage', perPage.toString());
+
+    const response = await fetch(`${DECK_API_ENDPOINT}/decks/${deckId}/comments?${queryParams}`, {
+      headers,
     });
 
     if (!response.ok) {
@@ -296,7 +300,10 @@ export const deckRepository = {
     }
 
     const data = await response.json();
-    return data.comments ?? [];
+    return {
+      data: data.comments ?? [],
+      pageInfo: data.pageInfo,
+    };
   },
 
   /**

@@ -36,6 +36,12 @@ export default function DeckDetailPage() {
     postError,
     canPost,
     restrictionMessage,
+    userProfiles,
+    profilesLoading,
+    pageInfo,
+    loadingMore,
+    hasMore,
+    loadMore,
     refresh: refreshComments,
     submit: submitComment,
   } = useDeckComments(deckId);
@@ -110,6 +116,12 @@ export default function DeckDetailPage() {
             postError={postError}
             canPost={canPost}
             restrictionMessage={restrictionMessage}
+            userProfiles={userProfiles}
+            profilesLoading={profilesLoading}
+            loadingMore={loadingMore}
+            hasMore={hasMore}
+            onLoadMore={loadMore}
+            totalCount={pageInfo?.totalCount ?? 0}
           />
         </div>
       )}

@@ -3,10 +3,14 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Comment } from '@/models/Comment';
 import { UserRole } from '@/models/enums';
+import { UserProfile } from '@/models/User';
+import { PageInfo } from '@/models/Pagination';
 import { publishedDeckService } from '@/services/publishedDeckService';
 import { useAuth } from './useAuth';
+import { useBatchUserProfiles } from './useBatchUserProfiles';
 
 export const MAX_COMMENT_LENGTH = 1000;
+export const COMMENTS_PER_PAGE = 20;
 
 interface UseDeckCommentsResult {
   comments: Comment[];
@@ -18,6 +22,12 @@ interface UseDeckCommentsResult {
   postError: string | null;
   canPost: boolean;
   restrictionMessage: string | null;
+  userProfiles: Map<string, UserProfile>;
+  profilesLoading: boolean;
+  pageInfo: PageInfo | null;
+  loadingMore: boolean;
+  hasMore: boolean;
+  loadMore: () => Promise<void>;
   refresh: () => Promise<void>;
   submit: () => Promise<void>;
 }
@@ -29,10 +39,13 @@ export const useDeckComments = (deckId: string | null): UseDeckCommentsResult =>
   const { role, isAuthenticated } = useAuth();
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [commentText, setCommentText] = useState('');
   const [posting, setPosting] = useState(false);
   const [postError, setPostError] = useState<string | null>(null);
+  const [pageInfo, setPageInfo] = useState<PageInfo | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const canPost = isAuthenticated && role === UserRole.EMAIL;
 
@@ -42,20 +55,52 @@ export const useDeckComments = (deckId: string | null): UseDeckCommentsResult =>
     return null;
   }, [canPost, isAuthenticated]);
 
-  const fetchComments = useCallback(async () => {
+  const userIds = useMemo(() => {
+    return comments.map((comment) => comment.userId);
+  }, [comments]);
+
+  const { profiles: userProfiles, loading: profilesLoading } = useBatchUserProfiles(userIds);
+
+  const fetchComments = useCallback(async (page: number = 1, append: boolean = false) => {
     if (!deckId) return;
-    setLoading(true);
+    
+    if (append) {
+      setLoadingMore(true);
+    } else {
+      setLoading(true);
+    }
     setError(null);
+    
     try {
-      const data = await publishedDeckService.getComments(deckId);
-      setComments(data);
+      const response = await publishedDeckService.getComments(deckId, page, COMMENTS_PER_PAGE);
+      setPageInfo(response.pageInfo);
+      
+      if (append) {
+        setComments((prev) => [...prev, ...response.data]);
+      } else {
+        setComments(response.data);
+      }
+      setCurrentPage(page);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'コメントの取得に失敗しました';
       setError(message);
     } finally {
-      setLoading(false);
+      if (append) {
+        setLoadingMore(false);
+      } else {
+        setLoading(false);
+      }
     }
   }, [deckId]);
+
+  const loadMore = useCallback(async () => {
+    if (!pageInfo?.hasNextPage || loadingMore) return;
+    await fetchComments(currentPage + 1, true);
+  }, [currentPage, fetchComments, loadingMore, pageInfo?.hasNextPage]);
+
+  const refresh = useCallback(async () => {
+    await fetchComments(1, false);
+  }, [fetchComments]);
 
   const submit = useCallback(async () => {
     if (!deckId) return;
@@ -74,16 +119,16 @@ export const useDeckComments = (deckId: string | null): UseDeckCommentsResult =>
     setPostError(null);
 
     try {
-      const newComment = await publishedDeckService.postComment(deckId, text);
-      setComments((prev) => [newComment, ...prev]);
+      await publishedDeckService.postComment(deckId, text);
       setCommentText('');
+      await fetchComments(1, false);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'コメントの投稿に失敗しました';
       setPostError(message);
     } finally {
       setPosting(false);
     }
-  }, [canPost, commentText, deckId, restrictionMessage]);
+  }, [canPost, commentText, deckId, fetchComments, restrictionMessage]);
 
   useEffect(() => {
     setComments([]);
@@ -105,7 +150,13 @@ export const useDeckComments = (deckId: string | null): UseDeckCommentsResult =>
     postError,
     canPost,
     restrictionMessage,
-    refresh: fetchComments,
+    userProfiles,
+    profilesLoading,
+    pageInfo,
+    loadingMore,
+    hasMore: pageInfo?.hasNextPage ?? false,
+    loadMore,
+    refresh,
     submit,
   };
 };

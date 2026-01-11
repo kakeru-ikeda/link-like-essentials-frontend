@@ -1,4 +1,5 @@
 import { Comment } from '@/models/Comment';
+import { UserProfile } from '@/models/User';
 import { MAX_COMMENT_LENGTH } from '@/hooks/useDeckComments';
 
 interface DeckCommentSectionProps {
@@ -13,6 +14,12 @@ interface DeckCommentSectionProps {
   postError: string | null;
   canPost: boolean;
   restrictionMessage: string | null;
+  userProfiles: Map<string, UserProfile>;
+  profilesLoading: boolean;
+  loadingMore: boolean;
+  hasMore: boolean;
+  onLoadMore: () => void;
+  totalCount: number;
 }
 
 const formatDateTime = (iso: string) => {
@@ -38,13 +45,21 @@ export const DeckCommentSection: React.FC<DeckCommentSectionProps> = ({
   postError,
   canPost,
   restrictionMessage,
+  userProfiles,
+  profilesLoading,
+  loadingMore,
+  hasMore,
+  onLoadMore,
+  totalCount,
 }) => {
   return (
     <section className="mt-10 rounded-xl border border-slate-200 bg-white shadow-sm">
       <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3">
         <div>
           <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Community</p>
-          <h2 className="text-lg font-bold text-slate-900">コメント</h2>
+          <h2 className="text-lg font-bold text-slate-900">
+            コメント {totalCount > 0 && <span className="text-sm font-normal text-slate-500">({totalCount})</span>}
+          </h2>
         </div>
         <button
           type="button"
@@ -73,18 +88,54 @@ export const DeckCommentSection: React.FC<DeckCommentSectionProps> = ({
             </div>
           ) : (
             <ul className="space-y-3">
-              {comments.map((comment) => (
-                <li key={comment.id} className="rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="text-sm font-semibold text-slate-900">{comment.userName || '匿名ユーザー'}</p>
-                      <p className="text-xs text-slate-500">{formatDateTime(comment.createdAt)}</p>
+              {comments.map((comment) => {
+                const userProfile = userProfiles.get(comment.userId);
+                const avatarUrl = userProfile?.avatarUrl;
+
+                return (
+                  <li key={comment.id} className="rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm">
+                    <div className="flex items-start gap-3">
+                      <div className="flex-shrink-0">
+                        {avatarUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={avatarUrl}
+                            alt={`${comment.userName}のアバター`}
+                            className="h-10 w-10 rounded-full border border-slate-200 bg-slate-100 object-cover"
+                          />
+                        ) : (
+                          <div className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-slate-100 text-sm font-semibold text-slate-500">
+                            {comment.userName?.[0]?.toUpperCase() || '?'}
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-start justify-between gap-3">
+                          <div>
+                            <p className="text-sm font-semibold text-slate-900">{comment.userName || '匿名ユーザー'}</p>
+                            <p className="text-xs text-slate-500">{formatDateTime(comment.createdAt)}</p>
+                          </div>
+                        </div>
+                        <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-slate-800">{comment.text}</p>
+                      </div>
                     </div>
-                  </div>
-                  <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-slate-800">{comment.text}</p>
-                </li>
-              ))}
+                  </li>
+                );
+              })}
             </ul>
+          )}
+
+          {!loading && hasMore && (
+            <div className="flex justify-center pt-2">
+              <button
+                type="button"
+                onClick={onLoadMore}
+                disabled={loadingMore}
+                className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {loadingMore ? '読み込み中...' : 'さらに読み込む'}
+              </button>
+            </div>
           )}
         </div>
 

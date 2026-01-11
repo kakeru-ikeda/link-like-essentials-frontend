@@ -41,8 +41,8 @@ export const publishedDeckService = {
     return deckRepository.postComment(deckId, text);
   },
 
-  async getComments(deckId: string): Promise<Comment[]> {
-    return deckRepository.getComments(deckId);
+  async getComments(deckId: string, page?: number, perPage?: number): Promise<PaginatedResponse<Comment>> {
+    return deckRepository.getComments(deckId, page, perPage);
   },
 
   async getPopularHashtags(): Promise<PopularHashtagSummary> {
