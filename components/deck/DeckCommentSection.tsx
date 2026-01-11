@@ -1,6 +1,7 @@
 import { Comment } from '@/models/Comment';
 import { UserProfile } from '@/models/User';
 import { MAX_COMMENT_LENGTH } from '@/hooks/useDeckComments';
+import { UserAvatar } from '@/components/common/UserAvatar';
 
 interface DeckCommentSectionProps {
   comments: Comment[];
@@ -95,20 +96,13 @@ export const DeckCommentSection: React.FC<DeckCommentSectionProps> = ({
                 return (
                   <li key={comment.id} className="rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm">
                     <div className="flex items-start gap-3">
-                      <div className="flex-shrink-0">
-                        {avatarUrl ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={avatarUrl}
-                            alt={`${comment.userName}のアバター`}
-                            className="h-10 w-10 rounded-full border border-slate-200 bg-slate-100 object-cover"
-                          />
-                        ) : (
-                          <div className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-slate-100 text-sm font-semibold text-slate-500">
-                            {comment.userName?.[0]?.toUpperCase() || '?'}
-                          </div>
-                        )}
-                      </div>
+                      <UserAvatar
+                        userName={comment.userName || 'ゲスト'}
+                        avatarUrl={avatarUrl}
+                        userProfile={userProfile}
+                        size="md"
+                        showTooltip={!!userProfile}
+                      />
                       <div className="flex-1">
                         <div className="flex items-start justify-between gap-3">
                           <div>
