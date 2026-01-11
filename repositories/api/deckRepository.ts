@@ -307,6 +307,59 @@ export const deckRepository = {
   },
 
   /**
+   * コメントを削除する(論理削除)
+   * @param deckId - デッキID(公開ID)
+   * @param commentId - コメントID
+   */
+  async deleteComment(deckId: string, commentId: string): Promise<void> {
+    const token = await getAuthToken();
+    const response = await fetch(`${DECK_API_ENDPOINT}/decks/${deckId}/comments/${commentId}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.error?.message || 'コメントの削除に失敗しました');
+    }
+  },
+
+  /**
+   * コメントを通報する
+   * @param deckId - デッキID(公開ID)
+   * @param commentId - コメントID
+   * @param reason - 通報理由
+   * @param details - 詳細(任意)
+   * @returns 通報結果
+   */
+  async reportComment(
+    deckId: string,
+    commentId: string,
+    reason: 'inappropriate_content' | 'spam' | 'copyright' | 'other',
+    details?: string
+  ): Promise<{ success: boolean; message: string }> {
+    const token = await getAuthToken();
+    const response = await fetch(`${DECK_API_ENDPOINT}/decks/${deckId}/comments/${commentId}/report`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ reason, details }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.error?.message || 'コメントの通報に失敗しました');
+    }
+
+    const data = await response.json();
+    return data;
+  },
+
+  /**   
    * デッキを通報する
    * @param deckId - デッキID（公開ID）
    * @param reason - 通報理由
