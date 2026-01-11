@@ -6,6 +6,8 @@ import { PublishedDeckDetail } from '@/components/deck/PublishedDeckDetail';
 import { useCompiledPublishedDeckDetail } from '@/hooks/useCompiledPublishedDeckDetail';
 import { publishedDeckImportService } from '@/services/publishedDeckImportService';
 import { PublishedDeckActions } from '@/components/deck/PublishedDeckActions';
+import { DeckCommentSection } from '@/components/deck/DeckCommentSection';
+import { useDeckComments } from '@/hooks/useDeckComments';
 
 const getDeckId = (param: string | string[] | undefined): string | null => {
   if (!param) return null;
@@ -24,6 +26,25 @@ export default function DeckDetailPage() {
     compiling,
     compileError,
   } = useCompiledPublishedDeckDetail(deckId);
+  const {
+    comments,
+    loading: commentsLoading,
+    error: commentsError,
+    commentText,
+    setCommentText,
+    posting,
+    postError,
+    canPost,
+    restrictionMessage,
+    userProfiles,
+    profilesLoading,
+    pageInfo,
+    loadingMore,
+    hasMore,
+    loadMore,
+    refresh: refreshComments,
+    submit: submitComment,
+  } = useDeckComments(deckId);
   const router = useRouter();
   const [importing, setImporting] = useState(false);
   const [importError, setImportError] = useState<string | null>(null);
@@ -81,7 +102,28 @@ export default function DeckDetailPage() {
       )}
 
       {!publishedDeckLoading && publishedDeck && (
-        <PublishedDeckDetail deck={publishedDeck} compiledDeck={compiledDeck} />
+        <div>
+          <PublishedDeckDetail deck={publishedDeck} compiledDeck={compiledDeck} />
+          <DeckCommentSection
+            comments={comments}
+            loading={commentsLoading}
+            error={commentsError}
+            commentText={commentText}
+            onChangeComment={setCommentText}
+            onSubmit={submitComment}
+            onRefresh={refreshComments}
+            posting={posting}
+            postError={postError}
+            canPost={canPost}
+            restrictionMessage={restrictionMessage}
+            userProfiles={userProfiles}
+            profilesLoading={profilesLoading}
+            loadingMore={loadingMore}
+            hasMore={hasMore}
+            onLoadMore={loadMore}
+            totalCount={pageInfo?.totalCount ?? 0}
+          />
+        </div>
       )}
     </div>
   );

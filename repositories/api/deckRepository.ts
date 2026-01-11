@@ -5,6 +5,7 @@ import { PaginatedResponse } from '@/models/Pagination';
 import { PopularHashtagSummary } from '@/models/Hashtag';
 import { DECK_API_ENDPOINT } from '@/config/api';
 import { getAuthToken } from './authUtils';
+import { auth } from '@/repositories/firebase/config';
 
 export const deckRepository = {
   /**
@@ -272,6 +273,37 @@ export const deckRepository = {
 
     const data = await response.json();
     return data.comment;
+  },
+
+  /**
+   * デッキのコメント一覧を取得
+   * @param deckId - デッキID（公開ID）
+   * @param page - ページ番号（デフォルト: 1）
+   * @param perPage - 1ページあたりの件数（デフォルト: 20）
+   * @returns ページネーション付きコメント配列
+   */
+  async getComments(deckId: string, page: number = 1, perPage: number = 20): Promise<PaginatedResponse<Comment>> {
+    const token = await getAuthToken();
+    const headers: HeadersInit = { Authorization: `Bearer ${token}` };
+    
+    const queryParams = new URLSearchParams();
+    queryParams.append('page', page.toString());
+    queryParams.append('perPage', perPage.toString());
+
+    const response = await fetch(`${DECK_API_ENDPOINT}/decks/${deckId}/comments?${queryParams}`, {
+      headers,
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.error?.message || 'コメントの取得に失敗しました');
+    }
+
+    const data = await response.json();
+    return {
+      data: data.comments ?? [],
+      pageInfo: data.pageInfo,
+    };
   },
 
   /**

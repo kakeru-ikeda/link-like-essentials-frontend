@@ -132,4 +132,59 @@ export const userRepository = {
       );
     }
   },
+
+  /**
+   * 複数ユーザーのプロフィールを取得する（バッチ取得）
+   * GET /users/batch?userIds=uid1,uid2,uid3
+   */
+  async getUsersByIds(userIds: string[]): Promise<UserProfile[]> {
+    if (userIds.length === 0) {
+      return [];
+    }
+
+    const token = await getAuthToken();
+    const queryParams = new URLSearchParams();
+    queryParams.append('userIds', userIds.join(','));
+
+    const response = await fetch(`${USER_API_ENDPOINT}/users/batch?${queryParams}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(
+        error.error?.message || 'ユーザー情報の取得に失敗しました'
+      );
+    }
+
+    const data = await response.json();
+    return data.users ?? [];
+  },
+
+  /**
+   * 任意ユーザーのプロフィールを取得する
+   * GET /users/:uid
+   */
+  async getUserById(uid: string): Promise<UserProfile> {
+    const token = await getAuthToken();
+    const response = await fetch(`${USER_API_ENDPOINT}/users/${uid}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorBody = await response.json().catch(() => ({}));
+      const error: RepositoryError = new Error(
+        errorBody.error?.message || 'ユーザー情報の取得に失敗しました'
+      );
+      error.status = response.status;
+      throw error;
+    }
+
+    const data = await response.json();
+    return data.user;
+  },
 };

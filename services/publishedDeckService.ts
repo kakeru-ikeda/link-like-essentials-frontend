@@ -1,5 +1,6 @@
 import { GetDecksParams, GetLikedDecksParams } from '@/models/DeckQueryParams';
 import { PublishedDeck } from '@/models/PublishedDeck';
+import { Comment } from '@/models/Comment';
 import { PaginatedResponse } from '@/models/Pagination';
 import { PopularHashtagSummary } from '@/models/Hashtag';
 import { deckRepository } from '@/repositories/api/deckRepository';
@@ -34,6 +35,14 @@ export const publishedDeckService = {
 
   async incrementViewCount(deckId: string): Promise<number> {
     return deckRepository.incrementViewCount(deckId);
+  },
+
+  async postComment(deckId: string, text: string): Promise<Comment> {
+    return deckRepository.postComment(deckId, text);
+  },
+
+  async getComments(deckId: string, page?: number, perPage?: number): Promise<PaginatedResponse<Comment>> {
+    return deckRepository.getComments(deckId, page, perPage);
   },
 
   async getPopularHashtags(): Promise<PopularHashtagSummary> {

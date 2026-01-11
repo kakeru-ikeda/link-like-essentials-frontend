@@ -14,6 +14,8 @@ interface VerifiedBadgeProps {
   anonymousLabel?: string;
   /** アノニマス時にバッジを非表示にする */
   hideAnonymous?: boolean;
+  /** バッジのサイズ */
+  size?: 'sm' | 'md' | 'lg';
   /** 追加のクラス名 */
   className?: string;
 }
@@ -24,11 +26,42 @@ export const VerifiedBadge: React.FC<VerifiedBadgeProps> = ({
   emailLabel,
   anonymousLabel,
   hideAnonymous = false,
+  size = 'md',
   className,
 }) => {
   if (role === UserRole.ANONYMOUS && hideAnonymous) {
     return null;
   }
+
+  const sizeClasses = (() => {
+    switch (size) {
+      case 'sm':
+        return {
+          circle: 'h-4 w-4',
+          icon: 'h-2.5 w-2.5',
+          container: 'px-1.5 py-0.5',
+          text: 'text-xs',
+          gap: 'gap-1',
+        };
+      case 'lg':
+        return {
+          circle: 'h-6 w-6',
+          icon: 'h-4 w-4',
+          container: 'px-2.5 py-1.5',
+          text: 'text-sm',
+          gap: 'gap-2',
+        };
+      case 'md':
+      default:
+        return {
+          circle: 'h-5 w-5',
+          icon: 'h-3.5 w-3.5',
+          container: 'px-2 py-1',
+          text: 'text-xs',
+          gap: 'gap-1.5',
+        };
+    }
+  })();
 
   const roleStyle = (() => {
     switch (role) {
@@ -49,7 +82,7 @@ export const VerifiedBadge: React.FC<VerifiedBadgeProps> = ({
   })();
 
   const containerClasses = label
-    ? 'inline-flex items-center gap-1 rounded-full border px-2 py-1 text-xs font-semibold leading-none'
+    ? `inline-flex items-center gap-1 rounded-full border ${sizeClasses.container} ${sizeClasses.text} font-semibold leading-none`
     : 'inline-flex items-center';
 
   const resolvedLabel = (() => {
@@ -65,9 +98,9 @@ export const VerifiedBadge: React.FC<VerifiedBadgeProps> = ({
 
   return (
     <span className={combinedClassName} aria-label={roleStyle.aria}>
-      <span className={`flex h-5 w-5 items-center justify-center rounded-full shadow-sm ${roleStyle.icon}`}>
+      <span className={`flex ${sizeClasses.circle} items-center justify-center rounded-full shadow-sm ${roleStyle.icon}`}>
         <svg
-          className="h-3.5 w-3.5"
+          className={sizeClasses.icon}
           viewBox="0 0 20 20"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
@@ -78,7 +111,7 @@ export const VerifiedBadge: React.FC<VerifiedBadgeProps> = ({
           />
         </svg>
       </span>
-      {resolvedLabel && <span className="text-xs font-semibold leading-none">{resolvedLabel}</span>}
+      {resolvedLabel && <span className={`${sizeClasses.text} font-semibold leading-none`}>{resolvedLabel}</span>}
     </span>
   );
 };
