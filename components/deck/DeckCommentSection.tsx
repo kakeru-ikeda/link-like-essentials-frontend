@@ -4,6 +4,8 @@ import { UserProfile } from '@/models/User';
 import { MAX_COMMENT_LENGTH } from '@/hooks/useDeckComments';
 import { UserAvatar } from '@/components/common/UserAvatar';
 import { ConfirmDialog } from '@/components/common/ConfirmDialog';
+import { ReportModal } from '@/components/common/ReportModal';
+import { ReportReason } from '@/models/Comment';
 
 interface DeckCommentSectionProps {
   comments: Comment[];
@@ -23,6 +25,9 @@ interface DeckCommentSectionProps {
   hasMore: boolean;
   onLoadMore: () => void;
   totalCount: number;
+  currentUserId?: string;
+  onDeleteComment?: (commentId: string) => Promise<void>;
+  onReportComment?: (commentId: string, reason: ReportReason, details?: string) => Promise<void>;
 }
 
 const formatDateTime = (iso: string) => {
@@ -35,6 +40,16 @@ const formatDateTime = (iso: string) => {
     minute: '2-digit',
   });
 };
+
+type ModalType = 'none' | 'post' | 'delete' | 'report';
+
+interface ModalState {
+  type: ModalType;
+  data: {
+    commentId?: string;
+    commentUserName?: string;
+  };
+}
 
 export const DeckCommentSection: React.FC<DeckCommentSectionProps> = ({
   comments,
@@ -54,33 +69,62 @@ export const DeckCommentSection: React.FC<DeckCommentSectionProps> = ({
   hasMore,
   onLoadMore,
   totalCount,
+  currentUserId,
+  onDeleteComment,
+  onReportComment,
 }) => {
-  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [modalState, setModalState] = useState<ModalState>({
+    type: 'none',
+    data: {},
+  });
+
+  const closeModal = () => setModalState({ type: 'none', data: {} });
 
   const handleSubmitClick = () => {
     if (commentText.trim().length === 0 || !canPost || posting) return;
-    setIsConfirmOpen(true);
+    setModalState({ type: 'post', data: {} });
   };
 
   const handleConfirm = async () => {
-    setIsConfirmOpen(false);
+    closeModal();
     onSubmit();
   };
 
-  const handleCancel = () => {
-    setIsConfirmOpen(false);
+  const handleReportClick = (commentId: string, commentUserName: string) => {
+    setModalState({ type: 'report', data: { commentId, commentUserName } });
+  };
+
+  const handleReportSubmit = async (reason: ReportReason, details?: string) => {
+    if (!modalState.data.commentId || !onReportComment) return;
+    await onReportComment(modalState.data.commentId, reason, details);
+    closeModal();
+  };
+
+  const handleDeleteClick = (commentId: string) => {
+    setModalState({ type: 'delete', data: { commentId } });
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!modalState.data.commentId || !onDeleteComment) return;
+    try {
+      await onDeleteComment(modalState.data.commentId);
+      closeModal();
+    } catch (err) {
+      // エラーはフック側で処理される
+      closeModal();
+    }
   };
 
   return (
     <>
       <ConfirmDialog
-        isOpen={isConfirmOpen}
+        isOpen={modalState.type === 'post'}
         title="コメントを投稿しますか?"
         description="投稿したコメントは他のユーザーに公開されます。公序良俗に反する内容や個人情報の記載はお控えください。"
         confirmLabel="投稿する"
         cancelLabel="キャンセル"
         onConfirm={handleConfirm}
-        onCancel={handleCancel}
+        onCancel={closeModal}
         confirmVariant="primary"
       >
         <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
@@ -88,6 +132,25 @@ export const DeckCommentSection: React.FC<DeckCommentSectionProps> = ({
           <p className="whitespace-pre-wrap text-sm text-slate-900">{commentText}</p>
         </div>
       </ConfirmDialog>
+
+      <ConfirmDialog
+        isOpen={modalState.type === 'delete'}
+        title="コメントを削除しますか?"
+        description="削除したコメントは復元できません。本当に削除してもよろしいですか?"
+        confirmLabel="削除する"
+        cancelLabel="キャンセル"
+        onConfirm={handleDeleteConfirm}
+        onCancel={closeModal}
+        confirmVariant="danger"
+      />
+
+      <ReportModal
+        isOpen={modalState.type === 'report'}
+        onClose={closeModal}
+        onSubmit={handleReportSubmit}
+        title="コメントを通報"
+        targetName={modalState.data.commentUserName || ''}
+      />
 
       <section className="mt-10 rounded-xl border border-slate-200 bg-white shadow-sm">
       <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3">
@@ -127,6 +190,7 @@ export const DeckCommentSection: React.FC<DeckCommentSectionProps> = ({
               {comments.map((comment) => {
                 const userProfile = userProfiles.get(comment.userId);
                 const avatarUrl = userProfile?.avatarUrl;
+                const isOwnComment = currentUserId === comment.userId;
 
                 return (
                   <li key={comment.id} className="rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm">
@@ -144,6 +208,31 @@ export const DeckCommentSection: React.FC<DeckCommentSectionProps> = ({
                             <p className="text-sm font-semibold text-slate-900">{comment.userName || '匿名ユーザー'}</p>
                             <p className="text-xs text-slate-500">{formatDateTime(comment.createdAt)}</p>
                           </div>
+                          {currentUserId && (
+                            <div className="flex gap-2">
+                              {isOwnComment ? (
+                                onDeleteComment && (
+                                  <button
+                                    type="button"
+                                    onClick={() => handleDeleteClick(comment.id)}
+                                    className="text-xs text-slate-500 hover:text-red-600"
+                                  >
+                                    削除
+                                  </button>
+                                )
+                              ) : (
+                                onReportComment && (
+                                  <button
+                                    type="button"
+                                    onClick={() => handleReportClick(comment.id, comment.userName)}
+                                    className="text-xs text-slate-500 hover:text-red-600"
+                                  >
+                                    通報
+                                  </button>
+                                )
+                              )}
+                            </div>
+                          )}
                         </div>
                         <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-slate-800">{comment.text}</p>
                       </div>
