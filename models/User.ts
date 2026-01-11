@@ -15,7 +15,7 @@ export interface UserProfile {
   /** アバター画像URL */
   avatarUrl?: string;
   /** ユーザー種別 */
-  role: UserRole;
+  role?: UserRole;
   /** 作成日時 */
   createdAt: string;
   /** 更新日時 */

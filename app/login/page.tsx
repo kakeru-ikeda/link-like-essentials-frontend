@@ -118,6 +118,7 @@ export default function LoginPage() {
                 onChange={(e) => setLoginPassword(e.target.value)}
                 className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none text-black"
                 required
+                minLength={6}
                 autoComplete="current-password"
               />
             </div>

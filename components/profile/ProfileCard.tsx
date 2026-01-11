@@ -74,7 +74,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
               <h2 className="text-2xl font-bold text-gray-900">
                 {profile.displayName}
               </h2>
-              <VerifiedBadge role={profile.role} label='認証済み' anonymousLabel='未認証' hideAnonymous={false} />
+              {profile.role && <VerifiedBadge role={profile.role} label="認証済み" anonymousLabel="未認証" hideAnonymous={false} />}
             </div>
             {profile.uid && (
               <p className="text-sm text-gray-400 mt-1">ID: {profile.uid}</p>
