@@ -1,38 +1,33 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useUserProfile } from '@/hooks/useUserProfile';
 import { ProfileCard } from '@/components/profile/ProfileCard';
 import { Button } from '@/components/common/Button';
-import { useMyDecks } from '@/hooks/useMyDecks';
-import { useLikedDecks } from '@/hooks/useLikedDecks';
 import { PublishedDeckList } from '@/components/deck/PublishedDeckList';
+import { useMyPage } from '@/hooks/useMyPage';
+import { UserRole } from '@/models/enums';
 
 export default function MyPage() {
-  const router = useRouter();
-  const { profile, isLoadingProfile, error, fetchProfile } = useUserProfile();
   const {
-    decks: myDecks,
-    pageInfo: myDecksPageInfo,
-    loading: isLoadingMyDecks,
-    error: myDecksError,
-    goToPage: goToMyDecksPage,
-    refresh: refreshMyDecks,
-  } = useMyDecks();
-
-  const {
-    decks: likedDecks,
-    pageInfo: likedDecksPageInfo,
-    loading: isLoadingLikedDecks,
-    error: likedDecksError,
-    goToPage: goToLikedDecksPage,
-    refresh: refreshLikedDecks,
-  } = useLikedDecks();
-
-  useEffect(() => {
-    fetchProfile();
-  }, [fetchProfile]);
+    profile,
+    isLoadingProfile,
+    profileError,
+    fetchProfile,
+    myDecks,
+    myDecksPageInfo,
+    isLoadingMyDecks,
+    myDecksError,
+    goToMyDecksPage,
+    refreshMyDecks,
+    likedDecks,
+    likedDecksPageInfo,
+    isLoadingLikedDecks,
+    likedDecksError,
+    goToLikedDecksPage,
+    refreshLikedDecks,
+    handleLogout,
+    navigateToProfileEdit,
+    navigateToLogin,
+  } = useMyPage();
 
   if (isLoadingProfile) {
     return (
@@ -44,12 +39,12 @@ export default function MyPage() {
     );
   }
 
-  if (error) {
+  if (profileError) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto">
           <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <p className="text-red-800">{error}</p>
+            <p className="text-red-800">{profileError}</p>
           </div>
           <div className="mt-4 text-center">
             <Button
@@ -76,7 +71,7 @@ export default function MyPage() {
               プロフィールを作成してください
             </p>
             <Button
-              onClick={() => router.push('/mypage/profile/edit')}
+              onClick={navigateToProfileEdit}
               className="bg-blue-500 hover:bg-blue-600"
             >
               プロフィールを作成
@@ -89,11 +84,48 @@ export default function MyPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="mb-6">
+      <div
+        className={`mb-6 flex items-center gap-4 ${
+          profile.role !== UserRole.ANONYMOUS ? 'justify-between' : 'justify-start'
+        }`}
+      >
         <h1 className="text-3xl font-bold text-gray-900">マイページ</h1>
+        {profile.role !== UserRole.ANONYMOUS && (
+          <Button
+            onClick={handleLogout}
+            className="bg-slate-700 hover:bg-slate-800"
+          >
+            ログアウト
+          </Button>
+        )}
       </div>
 
       <ProfileCard profile={profile} showEditButton={true} />
+
+      {profile.role === UserRole.ANONYMOUS && (
+        <div className="mt-6 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 shadow-sm">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-base font-semibold text-amber-900 pb-1">メールアドレスを登録してアカウントを認証してください</p>
+              <p className="text-sm text-amber-800">
+                コメントや通報機能はメール認証済みのアカウントでのみ利用可能です。
+              </p>
+              <p className="text-sm text-amber-800">
+                別端末でも「投稿したデッキ」や「いいねしたデッキ」のデータを利用できるように、メールとパスワードを設定してください。
+              </p>
+              <p className="text-sm text-amber-800">
+                ※ 公開デッキの情報のみ引き継がれます。デッキスロットは端末固有の情報として引き継がれませんのでご注意ください。
+              </p>
+            </div>
+            <Button
+              onClick={navigateToLogin}
+              className="bg-amber-500 hover:bg-amber-600 text-white"
+            >
+              メールでログイン/登録
+            </Button>
+          </div>
+        </div>
+      )}
 
       <section className="mt-10 space-y-4">
         <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">

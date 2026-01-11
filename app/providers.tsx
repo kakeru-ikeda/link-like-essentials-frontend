@@ -7,6 +7,7 @@ import { signInAnonymous, onAuthStateChange } from '@/repositories/firebase/auth
 import { userService } from '@/services/userService';
 import { useAuthStore } from '@/store/authStore';
 import { Loading } from '@/components/common/Loading';
+import { UserRole } from '@/models/enums';
 
 interface ProvidersProps {
   children: React.ReactNode;
@@ -14,7 +15,7 @@ interface ProvidersProps {
 
 export const Providers: React.FC<ProvidersProps> = ({ children }) => {
   const [isAuthReady, setIsAuthReady] = useState(false);
-  const { setUser, setToken } = useAuthStore();
+  const { setUser, setToken, setRole } = useAuthStore();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChange(async (firebaseUser) => {
@@ -24,9 +25,11 @@ export const Providers: React.FC<ProvidersProps> = ({ children }) => {
         setToken(token);
 
         try {
-          await userService.createProfile({ displayName: 'ゲスト' });
+          const profile = await userService.createProfile({ displayName: 'ゲスト' });
+          setRole(profile.role ?? UserRole.ANONYMOUS);
         } catch (error) {
           console.error('ユーザー作成エラー:', error);
+          setRole(UserRole.ANONYMOUS);
         }
 
         setIsAuthReady(true);
@@ -41,7 +44,7 @@ export const Providers: React.FC<ProvidersProps> = ({ children }) => {
     });
 
     return () => unsubscribe();
-  }, [setUser, setToken]);
+  }, [setUser, setToken, setRole]);
 
   if (!isAuthReady) {
     return <Loading fullScreen message="Loading..." />;

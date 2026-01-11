@@ -59,6 +59,11 @@ export enum SongAttribute {
   COOL = 'クール',
 }
 
+export enum UserRole {
+  ANONYMOUS = 'anonymous',
+  EMAIL = 'email',
+}
+
 /**
  * スキル効果の種類
  */

@@ -1,3 +1,5 @@
+import { UserRole } from './enums';
+
 /**
  * ユーザープロフィール情報
  */
@@ -12,6 +14,8 @@ export interface UserProfile {
   bio?: string;
   /** アバター画像URL */
   avatarUrl?: string;
+  /** ユーザー種別 */
+  role?: UserRole;
   /** 作成日時 */
   createdAt: string;
   /** 更新日時 */
@@ -30,4 +34,6 @@ export interface UserProfileInput {
   bio?: string;
   /** アバター画像URL */
   avatarUrl?: string;
+  /** ユーザー種別（通常は指定不要） */
+  role?: UserRole;
 }
