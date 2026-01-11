@@ -4,12 +4,14 @@ import { useCallback } from 'react';
 import { authService } from '@/services/authService';
 import { useApiBase } from './useApiBase';
 import { useAuthStore } from '@/store/authStore';
+import { useUserProfileStore } from '@/store/userProfileStore';
 import type { UpgradeAnonymousRequest, UpgradeAnonymousResponse } from '@/repositories/api/authRepository';
 import { UserRole } from '@/models/enums';
 
 export const useAuthUpgrade = () => {
   const { execute, isLoading, error, reset } = useApiBase();
   const { setUser, setToken, setRole } = useAuthStore();
+  const { setProfile } = useUserProfileStore();
 
   const upgrade = useCallback(
     async (payload: UpgradeAnonymousRequest): Promise<UpgradeAnonymousResponse> => {
@@ -17,16 +19,14 @@ export const useAuthUpgrade = () => {
         errorMessage: 'メールユーザーへの昇格に失敗しました',
       });
 
-      // 昇格後に新しい資格情報で再サインインしてトークンを更新する
-      const emailUser = await authService.signInWithEmail(payload.email, payload.password);
-      const token = await emailUser.getIdToken(true);
-      setUser(emailUser);
-      setToken(token);
-      setRole(result.user.role ?? UserRole.EMAIL);
+      setUser(result.user);
+      setToken(result.token);
+      setRole(result.role ?? UserRole.EMAIL);
+      setProfile(result.profile);
 
-      return result;
+      return result.upgradeResult;
     },
-    [execute, setRole, setToken, setUser]
+    [execute, setProfile, setRole, setToken, setUser]
   );
 
   return {

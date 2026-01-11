@@ -1,108 +1,32 @@
 'use client';
 
-import { FormEvent, useCallback, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuthStore } from '@/store/authStore';
-import { userService } from '@/services/userService';
-import { useUserProfileStore } from '@/store/userProfileStore';
-import { useAuthUpgrade } from '@/hooks/useAuthUpgrade';
 import { Button } from '@/components/common/Button';
-import { UserRole } from '@/models/enums';
-import { authErrorService } from '@/services/authErrorService';
-import { authService } from '@/services/authService';
-
-const isValidEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+import { useLogin } from '@/hooks/useLogin';
 
 export default function LoginPage() {
-  const router = useRouter();
-  const { setUser, setToken, setRole } = useAuthStore();
-  const { setProfile } = useUserProfileStore();
-  const { upgrade, isLoading: isUpgrading, error: upgradeError, reset: resetUpgrade } = useAuthUpgrade();
-
-  const [loginEmail, setLoginEmail] = useState('');
-  const [loginPassword, setLoginPassword] = useState('');
-  const [upgradeEmail, setUpgradeEmail] = useState('');
-  const [upgradePassword, setUpgradePassword] = useState('');
-  const [loginError, setLoginError] = useState<string | null>(null);
-  const [upgradeValidationError, setUpgradeValidationError] = useState<string | null>(null);
-  const [upgradeSubmitError, setUpgradeSubmitError] = useState<string | null>(null);
-  const [isLoggingIn, setIsLoggingIn] = useState(false);
-  const [upgradeMessage, setUpgradeMessage] = useState<string | null>(null);
-
-  const fetchAndStoreProfile = useCallback(async () => {
-    try {
-      const profile = await userService.getMyProfile();
-      setRole(profile.role ?? UserRole.ANONYMOUS);
-      setProfile(profile);
-      return profile;
-    } catch (error) {
-      // プロフィール未作成の場合はゲストで作成（idempotent）
-      const created = await userService.createProfile({ displayName: 'ゲスト' });
-      setRole(created.role ?? UserRole.ANONYMOUS);
-      setProfile(created);
-      return created;
-    }
-  }, [setProfile, setRole]);
-
-  const handleLogin = useCallback(
-    async (event: FormEvent) => {
-      event.preventDefault();
-      setLoginError(null);
-      setUpgradeMessage(null);
-      resetUpgrade();
-      setUpgradeSubmitError(null);
-      if (!isValidEmail(loginEmail)) {
-        setLoginError('メールアドレスの形式が正しくありません。');
-        return;
-      }
-      try {
-        setIsLoggingIn(true);
-        const user = await authService.signInWithEmail(loginEmail, loginPassword);
-        const token = await user.getIdToken(true);
-        setUser(user);
-        setToken(token);
-        await fetchAndStoreProfile();
-        router.push('/mypage');
-      } catch (error) {
-        setLoginError(authErrorService.mapLoginErrorMessage(error));
-      } finally {
-        setIsLoggingIn(false);
-      }
-    },
-    [fetchAndStoreProfile, loginEmail, loginPassword, resetUpgrade, router, setToken, setUser]
-  );
-
-  const handleUpgrade = useCallback(
-    async (event: FormEvent) => {
-      event.preventDefault();
-      setLoginError(null);
-      setUpgradeMessage(null);
-      setUpgradeValidationError(null);
-      setUpgradeSubmitError(null);
-      if (!isValidEmail(upgradeEmail)) {
-        setUpgradeValidationError('メールアドレスの形式が正しくありません。');
-        return;
-      }
-      try {
-        const result = await upgrade({
-          email: upgradeEmail,
-          password: upgradePassword,
-        });
-        setProfile(result.user);
-        setUpgradeMessage('メールアドレスを登録しました。');
-        router.push('/mypage');
-      } catch (error) {
-        const message = error instanceof Error ? error.message : 'メール登録に失敗しました';
-        setUpgradeSubmitError(message);
-      }
-    },
-    [router, setProfile, upgrade, upgradeEmail, upgradePassword]
-  );
+  const {
+    loginEmail,
+    setLoginEmail,
+    loginPassword,
+    setLoginPassword,
+    upgradeEmail,
+    setUpgradeEmail,
+    upgradePassword,
+    setUpgradePassword,
+    loginError,
+    upgradeValidationError,
+    upgradeMessage,
+    upgradeError,
+    isLoggingIn,
+    isUpgrading,
+    handleLogin,
+    handleUpgrade,
+  } = useLogin();
 
   return (
     <div className="container mx-auto px-4 py-8">
       <img
-        src="images/logo.png"
+        src="/images/logo.png"
         alt="logo"
         className="mx-auto my-10 h-32 w-auto"
       />
@@ -181,15 +105,15 @@ export default function LoginPage() {
               />
             </div>
 
-            {(upgradeValidationError || upgradeSubmitError || upgradeError || upgradeMessage) && (
+            {(upgradeValidationError || upgradeError || upgradeMessage) && (
               <div
                 className={`rounded-md border px-3 py-2 text-sm ${
-                  upgradeValidationError || upgradeSubmitError || upgradeError
+                  upgradeValidationError || upgradeError
                     ? 'border-red-200 bg-red-50 text-red-700'
                     : 'border-green-200 bg-green-50 text-green-700'
                 }`}
               >
-                {upgradeValidationError || upgradeSubmitError || upgradeError || upgradeMessage}
+                {upgradeValidationError || upgradeError || upgradeMessage}
               </div>
             )}
 

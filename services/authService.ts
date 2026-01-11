@@ -1,15 +1,44 @@
 import type { UpgradeAnonymousRequest, UpgradeAnonymousResponse } from '@/repositories/api/authRepository';
 import { authRepository } from '@/repositories/api/authRepository';
 import { signInWithEmail as signInWithEmailRepo, signOutUser as signOutUserRepo } from '@/repositories/firebase/auth';
+import { userService } from '@/services/userService';
+import type { UserProfile } from '@/models/User';
+import { UserRole } from '@/models/enums';
+
+interface SignInResult {
+  user: Awaited<ReturnType<typeof signInWithEmailRepo>>;
+  token: string;
+}
+
+interface UpgradeResult {
+  upgradeResult: UpgradeAnonymousResponse;
+  user: Awaited<ReturnType<typeof signInWithEmailRepo>>;
+  token: string;
+  profile: UserProfile;
+  role: UserRole;
+}
 
 export const authService = {
   async upgradeAnonymousToEmail(
     payload: UpgradeAnonymousRequest
-  ): Promise<UpgradeAnonymousResponse> {
-    return await authRepository.upgradeAnonymousToEmail(payload);
+  ): Promise<UpgradeResult> {
+    const upgradeResult = await authRepository.upgradeAnonymousToEmail(payload);
+    const { user, token } = await authService.signInWithEmail(payload.email, payload.password);
+    const profile = await authService.fetchOrCreateProfile();
+    const resolvedRole = profile.role ?? upgradeResult.user.role ?? UserRole.EMAIL;
+    return { upgradeResult, user, token, profile, role: resolvedRole };
   },
-  async signInWithEmail(email: string, password: string) {
-    return await signInWithEmailRepo(email, password);
+  async signInWithEmail(email: string, password: string): Promise<SignInResult> {
+    const user = await signInWithEmailRepo(email, password);
+    const token = await user.getIdToken(true);
+    return { user, token };
+  },
+  async fetchOrCreateProfile(): Promise<UserProfile> {
+    try {
+      return await userService.getMyProfile();
+    } catch {
+      return await userService.createProfile({ displayName: 'ゲスト' });
+    }
   },
   async signOutUser() {
     await signOutUserRepo();

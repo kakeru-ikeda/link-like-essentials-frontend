@@ -1,51 +1,33 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useUserProfile } from '@/hooks/useUserProfile';
 import { ProfileCard } from '@/components/profile/ProfileCard';
 import { Button } from '@/components/common/Button';
-import { useMyDecks } from '@/hooks/useMyDecks';
-import { useLikedDecks } from '@/hooks/useLikedDecks';
 import { PublishedDeckList } from '@/components/deck/PublishedDeckList';
+import { useMyPage } from '@/hooks/useMyPage';
 import { UserRole } from '@/models/enums';
-import { useAuth } from '@/hooks/useAuth';
-import { useUserProfileStore } from '@/store/userProfileStore';
-import { authService } from '@/services/authService';
 
 export default function MyPage() {
-  const router = useRouter();
-  const { profile, isLoadingProfile, error, fetchProfile } = useUserProfile();
   const {
-    decks: myDecks,
-    pageInfo: myDecksPageInfo,
-    loading: isLoadingMyDecks,
-    error: myDecksError,
-    goToPage: goToMyDecksPage,
-    refresh: refreshMyDecks,
-  } = useMyDecks();
-
-  const {
-    decks: likedDecks,
-    pageInfo: likedDecksPageInfo,
-    loading: isLoadingLikedDecks,
-    error: likedDecksError,
-    goToPage: goToLikedDecksPage,
-    refresh: refreshLikedDecks,
-  } = useLikedDecks();
-  const { logout } = useAuth();
-  const { clearProfile } = useUserProfileStore();
-
-  const handleLogout = async () => {
-    await authService.signOutUser();
-    logout();
-    clearProfile();
-    router.push('/');
-  };
-
-  useEffect(() => {
-    fetchProfile();
-  }, [fetchProfile]);
+    profile,
+    isLoadingProfile,
+    profileError,
+    fetchProfile,
+    myDecks,
+    myDecksPageInfo,
+    isLoadingMyDecks,
+    myDecksError,
+    goToMyDecksPage,
+    refreshMyDecks,
+    likedDecks,
+    likedDecksPageInfo,
+    isLoadingLikedDecks,
+    likedDecksError,
+    goToLikedDecksPage,
+    refreshLikedDecks,
+    handleLogout,
+    navigateToProfileEdit,
+    navigateToLogin,
+  } = useMyPage();
 
   if (isLoadingProfile) {
     return (
@@ -57,12 +39,12 @@ export default function MyPage() {
     );
   }
 
-  if (error) {
+  if (profileError) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto">
           <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <p className="text-red-800">{error}</p>
+            <p className="text-red-800">{profileError}</p>
           </div>
           <div className="mt-4 text-center">
             <Button
@@ -89,7 +71,7 @@ export default function MyPage() {
               プロフィールを作成してください
             </p>
             <Button
-              onClick={() => router.push('/mypage/profile/edit')}
+              onClick={navigateToProfileEdit}
               className="bg-blue-500 hover:bg-blue-600"
             >
               プロフィールを作成
@@ -136,7 +118,7 @@ export default function MyPage() {
               </p>
             </div>
             <Button
-              onClick={() => router.push('/login')}
+              onClick={navigateToLogin}
               className="bg-amber-500 hover:bg-amber-600 text-white"
             >
               メールでログイン/登録
