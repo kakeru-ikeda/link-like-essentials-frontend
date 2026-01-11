@@ -5,6 +5,7 @@ import { PaginatedResponse } from '@/models/Pagination';
 import { PopularHashtagSummary } from '@/models/Hashtag';
 import { DECK_API_ENDPOINT } from '@/config/api';
 import { getAuthToken } from './authUtils';
+import { auth } from '@/repositories/firebase/config';
 
 export const deckRepository = {
   /**
@@ -272,6 +273,30 @@ export const deckRepository = {
 
     const data = await response.json();
     return data.comment;
+  },
+
+  /**
+   * デッキのコメント一覧を取得
+   * @param deckId - デッキID（公開ID）
+   * @returns コメント配列
+   */
+  async getComments(deckId: string): Promise<Comment[]> {
+    const token = await getAuthToken();
+    const response = await fetch(`${DECK_API_ENDPOINT}/decks/${deckId}/comments`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      }
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.error?.message || 'コメントの取得に失敗しました');
+    }
+
+    const data = await response.json();
+    return data.comments ?? [];
   },
 
   /**
