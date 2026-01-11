@@ -5,7 +5,7 @@ import { MAX_COMMENT_LENGTH } from '@/hooks/useDeckComments';
 import { UserAvatar } from '@/components/common/UserAvatar';
 import { ConfirmDialog } from '@/components/common/ConfirmDialog';
 import { ReportModal } from '@/components/common/ReportModal';
-import { ReportReason } from '@/services/deckCommentService';
+import { ReportReason } from '@/models/Comment';
 
 interface DeckCommentSectionProps {
   comments: Comment[];
@@ -41,6 +41,16 @@ const formatDateTime = (iso: string) => {
   });
 };
 
+type ModalType = 'none' | 'post' | 'delete' | 'report';
+
+interface ModalState {
+  type: ModalType;
+  data: {
+    commentId?: string;
+    commentUserName?: string;
+  };
+}
+
 export const DeckCommentSection: React.FC<DeckCommentSectionProps> = ({
   comments,
   loading,
@@ -63,66 +73,58 @@ export const DeckCommentSection: React.FC<DeckCommentSectionProps> = ({
   onDeleteComment,
   onReportComment,
 }) => {
-  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-  const [reportModalState, setReportModalState] = useState<{ isOpen: boolean; commentId: string | null; commentUserName: string }>({
-    isOpen: false,
-    commentId: null,
-    commentUserName: '',
+  const [modalState, setModalState] = useState<ModalState>({
+    type: 'none',
+    data: {},
   });
-  const [deleteConfirmState, setDeleteConfirmState] = useState<{ isOpen: boolean; commentId: string | null }>({
-    isOpen: false,
-    commentId: null,
-  });
+
+  const closeModal = () => setModalState({ type: 'none', data: {} });
 
   const handleSubmitClick = () => {
     if (commentText.trim().length === 0 || !canPost || posting) return;
-    setIsConfirmOpen(true);
+    setModalState({ type: 'post', data: {} });
   };
 
   const handleConfirm = async () => {
-    setIsConfirmOpen(false);
+    closeModal();
     onSubmit();
   };
 
-  const handleCancel = () => {
-    setIsConfirmOpen(false);
-  };
-
   const handleReportClick = (commentId: string, commentUserName: string) => {
-    setReportModalState({ isOpen: true, commentId, commentUserName });
+    setModalState({ type: 'report', data: { commentId, commentUserName } });
   };
 
   const handleReportSubmit = async (reason: ReportReason, details?: string) => {
-    if (!reportModalState.commentId || !onReportComment) return;
-    await onReportComment(reportModalState.commentId, reason, details);
-    setReportModalState({ isOpen: false, commentId: null, commentUserName: '' });
+    if (!modalState.data.commentId || !onReportComment) return;
+    await onReportComment(modalState.data.commentId, reason, details);
+    closeModal();
   };
 
   const handleDeleteClick = (commentId: string) => {
-    setDeleteConfirmState({ isOpen: true, commentId });
+    setModalState({ type: 'delete', data: { commentId } });
   };
 
   const handleDeleteConfirm = async () => {
-    if (!deleteConfirmState.commentId || !onDeleteComment) return;
+    if (!modalState.data.commentId || !onDeleteComment) return;
     try {
-      await onDeleteComment(deleteConfirmState.commentId);
-      setDeleteConfirmState({ isOpen: false, commentId: null });
+      await onDeleteComment(modalState.data.commentId);
+      closeModal();
     } catch (err) {
       // エラーはフック側で処理される
-      setDeleteConfirmState({ isOpen: false, commentId: null });
+      closeModal();
     }
   };
 
   return (
     <>
       <ConfirmDialog
-        isOpen={isConfirmOpen}
+        isOpen={modalState.type === 'post'}
         title="コメントを投稿しますか?"
         description="投稿したコメントは他のユーザーに公開されます。公序良俗に反する内容や個人情報の記載はお控えください。"
         confirmLabel="投稿する"
         cancelLabel="キャンセル"
         onConfirm={handleConfirm}
-        onCancel={handleCancel}
+        onCancel={closeModal}
         confirmVariant="primary"
       >
         <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
@@ -132,22 +134,22 @@ export const DeckCommentSection: React.FC<DeckCommentSectionProps> = ({
       </ConfirmDialog>
 
       <ConfirmDialog
-        isOpen={deleteConfirmState.isOpen}
+        isOpen={modalState.type === 'delete'}
         title="コメントを削除しますか?"
         description="削除したコメントは復元できません。本当に削除してもよろしいですか?"
         confirmLabel="削除する"
         cancelLabel="キャンセル"
         onConfirm={handleDeleteConfirm}
-        onCancel={() => setDeleteConfirmState({ isOpen: false, commentId: null })}
+        onCancel={closeModal}
         confirmVariant="danger"
       />
 
       <ReportModal
-        isOpen={reportModalState.isOpen}
-        onClose={() => setReportModalState({ isOpen: false, commentId: null, commentUserName: '' })}
+        isOpen={modalState.type === 'report'}
+        onClose={closeModal}
         onSubmit={handleReportSubmit}
         title="コメントを通報"
-        targetName={reportModalState.commentUserName}
+        targetName={modalState.data.commentUserName || ''}
       />
 
       <section className="mt-10 rounded-xl border border-slate-200 bg-white shadow-sm">

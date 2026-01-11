@@ -1,9 +1,5 @@
 import { deckRepository } from '@/repositories/api/deckRepository';
-
-/**
- * 通報理由の型
- */
-export type ReportReason = 'inappropriate_content' | 'spam' | 'copyright' | 'other';
+import { ReportReason, getReportReasonLabel } from '@/models/Comment';
 
 /**
  * デッキコメントに関するビジネスロジックを提供するサービス
@@ -38,17 +34,11 @@ export const deckCommentService = {
   },
 
   /**
-   * 通報理由を日本語に変換
+   * 通報理由を日本語ラベルに変換
    * @param reason - 通報理由
-   * @returns 日本語の通報理由
+   * @returns 日本語ラベル
    */
   formatReportReason(reason: ReportReason): string {
-    const reasonMap: Record<ReportReason, string> = {
-      inappropriate_content: '不適切なコンテンツ',
-      spam: 'スパム',
-      copyright: '著作権侵害',
-      other: 'その他',
-    };
-    return reasonMap[reason] || 'その他';
+    return getReportReasonLabel(reason);
   },
 };

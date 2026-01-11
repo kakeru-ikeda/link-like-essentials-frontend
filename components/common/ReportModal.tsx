@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { ReportReason } from '@/services/deckCommentService';
+import { ReportReason, REPORT_REASONS } from '@/models/Comment';
 
 interface ReportModalProps {
   isOpen: boolean;
@@ -10,13 +10,6 @@ interface ReportModalProps {
   title: string;
   targetName: string;
 }
-
-const REPORT_REASONS: { value: ReportReason; label: string }[] = [
-  { value: 'inappropriate_content', label: '不適切なコンテンツ' },
-  { value: 'spam', label: 'スパム' },
-  { value: 'copyright', label: '著作権侵害' },
-  { value: 'other', label: 'その他' },
-];
 
 export function ReportModal({ isOpen, onClose, onSubmit, title, targetName }: ReportModalProps) {
   const [reason, setReason] = useState<ReportReason>('inappropriate_content');

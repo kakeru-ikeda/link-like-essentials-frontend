@@ -12,7 +12,7 @@ import { ReportModal } from '@/components/common/ReportModal';
 import { ConfirmDialog } from '@/components/common/ConfirmDialog';
 import { useDeckComments } from '@/hooks/useDeckComments';
 import { useAuth } from '@/hooks/useAuth';
-import { ReportReason } from '@/services/deckCommentService';
+import { ReportReason } from '@/models/Comment';
 
 const getDeckId = (param: string | string[] | undefined): string | null => {
   if (!param) return null;
@@ -79,7 +79,12 @@ export default function DeckDetailPage() {
 
   const handleReportDeck = useCallback(async (reason: ReportReason, details?: string) => {
     if (!deckId) return;
-    await publishedDeckService.reportDeck(deckId, reason, details);
+    try {
+      await publishedDeckService.reportDeck(deckId, reason, details);
+    } catch (err) {
+      console.error('デッキの通報に失敗しました', err);
+      alert(err instanceof Error ? err.message : 'デッキの通報に失敗しました');
+    }
   }, [deckId]);
 
   const handleDeleteDeck = useCallback(async () => {
@@ -88,12 +93,12 @@ export default function DeckDetailPage() {
     try {
       await publishedDeckService.deleteDeck(deckId);
       router.push('/decks');
+      setDeleteConfirmOpen(false);
     } catch (err) {
       console.error('デッキの削除に失敗しました', err);
       alert(err instanceof Error ? err.message : 'デッキの削除に失敗しました');
     } finally {
       setDeleting(false);
-      setDeleteConfirmOpen(false);
     }
   }, [deckId, router]);
 

@@ -4,7 +4,7 @@ import { Comment } from '@/models/Comment';
 import { PaginatedResponse } from '@/models/Pagination';
 import { PopularHashtagSummary } from '@/models/Hashtag';
 import { deckRepository } from '@/repositories/api/deckRepository';
-import { ReportReason } from './deckCommentService';
+import { ReportReason } from '@/models/Comment';
 
 /**
  * 公開デッキの取得・操作をまとめたサービス

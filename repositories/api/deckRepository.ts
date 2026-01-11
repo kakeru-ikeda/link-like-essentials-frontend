@@ -1,5 +1,5 @@
 import { DeckPublicationRequest, PublishedDeck } from '@/models/PublishedDeck';
-import { Comment } from '@/models/Comment';
+import { Comment, ReportReason } from '@/models/Comment';
 import { GetDecksParams, GetLikedDecksParams } from '@/models/DeckQueryParams';
 import { PaginatedResponse } from '@/models/Pagination';
 import { PopularHashtagSummary } from '@/models/Hashtag';
@@ -337,7 +337,7 @@ export const deckRepository = {
   async reportComment(
     deckId: string,
     commentId: string,
-    reason: 'inappropriate_content' | 'spam' | 'copyright' | 'other',
+    reason: ReportReason,
     details?: string
   ): Promise<{ success: boolean; message: string }> {
     const token = await getAuthToken();
@@ -359,7 +359,7 @@ export const deckRepository = {
     return data;
   },
 
-  /**   
+  /**
    * デッキを通報する
    * @param deckId - デッキID（公開ID）
    * @param reason - 通報理由
@@ -368,7 +368,7 @@ export const deckRepository = {
    */
   async reportDeck(
     deckId: string,
-    reason: 'inappropriate_content' | 'spam' | 'copyright' | 'other',
+    reason: ReportReason,
     details?: string
   ): Promise<{ success: boolean; message: string }> {
     const token = await getAuthToken();

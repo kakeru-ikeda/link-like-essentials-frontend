@@ -6,7 +6,8 @@ import { UserRole } from '@/models/enums';
 import { UserProfile } from '@/models/User';
 import { PageInfo } from '@/models/Pagination';
 import { publishedDeckService } from '@/services/publishedDeckService';
-import { deckCommentService, ReportReason } from '@/services/deckCommentService';
+import { deckCommentService } from '@/services/deckCommentService';
+import { ReportReason } from '@/models/Comment';
 import { useAuth } from './useAuth';
 import { useBatchUserProfiles } from './useBatchUserProfiles';
 
@@ -43,7 +44,7 @@ interface UseDeckCommentsResult {
  * 公開デッキのコメント一覧と投稿を扱うフック
  */
 export const useDeckComments = (deckId: string | null): UseDeckCommentsResult => {
-  const { role, isAuthenticated, user } = useAuth();
+  const { role, isAuthenticated } = useAuth();
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
