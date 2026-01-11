@@ -23,9 +23,9 @@ export default function LoginPage() {
   const [loginPassword, setLoginPassword] = useState('');
   const [upgradeEmail, setUpgradeEmail] = useState('');
   const [upgradePassword, setUpgradePassword] = useState('');
-  const [upgradeDisplayName, setUpgradeDisplayName] = useState('');
   const [loginError, setLoginError] = useState<string | null>(null);
   const [upgradeValidationError, setUpgradeValidationError] = useState<string | null>(null);
+  const [upgradeSubmitError, setUpgradeSubmitError] = useState<string | null>(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [upgradeMessage, setUpgradeMessage] = useState<string | null>(null);
 
@@ -50,6 +50,7 @@ export default function LoginPage() {
       setLoginError(null);
       setUpgradeMessage(null);
       resetUpgrade();
+      setUpgradeSubmitError(null);
       if (!isValidEmail(loginEmail)) {
         setLoginError('メールアドレスの形式が正しくありません。');
         return;
@@ -77,6 +78,7 @@ export default function LoginPage() {
       setLoginError(null);
       setUpgradeMessage(null);
       setUpgradeValidationError(null);
+      setUpgradeSubmitError(null);
       if (!isValidEmail(upgradeEmail)) {
         setUpgradeValidationError('メールアドレスの形式が正しくありません。');
         return;
@@ -85,17 +87,16 @@ export default function LoginPage() {
         const result = await upgrade({
           email: upgradeEmail,
           password: upgradePassword,
-          displayName: upgradeDisplayName || undefined,
         });
         setProfile(result.user);
         setUpgradeMessage('メールアドレスを登録しました。');
         router.push('/mypage');
       } catch (error) {
         const message = error instanceof Error ? error.message : 'メール登録に失敗しました';
-        setLoginError(message);
+        setUpgradeSubmitError(message);
       }
     },
-    [router, setProfile, upgrade, upgradeDisplayName, upgradeEmail, upgradePassword]
+    [router, setProfile, upgrade, upgradeEmail, upgradePassword]
   );
 
   return (
@@ -180,15 +181,15 @@ export default function LoginPage() {
               />
             </div>
 
-            {(upgradeValidationError || upgradeError || upgradeMessage) && (
+            {(upgradeValidationError || upgradeSubmitError || upgradeError || upgradeMessage) && (
               <div
                 className={`rounded-md border px-3 py-2 text-sm ${
-                  upgradeValidationError || upgradeError
+                  upgradeValidationError || upgradeSubmitError || upgradeError
                     ? 'border-red-200 bg-red-50 text-red-700'
                     : 'border-green-200 bg-green-50 text-green-700'
                 }`}
               >
-                {upgradeValidationError || upgradeError || upgradeMessage}
+                {upgradeValidationError || upgradeSubmitError || upgradeError || upgradeMessage}
               </div>
             )}
 
