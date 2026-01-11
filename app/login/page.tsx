@@ -2,7 +2,6 @@
 
 import { FormEvent, useCallback, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { signInWithEmail } from '@/repositories/firebase/auth';
 import { useAuthStore } from '@/store/authStore';
 import { userService } from '@/services/userService';
 import { useUserProfileStore } from '@/store/userProfileStore';
@@ -10,6 +9,7 @@ import { useAuthUpgrade } from '@/hooks/useAuthUpgrade';
 import { Button } from '@/components/common/Button';
 import { UserRole } from '@/models/enums';
 import { authErrorService } from '@/services/authErrorService';
+import { authService } from '@/services/authService';
 
 const isValidEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
 
@@ -57,7 +57,7 @@ export default function LoginPage() {
       }
       try {
         setIsLoggingIn(true);
-        const user = await signInWithEmail(loginEmail, loginPassword);
+        const user = await authService.signInWithEmail(loginEmail, loginPassword);
         const token = await user.getIdToken(true);
         setUser(user);
         setToken(token);

@@ -11,7 +11,7 @@ import { PublishedDeckList } from '@/components/deck/PublishedDeckList';
 import { UserRole } from '@/models/enums';
 import { useAuth } from '@/hooks/useAuth';
 import { useUserProfileStore } from '@/store/userProfileStore';
-import { signOutUser } from '@/repositories/firebase/auth';
+import { authService } from '@/services/authService';
 
 export default function MyPage() {
   const router = useRouter();
@@ -37,7 +37,7 @@ export default function MyPage() {
   const { clearProfile } = useUserProfileStore();
 
   const handleLogout = async () => {
-    await signOutUser();
+    await authService.signOutUser();
     logout();
     clearProfile();
     router.push('/');
