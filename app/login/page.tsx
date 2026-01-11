@@ -11,6 +11,8 @@ import { Button } from '@/components/common/Button';
 import { UserRole } from '@/models/enums';
 import { authErrorService } from '@/services/authErrorService';
 
+const isValidEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+
 export default function LoginPage() {
   const router = useRouter();
   const { setUser, setToken, setRole } = useAuthStore();
@@ -23,6 +25,7 @@ export default function LoginPage() {
   const [upgradePassword, setUpgradePassword] = useState('');
   const [upgradeDisplayName, setUpgradeDisplayName] = useState('');
   const [loginError, setLoginError] = useState<string | null>(null);
+  const [upgradeValidationError, setUpgradeValidationError] = useState<string | null>(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [upgradeMessage, setUpgradeMessage] = useState<string | null>(null);
 
@@ -47,6 +50,10 @@ export default function LoginPage() {
       setLoginError(null);
       setUpgradeMessage(null);
       resetUpgrade();
+      if (!isValidEmail(loginEmail)) {
+        setLoginError('メールアドレスの形式が正しくありません。');
+        return;
+      }
       try {
         setIsLoggingIn(true);
         const user = await signInWithEmail(loginEmail, loginPassword);
@@ -69,6 +76,11 @@ export default function LoginPage() {
       event.preventDefault();
       setLoginError(null);
       setUpgradeMessage(null);
+      setUpgradeValidationError(null);
+      if (!isValidEmail(upgradeEmail)) {
+        setUpgradeValidationError('メールアドレスの形式が正しくありません。');
+        return;
+      }
       try {
         const result = await upgrade({
           email: upgradeEmail,
@@ -168,15 +180,15 @@ export default function LoginPage() {
               />
             </div>
 
-            {(upgradeError || upgradeMessage) && (
+            {(upgradeValidationError || upgradeError || upgradeMessage) && (
               <div
                 className={`rounded-md border px-3 py-2 text-sm ${
-                  upgradeError
+                  upgradeValidationError || upgradeError
                     ? 'border-red-200 bg-red-50 text-red-700'
                     : 'border-green-200 bg-green-50 text-green-700'
                 }`}
               >
-                {upgradeError || upgradeMessage}
+                {upgradeValidationError || upgradeError || upgradeMessage}
               </div>
             )}
 
