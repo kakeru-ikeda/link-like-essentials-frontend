@@ -53,4 +53,8 @@ export const publishedDeckService = {
   async reportDeck(deckId: string, reason: ReportReason, details?: string): Promise<{ success: boolean; message: string }> {
     return deckRepository.reportDeck(deckId, reason, details);
   },
+
+  async deleteDeck(deckId: string): Promise<void> {
+    return deckRepository.deleteDeck(deckId);
+  },
 };

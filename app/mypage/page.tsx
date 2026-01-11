@@ -108,7 +108,7 @@ export default function MyPage() {
             <div>
               <p className="text-base font-semibold text-amber-900 pb-1">メールアドレスを登録してアカウントを認証してください</p>
               <p className="text-sm text-amber-800">
-                コメントや通報機能はメール認証済みのアカウントでのみ利用可能です。
+                コメントはメール認証済みのアカウントでのみ利用可能です。
               </p>
               <p className="text-sm text-amber-800">
                 別端末でも「投稿したデッキ」や「いいねしたデッキ」のデータを利用できるように、メールとパスワードを設定してください。
