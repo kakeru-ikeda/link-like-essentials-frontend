@@ -21,11 +21,13 @@ export const useBatchUserProfiles = (userIds: string[]): UseBatchUserProfilesRes
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const uniqueUserIds = useMemo(() => {
-    return Array.from(new Set(userIds)).filter((id) => id.length > 0);
+  const uniqueUserIdsKey = useMemo(() => {
+    return Array.from(new Set(userIds)).filter((id) => id.length > 0).sort().join(',');
   }, [userIds]);
 
   useEffect(() => {
+    const uniqueUserIds = uniqueUserIdsKey.split(',').filter((id) => id.length > 0);
+
     if (uniqueUserIds.length === 0) {
       setProfiles(new Map());
       setLoading(false);
@@ -61,7 +63,7 @@ export const useBatchUserProfiles = (userIds: string[]): UseBatchUserProfilesRes
     return () => {
       cancelled = true;
     };
-  }, [uniqueUserIds]);
+  }, [uniqueUserIdsKey]);
 
   return { profiles, loading, error };
 };

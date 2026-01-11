@@ -138,7 +138,8 @@ export const useDeckComments = (deckId: string | null): UseDeckCommentsResult =>
     if (deckId) {
       void fetchComments();
     }
-  }, [deckId, fetchComments]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [deckId]);
 
   return {
     comments,

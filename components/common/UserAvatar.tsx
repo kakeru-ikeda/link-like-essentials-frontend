@@ -1,6 +1,5 @@
 import { UserProfile } from '@/models/User';
 import { VerifiedBadge } from '@/components/common/VerifiedBadge';
-import { UserRole } from '@/models/enums';
 
 interface UserAvatarProps {
   userName: string;
@@ -73,7 +72,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
                   {userProfile.role ? (
                     <VerifiedBadge
                       role={userProfile.role}
-                      size='sm'
+                      size="sm"
                     />
                 ) : null}
                 </div>

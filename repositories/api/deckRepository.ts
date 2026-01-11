@@ -283,8 +283,8 @@ export const deckRepository = {
    * @returns ページネーション付きコメント配列
    */
   async getComments(deckId: string, page: number = 1, perPage: number = 20): Promise<PaginatedResponse<Comment>> {
-    const token = auth?.currentUser ? await auth.currentUser.getIdToken() : null;
-    const headers: HeadersInit = token ? { Authorization: `Bearer ${token}` } : {};
+    const token = await getAuthToken();
+    const headers: HeadersInit = { Authorization: `Bearer ${token}` };
     
     const queryParams = new URLSearchParams();
     queryParams.append('page', page.toString());
