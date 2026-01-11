@@ -87,73 +87,55 @@ export const Tooltip: React.FC<TooltipProps> = ({
         };
       };
 
-      // フォールバック位置を優先順位順に試行（左右優先）
+      // フォールバック位置を優先順位順に試行
       const tryPositions = (
         preferred: 'top' | 'bottom' | 'left' | 'right'
       ): {
         pos: 'top' | 'bottom' | 'left' | 'right';
         coords: { top: number; left: number };
       } => {
+        // まず指定された位置を試す
         let finalPos = preferred;
         let coords = calculatePosition(finalPos);
         let bounds = getOutOfBoundsDirections(coords);
 
-        // 左右優先でチェック
-        if (bounds.right) {
-          finalPos = 'left';
-          coords = calculatePosition('left');
-          bounds = getOutOfBoundsDirections(coords);
+        // 指定された位置の主軸が画面外かチェック
+        const isMainAxisOutOfBounds =
+          (preferred === 'left' && bounds.left) ||
+          (preferred === 'right' && bounds.right) ||
+          (preferred === 'top' && bounds.top) ||
+          (preferred === 'bottom' && bounds.bottom);
 
-          // leftも画面外なら上下を試す
-          if (bounds.left) {
-            finalPos = 'top';
-            coords = calculatePosition('top');
-            bounds = getOutOfBoundsDirections(coords);
-
-            // topも画面外ならbottomへ
-            if (bounds.top) {
-              finalPos = 'bottom';
-              coords = calculatePosition('bottom');
-            }
-          }
-        } else if (bounds.left) {
-          finalPos = 'right';
-          coords = calculatePosition('right');
-          bounds = getOutOfBoundsDirections(coords);
-
-          // rightも画面外なら上下を試す
-          if (bounds.right) {
-            finalPos = 'top';
-            coords = calculatePosition('top');
-            bounds = getOutOfBoundsDirections(coords);
-
-            // topも画面外ならbottomへ
-            if (bounds.top) {
-              finalPos = 'bottom';
-              coords = calculatePosition('bottom');
-            }
-          }
+        // 主軸が画面内なら、垂直/水平位置は後で調整するのでそのまま返す
+        if (!isMainAxisOutOfBounds) {
+          return { pos: finalPos, coords };
         }
-        // 左右に問題ない場合のみ上下をチェック
-        else if (bounds.top) {
-          finalPos = 'bottom';
-          coords = calculatePosition('bottom');
+
+        // フォールバック順序（反対方向 → 他の方向）
+        const fallbackOrder: Record<
+          string,
+          ('top' | 'bottom' | 'left' | 'right')[]
+        > = {
+          left: ['right', 'top', 'bottom'],
+          right: ['left', 'top', 'bottom'],
+          top: ['bottom', 'right', 'left'],
+          bottom: ['top', 'right', 'left'],
+        };
+
+        // フォールバック位置を順に試す
+        for (const fallbackPos of fallbackOrder[preferred]) {
+          finalPos = fallbackPos;
+          coords = calculatePosition(fallbackPos);
           bounds = getOutOfBoundsDirections(coords);
 
-          // bottomも画面外ならrightへ
-          if (bounds.bottom) {
-            finalPos = 'right';
-            coords = calculatePosition('right');
-          }
-        } else if (bounds.bottom) {
-          finalPos = 'top';
-          coords = calculatePosition('top');
-          bounds = getOutOfBoundsDirections(coords);
+          const isFallbackMainAxisOut =
+            (fallbackPos === 'left' && bounds.left) ||
+            (fallbackPos === 'right' && bounds.right) ||
+            (fallbackPos === 'top' && bounds.top) ||
+            (fallbackPos === 'bottom' && bounds.bottom);
 
-          // topも画面外ならrightへ
-          if (bounds.top) {
-            finalPos = 'right';
-            coords = calculatePosition('right');
+          if (!isFallbackMainAxisOut) {
+            break;
           }
         }
 
@@ -222,7 +204,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
       window.removeEventListener('resize', updatePosition);
       resizeObserver?.disconnect();
     };
-  }, [isVisible, position, content]);
+  }, [isVisible, position]);
 
   const tooltipContent =
     isVisible && mounted ? (
@@ -241,34 +223,33 @@ export const Tooltip: React.FC<TooltipProps> = ({
       >
         {content}
         {/* 矢印 */}
-        {!hideArrow &&
-          (() => {
-            const isVertical =
-              actualPosition === 'top' || actualPosition === 'bottom';
-            const isHorizontal =
-              actualPosition === 'left' || actualPosition === 'right';
-
-            return (
-              <div
-                className={`absolute w-2 h-2 bg-gray-900 ${
-                  actualPosition === 'top'
-                    ? 'bottom-[-4px]'
-                    : actualPosition === 'bottom'
-                      ? 'top-[-4px]'
-                      : actualPosition === 'left'
-                        ? 'right-[-4px]'
-                        : 'left-[-4px]'
-                }`}
-                style={{
-                  top: isHorizontal ? arrowOffset.top : undefined,
-                  left: isVertical ? arrowOffset.left : undefined,
-                  transform: isVertical
-                    ? 'translateX(-50%) rotate(45deg)'
-                    : 'translateY(-50%) rotate(45deg)',
-                }}
-              />
-            );
-          })()}
+        {!hideArrow && (
+          <div
+            className={`absolute w-2 h-2 bg-gray-900 ${
+              actualPosition === 'top'
+                ? 'bottom-[-4px]'
+                : actualPosition === 'bottom'
+                  ? 'top-[-4px]'
+                  : actualPosition === 'left'
+                    ? 'right-[-4px]'
+                    : 'left-[-4px]'
+            }`}
+            style={{
+              top:
+                actualPosition === 'left' || actualPosition === 'right'
+                  ? arrowOffset.top
+                  : undefined,
+              left:
+                actualPosition === 'top' || actualPosition === 'bottom'
+                  ? arrowOffset.left
+                  : undefined,
+              transform:
+                actualPosition === 'top' || actualPosition === 'bottom'
+                  ? 'translateX(-50%) rotate(45deg)'
+                  : 'translateY(-50%) rotate(45deg)',
+            }}
+          />
+        )}
       </div>
     ) : null;
 
