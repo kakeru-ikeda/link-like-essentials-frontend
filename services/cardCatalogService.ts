@@ -1,14 +1,7 @@
 import { apolloClient } from '@/repositories/graphql/client';
 import { GET_CARD_DETAILS } from '@/repositories/graphql/queries/cards';
+import { CardDetailsQueryData } from '@/types/graphql/cards';
 import { Card } from '@/models/Card';
-
-interface GetCardDetailsResponse {
-  cardDetails: Array<{
-    id: string;
-    cardId: string;
-    card: Card;
-  }>;
-}
 
 /**
  * カードカタログ取得用サービス
@@ -18,11 +11,15 @@ export const cardCatalogService = {
     const uniqueIds = Array.from(new Set(ids.filter(Boolean)));
     if (uniqueIds.length === 0) return [];
 
-    const { data } = await apolloClient.query<GetCardDetailsResponse>({
+    const { data } = await apolloClient.query<CardDetailsQueryData>({
       query: GET_CARD_DETAILS,
       variables: { cardIds: uniqueIds },
       fetchPolicy: 'cache-first',
     });
+
+    if (!data || !data.cardDetails) {
+      return [];
+    }
 
     return data.cardDetails
       .map((detail) => detail.card)

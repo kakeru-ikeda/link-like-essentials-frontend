@@ -1,24 +1,17 @@
 import { useQuery } from '@apollo/client';
-import { GET_CARDS, GET_CARD_DETAIL, GET_CARD_DETAILS } from '@/repositories/graphql/queries/cards';
+import {
+  GET_CARDS,
+  GET_CARD_DETAIL,
+  GET_CARD_DETAILS,
+} from '@/repositories/graphql/queries/cards';
+import {
+  CardsQueryData,
+  CardDetailQueryData,
+  CardDetailsQueryData,
+} from '@/types/graphql/cards';
 import { Card } from '@/models/Card';
 import { CardFilter } from '@/models/Filter';
 import { filterCardsOnClient } from '@/services/cardFilterService';
-
-interface CardsQueryData {
-  cards: Card[];
-}
-
-interface CardDetailQueryData {
-  card: Card;
-}
-
-interface CardDetailsQueryData {
-  cardDetails: Array<{
-    id: string;
-    cardId: string;
-    card: Card;
-  }>;
-}
 
 /**
  * カード一覧を取得するフック
