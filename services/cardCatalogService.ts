@@ -1,9 +1,13 @@
 import { apolloClient } from '@/repositories/graphql/client';
-import { GET_CARD_DETAIL } from '@/repositories/graphql/queries/cards';
+import { GET_CARD_DETAILS } from '@/repositories/graphql/queries/cards';
 import { Card } from '@/models/Card';
 
-interface GetCardDetailResponse {
-  card: Card;
+interface GetCardDetailsResponse {
+  cardDetails: Array<{
+    id: string;
+    cardId: string;
+    card: Card;
+  }>;
 }
 
 /**
@@ -14,18 +18,14 @@ export const cardCatalogService = {
     const uniqueIds = Array.from(new Set(ids.filter(Boolean)));
     if (uniqueIds.length === 0) return [];
 
-    const results = await Promise.all(
-      uniqueIds.map((id) =>
-        apolloClient.query<GetCardDetailResponse>({
-          query: GET_CARD_DETAIL,
-          variables: { id },
-          fetchPolicy: 'cache-first',
-        })
-      )
-    );
+    const { data } = await apolloClient.query<GetCardDetailsResponse>({
+      query: GET_CARD_DETAILS,
+      variables: { cardIds: uniqueIds },
+      fetchPolicy: 'cache-first',
+    });
 
-    return results
-      .map((res) => res.data.card)
+    return data.cardDetails
+      .map((detail) => detail.card)
       .filter((card): card is Card => Boolean(card));
   },
 };

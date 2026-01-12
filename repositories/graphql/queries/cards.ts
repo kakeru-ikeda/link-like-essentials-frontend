@@ -123,3 +123,55 @@ export const GET_CARD_DETAIL = gql`
     }
   }
 `;
+
+export const GET_CARD_DETAILS = gql`
+  query GetCardDetails($cardIds: [ID!]!) {
+    cardDetails(cardIds: $cardIds) {
+      id
+      cardId
+      favoriteMode
+      stats {
+        smile
+        pure
+        cool
+        mental
+      }
+      specialAppeal {
+        name
+        ap
+        effect
+      }
+      skill {
+        name
+        ap
+        effect
+      }
+      trait {
+        name
+        effect
+      }
+      accessories {
+        id
+        parentType
+        name
+        ap
+        effect
+        traitName
+        traitEffect
+      }
+      card {
+        id
+        cardName
+        characterName
+        rarity
+        styleType
+        limited
+        cardUrl
+        releaseDate
+        isLocked
+        createdAt
+        updatedAt
+      }
+    }
+  }
+`;
