@@ -1,6 +1,6 @@
 import { apolloClient } from '@/repositories/graphql/client';
 import { GET_CARD_DETAILS } from '@/repositories/graphql/queries/cards';
-import { CardDetailsQueryData } from '@/types/graphql/cards';
+import { CardDetailNode, CardDetailsQueryData } from '@/types/graphql/cards';
 import { Card } from '@/models/Card';
 
 /**
@@ -22,7 +22,34 @@ export const cardCatalogService = {
     }
 
     return data.cardDetails
-      .map((detail) => detail.card)
+      .map(cardCatalogService.mapDetailToCard)
       .filter((card): card is Card => Boolean(card));
+  },
+
+  mapDetailToCard(detail: CardDetailNode): Card | null {
+    if (!detail.card) return null;
+
+    const accessories = (detail.card.accessories ?? detail.accessories ?? []).map((accessory) => ({
+      ...accessory,
+      cardId: Number(accessory.cardId),
+    }));
+
+    return {
+      ...detail.card,
+      accessories,
+      detail: {
+        id: detail.id,
+        cardId: Number(detail.cardId),
+        favoriteMode: detail.favoriteMode ?? '',
+        acquisitionMethod: detail.acquisitionMethod ?? '',
+        awakeBeforeStorageUrl: detail.awakeBeforeStorageUrl ?? undefined,
+        awakeAfterStorageUrl: detail.awakeAfterStorageUrl ?? undefined,
+        stats: detail.stats,
+        specialAppeal: detail.specialAppeal ?? undefined,
+        skill: detail.skill ?? undefined,
+        trait: detail.trait ?? undefined,
+        accessories,
+      },
+    };
   },
 };

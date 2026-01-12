@@ -12,6 +12,7 @@ import {
 import { Card } from '@/models/Card';
 import { CardFilter } from '@/models/Filter';
 import { filterCardsOnClient } from '@/services/cardFilterService';
+import { cardCatalogService } from '@/services/cardCatalogService';
 
 /**
  * カード一覧を取得するフック
@@ -76,7 +77,10 @@ export const useBatchCardDetails = (cardIds: string[]) => {
     skip: !cardIds || cardIds.length === 0,
   });
 
-  const cards = data?.cardDetails.map((detail) => detail.card).filter((card): card is Card => Boolean(card)) ?? [];
+  const cards =
+    data?.cardDetails
+      .map(cardCatalogService.mapDetailToCard)
+      .filter((card): card is Card => Boolean(card)) ?? [];
 
   return {
     cards,
