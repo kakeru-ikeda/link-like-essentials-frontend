@@ -23,7 +23,10 @@ export const HelpTooltip: React.FC<HelpTooltipProps> = ({
   return (
     <Tooltip content={content} position={position} hideArrow={hideArrow}>
       <span
-        className={`inline-flex items-center justify-center text-sm font-bold text-white bg-cyan-400 rounded-full hover:bg-cyan-500 transition-colors ${className} w-${size} h-${size}`}
+        className={`inline-flex items-center justify-center font-bold text-white bg-cyan-400 rounded-full hover:bg-cyan-500 transition-colors ${className} w-${size} h-${size}`}
+        style={{
+          fontSize: ` ${size * 2.4}px`,
+        }}
       >
         {label}
       </span>
