@@ -130,6 +130,9 @@ export const GET_CARD_DETAILS = gql`
       id
       cardId
       favoriteMode
+      acquisitionMethod
+      awakeBeforeStorageUrl
+      awakeAfterStorageUrl
       stats {
         smile
         pure
@@ -152,6 +155,7 @@ export const GET_CARD_DETAILS = gql`
       }
       accessories {
         id
+        cardId
         parentType
         name
         ap
@@ -171,6 +175,16 @@ export const GET_CARD_DETAILS = gql`
         isLocked
         createdAt
         updatedAt
+        accessories {
+          id
+          cardId
+          parentType
+          name
+          ap
+          effect
+          traitName
+          traitEffect
+        }
       }
     }
   }

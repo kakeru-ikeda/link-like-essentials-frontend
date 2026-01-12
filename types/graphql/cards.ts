@@ -1,4 +1,4 @@
-import { Card } from '@/models/Card';
+import { Accessory, Card, Skill, Stats, Trait } from '@/models/Card';
 
 /**
  * GraphQLクエリのレスポンス型定義
@@ -13,9 +13,20 @@ export interface CardDetailQueryData {
 }
 
 export interface CardDetailsQueryData {
-  cardDetails: Array<{
-    id: string;
-    cardId: string;
-    card: Card;
-  }>;
+  cardDetails: CardDetailNode[];
+}
+
+export interface CardDetailNode {
+  id: string;
+  cardId: string;
+  favoriteMode?: string | null;
+  acquisitionMethod?: string | null;
+  awakeBeforeStorageUrl?: string | null;
+  awakeAfterStorageUrl?: string | null;
+  stats: Stats;
+  specialAppeal?: Skill | null;
+  skill?: Skill | null;
+  trait?: Trait | null;
+  accessories: Accessory[];
+  card: (Card & { accessories?: Accessory[] }) | null;
 }
