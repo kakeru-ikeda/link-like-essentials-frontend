@@ -1,5 +1,5 @@
 import { useQuery } from '@apollo/client';
-import { GET_CARDS, GET_CARD_DETAIL } from '@/repositories/graphql/queries/cards';
+import { GET_CARDS, GET_CARD_DETAIL, GET_CARD_DETAILS } from '@/repositories/graphql/queries/cards';
 import { Card } from '@/models/Card';
 import { CardFilter } from '@/models/Filter';
 import { filterCardsOnClient } from '@/services/cardFilterService';
@@ -10,6 +10,14 @@ interface CardsQueryData {
 
 interface CardDetailQueryData {
   card: Card;
+}
+
+interface CardDetailsQueryData {
+  cardDetails: Array<{
+    id: string;
+    cardId: string;
+    card: Card;
+  }>;
 }
 
 /**
@@ -55,6 +63,30 @@ export const useCardDetail = (id: string) => {
 
   return {
     card: data?.card,
+    loading,
+    error: error?.message,
+  };
+};
+
+/**
+ * 複数カード詳細をバッチで取得するフック
+ * 
+ * @param cardIds カードIDの配列
+ * @returns カード配列、ローディング状態、エラーメッセージ
+ */
+export const useBatchCardDetails = (cardIds: string[]) => {
+  const { data, loading, error } = useQuery<
+    CardDetailsQueryData,
+    { cardIds: string[] }
+  >(GET_CARD_DETAILS, {
+    variables: { cardIds },
+    skip: !cardIds || cardIds.length === 0,
+  });
+
+  const cards = data?.cardDetails.map((detail) => detail.card).filter((card): card is Card => Boolean(card)) ?? [];
+
+  return {
+    cards,
     loading,
     error: error?.message,
   };
