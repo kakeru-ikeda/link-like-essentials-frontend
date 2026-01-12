@@ -29,6 +29,7 @@ export enum LimitedType {
   GRADUATE_LIMITED = 'GRADUATE_LIMITED',
   LOGIN_BONUS = 'LOGIN_BONUS',
   REWARD = 'REWARD',
+  BANGDREAM_LIMITED = 'BANGDREAM_LIMITED',
 }
 
 export enum ParentType {

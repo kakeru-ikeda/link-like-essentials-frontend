@@ -59,6 +59,7 @@ export const LIMITED_TYPE_LABELS: Record<LimitedType, string> = {
   [LimitedType.GRADUATE_LIMITED]: '卒限定',
   [LimitedType.LOGIN_BONUS]: 'ログボ',
   [LimitedType.REWARD]: '報酬',
+  [LimitedType.BANGDREAM_LIMITED]: 'バンドリ限定',
 };
 
 /**
