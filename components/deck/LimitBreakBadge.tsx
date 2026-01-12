@@ -21,7 +21,7 @@ export const LimitBreakBadge: React.FC<LimitBreakBadgeProps> = ({
   showControls = false,
   onIncrease,
   onDecrease,
-  min = 10,
+  min = 1,
   max = 14,
   className = '',
 }) => {

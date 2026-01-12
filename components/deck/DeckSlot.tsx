@@ -145,7 +145,7 @@ export const DeckSlot: React.FC<DeckSlotProps> = ({
                 showControls={isHovered}
                 onIncrease={handleLimitIncrease}
                 onDecrease={handleLimitDecrease}
-                min={10}
+                min={1}
                 max={14}
               />
             ) : (
