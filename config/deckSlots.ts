@@ -105,10 +105,10 @@ export const DECK_SLOT_MAPPING_105_FT_KOZUE: DeckSlotMapping[] = [
   // 上段（105期生ft.梢 + フレンド）
   { slotId: 0, characterName: '乙宗梢', slotType: 'main', row: 0, col: 1 },
   { slotId: 1, characterName: '乙宗梢', slotType: 'side', row: 0, col: 2 },
-  { slotId: 2, characterName: 'セラス', slotType: 'main', row: 0, col: 3 },
-  { slotId: 3, characterName: 'セラス', slotType: 'side', row: 0, col: 4 },
-  { slotId: 4, characterName: '桂城泉', slotType: 'main', row: 0, col: 5 },
-  { slotId: 5, characterName: '桂城泉', slotType: 'side', row: 0, col: 6 },
+  { slotId: 4, characterName: '桂城泉', slotType: 'main', row: 0, col: 3 },
+  { slotId: 5, characterName: '桂城泉', slotType: 'side', row: 0, col: 4 },
+  { slotId: 2, characterName: 'セラス', slotType: 'main', row: 0, col: 5 },
+  { slotId: 3, characterName: 'セラス', slotType: 'side', row: 0, col: 6 },
   { slotId: FRIEND_SLOT_ID, characterName: 'フレンド', slotType: 'main', row: 0, col: 0 },
 
   // 中段（104期生）
@@ -132,10 +132,10 @@ export const DECK_SLOT_MAPPING_105_FT_TSUZURI: DeckSlotMapping[] = [
   // 上段（105期生ft.綴理 + フレンド）
   { slotId: 0, characterName: '夕霧綴理', slotType: 'main', row: 0, col: 1 },
   { slotId: 1, characterName: '夕霧綴理', slotType: 'side', row: 0, col: 2 },
-  { slotId: 2, characterName: 'セラス', slotType: 'main', row: 0, col: 3 },
-  { slotId: 3, characterName: 'セラス', slotType: 'side', row: 0, col: 4 },
-  { slotId: 4, characterName: '桂城泉', slotType: 'main', row: 0, col: 5 },
-  { slotId: 5, characterName: '桂城泉', slotType: 'side', row: 0, col: 6 },
+  { slotId: 4, characterName: '桂城泉', slotType: 'main', row: 0, col: 3 },
+  { slotId: 5, characterName: '桂城泉', slotType: 'side', row: 0, col: 4 },
+  { slotId: 2, characterName: 'セラス', slotType: 'main', row: 0, col: 5 },
+  { slotId: 3, characterName: 'セラス', slotType: 'side', row: 0, col: 6 },
   { slotId: FRIEND_SLOT_ID, characterName: 'フレンド', slotType: 'main', row: 0, col: 0 },
 
   // 中段（104期生）
@@ -159,10 +159,10 @@ export const DECK_SLOT_MAPPING_105_FT_MEGUMI: DeckSlotMapping[] = [
   // 上段（105期生ft.慈 + フレンド）
   { slotId: 0, characterName: '藤島慈', slotType: 'main', row: 0, col: 1 },
   { slotId: 1, characterName: '藤島慈', slotType: 'side', row: 0, col: 2 },
-  { slotId: 2, characterName: 'セラス', slotType: 'main', row: 0, col: 3 },
-  { slotId: 3, characterName: 'セラス', slotType: 'side', row: 0, col: 4 },
-  { slotId: 4, characterName: '桂城泉', slotType: 'main', row: 0, col: 5 },
-  { slotId: 5, characterName: '桂城泉', slotType: 'side', row: 0, col: 6 },
+  { slotId: 4, characterName: '桂城泉', slotType: 'main', row: 0, col: 3 },
+  { slotId: 5, characterName: '桂城泉', slotType: 'side', row: 0, col: 4 },
+  { slotId: 2, characterName: 'セラス', slotType: 'main', row: 0, col: 5 },
+  { slotId: 3, characterName: 'セラス', slotType: 'side', row: 0, col: 6 },
   { slotId: FRIEND_SLOT_ID, characterName: 'フレンド', slotType: 'main', row: 0, col: 0 },
 
   // 中段（104期生）
