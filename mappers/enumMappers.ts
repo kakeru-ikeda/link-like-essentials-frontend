@@ -54,12 +54,12 @@ export const LIMITED_TYPE_LABELS: Record<LimitedType, string> = {
   [LimitedType.WINTER_LIMITED]: '冬限定',
   [LimitedType.LEG_LIMITED]: 'LEG限定',
   [LimitedType.BATTLE_LIMITED]: '撃限定',
+  [LimitedType.BANGDREAM_LIMITED]: 'バンドリ限定',
   [LimitedType.PARTY_LIMITED]: '宴限定',
   [LimitedType.ACTIVITY_LIMITED]: '活限定',
   [LimitedType.GRADUATE_LIMITED]: '卒限定',
   [LimitedType.LOGIN_BONUS]: 'ログボ',
   [LimitedType.REWARD]: '報酬',
-  [LimitedType.BANGDREAM_LIMITED]: 'バンドリ限定',
 };
 
 /**
