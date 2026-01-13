@@ -104,7 +104,7 @@ export const SKILL_EFFECT_LABELS: Record<SkillEffectType, string> = {
   [SkillEffectType.VIBES]: 'バイブス',
   [SkillEffectType.AMBIENCE]: 'アンビエンス',
   [SkillEffectType.MENTAL_RECOVER]: 'メンタルリカバー',
-  [SkillEffectType.MENTAL_PROTECT]: 'メンタルプロテクト',
+  [SkillEffectType.NATURAL_MENTAL_PROTECT]: 'メンタルプロテクト',
   [SkillEffectType.RESHUFFLE]: 'リシャッフル',
   [SkillEffectType.EXTEND_HAND]: 'エクステンドハンド',
   [SkillEffectType.BLESSING]: 'ブレッシング',

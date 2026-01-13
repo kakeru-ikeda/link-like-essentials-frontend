@@ -26,7 +26,7 @@ export const SKILL_EFFECT_DESCRIPTIONS: Record<SkillEffectType, string> = {
     'ハッピー、メロウいずれかの方向にムード値を増減する。',
   [SkillEffectType.MENTAL_RECOVER]:
     'メンタル最大値に対する一定割合のメンタルを回復する。',
-  [SkillEffectType.MENTAL_PROTECT]:
+  [SkillEffectType.NATURAL_MENTAL_PROTECT]:
     'メンタル最大値に対する一定割合のメンタル自然減少を無効化する。防げるのは自然減少のみで、スキルやセクション効果などによるメンタル減少は防げない。',
   [SkillEffectType.RESHUFFLE]:
     '手札を全て捨てた後、スキルを手札上限まで引く。',
@@ -62,7 +62,7 @@ export const SKILL_EFFECT_KEYWORDS: Record<SkillEffectType, string[]> = {
   [SkillEffectType.VIBES]: ['ビートハートの出現個数を'],
   [SkillEffectType.AMBIENCE]: ['ムード値を'],
   [SkillEffectType.MENTAL_RECOVER]: ['メンタルを最大値の\\d+%回復'],
-  [SkillEffectType.MENTAL_PROTECT]: ['メンタル自然減少を無効'],
+  [SkillEffectType.NATURAL_MENTAL_PROTECT]: ['メンタル自然減少を無効'],
   [SkillEffectType.RESHUFFLE]: ['シャッフル', '手札をすべて捨てて', '手札を全て捨てて'],
   [SkillEffectType.EXTEND_HAND]: ['手札の上限枚数を'],
   [SkillEffectType.BLESSING]: ['消費APを-'],
