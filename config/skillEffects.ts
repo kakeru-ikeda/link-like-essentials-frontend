@@ -36,7 +36,7 @@ export const SKILL_EFFECT_DESCRIPTIONS: Record<SkillEffectType, string> = {
     '手札の上限枚数を増加させる。',
   [SkillEffectType.IMITATION]:
     'スキル使用後にカードがステージ上にセットされ、何かを一定量吸収して別の何かに変換する。',
-  [SkillEffectType.AP_SUPPORT]:
+  [SkillEffectType.BLESSING]:
     '他のカードのスキルの消費APを減少させる。',
   [SkillEffectType.AP_GAIN]:
     'APを直接増加させる。ただし上限を超えることはない。',
@@ -68,7 +68,7 @@ export const SKILL_EFFECT_KEYWORDS: Record<SkillEffectType, string[]> = {
   [SkillEffectType.MENTAL_GUARD]: ['メンタル直接ダメージを無効'],
   [SkillEffectType.RESHUFFLE]: ['シャッフル', '手札をすべて捨てて', '手札を全て捨てて'],
   [SkillEffectType.EXTEND_HAND]: ['手札の上限枚数を', '手札の上限枚数を\\d+枚増加'],
-  [SkillEffectType.AP_SUPPORT]: [
+  [SkillEffectType.BLESSING]: [
     'デッキ内の.+の消費AP-\\d+',
     'デッキ内の.+の消費APを-\\d+',
     '手札の.+の消費AP-\\d+',

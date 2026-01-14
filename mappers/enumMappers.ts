@@ -110,7 +110,7 @@ export const SKILL_EFFECT_LABELS: Record<SkillEffectType, string> = {
   [SkillEffectType.RESHUFFLE]: 'リシャッフル',
   [SkillEffectType.EXTEND_HAND]: 'エクステンドハンド',
   [SkillEffectType.IMITATION]: 'イミテーション',
-  [SkillEffectType.AP_SUPPORT]: 'APサポート',
+  [SkillEffectType.BLESSING]: 'ブレッシング',
   [SkillEffectType.AP_GAIN]: 'APゲイン',
   [SkillEffectType.HEAT_UP]: 'ヒートアップ',
   [SkillEffectType.BELIEF]: 'ビリーフ',
