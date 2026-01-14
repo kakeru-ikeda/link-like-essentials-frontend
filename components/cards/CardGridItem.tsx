@@ -2,15 +2,18 @@
 
 import React from 'react';
 import { Card } from '@/models/Card';
+import { HighlightText } from '@/components/common/HighlightText';
 import { getCharacterColor } from '@/utils/colorUtils';
 
 interface CardGridItemProps {
   card: Card;
+  highlightKeywords: string[];
   onClick: (card: Card) => void;
 }
 
 export const CardGridItem: React.FC<CardGridItemProps> = ({
   card,
+  highlightKeywords,
   onClick,
 }) => {
   const characterColor = getCharacterColor(card.characterName);
@@ -51,9 +54,11 @@ export const CardGridItem: React.FC<CardGridItemProps> = ({
         {/* ホバー時のカード情報オーバーレイ */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col justify-end p-3">
           <p className="text-xs font-bold text-white line-clamp-2 mb-1">
-            {card.cardName}
+            <HighlightText text={card.cardName} keywords={highlightKeywords} />
           </p>
-          <p className="text-xs text-white/90">{card.characterName}</p>
+          <p className="text-xs text-white/90">
+            <HighlightText text={card.characterName} keywords={highlightKeywords} />
+          </p>
         </div>
       </div>
     </button>

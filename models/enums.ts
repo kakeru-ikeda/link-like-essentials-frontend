@@ -93,6 +93,25 @@ export enum SkillEffectType {
 }
 
 /**
+ * 特性効果の種類
+ */
+export enum TraitEffectType {
+  HEART_COLLECT = 'HEART_COLLECT',
+  INSTANCE = 'INSTANCE',
+  ENCORE = 'ENCORE',
+  SHOT = 'SHOT',
+  AP_REDUCE = 'AP_REDUCE',
+  AP_SUPPORT = 'AP_SUPPORT',
+  INTERPRETATION = 'INTERPRETATION',
+  OVER_SECTION = 'OVER_SECTION',
+  SEARCH = 'SEARCH',
+  CHAIN = 'CHAIN',
+  DRAW = 'DRAW',
+  FAVORITE = 'FAVORITE',
+  REINFORCE = 'REINFORCE'
+}
+
+/**
  * スキル検索対象の種類
  */
 export enum SkillSearchTarget {

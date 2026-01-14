@@ -6,15 +6,17 @@ import { RarityBadge } from '@/components/common/RarityBadge';
 import { StyleTypeBadge } from '@/components/common/StyleTypeBadge';
 import { FavoriteModeBadge } from '@/components/common/FavoriteModeBadge';
 import { LimitedTypeBadge } from '@/components/common/LimitedTypeBadge';
+import { HighlightText } from '@/components/common/HighlightText';
 import { getCharacterColor } from '@/utils/colorUtils';
 
 interface CardListViewProps {
   cards: Card[];
   loading: boolean;
+  highlightKeywords: string[];
   onClickCard: (card: Card) => void;
 }
 
-export const CardListView: React.FC<CardListViewProps> = ({ cards, loading, onClickCard }) => {
+export const CardListView: React.FC<CardListViewProps> = ({ cards, loading, highlightKeywords, onClickCard }) => {
   const [errorMap, setErrorMap] = useState<Record<string, boolean>>({});
 
   if (loading) {
@@ -91,8 +93,12 @@ export const CardListView: React.FC<CardListViewProps> = ({ cards, loading, onCl
                   <LimitedTypeBadge limitedType={card.limited} size="small" />
                 </div>
                 <div className="space-y-0.5">
-                  <p className="text-sm sm:text-base font-bold text-gray-900 line-clamp-1">{card.cardName}</p>
-                  <p className="text-xs text-gray-600">{card.characterName}</p>
+                  <p className="text-sm sm:text-base font-bold text-gray-900 line-clamp-1">
+                    <HighlightText text={card.cardName} keywords={highlightKeywords} />
+                  </p>
+                  <p className="text-xs text-gray-600">
+                    <HighlightText text={card.characterName} keywords={highlightKeywords} />
+                  </p>
                 </div>
               </div>
             </div>

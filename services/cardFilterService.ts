@@ -1,7 +1,8 @@
 import { Card } from '@/models/Card';
 import { CardFilter, FilterMode } from '@/models/Filter';
-import { FavoriteMode, SkillEffectType, SkillSearchTarget } from '@/models/enums';
+import { FavoriteMode, SkillEffectType, SkillSearchTarget, TraitEffectType } from '@/models/enums';
 import { getSkillEffectKeyword, getSkillEffectKeywords } from '@/services/skillEffectService';
+import { getTraitEffectKeyword, getTraitEffectKeywords } from '@/services/traitEffectService';
 
 /**
  * クライアントサイドでカードをフィルタリング
@@ -227,6 +228,48 @@ export function filterCardsOnClient(cards: Card[], filter: CardFilter): Card[] {
       }
     }
 
+    // 特性効果検索（特性のみを対象）
+    if (filter.traitEffects && filter.traitEffects.length > 0) {
+      const mode = filter.filterMode ?? FilterMode.OR;
+
+      const checkTraitEffect = (effectType: TraitEffectType): boolean => {
+        const keywords = getTraitEffectKeyword(effectType);
+        const texts: (string | undefined)[] = [
+          card.detail?.trait?.name,
+          card.detail?.trait?.effect,
+        ];
+        card.accessories?.forEach((acc) => {
+          texts.push(acc.traitName, acc.traitEffect);
+        });
+
+        return keywords.some((keyword) =>
+          texts.some((text) => {
+            if (!text) return false;
+
+            if (keyword.includes('\\')) {
+              try {
+                const regex = new RegExp(keyword);
+                return regex.test(text);
+              } catch {
+                return text.includes(keyword);
+              }
+            }
+
+            return text.includes(keyword);
+          })
+        );
+      };
+
+      const hasTraitEffect =
+        mode === FilterMode.OR
+          ? filter.traitEffects.some(checkTraitEffect)
+          : filter.traitEffects.every(checkTraitEffect);
+
+      if (!hasTraitEffect) {
+        return false;
+      }
+    }
+
     return true;
   });
 }
@@ -261,6 +304,10 @@ export function buildGraphQLFilter(filter: CardFilter): Record<string, any> {
       // 検索対象が未指定の場合は全ての対象を検索
       graphqlFilter.skillEffectKeywords = skillKeywords;
     }
+  }
+
+  if (filter.traitEffects && filter.traitEffects.length > 0) {
+    graphqlFilter.traitEffects = filter.traitEffects;
   }
 
   // レアリティ
@@ -307,6 +354,20 @@ export function buildSkillEffectSearchQuery(filter: CardFilter): string | undefi
   
   // 複数のスキル効果が選択されている場合はOR検索
   // 例: "スキルハートを獲得" OR "ハート上限を"
+  return keywords.join(' OR ');
+}
+
+/**
+ * 特性効果フィルターの検索クエリを生成
+ * @param filter カードフィルター
+ * @returns 検索クエリ文字列（キーワード検索用）
+ */
+export function buildTraitEffectSearchQuery(filter: CardFilter): string | undefined {
+  if (!filter.traitEffects || filter.traitEffects.length === 0) {
+    return undefined;
+  }
+
+  const keywords = getTraitEffectKeywords(filter.traitEffects);
   return keywords.join(' OR ');
 }
 

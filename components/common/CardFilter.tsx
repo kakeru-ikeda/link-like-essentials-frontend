@@ -2,13 +2,14 @@
 
 import React from 'react';
 import type { CardFilter as CardFilterType } from '@/models/Filter';
-import { Rarity, StyleType, LimitedType, FavoriteMode, SkillEffectType, SkillSearchTarget } from '@/models/enums';
+import { Rarity, StyleType, LimitedType, FavoriteMode, SkillEffectType, SkillSearchTarget, TraitEffectType } from '@/models/enums';
 import { SearchModeFilter } from '@/components/common/filters/SearchModeFilter';
 import { KeywordSearchInput } from '@/components/common/KeywordSearchInput';
 import { CharacterFilter } from '@/components/cards/filters/CharacterFilter';
 import { RarityFilter } from '@/components/cards/filters/RarityFilter';
 import { FavoriteModeFilter } from '@/components/cards/filters/FavoriteModeFilter';
 import { SkillEffectFilter } from '@/components/cards/filters/SkillEffectFilter';
+import { TraitEffectFilter } from '@/components/cards/filters/TraitEffectFilter';
 import { StyleTypeFilter } from '@/components/cards/filters/StyleTypeFilter';
 import { LimitedTypeFilter } from '@/components/cards/filters/LimitedTypeFilter';
 import { TokenCardFilter } from '@/components/cards/filters/TokenCardFilter';
@@ -67,6 +68,10 @@ export const CardFilter: React.FC<CardFilterProps> = ({
 
   const toggleSkillSearchTarget = (target: SkillSearchTarget): void => {
     updateFilter(toggleFilterList(filter, 'skillSearchTargets', target));
+  };
+
+  const toggleTraitEffect = (traitEffect: TraitEffectType): void => {
+    updateFilter(toggleFilterList(filter, 'traitEffects', traitEffect));
   };
 
   return (
@@ -141,6 +146,16 @@ export const CardFilter: React.FC<CardFilterProps> = ({
             selectedTargets={filter.skillSearchTargets}
             onToggleEffect={toggleSkillEffect}
             onToggleTarget={toggleSkillSearchTarget}
+          />
+        </FilterWrapper>
+      )}
+
+      {/* 特性効果 */}
+      {isVisible('traitEffects') && (
+        <FilterWrapper>
+          <TraitEffectFilter
+            selectedEffects={filter.traitEffects}
+            onToggleEffect={toggleTraitEffect}
           />
         </FilterWrapper>
       )}

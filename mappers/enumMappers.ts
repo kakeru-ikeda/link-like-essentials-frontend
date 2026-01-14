@@ -6,6 +6,7 @@ import {
   DeckType,
   SkillEffectType,
   SkillSearchTarget,
+  TraitEffectType,
 } from '@/models/enums';
 import { SortField } from '@/models/Filter';
 
@@ -125,4 +126,23 @@ export const SKILL_SEARCH_TARGET_LABELS: Record<SkillSearchTarget, string> = {
   [SkillSearchTarget.TRAIT]: '特性',
   [SkillSearchTarget.ACCESSORY_SKILL]: 'スキル（トークン）',
   [SkillSearchTarget.ACCESSORY_TRAIT]: '特性（トークン）',
+};
+
+/**
+ * 特性効果のラベル定義
+ */
+export const TRAIT_EFFECT_LABELS: Record<TraitEffectType, string> = {
+  [TraitEffectType.ENCORE]: 'アンコール',
+  [TraitEffectType.SHOT]: 'ショット',
+  [TraitEffectType.AP_REDUCE]: 'APレデュース',
+  [TraitEffectType.AP_SUPPORT]: 'APサポート',
+  [TraitEffectType.INTERPRETATION]: 'インタープリテーション',
+  [TraitEffectType.OVER_SECTION]: 'オーバーセクション',
+  [TraitEffectType.SEARCH]: 'サーチ',
+  [TraitEffectType.CHAIN]: 'チェイン',
+  [TraitEffectType.DRAW]: 'ドロー',
+  [TraitEffectType.FAVORITE]: 'フェイバリット',
+  [TraitEffectType.REINFORCE]: 'リインフォース',
+  [TraitEffectType.INSTANCE]: 'インスタンス',
+  [TraitEffectType.HEART_COLLECT]: 'ハートコレクト',
 };

@@ -67,7 +67,7 @@ export const SKILL_EFFECT_KEYWORDS: Record<SkillEffectType, string[]> = {
   [SkillEffectType.MENTAL_PROTECT]: ['メンタル自然減少を無効','メンタルダメージを無効'],
   [SkillEffectType.MENTAL_GUARD]: ['メンタル直接ダメージを無効'],
   [SkillEffectType.RESHUFFLE]: ['シャッフル', '手札をすべて捨てて', '手札を全て捨てて'],
-  [SkillEffectType.EXTEND_HAND]: ['手札の上限枚数を'],
+  [SkillEffectType.EXTEND_HAND]: ['手札の上限枚数を', '手札の上限枚数を\\d+枚増加'],
   [SkillEffectType.BLESSING]: ['消費APを-'],
   [SkillEffectType.IMITATION]: ['カードがステージにセットされ'],
   [SkillEffectType.AP_GAIN]: ['APを\\d+回復'],

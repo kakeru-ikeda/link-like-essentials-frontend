@@ -7,12 +7,14 @@ import { CardGridItem } from '@/components/cards/CardGridItem';
 interface CardGridViewProps {
   cards: Card[];
   loading: boolean;
+  highlightKeywords: string[];
   onClickCard: (card: Card) => void;
 }
 
 export const CardGridView: React.FC<CardGridViewProps> = ({
   cards,
   loading,
+  highlightKeywords,
   onClickCard,
 }) => {
   if (loading) {
@@ -42,7 +44,12 @@ export const CardGridView: React.FC<CardGridViewProps> = ({
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
       {cards.map((card) => (
-        <CardGridItem key={card.id} card={card} onClick={onClickCard} />
+        <CardGridItem
+          key={card.id}
+          card={card}
+          highlightKeywords={highlightKeywords}
+          onClick={onClickCard}
+        />
       ))}
     </div>
   );
