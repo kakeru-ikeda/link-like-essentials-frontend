@@ -28,8 +28,8 @@ export const TraitEffectFilter: React.FC<TraitEffectFilterProps> = ({
         selectedValues={selectedEffects}
         onToggle={onToggleEffect}
         label={traitEffectLabel}
-        color="#2563eb" // blue-600
-        skillEffectTooltip={traitEffectTooltip}
+        color="#9333ea" // purple-600
+        valueTooltip={traitEffectTooltip}
       />
     </div>
   );

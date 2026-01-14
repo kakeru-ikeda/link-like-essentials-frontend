@@ -43,7 +43,7 @@ export const SkillEffectFilter: React.FC<SkillEffectFilterProps> = ({
           onToggle={onToggleEffect}
           label={skillEffectLabel}
           color="#10b981" // emerald-500
-          skillEffectTooltip={skillEffectTooltip}
+          valueTooltip={skillEffectTooltip}
         />
       </div>
 
