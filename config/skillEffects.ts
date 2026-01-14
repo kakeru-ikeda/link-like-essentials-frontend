@@ -68,7 +68,12 @@ export const SKILL_EFFECT_KEYWORDS: Record<SkillEffectType, string[]> = {
   [SkillEffectType.MENTAL_GUARD]: ['メンタル直接ダメージを無効'],
   [SkillEffectType.RESHUFFLE]: ['シャッフル', '手札をすべて捨てて', '手札を全て捨てて'],
   [SkillEffectType.EXTEND_HAND]: ['手札の上限枚数を', '手札の上限枚数を\\d+枚増加'],
-  [SkillEffectType.AP_SUPPORT]: ['デッキ内の.+の消費AP-\\d+', 'デッキ内の.+の消費APを-\\d+'],
+  [SkillEffectType.AP_SUPPORT]: [
+    'デッキ内の.+の消費AP-\\d+',
+    'デッキ内の.+の消費APを-\\d+',
+    '手札の.+の消費AP-\\d+',
+    '手札の.+の消費APを-\\d+',
+  ],
   [SkillEffectType.IMITATION]: ['カードがステージにセットされ'],
   [SkillEffectType.AP_GAIN]: ['APを\\d+回復'],
   [SkillEffectType.HEAT_UP]: ['AP回復速度を'],
