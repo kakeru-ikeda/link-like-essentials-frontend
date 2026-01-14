@@ -81,7 +81,8 @@ export const TRAIT_EFFECT_KEYWORDS: Record<TraitEffectType, string[]> = {
     'スキル効果値が増加',
     'スキルの効果値が増加',
     'スキル効果量が増加',
-    'スキルの効果量が増加'
+    'スキルの効果量が増加',
+    'スキル効果量を\\d+%増幅',
   ],
   [TraitEffectType.UN_DRAW]: [
     'ドローされない',
