@@ -108,7 +108,8 @@ export enum TraitEffectType {
   SEARCH = 'SEARCH',
   CHAIN = 'CHAIN',
   FAVORITE = 'FAVORITE',
-  REINFORCE = 'REINFORCE'
+  REINFORCE = 'REINFORCE',
+  UN_DRAW = 'UN_DRAW',
 }
 
 /**

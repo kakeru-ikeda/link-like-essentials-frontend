@@ -17,6 +17,7 @@ export const TRAIT_EFFECT_DESCRIPTIONS: Record<TraitEffectType, string> = {
   [TraitEffectType.CHAIN]: '特定スキル使用後のドロー確率を上げる特性。',
   [TraitEffectType.FAVORITE]: '特定セクションでのドロー確率を上げる特性。',
   [TraitEffectType.REINFORCE]: 'スキル効果量を増加させる特性。',
+  [TraitEffectType.UN_DRAW]: 'ドローされなくなる特性。',
 };
 
 /**
@@ -81,5 +82,9 @@ export const TRAIT_EFFECT_KEYWORDS: Record<TraitEffectType, string[]> = {
     'スキルの効果値が増加',
     'スキル効果量が増加',
     'スキルの効果量が増加'
-  ]
+  ],
+  [TraitEffectType.UN_DRAW]: [
+    'ドローされない',
+    'ドローされず'
+  ],
 };

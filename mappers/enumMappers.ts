@@ -143,4 +143,5 @@ export const TRAIT_EFFECT_LABELS: Record<TraitEffectType, string> = {
   [TraitEffectType.REINFORCE]: 'リインフォース',
   [TraitEffectType.INSTANCE]: 'インスタンス',
   [TraitEffectType.HEART_COLLECT]: 'ハートコレクト',
+  [TraitEffectType.UN_DRAW]: 'アンドロー(仮)',
 };
