@@ -17,7 +17,7 @@ export const MultiSelectFilter = <T extends string | number>({
   selectedValues = [],
   onToggle,
   label,
-  valueTooltip: skillEffectTooltip,
+  valueTooltip,
   color = '#3b82f6', // デフォルトは blue-500 相当
 }: MultiSelectFilterProps<T>): React.ReactElement => {
   return (
@@ -49,11 +49,11 @@ export const MultiSelectFilter = <T extends string | number>({
           </button>
         );
 
-        if (skillEffectTooltip) {
+        if (valueTooltip) {
           return (
             <Tooltip
               key={value}
-              content={skillEffectTooltip(value)}
+              content={valueTooltip(value)}
               position="top"
             >
               {buttonElement}
