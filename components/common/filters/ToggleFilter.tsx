@@ -1,13 +1,14 @@
 'use client';
 
 import React from 'react';
+import { FILTER_COLOR_TOKEN } from '@/styles/colors';
 
 interface ToggleFilterProps {
   value: boolean | undefined;
   onChange: (value: boolean | undefined) => void;
   trueLabel?: string;
   falseLabel?: string;
-  color: string;
+  color?: string;
 }
 
 export const ToggleFilter: React.FC<ToggleFilterProps> = ({
@@ -15,7 +16,7 @@ export const ToggleFilter: React.FC<ToggleFilterProps> = ({
   onChange,
   trueLabel = 'あり',
   falseLabel = 'なし',
-  color = '#06b6d4', // cyan-500
+  color = FILTER_COLOR_TOKEN,
 }) => {
   return (
     <div className="flex flex-wrap gap-2">

@@ -5,6 +5,7 @@ import { MultiSelectFilter } from '@/components/common/filters/MultiSelectFilter
 import { TraitEffectType } from '@/models/enums';
 import { TRAIT_EFFECT_LABELS } from '@/mappers/enumMappers';
 import { TRAIT_EFFECT_DESCRIPTIONS } from '@/config/traitEffects';
+import { FILTER_COLOR_TRAIT_EFFECT } from '@/styles/colors';
 
 interface TraitEffectFilterProps {
   selectedEffects: TraitEffectType[] | undefined;
@@ -28,7 +29,7 @@ export const TraitEffectFilter: React.FC<TraitEffectFilterProps> = ({
         selectedValues={selectedEffects}
         onToggle={onToggleEffect}
         label={traitEffectLabel}
-        color="#9333ea" // purple-600
+        color={FILTER_COLOR_TRAIT_EFFECT}
         valueTooltip={traitEffectTooltip}
       />
     </div>

@@ -9,6 +9,10 @@ import {
   SKILL_SEARCH_TARGET_LABELS,
 } from '@/mappers/enumMappers';
 import { SKILL_EFFECT_DESCRIPTIONS } from '@/config/skillEffects';
+import {
+  FILTER_COLOR_SKILL_EFFECT,
+  FILTER_COLOR_SKILL_SEARCH_TARGET,
+} from '@/styles/colors';
 
 interface SkillEffectFilterProps {
   selectedEffects: SkillEffectType[] | undefined;
@@ -42,7 +46,7 @@ export const SkillEffectFilter: React.FC<SkillEffectFilterProps> = ({
           selectedValues={selectedEffects}
           onToggle={onToggleEffect}
           label={skillEffectLabel}
-          color="#10b981" // emerald-500
+          color={FILTER_COLOR_SKILL_EFFECT}
           valueTooltip={skillEffectTooltip}
         />
       </div>
@@ -57,7 +61,7 @@ export const SkillEffectFilter: React.FC<SkillEffectFilterProps> = ({
           selectedValues={selectedTargets}
           onToggle={onToggleTarget}
           label={skillSearchTargetLabel}
-          color="#f97316" // orange-500
+          color={FILTER_COLOR_SKILL_SEARCH_TARGET}
         />
       </div>
     </div>
