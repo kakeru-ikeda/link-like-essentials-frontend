@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { useCards } from '@/hooks/useCards';
 import { useFilter } from '@/hooks/useFilter';
 import { CardGridView } from '@/components/cards/CardGridView';
@@ -9,9 +9,8 @@ import { CardDetailView } from '@/components/deck/CardDetailView';
 import { CardGridFilter } from '@/components/cards/CardGridFilter';
 import { SideModal } from '@/components/common/SideModal';
 import { useSideModal } from '@/hooks/useSideModal';
-import { getHighlightKeywordsByTarget } from '@/services/highlightService';
-import { useCardStore } from '@/store/cardStore';
 import { LayoutGrid, List } from 'lucide-react';
+import { useCardHighlight } from '@/hooks/useCardHighlight';
 
 export default function CardsPage(): JSX.Element {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -22,21 +21,13 @@ export default function CardsPage(): JSX.Element {
     clearFilterKey,
     countActiveFilters,
   } = useFilter();
-  const setActiveFilter = useCardStore((state) => state.setActiveFilter);
   const hasActiveFilter = filter && Object.keys(filter).length > 0;
-  const highlightKeywords = useMemo(
-    () => getHighlightKeywordsByTarget(hasActiveFilter ? filter : null),
-    [filter, hasActiveFilter]
-  );
+  const { highlightKeywords } = useCardHighlight({
+    syncFilter: hasActiveFilter ? filter : null,
+  });
   const { cards, loading, error } = useCards(filter);
   const { openCardDetail, closeCardDetail, selectedCardId, isCardDetailOpen } =
     useSideModal();
-
-  useEffect(() => {
-    setActiveFilter(hasActiveFilter ? filter : null);
-
-    return () => setActiveFilter(null);
-  }, [filter, hasActiveFilter, setActiveFilter]);
 
   if (error) {
     return (

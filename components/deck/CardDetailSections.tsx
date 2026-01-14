@@ -3,8 +3,7 @@
 import React from 'react';
 import { Card } from '@/models/Card';
 import { HighlightText } from '@/components/common/HighlightText';
-import { useCardStore } from '@/store/cardStore';
-import { getHighlightKeywordsByTarget } from '@/services/highlightService';
+import { useCardHighlight } from '@/hooks/useCardHighlight';
 
 interface CardDetailSectionsProps {
   card: Card;
@@ -20,8 +19,7 @@ export const CardDetailSections: React.FC<CardDetailSectionsProps> = ({
   showAcquisition = false,
 }) => {
   const isCompact = variant === 'compact';
-  const activeFilter = useCardStore((state) => state.activeFilter);
-  const highlightKeywords = getHighlightKeywordsByTarget(activeFilter);
+  const { highlightKeywords } = useCardHighlight();
   const skillSectionKeywords = [...highlightKeywords.general, ...highlightKeywords.skillTargets];
   const traitSectionKeywords = [
     ...highlightKeywords.general,
