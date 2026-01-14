@@ -1,4 +1,4 @@
-import { Rarity, StyleType, LimitedType, FavoriteMode, DeckType, SongAttribute, SkillEffectType, SkillSearchTarget } from './enums';
+import { Rarity, StyleType, LimitedType, FavoriteMode, DeckType, SongAttribute, SkillEffectType, SkillSearchTarget, TraitEffectType } from './enums';
 import { CharacterName } from '@/config/characters';
 
 /**
@@ -30,6 +30,9 @@ export interface CardFilter {
 
   // スキル効果絞り込み
   skillEffects?: SkillEffectType[];
+
+  // 特性効果絞り込み
+  traitEffects?: TraitEffectType[];
 
   // スキル検索対象（スペシャルアピール、スキル、特性）
   skillSearchTargets?: SkillSearchTarget[];

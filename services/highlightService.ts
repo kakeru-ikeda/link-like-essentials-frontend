@@ -1,5 +1,12 @@
 import { CardFilter } from '@/models/Filter';
 import { getSkillEffectKeywords } from '@/services/skillEffectService';
+import { getTraitEffectKeywords } from '@/services/traitEffectService';
+
+export interface HighlightKeywordsByTarget {
+  general: string[]; // キーワード検索など全体に適用するキーワード
+  skillTargets: string[]; // スキル検索対象（スペシャルアピール・スキル・特性）に適用するキーワード
+  traitTargets: string[]; // 特性検索専用キーワード
+}
 
 /**
  * アクティブフィルタからハイライト用のキーワードを抽出
@@ -7,20 +14,38 @@ import { getSkillEffectKeywords } from '@/services/skillEffectService';
  * @returns ハイライト対象のキーワード配列
  */
 export function getHighlightKeywords(filter: CardFilter | null): string[] {
-  if (!filter) return [];
+  const { general, skillTargets, traitTargets } = getHighlightKeywordsByTarget(filter);
+  return [...general, ...skillTargets, ...traitTargets];
+}
 
-  const keywords: string[] = [];
+/**
+ * ハイライト対象を検索ターゲット別に返す
+ * - general: フリーワード検索など全体に適用
+ * - skillTargets: スキル効果検索時にスペシャルアピール/スキル/特性へ適用
+ * - traitTargets: 特性効果検索時に特性へのみ適用
+ */
+export function getHighlightKeywordsByTarget(
+  filter: CardFilter | null
+): HighlightKeywordsByTarget {
+  const result: HighlightKeywordsByTarget = {
+    general: [],
+    skillTargets: [],
+    traitTargets: [],
+  };
 
-  // キーワード検索のキーワード
+  if (!filter) return result;
+
   if (filter.keyword) {
-    keywords.push(filter.keyword);
+    result.general.push(filter.keyword);
   }
 
-  // スキル効果のキーワード
   if (filter.skillEffects && filter.skillEffects.length > 0) {
-    const skillKeywords = getSkillEffectKeywords(filter.skillEffects);
-    keywords.push(...skillKeywords);
+    result.skillTargets.push(...getSkillEffectKeywords(filter.skillEffects));
   }
 
-  return keywords;
+  if (filter.traitEffects && filter.traitEffects.length > 0) {
+    result.traitTargets.push(...getTraitEffectKeywords(filter.traitEffects));
+  }
+
+  return result;
 }

@@ -2,13 +2,14 @@
 
 import React from 'react';
 import type { CardFilter as CardFilterType } from '@/models/Filter';
-import { Rarity, StyleType, LimitedType, FavoriteMode, SkillEffectType, SkillSearchTarget } from '@/models/enums';
+import { Rarity, StyleType, LimitedType, FavoriteMode, SkillEffectType, SkillSearchTarget, TraitEffectType } from '@/models/enums';
 import { SearchModeFilter } from '@/components/common/filters/SearchModeFilter';
 import { KeywordSearchInput } from '@/components/common/KeywordSearchInput';
 import { CharacterFilter } from '@/components/cards/filters/CharacterFilter';
 import { RarityFilter } from '@/components/cards/filters/RarityFilter';
 import { FavoriteModeFilter } from '@/components/cards/filters/FavoriteModeFilter';
 import { SkillEffectFilter } from '@/components/cards/filters/SkillEffectFilter';
+import { TraitEffectFilter } from '@/components/cards/filters/TraitEffectFilter';
 import { StyleTypeFilter } from '@/components/cards/filters/StyleTypeFilter';
 import { LimitedTypeFilter } from '@/components/cards/filters/LimitedTypeFilter';
 import { TokenCardFilter } from '@/components/cards/filters/TokenCardFilter';
@@ -69,6 +70,10 @@ export const CardFilter: React.FC<CardFilterProps> = ({
     updateFilter(toggleFilterList(filter, 'skillSearchTargets', target));
   };
 
+  const toggleTraitEffect = (traitEffect: TraitEffectType): void => {
+    updateFilter(toggleFilterList(filter, 'traitEffects', traitEffect));
+  };
+
   return (
     <div className="p-4 space-y-2">
       {/* AND/OR検索モード切り替え */}
@@ -123,16 +128,6 @@ export const CardFilter: React.FC<CardFilterProps> = ({
         </FilterWrapper>
       )}
 
-      {/* 得意ムード */}
-      {isVisible('favoriteModes') && (
-        <FilterWrapper>
-          <FavoriteModeFilter
-            selectedFavoriteModes={filter.favoriteModes}
-            onToggle={toggleFavoriteMode}
-          />
-        </FilterWrapper>
-      )}
-
       {/* スキル効果 */}
       {isVisible('skillEffects') && (
         <FilterWrapper>
@@ -141,6 +136,36 @@ export const CardFilter: React.FC<CardFilterProps> = ({
             selectedTargets={filter.skillSearchTargets}
             onToggleEffect={toggleSkillEffect}
             onToggleTarget={toggleSkillSearchTarget}
+          />
+        </FilterWrapper>
+      )}
+
+      {/* 特性効果 */}
+      {isVisible('traitEffects') && (
+        <FilterWrapper>
+          <TraitEffectFilter
+            selectedEffects={filter.traitEffects}
+            onToggleEffect={toggleTraitEffect}
+          />
+        </FilterWrapper>
+      )}
+
+      {/* トークンカードの有無 */}
+      {isVisible('hasTokens') && (
+        <FilterWrapper>
+          <TokenCardFilter
+            hasTokens={filter.hasTokens}
+            onChange={(value) => updateFilter({ hasTokens: value })}
+          />
+        </FilterWrapper>
+      )}
+
+      {/* 得意ムード */}
+      {isVisible('favoriteModes') && (
+        <FilterWrapper>
+          <FavoriteModeFilter
+            selectedFavoriteModes={filter.favoriteModes}
+            onToggle={toggleFavoriteMode}
           />
         </FilterWrapper>
       )}
@@ -161,16 +186,6 @@ export const CardFilter: React.FC<CardFilterProps> = ({
           <LimitedTypeFilter
             selectedLimitedTypes={filter.limitedTypes}
             onToggle={toggleLimitedType}
-          />
-        </FilterWrapper>
-      )}
-
-      {/* トークンカードの有無 */}
-      {isVisible('hasTokens') && (
-        <FilterWrapper>
-          <TokenCardFilter
-            hasTokens={filter.hasTokens}
-            onChange={(value) => updateFilter({ hasTokens: value })}
           />
         </FilterWrapper>
       )}

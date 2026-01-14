@@ -6,6 +6,7 @@ import {
   DeckType,
   SkillEffectType,
   SkillSearchTarget,
+  TraitEffectType,
 } from '@/models/enums';
 import { SortField } from '@/models/Filter';
 
@@ -108,8 +109,8 @@ export const SKILL_EFFECT_LABELS: Record<SkillEffectType, string> = {
   [SkillEffectType.MENTAL_GUARD]: 'メンタルガード',
   [SkillEffectType.RESHUFFLE]: 'リシャッフル',
   [SkillEffectType.EXTEND_HAND]: 'エクステンドハンド',
-  [SkillEffectType.BLESSING]: 'ブレッシング',
   [SkillEffectType.IMITATION]: 'イミテーション',
+  [SkillEffectType.BLESSING]: 'ブレッシング',
   [SkillEffectType.AP_GAIN]: 'APゲイン',
   [SkillEffectType.HEAT_UP]: 'ヒートアップ',
   [SkillEffectType.BELIEF]: 'ビリーフ',
@@ -123,6 +124,24 @@ export const SKILL_SEARCH_TARGET_LABELS: Record<SkillSearchTarget, string> = {
   [SkillSearchTarget.SPECIAL_APPEAL]: 'スペシャルアピール',
   [SkillSearchTarget.SKILL]: 'スキル',
   [SkillSearchTarget.TRAIT]: '特性',
-  [SkillSearchTarget.ACCESSORY_SKILL]: 'スキル（トークン）',
-  [SkillSearchTarget.ACCESSORY_TRAIT]: '特性（トークン）',
+};
+
+/**
+ * 特性効果のラベル定義
+ */
+export const TRAIT_EFFECT_LABELS: Record<TraitEffectType, string> = {
+  [TraitEffectType.ENCORE]: 'アンコール',
+  [TraitEffectType.SHOT]: 'ショット',
+  [TraitEffectType.AP_REDUCE]: 'APレデュース',
+  [TraitEffectType.AP_SUPPORT]: 'APサポート',
+  [TraitEffectType.INTERPRETATION]: 'インタープリテーション',
+  [TraitEffectType.OVER_SECTION]: 'オーバーセクション',
+  [TraitEffectType.SEARCH]: 'サーチ',
+  [TraitEffectType.CHAIN]: 'チェイン',
+  [TraitEffectType.DRAW]: 'ドロー',
+  [TraitEffectType.FAVORITE]: 'フェイバリット',
+  [TraitEffectType.REINFORCE]: 'リインフォース',
+  [TraitEffectType.INSTANCE]: 'インスタンス',
+  [TraitEffectType.HEART_COLLECT]: 'ハートコレクト',
+  [TraitEffectType.UN_DRAW]: 'アンドロー(仮)',
 };

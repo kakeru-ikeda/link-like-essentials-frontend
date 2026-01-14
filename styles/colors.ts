@@ -70,3 +70,12 @@ export const FAVORITE_MODE_COLORS: Record<FavoriteMode, string> = {
   [FavoriteMode.MELLOW]: '#60a5fa',
   [FavoriteMode.NEUTRAL]: '#34d399',
 };
+
+/**
+ * フィルター UI 用カラー定義
+ */
+export const FILTER_COLOR_KEYWORD = '#3b82f6';
+export const FILTER_COLOR_SKILL_EFFECT = '#10b981';
+export const FILTER_COLOR_SKILL_SEARCH_TARGET = '#f97316';
+export const FILTER_COLOR_TRAIT_EFFECT = '#9333ea';
+export const FILTER_COLOR_TOKEN = '#06b6d4';

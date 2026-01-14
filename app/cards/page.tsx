@@ -10,6 +10,7 @@ import { CardGridFilter } from '@/components/cards/CardGridFilter';
 import { SideModal } from '@/components/common/SideModal';
 import { useSideModal } from '@/hooks/useSideModal';
 import { LayoutGrid, List } from 'lucide-react';
+import { useCardHighlight } from '@/hooks/useCardHighlight';
 
 export default function CardsPage(): JSX.Element {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -20,6 +21,10 @@ export default function CardsPage(): JSX.Element {
     clearFilterKey,
     countActiveFilters,
   } = useFilter();
+  const hasActiveFilter = filter && Object.keys(filter).length > 0;
+  const { highlightKeywords } = useCardHighlight({
+    syncFilter: hasActiveFilter ? filter : null,
+  });
   const { cards, loading, error } = useCards(filter);
   const { openCardDetail, closeCardDetail, selectedCardId, isCardDetailOpen } =
     useSideModal();
@@ -75,12 +80,14 @@ export default function CardsPage(): JSX.Element {
         <CardGridView
           cards={cards}
           loading={loading}
+          highlightKeywords={highlightKeywords.general}
           onClickCard={(card) => openCardDetail(card.id)}
         />
       ) : (
         <CardListView
           cards={cards}
           loading={loading}
+          highlightKeywords={highlightKeywords.general}
           onClickCard={(card) => openCardDetail(card.id)}
         />
       )}

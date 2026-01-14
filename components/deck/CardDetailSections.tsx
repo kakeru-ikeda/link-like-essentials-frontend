@@ -3,8 +3,7 @@
 import React from 'react';
 import { Card } from '@/models/Card';
 import { HighlightText } from '@/components/common/HighlightText';
-import { useCardStore } from '@/store/cardStore';
-import { getHighlightKeywords } from '@/services/highlightService';
+import { useCardHighlight } from '@/hooks/useCardHighlight';
 
 interface CardDetailSectionsProps {
   card: Card;
@@ -20,8 +19,13 @@ export const CardDetailSections: React.FC<CardDetailSectionsProps> = ({
   showAcquisition = false,
 }) => {
   const isCompact = variant === 'compact';
-  const activeFilter = useCardStore((state) => state.activeFilter);
-  const highlightKeywords = getHighlightKeywords(activeFilter);
+  const { highlightKeywords } = useCardHighlight();
+  const skillSectionKeywords = [...highlightKeywords.general, ...highlightKeywords.skillTargets];
+  const traitSectionKeywords = [
+    ...highlightKeywords.general,
+    ...highlightKeywords.traitTargets,
+    ...highlightKeywords.skillTargets,
+  ];
 
   // スタイルクラス定義
   const sectionClass = isCompact
@@ -78,7 +82,7 @@ export const CardDetailSections: React.FC<CardDetailSectionsProps> = ({
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <span className={`${nameClass} ${isCompact ? 'text-green-600' : 'text-gray-900 font-bold'}`}>
-                <HighlightText text={card.detail.specialAppeal.name} keywords={highlightKeywords} />
+                <HighlightText text={card.detail.specialAppeal.name} keywords={skillSectionKeywords} />
               </span>
               {card.detail.specialAppeal.ap && (
                 <span className={apBadgeClass}>AP {card.detail.specialAppeal.ap}</span>
@@ -86,7 +90,7 @@ export const CardDetailSections: React.FC<CardDetailSectionsProps> = ({
             </div>
             {card.detail.specialAppeal.effect && (
               <p className={`${effectClass} ${isCompact ? '' : 'mt-1'}`}>
-                <HighlightText text={card.detail.specialAppeal.effect} keywords={highlightKeywords} />
+                <HighlightText text={card.detail.specialAppeal.effect} keywords={skillSectionKeywords} />
               </p>
             )}
           </div>
@@ -100,7 +104,7 @@ export const CardDetailSections: React.FC<CardDetailSectionsProps> = ({
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <span className={`${nameClass} ${isCompact ? 'text-blue-600' : 'text-gray-900 font-bold'}`}>
-                <HighlightText text={card.detail.skill.name} keywords={highlightKeywords} />
+                <HighlightText text={card.detail.skill.name} keywords={skillSectionKeywords} />
               </span>
               {card.detail.skill.ap && (
                 <span className={apBadgeClass}>AP {card.detail.skill.ap}</span>
@@ -108,7 +112,7 @@ export const CardDetailSections: React.FC<CardDetailSectionsProps> = ({
             </div>
             {card.detail.skill.effect && (
               <p className={`${effectClass} ${isCompact ? '' : 'mt-1'}`}>
-                <HighlightText text={card.detail.skill.effect} keywords={highlightKeywords} />
+                <HighlightText text={card.detail.skill.effect} keywords={skillSectionKeywords} />
               </p>
             )}
           </div>
@@ -121,11 +125,11 @@ export const CardDetailSections: React.FC<CardDetailSectionsProps> = ({
           <h4 className={`${baseTitleClass} text-purple-600`}>特性</h4>
           <div className="space-y-1">
             <span className={`${nameClass} ${isCompact ? 'text-purple-600' : 'text-gray-900 font-bold'}`}>
-              <HighlightText text={card.detail.trait.name} keywords={highlightKeywords} />
+              <HighlightText text={card.detail.trait.name} keywords={traitSectionKeywords} />
             </span>
             {card.detail.trait.effect && (
               <p className={`${effectClass} ${isCompact ? '' : 'mt-1'}`}>
-                <HighlightText text={card.detail.trait.effect} keywords={highlightKeywords} />
+                <HighlightText text={card.detail.trait.effect} keywords={traitSectionKeywords} />
               </p>
             )}
           </div>
@@ -144,7 +148,7 @@ export const CardDetailSections: React.FC<CardDetailSectionsProps> = ({
               >
                 <div className={`flex items-${isCompact ? 'center' : 'start'} ${isCompact ? 'gap-2 mb-1' : 'justify-between gap-2 mb-1'}`}>
                   <p className={`${isCompact ? 'text-xs font-bold text-blue-600' : 'text-sm font-medium text-blue-600'}`}>
-                    <HighlightText text={accessory.name} keywords={highlightKeywords} />
+                    <HighlightText text={accessory.name} keywords={skillSectionKeywords} />
                   </p>
                   {accessory.ap && (
                     <span className={apBadgeClass}>AP {accessory.ap}</span>
@@ -152,17 +156,17 @@ export const CardDetailSections: React.FC<CardDetailSectionsProps> = ({
                 </div>
                 {accessory.effect && (
                   <p className={`${isCompact ? 'text-xs text-gray-600 whitespace-pre-line mb-1' : 'text-xs text-gray-600 mt-1'}`}>
-                    <HighlightText text={accessory.effect} keywords={highlightKeywords} />
+                    <HighlightText text={accessory.effect} keywords={skillSectionKeywords} />
                   </p>
                 )}
                 {accessory.traitName && (
                   <div className={isCompact ? 'text-xs' : 'mt-2 pt-2 border-t border-gray-200'}>
                     <p className={isCompact ? 'font-bold text-purple-700' : 'text-xs font-medium text-purple-700'}>
-                      <HighlightText text={accessory.traitName} keywords={highlightKeywords} />
+                      <HighlightText text={accessory.traitName} keywords={traitSectionKeywords} />
                     </p>
                     {accessory.traitEffect && (
                       <p className={`${isCompact ? 'text-gray-600 ml-1 whitespace-pre-line' : 'text-xs text-gray-600 mt-1'}`}>
-                        <HighlightText text={isCompact ? `: ${accessory.traitEffect}` : accessory.traitEffect} keywords={highlightKeywords} />
+                        <HighlightText text={isCompact ? `: ${accessory.traitEffect}` : accessory.traitEffect} keywords={traitSectionKeywords} />
                       </p>
                     )}
                   </div>
