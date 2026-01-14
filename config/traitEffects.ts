@@ -8,13 +8,13 @@ export const TRAIT_EFFECT_DESCRIPTIONS: Record<TraitEffectType, string> = {
   [TraitEffectType.INSTANCE]: '使用後にデッキから除外される特性。',
   [TraitEffectType.ENCORE]: 'スキル使用後に山札へ戻る特性。',
   [TraitEffectType.SHOT]: 'スキルの使用回数に応じて発動する特性。',
+  [TraitEffectType.DRAW]: 'ドロー時に発動する特性。',
   [TraitEffectType.AP_REDUCE]: 'スキルの消費APを減らす特性。',
   [TraitEffectType.AP_SUPPORT]: '他カードのAP消費を減らすサポート特性。',
   [TraitEffectType.INTERPRETATION]: 'ムード補正の効果量を引き上げる特性。',
   [TraitEffectType.OVER_SECTION]: 'セクション跨ぎで発動する特性。',
   [TraitEffectType.SEARCH]: 'カードドロー確率を大幅に上げる特性。',
   [TraitEffectType.CHAIN]: '特定スキル使用後のドロー確率を上げる特性。',
-  [TraitEffectType.DRAW]: 'ドロー時に発動する特性。',
   [TraitEffectType.FAVORITE]: '特定セクションでのドロー確率を上げる特性。',
   [TraitEffectType.REINFORCE]: 'スキル効果量を増加させる特性。',
 };
@@ -38,6 +38,14 @@ export const TRAIT_EFFECT_KEYWORDS: Record<TraitEffectType, string[]> = {
     'スキル使用時、\\d+回まで',
     'スキル使用時\\d+回まで',
   ],
+  [TraitEffectType.DRAW]: [
+    'ドローした時',
+    'ドローしたセクションの間',
+    'までにドローした時',
+    '以降にドローした時',
+    '目でドローした時',
+    'セクションでドローした時'
+  ],
   [TraitEffectType.AP_REDUCE]: [
     'APレデュース',
     'このスキルの消費AP-\\d+',
@@ -59,14 +67,6 @@ export const TRAIT_EFFECT_KEYWORDS: Record<TraitEffectType, string[]> = {
     'スキルを使用した後、ドローされる確率が大幅に増加',
     'スキルを使用した際、ドローされる確率が増加する',
     'スキルを使用した際、ドローされる確率が大幅に増加する'
-  ],
-  [TraitEffectType.DRAW]: [
-    'ドローした時',
-    'ドローしたセクションの間',
-    'までにドローした時',
-    '以降にドローした時',
-    '目でドローした時',
-    'セクションでドローした時'
   ],
   [TraitEffectType.FAVORITE]: [
     'フェイバリット',
