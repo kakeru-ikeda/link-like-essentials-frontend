@@ -58,6 +58,7 @@ export const LIMITED_TYPE_COLORS: Record<LimitedType, string> = {
   [LimitedType.GRADUATE_LIMITED]: '#6366f1',
   [LimitedType.LOGIN_BONUS]: '#10b981',
   [LimitedType.REWARD]: '#ca8a04',
+  [LimitedType.BANGDREAM_LIMITED]: '#f43f5e',
 };
 
 /**
