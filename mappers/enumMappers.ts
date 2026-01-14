@@ -124,8 +124,6 @@ export const SKILL_SEARCH_TARGET_LABELS: Record<SkillSearchTarget, string> = {
   [SkillSearchTarget.SPECIAL_APPEAL]: 'スペシャルアピール',
   [SkillSearchTarget.SKILL]: 'スキル',
   [SkillSearchTarget.TRAIT]: '特性',
-  [SkillSearchTarget.ACCESSORY_SKILL]: 'スキル（トークン）',
-  [SkillSearchTarget.ACCESSORY_TRAIT]: '特性（トークン）',
 };
 
 /**

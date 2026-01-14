@@ -161,24 +161,18 @@ export function filterCardsOnClient(cards: Card[], filter: CardFilter): Card[] {
             
             switch (target) {
               case SkillSearchTarget.SKILL:
-                // カード本体のスキルのみ
+                // カード本体のスキルとトークンのスキル
                 texts.push(card.detail?.skill?.effect);
+                card.accessories?.forEach((acc) => texts.push(acc.effect));
                 break;
               case SkillSearchTarget.SPECIAL_APPEAL:
                 // カード本体のスペシャルアピールのみ（アクセサリーにはない）
                 texts.push(card.detail?.specialAppeal?.effect);
                 break;
               case SkillSearchTarget.TRAIT:
-                // カード本体の特性のみ
+                // カード本体の特性とトークンの特性
                 texts.push(card.detail?.trait?.effect);
-                break;
-              case SkillSearchTarget.ACCESSORY_SKILL:
-                // アクセサリーカードのスキルのみ
-                card.accessories?.forEach(acc => texts.push(acc.effect));
-                break;
-              case SkillSearchTarget.ACCESSORY_TRAIT:
-                // アクセサリーカードの特性のみ
-                card.accessories?.forEach(acc => texts.push(acc.traitEffect));
+                card.accessories?.forEach((acc) => texts.push(acc.traitEffect));
                 break;
             }
             
