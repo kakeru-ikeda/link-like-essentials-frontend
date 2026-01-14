@@ -128,16 +128,6 @@ export const CardFilter: React.FC<CardFilterProps> = ({
         </FilterWrapper>
       )}
 
-      {/* 得意ムード */}
-      {isVisible('favoriteModes') && (
-        <FilterWrapper>
-          <FavoriteModeFilter
-            selectedFavoriteModes={filter.favoriteModes}
-            onToggle={toggleFavoriteMode}
-          />
-        </FilterWrapper>
-      )}
-
       {/* スキル効果 */}
       {isVisible('skillEffects') && (
         <FilterWrapper>
@@ -160,6 +150,26 @@ export const CardFilter: React.FC<CardFilterProps> = ({
         </FilterWrapper>
       )}
 
+      {/* トークンカードの有無 */}
+      {isVisible('hasTokens') && (
+        <FilterWrapper>
+          <TokenCardFilter
+            hasTokens={filter.hasTokens}
+            onChange={(value) => updateFilter({ hasTokens: value })}
+          />
+        </FilterWrapper>
+      )}
+
+      {/* 得意ムード */}
+      {isVisible('favoriteModes') && (
+        <FilterWrapper>
+          <FavoriteModeFilter
+            selectedFavoriteModes={filter.favoriteModes}
+            onToggle={toggleFavoriteMode}
+          />
+        </FilterWrapper>
+      )}
+
       {/* スタイルタイプ */}
       {isVisible('styleTypes') && (
         <FilterWrapper>
@@ -176,16 +186,6 @@ export const CardFilter: React.FC<CardFilterProps> = ({
           <LimitedTypeFilter
             selectedLimitedTypes={filter.limitedTypes}
             onToggle={toggleLimitedType}
-          />
-        </FilterWrapper>
-      )}
-
-      {/* トークンカードの有無 */}
-      {isVisible('hasTokens') && (
-        <FilterWrapper>
-          <TokenCardFilter
-            hasTokens={filter.hasTokens}
-            onChange={(value) => updateFilter({ hasTokens: value })}
           />
         </FilterWrapper>
       )}
