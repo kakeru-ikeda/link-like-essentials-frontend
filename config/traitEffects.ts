@@ -17,6 +17,7 @@ export const TRAIT_EFFECT_DESCRIPTIONS: Record<TraitEffectType, string> = {
   [TraitEffectType.CHAIN]: '特定スキル使用後のドロー確率を上げる特性。',
   [TraitEffectType.FAVORITE]: '特定セクションでのドロー確率を上げる特性。',
   [TraitEffectType.REINFORCE]: 'スキル効果量を増加させる特性。',
+  [TraitEffectType.ACCUMULATE]: '条件を満たすたびに効果が変化する特性。',
   [TraitEffectType.UN_DRAW]: 'ドローされなくなる特性。',
 };
 
@@ -31,7 +32,7 @@ export const TRAIT_EFFECT_KEYWORDS: Record<TraitEffectType, string[]> = {
     '手札にある状態でハートを\\d+個回収する',
     '手札にある状態でハートを\\d+個獲得したとき',
   ],
-  [TraitEffectType.INSTANCE]: ['インスタンス', 'デッキから除外される'],
+  [TraitEffectType.INSTANCE]: ['インスタンス', 'デッキから除外され'],
   [TraitEffectType.ENCORE]: ['アンコール', 'スキル使用時、山札に戻る'],
   [TraitEffectType.SHOT]: [
     'ショット',
@@ -58,6 +59,10 @@ export const TRAIT_EFFECT_KEYWORDS: Record<TraitEffectType, string[]> = {
     'デッキ内の.+の消費APを-\\d+',
   ],
   [TraitEffectType.INTERPRETATION]: ['インタープリテーション', 'ムードによる効果増加量を上昇させ'],
+  [TraitEffectType.ACCUMULATE]: [
+    'アキューミュレイト',
+    'たびに',
+  ],
   [TraitEffectType.OVER_SECTION]: ['オーバーセクション', '手札にある状態でセクションが変わる'],
   [TraitEffectType.SEARCH]: ['サーチ', 'カードをドローする確率大幅アップ'],
   [TraitEffectType.CHAIN]: [
@@ -74,7 +79,8 @@ export const TRAIT_EFFECT_KEYWORDS: Record<TraitEffectType, string[]> = {
     'セクション目でドローされる確率が大幅に増加',
     'セクション目でドローされる確率が増加',
     'セクションでドローされる確率が大幅に増加',
-    'セクションでドローされる確率が増加'
+    'セクションでドローされる確率が増加',
+    'ドローされる確率が大幅に増加する'
   ],
   [TraitEffectType.REINFORCE]: [
     'リインフォース',

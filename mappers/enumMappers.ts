@@ -135,6 +135,7 @@ export const TRAIT_EFFECT_LABELS: Record<TraitEffectType, string> = {
   [TraitEffectType.AP_REDUCE]: 'APレデュース',
   [TraitEffectType.AP_SUPPORT]: 'APサポート',
   [TraitEffectType.INTERPRETATION]: 'インタープリテーション',
+  [TraitEffectType.ACCUMULATE]: 'アキューミュレイト',
   [TraitEffectType.OVER_SECTION]: 'オーバーセクション',
   [TraitEffectType.SEARCH]: 'サーチ',
   [TraitEffectType.CHAIN]: 'チェイン',
