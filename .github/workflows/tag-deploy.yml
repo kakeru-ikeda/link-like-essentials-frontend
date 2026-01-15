@@ -1,0 +1,55 @@
+name: Deploy to Vercel on Tag
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Pull Vercel env (production)
+        run: npx vercel pull --yes --environment=production --token "$VERCEL_TOKEN" --scope "$VERCEL_ORG_ID" --project "$VERCEL_PROJECT_ID"
+
+      - name: Build (Vercel)
+        run: npx vercel build --token "$VERCEL_TOKEN" --scope "$VERCEL_ORG_ID" --project "$VERCEL_PROJECT_ID"
+
+      - name: Deploy to Vercel (prod)
+        id: deploy
+        run: |
+          DEPLOY_URL=$(npx vercel deploy --prebuilt --prod --token "$VERCEL_TOKEN" --scope "$VERCEL_ORG_ID" --project "$VERCEL_PROJECT_ID")
+          echo "url=${DEPLOY_URL}" >> "$GITHUB_OUTPUT"
+
+      - name: Notify Discord
+        if: always()
+        env:
+          DISCORD_DEPLOY_NOTIFICATION_URL: ${{ secrets.DISCORD_DEPLOY_NOTIFICATION_URL }}
+          DEPLOY_URL: ${{ steps.deploy.outputs.url }}
+        run: |
+          STATUS="${{ job.status }}"
+          TAG="${GITHUB_REF#refs/tags/}"
+          URL_MESSAGE="$DEPLOY_URL"
+          if [ -z "$URL_MESSAGE" ]; then URL_MESSAGE="(not available)"; fi
+          curl -X POST -H "Content-Type: application/json" \
+            -d "{\"content\": \"Tag: ${TAG}\\nJob status: ${STATUS}\\nDeploy URL: ${URL_MESSAGE}\"}" \
+            "$DISCORD_DEPLOY_NOTIFICATION_URL"
