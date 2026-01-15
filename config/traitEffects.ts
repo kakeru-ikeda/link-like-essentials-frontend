@@ -62,10 +62,7 @@ export const TRAIT_EFFECT_KEYWORDS: Record<TraitEffectType, string[]> = {
   [TraitEffectType.INSTANCE]: ['インスタンス', 'デッキから除外され'],
   [TraitEffectType.IMMORTAL]: ['インモータル', 'デッキから除外されない'],
   [TraitEffectType.INTERPRETATION]: ['インタープリテーション', 'ムードによる効果増加量を上昇させ'],
-  [TraitEffectType.ACCUMULATE]: [
-    'アキューミュレイト',
-    'たびに',
-  ],
+  [TraitEffectType.ACCUMULATE]: ['アキューミュレイト'],
   [TraitEffectType.OVER_SECTION]: ['オーバーセクション', '手札にある状態でセクションが変わる'],
   [TraitEffectType.ALTERNATE_IGNITION]: [
     'オルタネイト：イグニッション',
