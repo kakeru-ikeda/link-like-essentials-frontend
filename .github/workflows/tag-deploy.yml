@@ -28,15 +28,15 @@ jobs:
         run: npm ci
 
       - name: Pull Vercel env (production)
-        run: npx vercel pull --yes --environment=production --token "$VERCEL_TOKEN" --project "$VERCEL_PROJECT_ID"
+        run: npx vercel pull --yes --environment=production --token "$VERCEL_TOKEN"
 
       - name: Build (Vercel)
-        run: npx vercel build --token "$VERCEL_TOKEN" --project "$VERCEL_PROJECT_ID"
+        run: npx vercel build --token "$VERCEL_TOKEN"
 
       - name: Deploy to Vercel (prod)
         id: deploy
         run: |
-          DEPLOY_URL=$(npx vercel deploy --prebuilt --prod --token "$VERCEL_TOKEN" --project "$VERCEL_PROJECT_ID")
+          DEPLOY_URL=$(npx vercel deploy --prebuilt --prod --token "$VERCEL_TOKEN")
           echo "url=${DEPLOY_URL}" >> "$GITHUB_OUTPUT"
 
       - name: Notify Discord
