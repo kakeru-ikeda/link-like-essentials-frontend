@@ -71,8 +71,8 @@ export const SKILL_EFFECT_KEYWORDS: Record<SkillEffectType, string[]> = {
   [SkillEffectType.BLESSING]: [
     'デッキ内の.+の消費AP-\\d+',
     'デッキ内の.+の消費APを-\\d+',
-    '手札の.+の消費AP-\\d+',
-    '手札の.+の消費APを-\\d+',
+    '手札の(?!このスキル).*の消費AP-\\d+',
+    '手札の(?!このスキル).*の消費APを-\\d+',
   ],
   [SkillEffectType.IMITATION]: ['カードがステージにセットされ'],
   [SkillEffectType.AP_GAIN]: ['APを\\d+回復'],
