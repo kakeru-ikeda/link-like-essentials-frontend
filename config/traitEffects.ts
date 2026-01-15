@@ -5,14 +5,16 @@ import { TraitEffectType } from '@/models/enums';
  */
 export const TRAIT_EFFECT_DESCRIPTIONS: Record<TraitEffectType, string> = {
   [TraitEffectType.HEART_COLLECT]: 'ハート回収条件で発動する特性。',
-  [TraitEffectType.INSTANCE]: '使用後にデッキから除外される特性。',
   [TraitEffectType.ENCORE]: 'スキル使用後に山札へ戻る特性。',
   [TraitEffectType.SHOT]: 'スキルの使用回数に応じて発動する特性。',
   [TraitEffectType.DRAW]: 'ドロー時に発動する特性。',
   [TraitEffectType.AP_REDUCE]: 'スキルの消費APを減らす特性。',
   [TraitEffectType.AP_SUPPORT]: '他カードのAP消費を減らすサポート特性。',
+  [TraitEffectType.INSTANCE]: '使用後にデッキから除外される特性。',
+  [TraitEffectType.IMMORTAL]: '使用後にデッキから除外されない特性。',
   [TraitEffectType.INTERPRETATION]: 'ムード補正の効果量を引き上げる特性。',
   [TraitEffectType.OVER_SECTION]: 'セクション跨ぎで発動する特性。',
+  [TraitEffectType.ALTERNATE_IGNITION]: '姫芽の《イグニッションモード》状態に応じて効果が変化する特性。',
   [TraitEffectType.SEARCH]: 'カードドロー確率を大幅に上げる特性。',
   [TraitEffectType.CHAIN]: '特定スキル使用後のドロー確率を上げる特性。',
   [TraitEffectType.FAVORITE]: '特定セクションでのドロー確率を上げる特性。',
@@ -32,7 +34,6 @@ export const TRAIT_EFFECT_KEYWORDS: Record<TraitEffectType, string[]> = {
     '手札にある状態でハートを\\d+個回収する',
     '手札にある状態でハートを\\d+個獲得したとき',
   ],
-  [TraitEffectType.INSTANCE]: ['インスタンス', 'デッキから除外され'],
   [TraitEffectType.ENCORE]: ['アンコール', 'スキル使用時、山札に戻る'],
   [TraitEffectType.SHOT]: [
     'ショット',
@@ -58,12 +59,18 @@ export const TRAIT_EFFECT_KEYWORDS: Record<TraitEffectType, string[]> = {
     'デッキ内の.+の消費AP-\\d+',
     'デッキ内の.+の消費APを-\\d+',
   ],
+  [TraitEffectType.INSTANCE]: ['インスタンス', 'デッキから除外され'],
+  [TraitEffectType.IMMORTAL]: ['インモータル', 'デッキから除外されない'],
   [TraitEffectType.INTERPRETATION]: ['インタープリテーション', 'ムードによる効果増加量を上昇させ'],
   [TraitEffectType.ACCUMULATE]: [
     'アキューミュレイト',
     'たびに',
   ],
   [TraitEffectType.OVER_SECTION]: ['オーバーセクション', '手札にある状態でセクションが変わる'],
+  [TraitEffectType.ALTERNATE_IGNITION]: [
+    'オルタネイト：イグニッション',
+    'イグニッションモード',
+  ],
   [TraitEffectType.SEARCH]: ['サーチ', 'カードをドローする確率大幅アップ'],
   [TraitEffectType.CHAIN]: [
     'チェイン',
