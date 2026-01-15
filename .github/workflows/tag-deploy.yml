@@ -29,27 +29,59 @@ jobs:
         run: npm ci
 
       - name: Pull Vercel env (production)
-        run: npx vercel pull --yes --environment=production --token "$VERCEL_TOKEN" --scope "$VERCEL_ORG_ID" --project "$VERCEL_PROJECT_ID"
+        run: npx vercel pull --yes --environment=production --token "$VERCEL_TOKEN" --scope "$VERCEL_ORG_ID"
 
       - name: Build (Vercel)
-        run: npx vercel build --token "$VERCEL_TOKEN" --scope "$VERCEL_ORG_ID" --project "$VERCEL_PROJECT_ID"
+        run: npx vercel build --token "$VERCEL_TOKEN" --scope "$VERCEL_ORG_ID"
 
       - name: Deploy to Vercel (prod)
         id: deploy
         run: |
-          DEPLOY_URL=$(npx vercel deploy --prebuilt --prod --token "$VERCEL_TOKEN" --scope "$VERCEL_ORG_ID" --project "$VERCEL_PROJECT_ID")
+          DEPLOY_OUTPUT=$(npx vercel deploy --prebuilt --prod --token "$VERCEL_TOKEN" --scope "$VERCEL_ORG_ID" 2>&1)
+          DEPLOY_STATUS=$?
+          DEPLOY_URL=$(printf '%s\n' "$DEPLOY_OUTPUT" | tail -n 1)
+
+          if [ $DEPLOY_STATUS -ne 0 ]; then
+            echo "Deploy failed. Output:" >&2
+            printf '%s\n' "$DEPLOY_OUTPUT" >&2
+            DEPLOY_URL=""
+          fi
+
           echo "url=${DEPLOY_URL}" >> "$GITHUB_OUTPUT"
+          {
+            echo "error<<'EOF'"
+            printf '%s\n' "$DEPLOY_OUTPUT" | tail -n 20
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+          exit $DEPLOY_STATUS
 
       - name: Notify Discord
         if: always()
         env:
           DISCORD_DEPLOY_NOTIFICATION_URL: ${{ secrets.DISCORD_DEPLOY_NOTIFICATION_URL }}
           DEPLOY_URL: ${{ steps.deploy.outputs.url }}
+          DEPLOY_ERROR: ${{ steps.deploy.outputs.error }}
+          DEPLOY_OUTCOME: ${{ steps.deploy.outcome }}
         run: |
           STATUS="${{ job.status }}"
           TAG="${GITHUB_REF#refs/tags/}"
           URL_MESSAGE="$DEPLOY_URL"
+          ERROR_MESSAGE="$DEPLOY_ERROR"
+          OUTCOME="$DEPLOY_OUTCOME"
           if [ -z "$URL_MESSAGE" ]; then URL_MESSAGE="(not available)"; fi
+          if [ -z "$OUTCOME" ]; then OUTCOME="not-run"; fi
+          MESSAGE="Tag: ${TAG}
+Job status: ${STATUS}
+Deploy outcome: ${OUTCOME}
+Deploy URL: ${URL_MESSAGE}"
+          if [ "$STATUS" != "success" ]; then
+            if [ -z "$ERROR_MESSAGE" ]; then ERROR_MESSAGE="See Actions logs for details."; fi
+            MESSAGE="${MESSAGE}
+Error:
+${ERROR_MESSAGE}"
+          fi
+          SAFE_MESSAGE=$(printf '%s' "$MESSAGE" | sed ':a;N;$!ba;s/\n/\\n/g' | sed 's/"/\\"/g')
           curl -X POST -H "Content-Type: application/json" \
-            -d "{\"content\": \"Tag: ${TAG}\\nJob status: ${STATUS}\\nDeploy URL: ${URL_MESSAGE}\"}" \
+            -d "{\"content\": \"${SAFE_MESSAGE}\"}" \
             "$DISCORD_DEPLOY_NOTIFICATION_URL"
