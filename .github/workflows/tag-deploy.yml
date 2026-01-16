@@ -37,7 +37,7 @@ jobs:
           npx vercel env pull .env.production.local --environment=production --token "$VERCEL_TOKEN"
 
       - name: Build (Vercel)
-        run: npx vercel build --token "$VERCEL_TOKEN"
+        run: npx vercel build --prod --token "$VERCEL_TOKEN"
 
       - name: Deploy to Vercel (prod)
         id: deploy
