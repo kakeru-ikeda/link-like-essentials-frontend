@@ -32,7 +32,9 @@ jobs:
         run: npm ci
 
       - name: Pull Vercel env (production)
-        run: npx vercel pull --yes --environment=production --token "$VERCEL_TOKEN" --local-env-file .env.production.local
+        run: |
+          npx vercel pull --yes --environment=production --token "$VERCEL_TOKEN"
+          npx vercel env pull .env.production.local --environment=production --token "$VERCEL_TOKEN"
 
       - name: Build (Vercel)
         run: npx vercel build --token "$VERCEL_TOKEN"
