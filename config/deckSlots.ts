@@ -111,7 +111,7 @@ export const DECK_SLOT_MAPPING_102: DeckSlotMapping[] = [
   { slotId: 5, characterName: '藤島慈', slotType: 'side', row: 0, col: 6 },
   { slotId: FRIEND_SLOT_ID, characterName: 'フレンド', slotType: 'side', row: 0, col: 0 },
 
-  // 中段（フリー枠x3）
+  // 中段（フリー枠）
   { slotId: 6, characterName: 'フリー', slotType: 'side', row: 1, col: 0 },
   { slotId: 7, characterName: 'フリー', slotType: 'side', row: 1, col: 1 },
   { slotId: 8, characterName: 'フリー', slotType: 'side', row: 1, col: 2 },
@@ -119,7 +119,7 @@ export const DECK_SLOT_MAPPING_102: DeckSlotMapping[] = [
   { slotId: 10, characterName: 'フリー', slotType: 'side', row: 1, col: 4 },
   { slotId: 11, characterName: 'フリー', slotType: 'side', row: 1, col: 5 },
 
-  // 下段（フリー枠x3）
+  // 下段（フリー枠）
   { slotId: 12, characterName: 'フリー', slotType: 'side', row: 2, col: 0 },
   { slotId: 13, characterName: 'フリー', slotType: 'side', row: 2, col: 1 },
   { slotId: 14, characterName: 'フリー', slotType: 'side', row: 2, col: 2 },
