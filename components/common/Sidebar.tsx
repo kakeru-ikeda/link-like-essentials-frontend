@@ -93,9 +93,6 @@ export function Sidebar({ children }: SidebarProps): JSX.Element {
   const { profile, fetchProfile } = useUserProfile();
   const { isPc } = useResponsiveDevice();
 
-  const showPcSidebar = isPc;
-  const showSpUi = !isPc;
-
   useEffect(() => {
     if (!profile) {
       fetchProfile();
@@ -120,7 +117,7 @@ export function Sidebar({ children }: SidebarProps): JSX.Element {
     <div className="flex h-screen overflow-hidden">
       {/* PC用サイドバー - ホバーで展開 */}
       <aside
-        className={`${showPcSidebar ? 'flex' : 'hidden'} flex-col bg-white border-r border-gray-200 transition-all duration-300 ease-in-out fixed left-0 top-0 h-full z-50`}
+        className="hidden md:flex md:flex-col bg-white border-r border-gray-200 transition-all duration-300 ease-in-out fixed left-0 top-0 h-full z-50"
         style={{ width: isSidebarExpanded ? '16rem' : '3.5rem' }}
         onMouseEnter={() => setIsSidebarExpanded(true)}
         onMouseLeave={() => setIsSidebarExpanded(false)}
@@ -234,10 +231,10 @@ export function Sidebar({ children }: SidebarProps): JSX.Element {
       {/* メインコンテンツエリア */}
       <div
         className="flex-1 flex flex-col overflow-hidden"
-        style={{ marginLeft: showPcSidebar ? '3rem' : undefined }}
+        style={{ marginLeft: isPc ? '3rem' : undefined }}
       >
         {/* SP用ヘッダー（ハンバーガーメニュー） */}
-        {showSpUi && (
+        {!isPc && (
           <header className="bg-white border-b border-gray-200 px-4 py-3">
           <div className="flex items-center justify-between">
             <Image
@@ -282,7 +279,7 @@ export function Sidebar({ children }: SidebarProps): JSX.Element {
         )}
 
         {/* SP用サイドバー（オーバーレイ） */}
-        {showSpUi && isMobileMenuOpen && (
+        {!isPc && isMobileMenuOpen && (
           <>
             {/* 背景オーバーレイ */}
             <div
