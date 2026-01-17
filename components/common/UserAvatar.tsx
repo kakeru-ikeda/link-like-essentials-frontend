@@ -54,7 +54,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={userProfile.avatarUrl}
-                  alt={`${userProfile.displayName}のアバター`}
+                  alt={`${userProfile?.displayName}のアバター`}
                   className="h-12 w-12 flex-shrink-0 rounded-full border border-slate-200 bg-slate-100 object-cover"
                 />
               ) : (
@@ -65,7 +65,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-1.5">
                   <p className="truncate text-sm font-semibold text-slate-900">
-                    {userProfile.displayName}
+                    {userProfile?.displayName}
                   </p>
                   {userProfile.role ? (
                     <VerifiedBadge role={userProfile.role} size="sm" />

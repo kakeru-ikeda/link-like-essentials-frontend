@@ -50,18 +50,18 @@ export const PublishedDeckCard: React.FC<PublishedDeckCardProps> = ({
   const [isHovering, setIsHovering] = useState(false);
   const [imageLoading, setImageLoading] = useState(false);
 
-  const handlePrevImage = (onclick: React.MouseEvent) => {
-    onclick.preventDefault();
-    onclick.stopPropagation();
+  const handlePrevImage = (event: React.MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
     setCurrentImageIndex((prev) =>
       prev === 0 ? allImages.length - 1 : prev - 1
     );
     setImageLoading(true);
   };
 
-  const handleNextImage = (onclick: React.MouseEvent) => {
-    onclick.preventDefault();
-    onclick.stopPropagation();
+  const handleNextImage = (event: React.MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
     setCurrentImageIndex((prev) =>
       prev === allImages.length - 1 ? 0 : prev + 1
     );
@@ -188,7 +188,7 @@ export const PublishedDeckCard: React.FC<PublishedDeckCardProps> = ({
               liked
                 ? 'bg-rose-600 text-white shadow-[0_6px_20px_rgba(244,63,94,0.25)] hover:bg-rose-700'
                 : 'bg-black/60 text-white shadow-md backdrop-blur-sm hover:bg-black/70'
-            } disabled`}
+            }`}
             aria-pressed={liked}
           >
             <span className="sr-only">いいね</span>
@@ -240,7 +240,6 @@ export const PublishedDeckCard: React.FC<PublishedDeckCardProps> = ({
                     className="flex items-center gap-1"
                     aria-label="参考スコア"
                   >
-                    <span aria-hidden></span>
                     {baseDeck.score}兆<span className="text-[0.8em]">LOVE</span>
                   </span>
                 </div>
