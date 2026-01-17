@@ -2,8 +2,6 @@ import { UserProfile } from '@/models/User';
 import { VerifiedBadge } from '@/components/common/VerifiedBadge';
 
 interface UserAvatarProps {
-  userName: string;
-  avatarUrl?: string;
   userProfile?: UserProfile;
   size?: 'sm' | 'md' | 'lg';
   showTooltip?: boolean;
@@ -25,8 +23,6 @@ const sizeClasses = {
 };
 
 export const UserAvatar: React.FC<UserAvatarProps> = ({
-  userName,
-  avatarUrl,
   userProfile,
   size = 'md',
   showTooltip = false,
@@ -35,18 +31,18 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
 
   const avatarElement = (
     <div className="relative inline-block flex-shrink-0">
-      {avatarUrl ? (
+      {userProfile?.avatarUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          src={avatarUrl}
-          alt={`${userName}のアバター`}
+          src={userProfile.avatarUrl}
+          alt={`${userProfile.displayName}のアバター`}
           className={`${sizeClass.container} rounded-full border border-slate-200 bg-slate-100 object-cover`}
         />
       ) : (
         <div
           className={`${sizeClass.container} ${sizeClass.text} flex items-center justify-center rounded-full border border-slate-200 bg-slate-100 font-semibold text-slate-500`}
         >
-          {userName?.[0]?.toUpperCase() || '?'}
+          {userProfile?.displayName?.[0]?.toUpperCase() || '?'}
         </div>
       )}
 
@@ -54,30 +50,31 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
         <div className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 -translate-x-1/2 opacity-0 transition-opacity duration-200 group-hover:pointer-events-auto group-hover:opacity-100">
           <div className="w-64 rounded-lg border border-slate-200 bg-white p-3 shadow-lg">
             <div className="flex items-start gap-3">
-              {avatarUrl ? (
+              {userProfile?.avatarUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
-                  src={avatarUrl}
-                  alt={`${userName}のアバター`}
+                  src={userProfile.avatarUrl}
+                  alt={`${userProfile.displayName}のアバター`}
                   className="h-12 w-12 flex-shrink-0 rounded-full border border-slate-200 bg-slate-100 object-cover"
                 />
               ) : (
                 <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full border border-slate-200 bg-slate-100 text-sm font-semibold text-slate-500">
-                  {userName?.[0]?.toUpperCase() || '?'}
+                  {userProfile?.displayName?.[0]?.toUpperCase() || '?'}
                 </div>
               )}
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-1.5">
-                  <p className="truncate text-sm font-semibold text-slate-900">{userName}</p>
+                  <p className="truncate text-sm font-semibold text-slate-900">
+                    {userProfile.displayName}
+                  </p>
                   {userProfile.role ? (
-                    <VerifiedBadge
-                      role={userProfile.role}
-                      size="sm"
-                    />
-                ) : null}
+                    <VerifiedBadge role={userProfile.role} size="sm" />
+                  ) : null}
                 </div>
                 {userProfile.bio && (
-                  <p className="mt-1 text-xs leading-relaxed text-slate-600">{userProfile.bio}</p>
+                  <p className="mt-1 text-xs leading-relaxed text-slate-600">
+                    {userProfile.bio}
+                  </p>
                 )}
               </div>
             </div>
@@ -89,7 +86,11 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
   );
 
   if (showTooltip && userProfile) {
-    return <div className="group relative">{avatarElement}</div>;
+    return (
+      <div className="group relative inline-flex items-center">
+        {avatarElement}
+      </div>
+    );
   }
 
   return avatarElement;
