@@ -3,6 +3,7 @@ import { Deck } from '@/models/Deck';
 import { ExportDashboard } from '@/components/deck/export/ExportDashboard';
 import { ImagePreviewGrid } from '@/components/deck/ImagePreviewGrid';
 import { HashtagChips } from '@/components/deck/HashtagChips';
+import { UserAvatar } from '@/components/common/UserAvatar';
 
 interface PublishedDeckDetailProps {
   deck: PublishedDeck;
@@ -11,8 +12,19 @@ interface PublishedDeckDetailProps {
 
 const formatDate = (iso: string) => new Date(iso).toLocaleDateString('ja-JP');
 
-export const PublishedDeckDetail: React.FC<PublishedDeckDetailProps> = ({ deck, compiledDeck }) => {
-  const { deck: baseDeck, userName, hashtags, thumbnail, publishedAt, comment, imageUrls } = deck;
+export const PublishedDeckDetail: React.FC<PublishedDeckDetailProps> = ({
+  deck,
+  compiledDeck,
+}) => {
+  const {
+    deck: baseDeck,
+    userProfile,
+    hashtags,
+    thumbnail,
+    publishedAt,
+    comment,
+    imageUrls,
+  } = deck;
 
   return (
     <div className="space-y-6">
@@ -28,7 +40,10 @@ export const PublishedDeckDetail: React.FC<PublishedDeckDetailProps> = ({ deck, 
                   className="h-full w-full object-contain"
                 />
               ) : (
-                <div className="flex h-full w-full items-center justify-center text-sm text-slate-500" style={{ minHeight: '320px' }}>
+                <div
+                  className="flex h-full w-full items-center justify-center text-sm text-slate-500"
+                  style={{ minHeight: '320px' }}
+                >
                   サムネイルなし（プレビュー準備中）
                 </div>
               )}
@@ -39,9 +54,22 @@ export const PublishedDeckDetail: React.FC<PublishedDeckDetailProps> = ({ deck, 
         <div className="flex flex-col gap-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="text-xs font-medium uppercase tracking-wide text-slate-500">デッキ名</p>
-              <h1 className="text-2xl font-bold text-slate-900">{baseDeck.name}</h1>
-              <p className="text-sm text-slate-600">by {userName || '匿名ユーザー'}</p>
+              <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                デッキ名
+              </p>
+              <h1 className="text-2xl font-bold text-slate-900">
+                {baseDeck.name}
+              </h1>
+              <div className="flex items-center gap-2 pt-1">
+                <UserAvatar
+                  userProfile={userProfile}
+                  size="lg"
+                  showTooltip={!!userProfile}
+                />
+                <p className="text-md text-slate-600">
+                  {userProfile?.displayName || '匿名ユーザー'}
+                </p>
+              </div>
             </div>
             <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700 whitespace-nowrap self-start">
               {formatDate(publishedAt)}

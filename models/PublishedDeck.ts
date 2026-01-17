@@ -1,4 +1,5 @@
-import { DeckForCloud } from './Deck';
+import { DeckForCloud } from '@/models/Deck';
+import { UserProfile } from '@/models/User';
 
 /**
  * 公開済みデッキ型
@@ -14,8 +15,8 @@ export interface PublishedDeck {
   /** 公開者のAuthUID */
   userId: string;
 
-  /** 公開者の表示名 */
-  userName: string;
+  /** 公開者のユーザープロフィール情報 */
+  userProfile: UserProfile;
 
   /** コメント */
   comment?: string;
