@@ -4,11 +4,13 @@ import React from 'react';
 import { MultiSelectFilter } from '@/components/common/filters/MultiSelectFilter';
 import { getSelectableCharactersForSlot } from '@/services/characterFilterService';
 import { getCharacterColor } from '@/utils/colorUtils';
+import type { DeckType } from '@/models/enums';
 
 interface CharacterFilterProps {
   selectedCharacters: string[] | undefined;
   onToggle: (characterName: string) => void;
   currentSlotId?: number | null;
+  deckType?: DeckType;
   isLabelHidden?: boolean;
   paddingDisabled?: boolean;
 }
@@ -17,12 +19,13 @@ export const CharacterFilter: React.FC<CharacterFilterProps> = ({
   selectedCharacters,
   onToggle,
   currentSlotId,
+  deckType,
   isLabelHidden = false,
   paddingDisabled = false,
 }) => {
   const selectableCharacters = React.useMemo(
-    () => getSelectableCharactersForSlot(currentSlotId ?? null),
-    [currentSlotId]
+    () => getSelectableCharactersForSlot(currentSlotId ?? null, deckType),
+    [currentSlotId, deckType]
   );
 
   const characterLabel = (character: string) => character;
