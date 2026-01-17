@@ -9,9 +9,9 @@ import type { CharacterName } from '@/config/characters';
 import type { DeckSlotMapping } from '@/config/deckSlots';
 import { canPlaceCardInSlot } from '@/services/deckRulesService';
 import { SideModal } from '@/components/common/SideModal';
-import { CardList } from '@/components/deck/CardList';
 import { CurrentCardDisplay } from '@/components/deck/CurrentCardDisplay';
 import { InProgressCardDisplay } from '@/components/deck/InProgressCardDisplay';
+import { AvailableCardDisplay } from '@/components/deck/AvailableCardDisplay';
 import { CardDetailView } from '@/components/deck/CardDetailView';
 import { CardFilter } from '@/components/common/CardFilter';
 import { FilterButton } from '@/components/common/FilterButton';
@@ -438,7 +438,7 @@ export const DeckBuilder: React.FC = () => {
                 onSelectCard={handleSelectCard}
               />
             )}
-            <CardList
+            <AvailableCardDisplay
               cards={filteredCards}
               loading={loading}
               onSelectCard={handleSelectCard}

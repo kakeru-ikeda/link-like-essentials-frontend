@@ -14,7 +14,7 @@ export const InProgressCardDisplay: React.FC<InProgressCardDisplayProps> = ({
   cards,
   onSelectCard,
 }) => {
-  const [isSectionOpen, setIsSectionOpen] = useState(true);
+  const [isSectionOpen, setIsSectionOpen] = useState(false);
 
   const handleToggleSection = (): void => {
     setIsSectionOpen(!isSectionOpen);
@@ -25,11 +25,11 @@ export const InProgressCardDisplay: React.FC<InProgressCardDisplayProps> = ({
   }
 
   return (
-    <div className="bg-green-50 border-b border-green-200 flex-shrink-0">
+    <div className="bg-green-100 border-b border-green-200 flex-shrink-0">
       {/* セクションヘッダー */}
       <button
         onClick={handleToggleSection}
-        className="w-full px-4 py-2 hover:bg-green-100 transition-colors text-left flex items-center justify-between"
+        className="w-full px-4 py-2 hover:bg-green-200 transition-colors text-left flex items-center justify-between"
       >
         <h3 className="text-sm font-bold text-gray-700">
           編成中のカード ({cards.length})
