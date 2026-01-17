@@ -2,6 +2,7 @@ import { DeckType } from '@/models/enums';
 import { CharacterName } from '@/config/characters';
 import {
   DeckSlotMapping,
+  DECK_SLOT_MAPPING_102,
   DECK_SLOT_MAPPING_103,
   DECK_SLOT_MAPPING_104,
   DECK_SLOT_MAPPING_105,
@@ -19,6 +20,8 @@ export function getDeckSlotMapping(deckType?: DeckType): DeckSlotMapping[] {
   }
 
   switch (deckType) {
+    case DeckType.TERM_102:
+      return DECK_SLOT_MAPPING_102;
     case DeckType.TERM_103:
       return DECK_SLOT_MAPPING_103;
     case DeckType.TERM_104:
@@ -45,6 +48,8 @@ export function getDeckFrame(deckType?: DeckType): (CharacterName | 'フリー' 
   }
 
   switch (deckType) {
+    case DeckType.TERM_102:
+      return ['乙宗梢', '夕霧綴理', '藤島慈', 'フレンド', 'フリー', 'フリー', 'フリー', 'フリー', 'フリー', 'フリー'];
     case DeckType.TERM_103:
       return ['日野下花帆', '村野さやか', '大沢瑠璃乃', 'フレンド', '乙宗梢', '夕霧綴理', '藤島慈'];
     case DeckType.TERM_104:

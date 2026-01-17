@@ -113,6 +113,7 @@ export const CardGridFilter: React.FC<CardGridFilterProps> = ({
             visibleFilters={VISIBLE_FILTERS}
             updateFilter={updateFilter}
             currentSlotId={null}
+            deckType={undefined}
             onApply={() => setIsFilterVisible(false)}
           />
         </div>

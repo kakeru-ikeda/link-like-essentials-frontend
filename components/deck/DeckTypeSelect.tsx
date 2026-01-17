@@ -21,6 +21,7 @@ export const DeckTypeSelect: React.FC<DeckTypeProps> = ({
   className = '',
 }) => {
   const options: DropdownOption<DeckType>[] = [
+    { value: DeckType.TERM_102, label: '102期' },
     { value: DeckType.TERM_103, label: '103期' },
     { value: DeckType.TERM_104, label: '104期' },
     { value: DeckType.TERM_105, label: '105期' },

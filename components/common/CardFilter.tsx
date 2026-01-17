@@ -15,12 +15,14 @@ import { LimitedTypeFilter } from '@/components/cards/filters/LimitedTypeFilter'
 import { TokenCardFilter } from '@/components/cards/filters/TokenCardFilter';
 import { toggleFilterList } from '@/services/cardFilterService';
 import { FilterWrapper } from '@/components/common/filters/FilterWrapper';
+import type { DeckType } from '@/models/enums';
 
 interface CardFilterProps {
   filter: CardFilterType;
   visibleFilters?: (keyof CardFilterType)[];
   updateFilter: (updates: Partial<CardFilterType>) => void;
   currentSlotId?: number | null;
+  deckType?: DeckType;
   onApply: () => void;
 }
 
@@ -29,6 +31,7 @@ export const CardFilter: React.FC<CardFilterProps> = ({
   visibleFilters,
   updateFilter,
   currentSlotId,
+  deckType,
   onApply,
 }) => {
   const isVisible = (key: keyof CardFilterType): boolean => {
@@ -114,6 +117,7 @@ export const CardFilter: React.FC<CardFilterProps> = ({
             selectedCharacters={filter.characterNames}
             onToggle={toggleCharacterName}
             currentSlotId={currentSlotId}
+            deckType={deckType}
           />
         </FilterWrapper>
       )}

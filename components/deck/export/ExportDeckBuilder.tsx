@@ -8,6 +8,8 @@ import { VerticalBadge } from '@/components/common/VerticalBadge';
 import { AceBadge } from '@/components/common/AceBadge';
 import { LimitBreakBadge } from '@/components/deck/LimitBreakBadge';
 import type { DeckSlot } from '@/models/Deck';
+import type { CharacterName } from '@/config/characters';
+import type { DeckSlotMapping } from '@/config/deckSlots';
 
 interface ExportDeckBuilderProps {
   captureRef?: React.Ref<HTMLDivElement>;
@@ -84,12 +86,21 @@ ExportCardSlot.displayName = 'ExportCardSlot';
 
 export const ExportDeckBuilder: React.FC<ExportDeckBuilderProps> = ({ captureRef }) => {
   const { deck, isFriendSlotEnabled } = useDeck();
-
-  if (!deck) return null;
+  const deckSlots = deck?.slots ?? [];
 
   // デッキタイプに応じたスロットマッピングとキャラクターフレームを取得
-  const slotMapping = getDeckSlotMapping(deck.deckType);
-  const characterFrame = getDeckFrame(deck.deckType);
+  const slotMapping = getDeckSlotMapping(deck?.deckType);
+  const characterFrame = getDeckFrame(deck?.deckType);
+  const slotMappingByCharacter = React.useMemo(() => {
+    const mapping = new Map<CharacterName, DeckSlotMapping[]>();
+    slotMapping.forEach((slot) => {
+      const list = mapping.get(slot.characterName) ?? [];
+      list.push(slot);
+      mapping.set(slot.characterName, list);
+    });
+    mapping.forEach((list) => list.sort((a, b) => a.slotId - b.slotId));
+    return mapping;
+  }, [slotMapping]);
   
   // フレンド枠が無効な場合はフレームから除外
   // 画像生成時はフレンド枠を最後に移動
@@ -108,28 +119,50 @@ export const ExportDeckBuilder: React.FC<ExportDeckBuilderProps> = ({ captureRef
     }
   }
   
-  // キャラクターごとのスロットをグループ化
-  const characterSlots = filteredCharacterFrame.map((character) => {
-    const charSlots = slotMapping
-      .filter((mapping) => mapping.characterName === character)
-      .map((mapping) => deck.slots.find((slot) => slot.slotId === mapping.slotId)!)
-      .filter(Boolean);
-    
-    return { character, slots: charSlots };
-  }).filter(({ slots }) => slots.length > 0); // 空のグループを除外
+  // キャラクターごとのスロットをフレーム順で消費しつつグループ化
+  const characterSlots = React.useMemo(() => {
+    const mappingCopies = new Map<CharacterName, DeckSlotMapping[]>(
+      Array.from(slotMappingByCharacter.entries()).map(([key, value]) => [
+        key,
+        [...value],
+      ])
+    );
+
+    return filteredCharacterFrame
+      .map((character: CharacterName, idx) => {
+        const mappings = mappingCopies.get(character);
+        if (!mappings || mappings.length === 0) return null;
+
+        const groupSize = character === 'フリー' ? Math.min(2, mappings.length) : Math.min(3, mappings.length);
+        const groupMappings = mappings.splice(0, groupSize);
+        if (groupMappings.length === 0) return null;
+
+        const slots = groupMappings
+          .map((mapping) => deckSlots.find((slot) => slot.slotId === mapping.slotId))
+          .filter((slot): slot is DeckSlot => Boolean(slot));
+
+        const key = `${character}-${groupMappings[0]?.slotId ?? idx}`;
+
+        return { character, slots, key };
+      })
+      .filter((group): group is { character: CharacterName; slots: DeckSlot[]; key: string } => group !== null)
+      .filter(({ slots }) => slots.length > 0);
+  }, [deckSlots, filteredCharacterFrame, slotMappingByCharacter]);
+
+  if (!deck) return null;
 
   return (
     <div className="w-full" ref={captureRef}>
       {/* デッキグリッド */}
       <div className="grid grid-cols-3 gap-8">
-        {characterSlots.map(({ character, slots }) => {
+        {characterSlots.map(({ character, slots, key }) => {
           const isCenter = deck.centerCharacter === character;
           const isSinger = deck.participations?.includes(character) || false;
           const backgroundColor = getCharacterBackgroundColor(character, 0.5);
           const characterColor = getCharacterColor(character);
 
           return (
-            <div key={character} className="relative pl-6">
+            <div key={key} className="relative pl-6">
               {/* Left badge area */}
               {(isCenter || isSinger) && (
                 <div className="absolute left-0 top-0 bottom-0 z-10 flex flex-col gap-3 pt-6">

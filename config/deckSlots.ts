@@ -101,6 +101,33 @@ export const DECK_SLOT_MAPPING_103: DeckSlotMapping[] = [
   { slotId: 17, characterName: '藤島慈', slotType: 'side', row: 2, col: 8 },
 ];
 
+export const DECK_SLOT_MAPPING_102: DeckSlotMapping[] = [
+  // 上段（102期生 + フレンド）
+  { slotId: 0, characterName: '乙宗梢', slotType: 'main', row: 0, col: 1 },
+  { slotId: 1, characterName: '乙宗梢', slotType: 'side', row: 0, col: 2 },
+  { slotId: 2, characterName: '夕霧綴理', slotType: 'main', row: 0, col: 3 },
+  { slotId: 3, characterName: '夕霧綴理', slotType: 'side', row: 0, col: 4 },
+  { slotId: 4, characterName: '藤島慈', slotType: 'main', row: 0, col: 5 },
+  { slotId: 5, characterName: '藤島慈', slotType: 'side', row: 0, col: 6 },
+  { slotId: FRIEND_SLOT_ID, characterName: 'フレンド', slotType: 'side', row: 0, col: 0 },
+
+  // 中段（フリー枠x3）
+  { slotId: 6, characterName: 'フリー', slotType: 'side', row: 1, col: 0 },
+  { slotId: 7, characterName: 'フリー', slotType: 'side', row: 1, col: 1 },
+  { slotId: 8, characterName: 'フリー', slotType: 'side', row: 1, col: 2 },
+  { slotId: 9, characterName: 'フリー', slotType: 'side', row: 1, col: 3 },
+  { slotId: 10, characterName: 'フリー', slotType: 'side', row: 1, col: 4 },
+  { slotId: 11, characterName: 'フリー', slotType: 'side', row: 1, col: 5 },
+
+  // 下段（フリー枠x3）
+  { slotId: 12, characterName: 'フリー', slotType: 'side', row: 2, col: 0 },
+  { slotId: 13, characterName: 'フリー', slotType: 'side', row: 2, col: 1 },
+  { slotId: 14, characterName: 'フリー', slotType: 'side', row: 2, col: 2 },
+  { slotId: 15, characterName: 'フリー', slotType: 'side', row: 2, col: 3 },
+  { slotId: 16, characterName: 'フリー', slotType: 'side', row: 2, col: 4 },
+  { slotId: 17, characterName: 'フリー', slotType: 'side', row: 2, col: 5 },
+];
+
 export const DECK_SLOT_MAPPING_105_FT_KOZUE: DeckSlotMapping[] = [
   // 上段（105期生ft.梢 + フレンド）
   { slotId: 0, characterName: '乙宗梢', slotType: 'main', row: 0, col: 1 },

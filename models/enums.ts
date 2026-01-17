@@ -46,6 +46,7 @@ export enum FavoriteMode {
 }
 
 export enum DeckType {
+  TERM_102 = '102期',
   TERM_103 = '103期',
   TERM_104 = '104期',
   TERM_105 = '105期',

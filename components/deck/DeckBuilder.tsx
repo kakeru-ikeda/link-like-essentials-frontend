@@ -5,6 +5,8 @@ import { useDeck } from '@/hooks/useDeck';
 import { Checkbox } from '@/components/common/Checkbox';
 import { CharacterDeckGroup } from '@/components/deck/CharacterDeckGroup';
 import { getDeckSlotMapping, getDeckFrame } from '@/services/deckConfigService';
+import type { CharacterName } from '@/config/characters';
+import type { DeckSlotMapping } from '@/config/deckSlots';
 import { canPlaceCardInSlot } from '@/services/deckRulesService';
 import { SideModal } from '@/components/common/SideModal';
 import { CardList } from '@/components/deck/CardList';
@@ -19,6 +21,7 @@ import { useCardStore } from '@/store/cardStore';
 import { useSideModal } from '@/hooks/useSideModal';
 import { useFilter } from '@/hooks/useFilter';
 import type { Card } from '@/models/Card';
+import type { DeckSlot } from '@/models/Deck';
 import {
   filterCardsBySlot,
   getAssignedCardsForSlot,
@@ -43,6 +46,8 @@ export const DeckBuilder: React.FC = () => {
     clearFilterKey,
     countActiveFilters,
   } = useFilter();
+
+  const deckSlots = deck?.slots ?? [];
 
   React.useEffect(() => {
     setActiveFilter(filter);
@@ -113,20 +118,19 @@ export const DeckBuilder: React.FC = () => {
     }, [sideModal.currentSlotId, deck]);
 
   const assignedCardIds = React.useMemo(() => {
-    if (!deck) return [];
-    return deck.slots
+    return deckSlots
       .filter((slot) => slot.slotId !== sideModal.currentSlotId && slot.card)
       .map((slot) => slot.card!.id);
-  }, [deck, sideModal.currentSlotId]);
+  }, [deckSlots, sideModal.currentSlotId]);
 
   const assignedCards = React.useMemo(() => {
-    if (!deck || sideModal.currentSlotId === null) return [];
+    if (sideModal.currentSlotId === null) return [];
     return getAssignedCardsForSlot(
-      deck.slots,
+      deckSlots,
       sideModal.currentSlotId,
-      deck.deckType
+      deck?.deckType
     );
-  }, [deck, sideModal.currentSlotId]);
+  }, [deckSlots, sideModal.currentSlotId, deck?.deckType]);
 
   const filterForQuery = React.useMemo(() => {
     if (sideModal.currentSlotId === null) return undefined;
@@ -221,6 +225,58 @@ export const DeckBuilder: React.FC = () => {
     [updateFilter]
   );
 
+  const deckFrame = getDeckFrame(deck?.deckType);
+  const deckMapping = getDeckSlotMapping(deck?.deckType);
+
+  // フレンド枠のフィルタリング
+  const filteredDeckFrame = isFriendSlotEnabled
+    ? deckFrame
+    : deckFrame.filter((character) => character !== 'フレンド');
+
+  // スロット定義をキャラクターごとにコピーして、frameの出現順で消費しながらグループ化
+  const slotMappingByCharacter = React.useMemo(() => {
+    const mapping = new Map<CharacterName, DeckSlotMapping[]>();
+    deckMapping.forEach((slot) => {
+      const list = mapping.get(slot.characterName) ?? [];
+      list.push(slot);
+      mapping.set(slot.characterName, list);
+    });
+    mapping.forEach((list) => list.sort((a, b) => a.slotId - b.slotId));
+    return mapping;
+  }, [deckMapping]);
+
+  const characterGroups = React.useMemo(() => {
+    const mappingCopies = new Map<CharacterName, DeckSlotMapping[]>(
+      Array.from(slotMappingByCharacter.entries()).map(([key, value]) => [
+        key,
+        [...value],
+      ])
+    );
+
+    return filteredDeckFrame
+      .map((character: CharacterName, idx) => {
+        const mappings = mappingCopies.get(character);
+        if (!mappings || mappings.length === 0) return null;
+
+        const groupSize = character === 'フリー' ? Math.min(2, mappings.length) : Math.min(3, mappings.length);
+        const groupMappings = mappings.splice(0, groupSize);
+        if (groupMappings.length === 0) return null;
+
+        const slots = groupMappings
+          .map((mapping) => deckSlots.find((s) => s.slotId === mapping.slotId))
+          .filter((slot): slot is DeckSlot => Boolean(slot));
+
+        const key = `${character}-${groupMappings[0]?.slotId ?? idx}`;
+
+        return { character, slots, row: groupMappings[0]?.row ?? 0, key };
+      })
+      .filter((group): group is { character: CharacterName; slots: DeckSlot[]; row: number; key: string } => group !== null);
+  }, [deckSlots, filteredDeckFrame, slotMappingByCharacter]);
+
+  const topRowGroups = characterGroups.filter((g) => g.row === 0);
+  const middleRowGroups = characterGroups.filter((g) => g.row === 1);
+  const bottomRowGroups = characterGroups.filter((g) => g.row === 2);
+
   if (!deck) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -229,37 +285,6 @@ export const DeckBuilder: React.FC = () => {
     );
   }
 
-  const deckFrame = getDeckFrame(deck.deckType);
-  const deckMapping = getDeckSlotMapping(deck.deckType);
-  
-  // フレンド枠のフィルタリング
-  const filteredDeckFrame = isFriendSlotEnabled 
-    ? deckFrame 
-    : deckFrame.filter(character => character !== 'フレンド');
-  
-  const characterGroups = filteredDeckFrame.map((character) => {
-    const slots = deckMapping
-      .filter((m) => m.characterName === character)
-      .sort((a, b) => a.slotId - b.slotId)
-      .map((mapping) => deck.slots.find((s) => s.slotId === mapping.slotId))
-      .filter((slot) => slot !== undefined);
-    return { character, slots };
-  });
-
-  // row情報でグルーピング
-  const topRowGroups = characterGroups.filter((g) => {
-    const mapping = deckMapping.find((m) => m.characterName === g.character);
-    return mapping?.row === 0;
-  });
-  const middleRowGroups = characterGroups.filter((g) => {
-    const mapping = deckMapping.find((m) => m.characterName === g.character);
-    return mapping?.row === 1;
-  });
-  const bottomRowGroups = characterGroups.filter((g) => {
-    const mapping = deckMapping.find((m) => m.characterName === g.character);
-    return mapping?.row === 2;
-  });
-
   return (
     <div className="h-full flex flex-col">
       {/* デッキグリッド */}
@@ -267,9 +292,9 @@ export const DeckBuilder: React.FC = () => {
         <div className="h-full flex flex-col gap-2 sm:gap-3 md:gap-4 justify-center" style={{ width: 'min(100%, 896px)' }}>
           {/* 上段 - 固定幅で並べ、フレンド有効時は4つ目がはみ出す */}
           <div className="flex gap-2 sm:gap-3 md:gap-4 lg:gap-5">
-            {topRowGroups.map(({ character, slots }) => (
+            {topRowGroups.map(({ character, slots, key }) => (
               <div 
-                key={character} 
+                key={key} 
                 className="flex-shrink-0" 
                 style={{ width: character === 'フレンド' ? 'calc((90% - (2 * 0.5rem)) / 3 * 0.75)' : 'calc((90% - (2 * 0.5rem)) / 3)' }}
               >
@@ -297,8 +322,8 @@ export const DeckBuilder: React.FC = () => {
 
           {/* 中段 */}
           <div className="flex gap-2 sm:gap-3 md:gap-4 lg:gap-5">
-            {middleRowGroups.map(({ character, slots }) => (
-              <div key={character} className="flex-shrink-0" style={{ width: 'calc((90% - (2 * 0.5rem)) / 3)' }}>
+            {middleRowGroups.map(({ character, slots, key }) => (
+              <div key={key} className="flex-shrink-0" style={{ width: 'calc((90% - (2 * 0.5rem)) / 3)' }}>
                 <CharacterDeckGroup
                   character={character}
                   slots={slots}
@@ -323,8 +348,8 @@ export const DeckBuilder: React.FC = () => {
 
           {/* 下段 */}
           <div className="flex gap-2 sm:gap-3 md:gap-4 lg:gap-5">
-            {bottomRowGroups.map(({ character, slots }) => (
-              <div key={character} className="flex-shrink-0" style={{ width: 'calc((90% - (2 * 0.5rem)) / 3)' }}>
+            {bottomRowGroups.map(({ character, slots, key }) => (
+              <div key={key} className="flex-shrink-0" style={{ width: 'calc((90% - (2 * 0.5rem)) / 3)' }}>
                 <CharacterDeckGroup
                   character={character}
                   slots={slots}
@@ -451,6 +476,7 @@ export const DeckBuilder: React.FC = () => {
           filter={filter}
           updateFilter={updateFilter}
           currentSlotId={sideModal.currentSlotId}
+          deckType={deck?.deckType}
           onApply={handleApplyAndCloseFilter}
         />
       </SideModal>
