@@ -318,7 +318,6 @@ export class DeckService {
 
   /**
    * メイン枠の未編成スロットを取得
-   * - フレンド枠が無効化されている場合は判定対象から除外
    */
   static getUnfilledMainSlots(deck: Deck | null): DeckSlotMapping[] {
     if (!deck) return [];
@@ -327,11 +326,6 @@ export class DeckService {
 
     return mapping.filter((slot) => {
       if (slot.slotType !== 'main') return false;
-
-      // フレンド枠が無効化されている場合はスキップ
-      if (slot.characterName === 'フレンド' && deck.isFriendSlotEnabled === false) {
-        return false;
-      }
 
       const deckSlot = deck.slots.find((s) => s.slotId === slot.slotId);
       const hasCard = Boolean(deckSlot?.card || deckSlot?.cardId);
