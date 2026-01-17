@@ -3,12 +3,12 @@ import { Inter } from 'next/font/google';
 import '@/styles/globals.css';
 import { Providers } from './providers';
 import { Sidebar } from '@/components/common/Sidebar';
+import { buildPageMetadata } from '@/utils/metadataUtils';
 
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Link Like Essentials - デッキビルダー',
-  description: 'Link! Like! ラブライブ! のカードデッキビルダー',
+  ...buildPageMetadata({ title: 'Link! Like! デッキビルダー' }),
   icons: {
     icon: '/favicon.ico',
   },

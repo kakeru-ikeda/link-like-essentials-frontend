@@ -1,9 +1,11 @@
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import sanitizeHtml from 'sanitize-html';
 import { News } from '@/models/News';
 import { DEFAULT_MICROCMS_REVALIDATE_SECONDS } from '@/repositories/api/newsRepository';
 import { newsService } from '@/services/newsService';
 import { formatNewsDate } from '@/utils/dateUtils';
+import { buildPageMetadata } from '@/utils/metadataUtils';
 
 interface NewsPageProps {
   params: { id: string };
@@ -11,13 +13,32 @@ interface NewsPageProps {
 
 export const revalidate = DEFAULT_MICROCMS_REVALIDATE_SECONDS;
 
+export async function generateMetadata({ params }: NewsPageProps): Promise<Metadata> {
+  try {
+    const newsArticle = await newsService.getNews(params.id);
+    const rawDescription = newsArticle.content ?? newsArticle.body ?? '';
+    const plainDescription = rawDescription.replace(/<[^>]*>/g, '').slice(0, 120) || undefined;
+    const ogImagePath = newsArticle.thumbnail?.url;
+
+    return buildPageMetadata({
+      title: newsArticle.title,
+      description: plainDescription ?? 'お知らせの詳細を表示します。',
+      ogImagePath,
+    });
+  } catch (error) {
+    return buildPageMetadata({
+      title: 'お知らせ',
+      description: 'お知らせの詳細を表示します。',
+    });
+  }
+}
+
 export default async function NewsDetailPage({ params }: NewsPageProps) {
   let newsArticle: News | null = null;
 
   try {
     newsArticle = await newsService.getNews(params.id);
   } catch (error) {
-    console.error('Failed to fetch news detail', error);
     notFound();
   }
 
