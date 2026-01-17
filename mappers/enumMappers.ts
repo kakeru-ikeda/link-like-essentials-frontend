@@ -64,18 +64,6 @@ export const LIMITED_TYPE_LABELS: Record<LimitedType, string> = {
 };
 
 /**
- * デッキタイプのラベル定義
- */
-export const DECK_TYPE_LABELS: Record<DeckType, string> = {
-  [DeckType.TERM_103]: '103期',
-  [DeckType.TERM_104]: '104期',
-  [DeckType.TERM_105]: '105期',
-  [DeckType.TERM_105_FT_KOZUE]: '105期ft.梢',
-  [DeckType.TERM_105_FT_TSUZURI]: '105期ft.綴理',
-  [DeckType.TERM_105_FT_MEGUMI]: '105期ft.慈',
-};
-
-/**
  * ソートフィールドのラベル定義
  */
 export const SORT_FIELD_LABELS: Record<SortField, string> = {
