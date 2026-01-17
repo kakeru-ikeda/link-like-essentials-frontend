@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import { Card } from '@/models/Card';
 import { CardList } from '@/components/deck/CardList';
-import { ChevronDown, ChevronUp } from 'lucide-react';
 
 interface AvailableCardDisplayProps {
   cards: Card[];
@@ -16,12 +15,6 @@ export const AvailableCardDisplay: React.FC<AvailableCardDisplayProps> = ({
   loading,
   onSelectCard,
 }) => {
-  const [isSectionOpen, setIsSectionOpen] = useState(true);
-
-  const handleToggleSection = (): void => {
-    setIsSectionOpen(!isSectionOpen);
-  };
-
   const headerLabel = loading
     ? '編成可能なカードを読み込み中...'
     : `編成可能なカード (${cards.length})`;
