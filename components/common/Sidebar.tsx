@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useUserProfile } from '@/hooks/useUserProfile';
+import { useResponsiveDevice } from '@/hooks/useResponsiveDevice';
 
 interface SidebarProps {
   children?: React.ReactNode;
@@ -90,6 +91,10 @@ export function Sidebar({ children }: SidebarProps): JSX.Element {
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
   const pathname = usePathname();
   const { profile, fetchProfile } = useUserProfile();
+  const { isPc } = useResponsiveDevice();
+
+  const showPcSidebar = isPc;
+  const showSpUi = !isPc;
 
   useEffect(() => {
     if (!profile) {
@@ -115,7 +120,7 @@ export function Sidebar({ children }: SidebarProps): JSX.Element {
     <div className="flex h-screen overflow-hidden">
       {/* PC用サイドバー - ホバーで展開 */}
       <aside
-        className="hidden md:flex md:flex-col bg-white border-r border-gray-200 transition-all duration-300 ease-in-out fixed left-0 top-0 h-full z-50"
+        className={`${showPcSidebar ? 'flex' : 'hidden'} flex-col bg-white border-r border-gray-200 transition-all duration-300 ease-in-out fixed left-0 top-0 h-full z-50`}
         style={{ width: isSidebarExpanded ? '16rem' : '3.5rem' }}
         onMouseEnter={() => setIsSidebarExpanded(true)}
         onMouseLeave={() => setIsSidebarExpanded(false)}
@@ -227,13 +232,23 @@ export function Sidebar({ children }: SidebarProps): JSX.Element {
       </aside>
 
       {/* メインコンテンツエリア */}
-      <div className="flex-1 flex flex-col overflow-hidden md:ml-12">
+      <div
+        className="flex-1 flex flex-col overflow-hidden"
+        style={{ marginLeft: showPcSidebar ? '3rem' : undefined }}
+      >
         {/* SP用ヘッダー（ハンバーガーメニュー） */}
-        <header className="md:hidden bg-white border-b border-gray-200 px-4 py-3">
+        {showSpUi && (
+          <header className="bg-white border-b border-gray-200 px-4 py-3">
           <div className="flex items-center justify-between">
-            <h1 className="text-lg font-bold text-gray-900">
-              Link Like Essentials
-            </h1>
+            <Image
+              src="/images/logo_square.png"
+              alt="Link Like Essentials"
+              width={40}
+              height={40}
+              className="w-8"
+              priority
+            />
+
             <button
               onClick={toggleMobileMenu}
               className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
@@ -263,19 +278,20 @@ export function Sidebar({ children }: SidebarProps): JSX.Element {
               </svg>
             </button>
           </div>
-        </header>
+          </header>
+        )}
 
         {/* SP用サイドバー（オーバーレイ） */}
-        {isMobileMenuOpen && (
+        {showSpUi && isMobileMenuOpen && (
           <>
             {/* 背景オーバーレイ */}
             <div
-              className="md:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
+              className="fixed inset-0 bg-black bg-opacity-50 z-40"
               onClick={closeMobileMenu}
             />
 
             {/* サイドバーコンテンツ */}
-            <aside className="md:hidden fixed inset-y-0 left-0 w-64 bg-white z-50 shadow-xl">
+            <aside className="fixed inset-y-0 left-0 w-64 bg-white z-50 shadow-xl">
               <div className="flex flex-col h-full">
                 {/* ロゴ/タイトル */}
                 <div className="px-6 py-4 border-b border-gray-200">
