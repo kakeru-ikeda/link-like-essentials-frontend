@@ -19,6 +19,12 @@ export const metadataDefaults = {
   defaultOgImage: DEFAULT_OG_IMAGE,
 };
 
+/**
+ * ページメタデータを構築するヘルパー関数。
+ * タイトル、説明、OG画像などを一括で設定可能。
+ * @param options ページメタデータのオプション
+ * @returns 構築されたメタデータオブジェクト
+ */
 export function buildPageMetadata({
   title,
   description = DEFAULT_DESCRIPTION,
@@ -49,6 +55,13 @@ export function buildPageMetadata({
   };
 }
 
+/**
+ * ページタイトルを構築するヘルパー関数。
+ * 
+ * @param title 
+ * @param skipTitleSuffix 
+ * @returns 
+ */
 export function buildPageTitle(title?: string, skipTitleSuffix: boolean = false): string {
   if (!title) return SITE_TITLE_SUFFIX;
   return skipTitleSuffix ? title : `${title} - ${SITE_TITLE_SUFFIX}`;
@@ -102,7 +115,8 @@ export function syncClientMetadata({
   ];
 
   ogTags.forEach(({ selector, content }) => {
-    if (!content) return;
+    // null / undefined のみスキップし、空文字列は有効な値として扱う
+    if (content == null) return;
     const tag = document.querySelector(selector) ?? createOpenGraphTag(selector);
     if (tag) tag.setAttribute('content', content);
   });
@@ -123,7 +137,7 @@ function createOpenGraphTag(selector: string): HTMLMetaElement | null {
 }
 
 function appendDescriptionSuffix(desc: string): string {
-  if (!desc) return DESCRIPTION_SUFFIX.trim();
+  if (desc == null) return DESCRIPTION_SUFFIX.trim();
   if (desc.includes(DESCRIPTION_SUFFIX.trim())) return desc;
   return `${desc}${DESCRIPTION_SUFFIX}`;
 }

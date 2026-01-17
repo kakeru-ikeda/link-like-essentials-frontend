@@ -26,7 +26,6 @@ export async function generateMetadata({ params }: NewsPageProps): Promise<Metad
       ogImagePath,
     });
   } catch (error) {
-    console.error('Failed to generate metadata for news detail', error);
     return buildPageMetadata({
       title: 'お知らせ',
       description: 'お知らせの詳細を表示します。',
@@ -40,7 +39,6 @@ export default async function NewsDetailPage({ params }: NewsPageProps) {
   try {
     newsArticle = await newsService.getNews(params.id);
   } catch (error) {
-    console.error('Failed to fetch news detail', error);
     notFound();
   }
 
