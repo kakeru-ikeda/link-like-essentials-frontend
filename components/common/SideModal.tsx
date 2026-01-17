@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { KeywordSearchInput } from '@/components/common/KeywordSearchInput';
+import { useResponsiveDevice } from '@/hooks/useResponsiveDevice';
 
 interface SideModalProps {
   isOpen: boolean;
@@ -44,6 +45,7 @@ export function SideModal({
   const [shouldMount, setShouldMount] = useState<boolean>(false);
   const [isAnimating, setIsAnimating] = useState<boolean>(false);
   const [mounted, setMounted] = useState<boolean>(false);
+  const { isSp } = useResponsiveDevice();
 
   // クライアントサイドでマウントされたことを確認
   useEffect(() => {
@@ -111,6 +113,8 @@ export function SideModal({
 
   if (!shouldMount || !mounted) return null;
 
+  const modalWidthClass = isSp ? 'w-full' : widthClasses[width];
+
   const modalContent = (
     <>
       {/* オーバーレイ */}
@@ -125,7 +129,7 @@ export function SideModal({
 
       {/* サイドモーダル本体 */}
       <div
-        className={`fixed top-0 right-0 h-full ${widthClasses[width]} bg-white shadow-2xl transform transition-transform duration-300 ease-out flex flex-col ${
+        className={`fixed top-0 right-0 h-full ${modalWidthClass} bg-white shadow-2xl transform transition-transform duration-300 ease-out flex flex-col ${
           isVisible ? 'translate-x-0' : 'translate-x-full'
         }`}
         style={{ zIndex: zIndex + 10 }}
