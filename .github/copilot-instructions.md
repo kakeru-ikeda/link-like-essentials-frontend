@@ -156,6 +156,12 @@ export const DECK_SLOT_MAPPING = [
 - モバイルファースト: `sm:`, `md:`, `lg:`, `xl:`
 - 絶対パス: `@/`エイリアス使用
 
+### レスポンシブ対応
+
+- PC/それ以外の判定は必ずレスポンシブユーティリティを使うこと。
+  - `hooks/useResponsiveDevice` の `isPc`, `isSp` を用いて出し分ける。
+  - 幅判定のロジックは `config/responsive.ts` / `utils/responsive.ts` に集約し、コンポーネント内で独自の `window.innerWidth` や `matchMedia` を書かない。
+
 ## コンポーネント構造
 
 **フラット構造を採用** - `index.ts` の乱立を避けるため、各ディレクトリ直下に `.tsx` ファイルを配置
