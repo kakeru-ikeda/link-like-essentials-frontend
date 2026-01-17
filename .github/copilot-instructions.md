@@ -161,6 +161,7 @@ export const DECK_SLOT_MAPPING = [
 - PC/それ以外の判定は必ずレスポンシブユーティリティを使うこと。
   - `hooks/useResponsiveDevice` の `isPc`, `isSp` を用いて出し分ける。
   - 幅判定のロジックは `config/responsive.ts` / `utils/responsive.ts` に集約し、コンポーネント内で独自の `window.innerWidth` や `matchMedia` を書かない。
+  - (PC) / (SP) のみの2択判定とし、タブレットサイズはSP扱いとする。
 
 ## コンポーネント構造
 
