@@ -5,6 +5,7 @@ import { DeckTitle } from '@/components/deck/DeckTitle';
 import { DeckTypeSelect } from '@/components/deck/DeckTypeSelect';
 import { SongSelect } from '@/components/deck/SongSelect';
 import { Button } from '@/components/common/Button';
+import { Modal } from '@/components/common/Modal';
 import { CenterCardDisplay } from '@/components/deck/CenterCardDisplay';
 import { LRCardsList } from '@/components/deck/LRCardsList';
 import { ExpandableTextArea } from '@/components/common/ExpandableTextArea';
@@ -13,6 +14,8 @@ import { Song } from '@/models/Song';
 import { DeckType } from '@/models/enums';
 import { useDeck } from '@/hooks/useDeck';
 import { getCenterCard, getOtherLRCards } from '@/services/deckAnalysisService';
+import { DeckService } from '@/services/deckService';
+import { DeckSlotMapping } from '@/config/deckSlots';
 import { LiveGrandPrixSelect } from './LiveGrandPrixSelect';
 import { LiveGrandPrixStageSelect } from './LiveGrandPrixStageSelect';
 import { useLiveGrandPrixById, useActiveLiveGrandPrix } from '@/hooks/useLiveGrandPrix';
@@ -43,6 +46,8 @@ export const DeckDashboard: React.FC = () => {
   const [publishSuccessUnlisted, setPublishSuccessUnlisted] = useState<boolean>(false);
   const [publishSuccessName, setPublishSuccessName] = useState<string | null>(null);
   const [isSuccessDialogOpen, setSuccessDialogOpen] = useState<boolean>(false);
+  const [isMainSlotWarningOpen, setMainSlotWarningOpen] = useState<boolean>(false);
+  const [unfilledMainSlots, setUnfilledMainSlots] = useState<DeckSlotMapping[]>([]);
 
   // ライブグランプリの詳細を取得（選択されている場合のみ）
   const { liveGrandPrix, loading: lgpLoading } = useLiveGrandPrixById(
@@ -125,6 +130,23 @@ export const DeckDashboard: React.FC = () => {
     setPublishSuccessName(null);
   };
 
+  const handleOpenPublishModal = (): void => {
+    const emptyMainSlots = DeckService.getUnfilledMainSlots(deck);
+
+    if (emptyMainSlots.length > 0) {
+      setUnfilledMainSlots(emptyMainSlots);
+      setMainSlotWarningOpen(true);
+      return;
+    }
+
+    openPublishModal();
+  };
+
+  const handleCloseMainSlotWarning = (): void => {
+    setMainSlotWarningOpen(false);
+    setUnfilledMainSlots([]);
+  };
+
   return (
     <div className="flex-1 flex flex-col gap-4 p-4 border-2 border-gray-300 rounded-lg overflow-hidden min-w-0">
       {/* タイトル＆ボタン */}
@@ -139,7 +161,7 @@ export const DeckDashboard: React.FC = () => {
           <Button variant="secondary" onClick={clearDeck}>
             クリア
           </Button>
-          <Button onClick={openPublishModal} className="bg-green-600 hover:bg-green-700 disabled:bg-green-400">
+          <Button onClick={handleOpenPublishModal} className="bg-green-600 hover:bg-green-700 disabled:bg-green-400">
             公開
           </Button>
         </div>
@@ -282,6 +304,29 @@ export const DeckDashboard: React.FC = () => {
         deckName={publishSuccessName}
         onClose={handleCloseSuccessDialog}
       />
+
+      <Modal
+        isOpen={isMainSlotWarningOpen}
+        onClose={handleCloseMainSlotWarning}
+        title="メイン枠が未編成です"
+      >
+        <div className="space-y-4">
+          <p className="text-sm text-gray-700">
+            公開する前にメイン枠すべてにカードを編成してください。
+            以下の枠が未設定です。
+          </p>
+          <ul className="list-disc list-inside space-y-1">
+            {unfilledMainSlots.map((slot) => (
+              <li key={slot.slotId} className="text-sm text-gray-900">
+                {slot.characterName}
+              </li>
+            ))}
+          </ul>
+          <div className="flex justify-end">
+            <Button onClick={handleCloseMainSlotWarning}>編成に戻る</Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };

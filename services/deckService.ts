@@ -3,6 +3,7 @@ import { Deck, DeckSlot, DeckForCloud } from '@/models/Deck';
 import { DeckType } from '@/models/enums';
 import { canPlaceCardInSlot } from '@/services/deckRulesService';
 import { getDeckSlotMapping } from '@/services/deckConfigService';
+import { DeckSlotMapping } from '@/config/deckSlots';
 import { PublishedDeck } from '@/models/PublishedDeck';
 import { cardCatalogService } from '@/services/cardCatalogService';
 import { CharacterName } from '@/config/characters';
@@ -313,5 +314,23 @@ export class DeckService {
       currentDeckType: deck?.deckType,
       newDeckType: newDeckType,
     };
+  }
+
+  /**
+   * メイン枠の未編成スロットを取得
+   */
+  static getUnfilledMainSlots(deck: Deck | null): DeckSlotMapping[] {
+    if (!deck) return [];
+
+    const mapping = getDeckSlotMapping(deck.deckType);
+
+    return mapping.filter((slot) => {
+      if (slot.slotType !== 'main') return false;
+
+      const deckSlot = deck.slots.find((s) => s.slotId === slot.slotId);
+      const hasCard = Boolean(deckSlot?.card || deckSlot?.cardId);
+
+      return !hasCard;
+    });
   }
 }
