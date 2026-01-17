@@ -1,8 +1,15 @@
+import type { Metadata } from 'next';
 import { NewsList } from '@/components/news/NewsList';
 import { DEFAULT_MICROCMS_REVALIDATE_SECONDS } from '@/repositories/api/newsRepository';
 import { newsService } from '@/services/newsService';
+import { buildPageMetadata } from '@/utils/metadataUtils';
 
 export const revalidate = DEFAULT_MICROCMS_REVALIDATE_SECONDS;
+
+export const metadata: Metadata = buildPageMetadata({
+  title: 'お知らせ',
+  description: '最新の更新情報をお届けします。',
+});
 
 export default async function NewsPage() {
   const { contents: newsItems } = await newsService.getNewsList(50);

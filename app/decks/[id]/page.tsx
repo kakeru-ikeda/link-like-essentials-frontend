@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams, useRouter } from 'next/navigation';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { PublishedDeckDetail } from '@/components/deck/PublishedDeckDetail';
 import { useCompiledPublishedDeckDetail } from '@/hooks/useCompiledPublishedDeckDetail';
 import { publishedDeckImportService } from '@/services/publishedDeckImportService';
@@ -13,6 +13,7 @@ import { ConfirmDialog } from '@/components/common/ConfirmDialog';
 import { useDeckComments } from '@/hooks/useDeckComments';
 import { useAuth } from '@/hooks/useAuth';
 import { ReportReason } from '@/models/Comment';
+import { syncClientMetadata } from '@/utils/metadataUtils';
 
 const getDeckId = (param: string | string[] | undefined): string | null => {
   if (!param) return null;
@@ -61,6 +62,15 @@ export default function DeckDetailPage() {
   const [deleting, setDeleting] = useState(false);
 
   const isOwnDeck = publishedDeck?.userId === user?.uid;
+
+  // 取得完了後にクライアント側メタデータを書き換え（サーバーでの認証フェッチは不可のため）
+  useEffect(() => {
+    if (!publishedDeck?.deck?.name) return;
+    const description = publishedDeck.comment ?? '公開デッキの詳細を表示します。';
+    const ogImage = publishedDeck.thumbnail ?? publishedDeck.imageUrls?.[0];
+    // buildPageTitleはsyncClientMetadata内で付与するので生のタイトルを渡す
+    syncClientMetadata({ title: publishedDeck.deck.name, description, ogImagePath: ogImage });
+  }, [publishedDeck]);
 
   const handleImport = useCallback(async () => {
     if (!publishedDeck) return;
