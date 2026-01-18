@@ -8,6 +8,7 @@ import { DeckPublishForm } from '@/components/deck/DeckPublishForm';
 import { useDeck } from '@/hooks/useDeck';
 import { useDeckPublish } from '@/hooks/useDeckPublish';
 import { useLiveGrandPrixById } from '@/hooks/useLiveGrandPrix';
+import { useResponsiveDevice } from '@/hooks/useResponsiveDevice';
 import { PublishedDeck } from '@/models/PublishedDeck';
 import { FRIEND_SLOT_ID } from '@/config/deckSlots';
 
@@ -26,6 +27,7 @@ export const DeckPublishModal: React.FC<DeckPublishModalProps> = ({
   const exportViewRef = useRef<HTMLDivElement>(null);
   const exportBuilderRef = useRef<HTMLDivElement>(null);
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState<boolean>(false);
+  const [isPreviewVisible, setPreviewVisible] = useState<boolean>(false);
 
   const handlePublishSuccess = useCallback((publishedDeck: PublishedDeck): void => {
     onPublished?.(publishedDeck);
@@ -57,6 +59,15 @@ export const DeckPublishModal: React.FC<DeckPublishModalProps> = ({
     setFriendSlotEnabled,
     handlePublishSuccess
   );
+
+  const { isPc } = useResponsiveDevice();
+  const shouldShowExportView = isPc || isCapturing || isPreviewVisible;
+  const previewContainerClass = 'flex-shrink-0 overflow-auto max-h-[70vh] relative';
+
+  useEffect(() => {
+    // PCでは常に表示、SPではモーダルオープン時は非表示に戻す
+    setPreviewVisible(isPc);
+  }, [isPc, isOpen]);
 
   // ライブグランプリ情報を取得（デッキに設定されている場合）
   const { liveGrandPrix } = useLiveGrandPrixById(
@@ -103,8 +114,23 @@ export const DeckPublishModal: React.FC<DeckPublishModalProps> = ({
     ? '限定公開リンクだけでアクセスできます。公開デッキ一覧には掲載されません。内容に問題がないか確認してください。'
     : '公開すると共有用のURLが発行されます。公開デッキ一覧に掲載が行われます。内容に問題がないか確認してください。';
 
+  const withPreviewVisible = async (action: () => Promise<void>): Promise<void> => {
+    if (!isPc) {
+      setPreviewVisible(true);
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+    }
+
+    try {
+      await action();
+    } finally {
+      if (!isPc) {
+        setPreviewVisible(false);
+      }
+    }
+  };
+
   const handleConfirmPublish = async (): Promise<void> => {
-    await handlePublishDeck();
+    await withPreviewVisible(handlePublishDeck);
   };
 
   return (
@@ -114,17 +140,19 @@ export const DeckPublishModal: React.FC<DeckPublishModalProps> = ({
       title="デッキを公開する"
       maxWidth="max-w-7xl"
     >
-      <div className="flex gap-6">
-        {/* 左側: プレビュー */}
-        <div className="flex-shrink-0 overflow-auto max-h-[70vh] relative">
-          <div style={{ zoom: 0.5, maxWidth: '1700px' }}>
-            <DeckExportView
-              captureRef={exportViewRef}
-              builderCaptureRef={exportBuilderRef}
-            />
+      <div className="flex flex-col lg:flex-row gap-6">
+        {/* 左側: プレビュー（SPでは非表示。キャプチャ中のみ表示） */}
+        {shouldShowExportView && (
+          <div className={previewContainerClass} aria-hidden={!shouldShowExportView}>
+            <div className="min-w-[1700px]" style={{ zoom: 0.5 }}>
+              <DeckExportView
+                captureRef={exportViewRef}
+                builderCaptureRef={exportBuilderRef}
+              />
+            </div>
           </div>
-        </div>
-        
+        )}
+
         {/* 右側: 編集フォーム */}
         <DeckPublishForm
           deck={deck}
@@ -141,7 +169,7 @@ export const DeckPublishModal: React.FC<DeckPublishModalProps> = ({
           setIsUnlisted={setIsUnlisted}
           handleImageUpload={handleImageUpload}
           handleRemoveImage={handleRemoveImage}
-          handleDownloadImage={handleDownloadImage}
+          handleDownloadImage={(ref, name) => withPreviewVisible(() => handleDownloadImage(ref, name))}
           isCapturing={isCapturing}
           exportViewRef={exportViewRef}
           onRequestPublish={openConfirmDialog}

@@ -26,6 +26,7 @@ import { DeckPublishModal } from '@/components/deck/DeckPublishModal';
 import { DeckPublishSuccessDialog } from '@/components/deck/DeckPublishSuccessDialog';
 import { useModal } from '@/hooks/useModal';
 import { PublishedDeck } from '@/models/PublishedDeck';
+import { useResponsiveDevice } from '@/hooks/useResponsiveDevice';
 
 export const DeckDashboard: React.FC = () => {
   const { 
@@ -48,6 +49,7 @@ export const DeckDashboard: React.FC = () => {
   const [isSuccessDialogOpen, setSuccessDialogOpen] = useState<boolean>(false);
   const [isMainSlotWarningOpen, setMainSlotWarningOpen] = useState<boolean>(false);
   const [unfilledMainSlots, setUnfilledMainSlots] = useState<DeckSlotMapping[]>([]);
+  const { isSp } = useResponsiveDevice();
 
   // ライブグランプリの詳細を取得（選択されている場合のみ）
   const { liveGrandPrix, loading: lgpLoading } = useLiveGrandPrixById(
@@ -193,12 +195,12 @@ export const DeckDashboard: React.FC = () => {
           </div>
         }
       >
-        <div className="flex gap-4 min-w-0">
+        <div className={`flex min-w-0 ${isSp ? 'flex-col gap-3' : 'flex-row gap-4'}`}>
           <LiveGrandPrixSelect
             deckType={deck?.deckType}
             value={deck?.liveGrandPrixId}
             onChange={handleLiveGrandPrixChange}
-            className="flex-1 min-w-0"
+            className={isSp ? 'w-full' : 'flex-1 min-w-0'}
           />
 
           <LiveGrandPrixStageSelect
@@ -206,7 +208,7 @@ export const DeckDashboard: React.FC = () => {
             value={deck?.liveGrandPrixDetailId}
             onChange={handleLiveGrandPrixStageChange}
             disabled={lgpLoading || !deck?.liveGrandPrixId}
-            className="w-48 flex-shrink-0"
+            className={isSp ? 'w-full' : 'w-48 flex-shrink-0'}
           />
         </div>
       </ExpansionPanel>
