@@ -24,6 +24,7 @@ interface DeckSlotProps {
   isDroppable?: boolean;
   limitBreakCount?: number;
   showLimitBreak?: boolean;
+  isPortrait?: boolean;
 }
 
 export const DeckSlot: React.FC<DeckSlotProps> = ({ 
@@ -42,6 +43,7 @@ export const DeckSlot: React.FC<DeckSlotProps> = ({
   isDroppable = false,
   limitBreakCount = 14,
   showLimitBreak = false,
+  isPortrait = false,
 }) => {
   const [imageError, setImageError] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -49,7 +51,9 @@ export const DeckSlot: React.FC<DeckSlotProps> = ({
   // キャラクターカラーを取得（画像枠線用）
   const characterColor = getCharacterColor(slot.characterName);
 
-  const containerClass = isMain 
+  const containerClass = isPortrait
+    ? `relative w-full aspect-[5/7] ${isMain ? 'border-2' : 'border'} border-gray-300 rounded-lg overflow-hidden hover:border-blue-500 transition-colors bg-white`
+    : isMain
     ? `relative w-full aspect-[16/9] border-2 border-gray-300 rounded-lg overflow-hidden hover:border-blue-500 transition-colors bg-white`
     : `relative w-full aspect-[16/9] border border-gray-300 rounded overflow-hidden hover:border-blue-500 transition-colors bg-white`;
 
@@ -226,14 +230,18 @@ export const DeckSlot: React.FC<DeckSlotProps> = ({
           )}
           
           {!imageError && slot.card.detail?.awakeAfterStorageUrl ? (
-            <div 
-              className="w-full h-full border-2"
+            <div
+              className="relative w-full h-full border-2 overflow-hidden"
               style={{ borderColor: characterColor }}
             >
               <img
                 src={slot.card.detail.awakeAfterStorageUrl}
                 alt={slot.card.cardName}
-                className="w-full h-full object-cover"
+                className={
+                  isPortrait
+                    ? 'absolute left-1/2 top-1/2 h-full w-auto max-w-none max-h-none -translate-x-1/2 -translate-y-1/2 rotate-90 object-cover'
+                    : 'w-full h-full object-cover object-center'
+                }
                 onError={() => setImageError(true)}
                 draggable={false}
               />

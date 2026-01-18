@@ -23,6 +23,7 @@ interface CharacterDeckGroupProps {
   onDragEnd: () => void;
   onDrop: (slotId: number) => void;
   canDropToSlot: (slotId: number) => boolean;
+  isSpLayout?: boolean;
 }
 
 export const CharacterDeckGroup: React.FC<CharacterDeckGroupProps> = React.memo(
@@ -43,6 +44,7 @@ export const CharacterDeckGroup: React.FC<CharacterDeckGroupProps> = React.memo(
     onDragEnd,
     onDrop,
     canDropToSlot,
+    isSpLayout = false,
   }) => {
     const backgroundColor = getCharacterBackgroundColor(character, 0.5);
 
@@ -58,7 +60,7 @@ export const CharacterDeckGroup: React.FC<CharacterDeckGroupProps> = React.memo(
 
         {/* Card slots area */}
         <div
-          className="flex flex-col h-full justify-around gap-1 sm:gap-1.5 md:gap-2 p-2 sm:p-3 rounded-lg backdrop-blur-sm"
+          className={`flex flex-col h-full ${isSpLayout ? 'gap-1.5 p-2' : 'justify-around gap-1 sm:gap-1.5 md:gap-2 p-2 sm:p-3'} rounded-lg backdrop-blur-sm`}
           style={{
             backgroundColor,
             boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06)',
@@ -87,13 +89,14 @@ export const CharacterDeckGroup: React.FC<CharacterDeckGroupProps> = React.memo(
             isDroppable={draggingSlotId !== null && canDropToSlot(slots[0].slotId)}
             showLimitBreak={showLimitBreak}
             limitBreakCount={slots[0].limitBreak ?? 14}
+            isPortrait={isSpLayout}
           />
         )}
 
         {/* Sub slots (2 cards side by side) */}
-        <div className="flex gap-1 sm:gap-1.5 md:gap-2">
+        <div className={isSpLayout ? 'flex flex-col gap-1.5 items-start' : 'flex gap-1 sm:gap-1.5 md:gap-2'}>
           {slots[1] && (
-            <div className="flex-1 max-w-[55%]">
+            <div className={isSpLayout ? 'w-[80%] self-start' : 'flex-1 max-w-[55%]'}>
               <DeckSlot
                 slot={slots[1]}
                 onSlotClick={onSlotClick}
@@ -110,11 +113,12 @@ export const CharacterDeckGroup: React.FC<CharacterDeckGroupProps> = React.memo(
                 isDroppable={draggingSlotId !== null && canDropToSlot(slots[1].slotId)}
                 showLimitBreak={showLimitBreak}
                 limitBreakCount={slots[1].limitBreak ?? 14}
+                isPortrait={isSpLayout}
               />
             </div>
           )}
           {slots[2] && (
-            <div className="flex-1 max-w-[48%]">
+            <div className={isSpLayout ? 'w-[80%] self-start' : 'flex-1 max-w-[48%]'}>
               <DeckSlot
                 slot={slots[2]}
                 onSlotClick={onSlotClick}
@@ -131,6 +135,7 @@ export const CharacterDeckGroup: React.FC<CharacterDeckGroupProps> = React.memo(
                 isDroppable={draggingSlotId !== null && canDropToSlot(slots[2].slotId)}
                 showLimitBreak={showLimitBreak}
                 limitBreakCount={slots[2].limitBreak ?? 14}
+                isPortrait={isSpLayout}
               />
             </div>
           )}
@@ -146,6 +151,7 @@ export const CharacterDeckGroup: React.FC<CharacterDeckGroupProps> = React.memo(
     if (prevProps.isCenter !== nextProps.isCenter) return false;
     if (prevProps.isSinger !== nextProps.isSinger) return false;
     if (prevProps.showLimitBreak !== nextProps.showLimitBreak) return false;
+    if (prevProps.isSpLayout !== nextProps.isSpLayout) return false;
 
     // slots配列の各slotを比較（カードの有無、slotId、characterName、limitBreak）
     if (prevProps.slots.length !== nextProps.slots.length) return false;

@@ -22,14 +22,17 @@ import { useSideModal } from '@/hooks/useSideModal';
 import { useFilter } from '@/hooks/useFilter';
 import type { Card } from '@/models/Card';
 import type { DeckSlot } from '@/models/Deck';
+import { DeckType } from '@/models/enums';
 import {
   filterCardsBySlot,
   getAssignedCardsForSlot,
 } from '@/services/deckFilterService';
 import { filterAvailableCards } from '@/services/characterFilterService';
+import { useResponsiveDevice } from '@/hooks/useResponsiveDevice';
 
 export const DeckBuilder: React.FC = () => {
   const { deck, removeCard, toggleAceCard, swapCards, addCard, updateLimitBreakCount, isFriendSlotEnabled, setFriendSlotEnabled } = useDeck();
+  const { isSp } = useResponsiveDevice();
   const [draggingSlotId, setDraggingSlotId] = useState<number | null>(null);
   const [showLimitBreak, setShowLimitBreak] = useState<boolean>(false);
 
@@ -233,6 +236,15 @@ export const DeckBuilder: React.FC = () => {
     ? deckFrame
     : deckFrame.filter((character) => character !== 'フレンド');
 
+  const displayDeckFrame = React.useMemo<CharacterName[]>(() => {
+    if (!isSp) return filteredDeckFrame;
+
+    const withoutFriend = filteredDeckFrame.filter((character) => character !== 'フレンド');
+    return filteredDeckFrame.includes('フレンド')
+      ? ([...withoutFriend, 'フレンド'] as CharacterName[])
+      : (withoutFriend as CharacterName[]);
+  }, [filteredDeckFrame, isSp]);
+
   // スロット定義をキャラクターごとにコピーして、frameの出現順で消費しながらグループ化
   const slotMappingByCharacter = React.useMemo(() => {
     const mapping = new Map<CharacterName, DeckSlotMapping[]>();
@@ -253,7 +265,7 @@ export const DeckBuilder: React.FC = () => {
       ])
     );
 
-    return filteredDeckFrame
+    return displayDeckFrame
       .map((character: CharacterName, idx) => {
         const mappings = mappingCopies.get(character);
         if (!mappings || mappings.length === 0) return null;
@@ -271,7 +283,7 @@ export const DeckBuilder: React.FC = () => {
         return { character, slots, row: groupMappings[0]?.row ?? 0, key };
       })
       .filter((group): group is { character: CharacterName; slots: DeckSlot[]; row: number; key: string } => group !== null);
-  }, [deckSlots, filteredDeckFrame, slotMappingByCharacter]);
+  }, [deckSlots, displayDeckFrame, slotMappingByCharacter]);
 
   const topRowGroups = characterGroups.filter((g) => g.row === 0);
   const middleRowGroups = characterGroups.filter((g) => g.row === 1);
@@ -288,16 +300,11 @@ export const DeckBuilder: React.FC = () => {
   return (
     <div className="h-full flex flex-col">
       {/* デッキグリッド */}
-      <div className={`flex-1 w-full self-center py-2 px-2 overflow-x-auto pl-14 ${!isFriendSlotEnabled ? 'flex justify-center' : ''}`}>
-        <div className="h-full flex flex-col gap-2 sm:gap-3 md:gap-4 justify-center" style={{ width: 'min(100%, 896px)' }}>
-          {/* 上段 - 固定幅で並べ、フレンド有効時は4つ目がはみ出す */}
-          <div className="flex gap-2 sm:gap-3 md:gap-4 lg:gap-5">
-            {topRowGroups.map(({ character, slots, key }) => (
-              <div 
-                key={key} 
-                className="flex-shrink-0" 
-                style={{ width: character === 'フレンド' ? 'calc((90% - (2 * 0.5rem)) / 3 * 0.75)' : 'calc((90% - (2 * 0.5rem)) / 3)' }}
-              >
+      <div className={isSp ? 'w-full py-2 px-3' : `flex-1 w-full self-center py-2 px-2 overflow-x-auto pl-14 ${!isFriendSlotEnabled ? 'flex justify-center' : ''}`}>
+        {isSp ? (
+          <div className="grid grid-cols-3 gap-2 sm:gap-3">
+            {characterGroups.map(({ character, slots, key }) => (
+              <div key={key}>
                 <CharacterDeckGroup
                   character={character}
                   slots={slots}
@@ -315,63 +322,96 @@ export const DeckBuilder: React.FC = () => {
                   onDragEnd={handleDragEnd}
                   onDrop={handleDrop}
                   canDropToSlot={canDropToSlot}
+                  isSpLayout
                 />
               </div>
             ))}
           </div>
+        ) : (
+          <div className="h-full flex flex-col gap-2 sm:gap-3 md:gap-4 justify-center" style={{ width: 'min(100%, 896px)' }}>
+            {/* 上段 - 固定幅で並べ、フレンド有効時は4つ目がはみ出す */}
+            <div className="flex gap-2 sm:gap-3 md:gap-4 lg:gap-5">
+              {topRowGroups.map(({ character, slots, key }) => (
+                <div 
+                  key={key} 
+                  className="flex-shrink-0" 
+                  style={{ width: character === 'フレンド' ? 'calc((90% - (2 * 0.5rem)) / 3 * 0.75)' : 'calc((90% - (2 * 0.5rem)) / 3)' }}
+                >
+                  <CharacterDeckGroup
+                    character={character}
+                    slots={slots}
+                    aceSlotId={deck.aceSlotId}
+                    draggingSlotId={draggingSlotId}
+                    isCenter={deck?.centerCharacter === character}
+                    isSinger={deck?.participations?.includes(character) || false}
+                    showLimitBreak={showLimitBreak}
+                    onSlotClick={handleSlotClick}
+                    onRemoveCard={removeCard}
+                    onToggleAce={toggleAceCard}
+                    onShowDetail={handleShowDetail}
+                    onLimitBreakChange={updateLimitBreakCount}
+                    onDragStart={handleDragStart}
+                    onDragEnd={handleDragEnd}
+                    onDrop={handleDrop}
+                    canDropToSlot={canDropToSlot}
+                  />
+                </div>
+              ))}
+            </div>
 
-          {/* 中段 */}
-          <div className="flex gap-2 sm:gap-3 md:gap-4 lg:gap-5">
-            {middleRowGroups.map(({ character, slots, key }) => (
-              <div key={key} className="flex-shrink-0" style={{ width: 'calc((90% - (2 * 0.5rem)) / 3)' }}>
-                <CharacterDeckGroup
-                  character={character}
-                  slots={slots}
-                  aceSlotId={deck.aceSlotId}
-                  draggingSlotId={draggingSlotId}
-                  isCenter={deck?.centerCharacter === character}
-                  isSinger={deck?.participations?.includes(character) || false}
-                  showLimitBreak={showLimitBreak}
-                  onSlotClick={handleSlotClick}
-                  onRemoveCard={removeCard}
-                  onToggleAce={toggleAceCard}
-                  onShowDetail={handleShowDetail}
-                  onLimitBreakChange={updateLimitBreakCount}
-                  onDragStart={handleDragStart}
-                  onDragEnd={handleDragEnd}
-                  onDrop={handleDrop}
-                  canDropToSlot={canDropToSlot}
-                />
-              </div>
-            ))}
-          </div>
+            {/* 中段 */}
+            <div className="flex gap-2 sm:gap-3 md:gap-4 lg:gap-5">
+              {middleRowGroups.map(({ character, slots, key }) => (
+                <div key={key} className="flex-shrink-0" style={{ width: 'calc((90% - (2 * 0.5rem)) / 3)' }}>
+                  <CharacterDeckGroup
+                    character={character}
+                    slots={slots}
+                    aceSlotId={deck.aceSlotId}
+                    draggingSlotId={draggingSlotId}
+                    isCenter={deck?.centerCharacter === character}
+                    isSinger={deck?.participations?.includes(character) || false}
+                    showLimitBreak={showLimitBreak}
+                    onSlotClick={handleSlotClick}
+                    onRemoveCard={removeCard}
+                    onToggleAce={toggleAceCard}
+                    onShowDetail={handleShowDetail}
+                    onLimitBreakChange={updateLimitBreakCount}
+                    onDragStart={handleDragStart}
+                    onDragEnd={handleDragEnd}
+                    onDrop={handleDrop}
+                    canDropToSlot={canDropToSlot}
+                  />
+                </div>
+              ))}
+            </div>
 
-          {/* 下段 */}
-          <div className="flex gap-2 sm:gap-3 md:gap-4 lg:gap-5">
-            {bottomRowGroups.map(({ character, slots, key }) => (
-              <div key={key} className="flex-shrink-0" style={{ width: 'calc((90% - (2 * 0.5rem)) / 3)' }}>
-                <CharacterDeckGroup
-                  character={character}
-                  slots={slots}
-                  aceSlotId={deck.aceSlotId}
-                  draggingSlotId={draggingSlotId}
-                  isCenter={deck?.centerCharacter === character}
-                  isSinger={deck?.participations?.includes(character) || false}
-                  showLimitBreak={showLimitBreak}
-                  onSlotClick={handleSlotClick}
-                  onRemoveCard={removeCard}
-                  onToggleAce={toggleAceCard}
-                  onShowDetail={handleShowDetail}
-                  onLimitBreakChange={updateLimitBreakCount}
-                  onDragStart={handleDragStart}
-                  onDragEnd={handleDragEnd}
-                  onDrop={handleDrop}
-                  canDropToSlot={canDropToSlot}
-                />
-              </div>
-            ))}
+            {/* 下段 */}
+            <div className="flex gap-2 sm:gap-3 md:gap-4 lg:gap-5">
+              {bottomRowGroups.map(({ character, slots, key }) => (
+                <div key={key} className="flex-shrink-0" style={{ width: 'calc((90% - (2 * 0.5rem)) / 3)' }}>
+                  <CharacterDeckGroup
+                    character={character}
+                    slots={slots}
+                    aceSlotId={deck.aceSlotId}
+                    draggingSlotId={draggingSlotId}
+                    isCenter={deck?.centerCharacter === character}
+                    isSinger={deck?.participations?.includes(character) || false}
+                    showLimitBreak={showLimitBreak}
+                    onSlotClick={handleSlotClick}
+                    onRemoveCard={removeCard}
+                    onToggleAce={toggleAceCard}
+                    onShowDetail={handleShowDetail}
+                    onLimitBreakChange={updateLimitBreakCount}
+                    onDragStart={handleDragStart}
+                    onDragEnd={handleDragEnd}
+                    onDrop={handleDrop}
+                    canDropToSlot={canDropToSlot}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* ツールバー */}
