@@ -21,6 +21,16 @@ export const ExportDashboard: React.FC<ExportDashboardProps> = ({ deck: deckProp
   const badgeTextSize = isCompact ? 'text-[11px]' : 'text-xl';
   const chartTextSize = isCompact ? 'text-[11px]' : 'text-3xl';
 
+  const aceInfo = React.useMemo(() => {
+    if (!deck?.aceSlotId || !deck?.slots) return null;
+    const aceSlot = deck.slots.find((slot) => slot.slotId === deck.aceSlotId);
+    if (!aceSlot || !aceSlot.card) return null;
+    return {
+      characterName: aceSlot.characterName,
+      cardName: aceSlot.card.cardName,
+    };
+  }, [deck?.aceSlotId, deck?.slots]);
+
   // ライブグランプリの詳細を取得（選択されている場合のみ）
   const { liveGrandPrix } = useLiveGrandPrixById(
     deck?.liveGrandPrixId || '',
@@ -78,6 +88,12 @@ export const ExportDashboard: React.FC<ExportDashboardProps> = ({ deck: deckProp
             )}
           </div>
         )}
+        <div className="col-span-2">
+          <span className={`${headingSize} font-semibold text-slate-700`}>エースカード: </span>
+          <span className={`${headingSize} text-slate-600`}>
+            {aceInfo ? `[${aceInfo.cardName}] ${aceInfo.characterName}` : '未設定'}
+          </span>
+        </div>
         {deck.score && (
           <div>
             <span className={`${headingSize} font-semibold text-slate-700`}>参考スコア: </span>
