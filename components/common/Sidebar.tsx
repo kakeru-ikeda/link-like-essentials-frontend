@@ -91,7 +91,7 @@ export function Sidebar({ children }: SidebarProps): JSX.Element {
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
   const pathname = usePathname();
   const { profile, fetchProfile } = useUserProfile();
-  const { isPc } = useResponsiveDevice();
+  const { isPc, isSp } = useResponsiveDevice();
 
   useEffect(() => {
     if (!profile) {
@@ -116,117 +116,119 @@ export function Sidebar({ children }: SidebarProps): JSX.Element {
   return (
     <div className="flex h-screen overflow-hidden">
       {/* PC用サイドバー - ホバーで展開 */}
-      <aside
-        className="hidden md:flex md:flex-col bg-white border-r border-gray-200 transition-all duration-300 ease-in-out fixed left-0 top-0 h-full z-50"
-        style={{ width: isSidebarExpanded ? '16rem' : '3.5rem' }}
-        onMouseEnter={() => setIsSidebarExpanded(true)}
-        onMouseLeave={() => setIsSidebarExpanded(false)}
-      >
-        <div className="flex-1 flex flex-col overflow-y-auto">
-          {/* ロゴ/タイトル */}
-          <div className="px-3 py-4 border-b border-gray-200 flex justify-center">
-            <Link href="/" aria-label="ホームに戻る">
-              {isSidebarExpanded ? (
-                <Image
-                  src="/images/logo.png"
-                  alt="Link Like Essentials"
-                  width={200}
-                  height={70}
-                  className="h-16 w-auto"
-                  priority
-                />
-              ) : (
-                <Image
-                  src="/images/logo_square.png"
-                  alt="Link Like Essentials"
-                  width={40}
-                  height={40}
-                  className="w-8"
-                  priority
-                />
-              )}
-            </Link>
-          </div>
-
-          {/* ナビゲーション */}
-          <nav className="flex-1 px-2 py-5 space-y-1">
-            {NAV_ITEMS.map((item) => {
-              const isActive = pathname === item.href;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`
-                    flex items-center py-3 rounded-lg transition-colors
-                    ${
-                      isActive
-                        ? 'bg-blue-50 text-blue-700 font-semibold'
-                        : 'text-gray-700 hover:bg-gray-100'
-                    }
-                    ${isSidebarExpanded ? 'px-3' : 'px-2 justify-center'}
-                  `}
-                  title={!isSidebarExpanded ? item.label : undefined}
-                >
-                  <span
-                    className={`flex items-center justify-center shrink-0 ${
-                      isSidebarExpanded ? 'mr-3' : ''
-                    }`}
-                  >
-                    {item.icon}
-                  </span>
-                  {isSidebarExpanded && <span className="whitespace-nowrap">{item.label}</span>}
-                </Link>
-              );
-            })}
-          </nav>
-
-          {/* マイページ（最下部固定） */}
-          <div className="px-2 pb-5">
-            <Link
-              href={MY_PAGE_ITEM.href}
-              className={`
-                flex items-center py-3 rounded-lg transition-colors
-                ${
-                  pathname === MY_PAGE_ITEM.href
-                    ? 'bg-blue-50 text-blue-700 font-semibold'
-                    : 'text-gray-700 hover:bg-gray-100'
-                }
-                ${isSidebarExpanded ? 'px-3' : 'px-2 justify-center'}
-              `}
-              title={!isSidebarExpanded ? MY_PAGE_ITEM.label : undefined}
-            >
-              <span
-                className={`flex items-center justify-center shrink-0 ${
-                  isSidebarExpanded ? 'mr-3' : ''
-                }`}
-              >
-                {avatarSrc ? (
-                  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full overflow-hidden shrink-0">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={avatarSrc}
-                      alt="マイアバター"
-                      className="w-full h-full object-cover"
-                    />
-                  </span>
+      {isPc && (
+        <aside
+          className="flex flex-col bg-white border-r border-gray-200 transition-all duration-300 ease-in-out fixed left-0 top-0 h-full z-50"
+          style={{ width: isSidebarExpanded ? '16rem' : '3.5rem' }}
+          onMouseEnter={() => setIsSidebarExpanded(true)}
+          onMouseLeave={() => setIsSidebarExpanded(false)}
+        >
+          <div className="flex-1 flex flex-col overflow-y-auto">
+            {/* ロゴ/タイトル */}
+            <div className="px-3 py-4 border-b border-gray-200 flex justify-center">
+              <Link href="/" aria-label="ホームに戻る">
+                {isSidebarExpanded ? (
+                  <Image
+                    src="/images/logo.png"
+                    alt="Link Like Essentials"
+                    width={200}
+                    height={70}
+                    className="h-16 w-auto"
+                    priority
+                  />
                 ) : (
-                  MY_PAGE_ITEM.icon
+                  <Image
+                    src="/images/logo_square.png"
+                    alt="Link Like Essentials"
+                    width={40}
+                    height={40}
+                    className="w-8"
+                    priority
+                  />
                 )}
-              </span>
-              {isSidebarExpanded && <span className="whitespace-nowrap">{MY_PAGE_ITEM.label}</span>}
-            </Link>
-          </div>
-
-          {/* フッター情報 */}
-          {isSidebarExpanded && (
-            <div className="px-6 py-4 border-t border-gray-200">
-              <p className="text-xs text-gray-500 whitespace-nowrap">
-                © 2025 Link Like Essentials
-              </p>
+              </Link>
             </div>
-          )}
-        </div>
-      </aside>
+
+            {/* ナビゲーション */}
+            <nav className="flex-1 px-2 py-5 space-y-1">
+              {NAV_ITEMS.map((item) => {
+                const isActive = pathname === item.href;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`
+                      flex items-center py-3 rounded-lg transition-colors
+                      ${
+                        isActive
+                          ? 'bg-blue-50 text-blue-700 font-semibold'
+                          : 'text-gray-700 hover:bg-gray-100'
+                      }
+                      ${isSidebarExpanded ? 'px-3' : 'px-2 justify-center'}
+                    `}
+                    title={!isSidebarExpanded ? item.label : undefined}
+                  >
+                    <span
+                      className={`flex items-center justify-center shrink-0 ${
+                        isSidebarExpanded ? 'mr-3' : ''
+                      }`}
+                    >
+                      {item.icon}
+                    </span>
+                    {isSidebarExpanded && <span className="whitespace-nowrap">{item.label}</span>}
+                  </Link>
+                );
+              })}
+            </nav>
+
+            {/* マイページ（最下部固定） */}
+            <div className="px-2 pb-5">
+              <Link
+                href={MY_PAGE_ITEM.href}
+                className={`
+                  flex items-center py-3 rounded-lg transition-colors
+                  ${
+                    pathname === MY_PAGE_ITEM.href
+                      ? 'bg-blue-50 text-blue-700 font-semibold'
+                      : 'text-gray-700 hover:bg-gray-100'
+                  }
+                  ${isSidebarExpanded ? 'px-3' : 'px-2 justify-center'}
+                `}
+                title={!isSidebarExpanded ? MY_PAGE_ITEM.label : undefined}
+              >
+                <span
+                  className={`flex items-center justify-center shrink-0 ${
+                    isSidebarExpanded ? 'mr-3' : ''
+                  }`}
+                >
+                  {avatarSrc ? (
+                    <span className="inline-flex items-center justify-center w-6 h-6 rounded-full overflow-hidden shrink-0">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={avatarSrc}
+                        alt="マイアバター"
+                        className="w-full h-full object-cover"
+                      />
+                    </span>
+                  ) : (
+                    MY_PAGE_ITEM.icon
+                  )}
+                </span>
+                {isSidebarExpanded && <span className="whitespace-nowrap">{MY_PAGE_ITEM.label}</span>}
+              </Link>
+            </div>
+
+            {/* フッター情報 */}
+            {isSidebarExpanded && (
+              <div className="px-6 py-4 border-t border-gray-200">
+                <p className="text-xs text-gray-500 whitespace-nowrap">
+                  © 2025 Link Like Essentials
+                </p>
+              </div>
+            )}
+          </div>
+        </aside>
+      )}
 
       {/* メインコンテンツエリア */}
       <div
@@ -234,7 +236,7 @@ export function Sidebar({ children }: SidebarProps): JSX.Element {
         style={{ marginLeft: isPc ? '3rem' : undefined }}
       >
         {/* SP用ヘッダー（ハンバーガーメニュー） */}
-        {!isPc && (
+        {isSp && (
           <header className="bg-white border-b border-gray-200 px-4 py-3">
           <div className="flex items-center justify-between">
             <Image
@@ -279,7 +281,7 @@ export function Sidebar({ children }: SidebarProps): JSX.Element {
         )}
 
         {/* SP用サイドバー（オーバーレイ） */}
-        {!isPc && isMobileMenuOpen && (
+        {isSp && isMobileMenuOpen && (
           <>
             {/* 背景オーバーレイ */}
             <div

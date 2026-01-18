@@ -50,6 +50,7 @@ export const DeckBuilder: React.FC = () => {
     countActiveFilters,
   } = useFilter();
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const deckSlots = deck?.slots ?? [];
 
   React.useEffect(() => {

@@ -129,6 +129,61 @@ export const DeckSlot: React.FC<DeckSlotProps> = ({
   const dropClass = isDroppable 
     ? 'ring-4 ring-green-400 ring-offset-2 bg-green-50' 
     : '';
+  const actionContainerClass = isSp ? 'flex-col gap-2' : 'flex-row gap-1';
+  const actionButtonClass = isSp ? 'p-2' : 'p-1';
+  const actionIconClass = isSp ? 'w-3 h-3' : 'w-3 h-3 sm:w-4 sm:h-4';
+
+  const renderActionButton = (type: 'detail' | 'remove'): JSX.Element | null => {
+    if (type === 'detail') {
+      if (!onShowDetail) return null;
+      return (
+        <button
+          key="detail"
+          onClick={handleDetailClick}
+          className={`bg-blue-500 hover:bg-blue-600 text-white rounded-full ${actionButtonClass} transition-colors shadow-lg`}
+          aria-label="カード詳細を表示"
+        >
+          <svg
+            className={actionIconClass}
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+        </button>
+      );
+    }
+
+    if (!onRemoveCard) return null;
+    return (
+      <button
+        key="remove"
+        onClick={handleRemoveClick}
+        className={`bg-red-500 hover:bg-red-600 text-white rounded-full ${actionButtonClass} transition-colors shadow-lg`}
+        aria-label="カードを削除"
+      >
+        <svg
+          className={actionIconClass}
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+      </button>
+    );
+  };
 
   return (
     <div
@@ -185,51 +240,12 @@ export const DeckSlot: React.FC<DeckSlotProps> = ({
           
           {/* ホバー時のボタングループ */}
           {shouldShowHoverActions && !(isSp && showLimitBreak) && (
-            <div className="absolute top-1 right-1 z-10 flex gap-1">
-              {/* 詳細ボタン */}
-              {onShowDetail && (
-                <button
-                  onClick={handleDetailClick}
-                  className="bg-blue-500 hover:bg-blue-600 text-white rounded-full p-1 transition-colors shadow-lg"
-                  aria-label="カード詳細を表示"
-                >
-                  <svg
-                    className="w-3 h-3 sm:w-4 sm:h-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                </button>
-              )}
-              {/* 削除ボタン */}
-              {onRemoveCard && (
-                <button
-                  onClick={handleRemoveClick}
-                  className="bg-red-500 hover:bg-red-600 text-white rounded-full p-1 transition-colors shadow-lg"
-                  aria-label="カードを削除"
-                >
-                  <svg
-                    className="w-3 h-3 sm:w-4 sm:h-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
-              )}
+            <div className={`absolute top-1 right-1 z-10 flex ${actionContainerClass}`}>
+              {(
+                isSp ? ['remove', 'detail'] : ['detail', 'remove']
+              )
+                .map((type) => renderActionButton(type as 'detail' | 'remove'))
+                .filter(Boolean)}
             </div>
           )}
           
