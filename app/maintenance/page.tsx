@@ -1,11 +1,8 @@
 import type { Metadata } from 'next';
-import { DEFAULT_MICROCMS_REVALIDATE_SECONDS } from '@/config/microcms';
-import sanitizeHtml from 'sanitize-html';
 import { maintenanceService } from '@/services/maintenanceService';
 import { formatDate } from '@/utils/dateUtils';
 import { buildPageMetadata } from '@/utils/metadataUtils';
-
-export const revalidate = DEFAULT_MICROCMS_REVALIDATE_SECONDS;
+import { sanitizeMicroCMSContent } from '@/utils/sanitizeHtmlUtils';
 
 export const metadata: Metadata = buildPageMetadata({
   title: 'メンテナンス中',
@@ -15,7 +12,7 @@ export const metadata: Metadata = buildPageMetadata({
 export default async function MaintenancePage() {
   const maintenance = await maintenanceService.getMaintenanceContent();
   const bodyHtml = maintenance.body ?? maintenance.notice ?? '';
-  const sanitizedBody = sanitizeHtml(bodyHtml);
+  const sanitizedBody = sanitizeMicroCMSContent(bodyHtml);
   const updatedText = formatDate(maintenance.updatedAt);
 
   return (

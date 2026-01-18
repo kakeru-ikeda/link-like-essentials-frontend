@@ -1,10 +1,7 @@
 import type { Metadata } from 'next';
-import { DEFAULT_MICROCMS_REVALIDATE_SECONDS } from '@/config/microcms';
 import { NewsList } from '@/components/news/NewsList';
 import { newsService } from '@/services/newsService';
 import { buildPageMetadata } from '@/utils/metadataUtils';
-
-export const revalidate = DEFAULT_MICROCMS_REVALIDATE_SECONDS;
 
 export const metadata: Metadata = buildPageMetadata({
   title: 'お知らせ',
