@@ -239,14 +239,21 @@ export function Sidebar({ children }: SidebarProps): JSX.Element {
         {isSp && (
           <header className="bg-white border-b border-gray-200 px-4 py-3">
           <div className="flex items-center justify-between">
-            <Image
-              src="/images/logo_square.png"
-              alt="Link Like Essentials"
-              width={40}
-              height={40}
-              className="w-8"
-              priority
-            />
+            <button
+              type="button"
+              onClick={toggleMobileMenu}
+              className="p-1 rounded-lg hover:bg-gray-100 transition-colors"
+              aria-label="メニューを開く"
+            >
+              <Image
+                src="/images/logo_square.png"
+                alt="Link Like Essentials"
+                width={40}
+                height={40}
+                className="w-8"
+                priority
+              />
+            </button>
 
             <button
               onClick={toggleMobileMenu}
@@ -281,16 +288,22 @@ export function Sidebar({ children }: SidebarProps): JSX.Element {
         )}
 
         {/* SP用サイドバー（オーバーレイ） */}
-        {isSp && isMobileMenuOpen && (
+        {isSp && (
           <>
             {/* 背景オーバーレイ */}
             <div
-              className="fixed inset-0 bg-black bg-opacity-50 z-40"
+              className={`fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity duration-300 ${
+                isMobileMenuOpen ? 'opacity-50 pointer-events-auto' : 'opacity-0 pointer-events-none'
+              }`}
               onClick={closeMobileMenu}
             />
 
             {/* サイドバーコンテンツ */}
-            <aside className="fixed inset-y-0 left-0 w-64 bg-white z-50 shadow-xl">
+            <aside
+              className={`fixed inset-y-0 left-0 w-64 bg-white z-50 shadow-xl transform transition-transform duration-300 ${
+                isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+              }`}
+            >
               <div className="flex flex-col h-full">
                 {/* ロゴ/タイトル */}
                 <div className="px-6 py-4 border-b border-gray-200">
