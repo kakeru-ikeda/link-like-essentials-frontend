@@ -20,6 +20,7 @@ interface ExportCardSlotProps {
   isMain?: boolean;
   characterColor: string;
   isAce?: boolean;
+  onLimitBreakChange?: (slotId: number, count: number) => void;
 }
 
 // 画像表示専用のカードスロットコンポーネント(メモ化)
@@ -28,9 +29,29 @@ const ExportCardSlot = React.memo<ExportCardSlotProps>((
     slot, 
     isMain = false,
     characterColor,
-    isAce = false
+    isAce = false,
+    onLimitBreakChange,
   }
 ) => {
+  const limitBreakValue = slot.limitBreak ?? 14;
+  const [isHovered, setIsHovered] = React.useState(false);
+
+  const handleLimitIncrease = (e: React.MouseEvent<HTMLButtonElement>): void => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!onLimitBreakChange) return;
+    const next = Math.min(limitBreakValue + 1, 14);
+    onLimitBreakChange(slot.slotId, next);
+  };
+
+  const handleLimitDecrease = (e: React.MouseEvent<HTMLButtonElement>): void => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!onLimitBreakChange) return;
+    const next = Math.max(limitBreakValue - 1, 1);
+    onLimitBreakChange(slot.slotId, next);
+  };
+
   if (!slot.card) {
     return (
       <div className={`relative w-full aspect-[17/11] border-4 border-gray-300 rounded-2xl bg-gray-100 flex items-center justify-center`}>
@@ -40,7 +61,12 @@ const ExportCardSlot = React.memo<ExportCardSlotProps>((
   }
 
   return (
-    <div className={`relative w-full aspect-[17/11] border-4 rounded-2xl overflow-hidden`} style={{ borderColor: characterColor }}>
+    <div
+      className={`relative w-full aspect-[17/11] border-4 rounded-2xl overflow-hidden`}
+      style={{ borderColor: characterColor }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       {/* エースバッジ（フレンドカードは除外） */}
       {slot.slotId !== 99 && isAce && (
         <AceBadge
@@ -66,9 +92,12 @@ const ExportCardSlot = React.memo<ExportCardSlotProps>((
 
       {/* 上限解放数表示 */}
       <LimitBreakBadge
-        value={slot.limitBreak ?? 14}
+        value={limitBreakValue}
         variant="export"
         isMain={isMain}
+        showControls={isHovered}
+        onIncrease={handleLimitIncrease}
+        onDecrease={handleLimitDecrease}
         className="absolute top-2 left-2 z-30"
       />
 
@@ -85,7 +114,7 @@ const ExportCardSlot = React.memo<ExportCardSlotProps>((
 ExportCardSlot.displayName = 'ExportCardSlot';
 
 export const ExportDeckBuilder: React.FC<ExportDeckBuilderProps> = ({ captureRef }) => {
-  const { deck, isFriendSlotEnabled } = useDeck();
+  const { deck, isFriendSlotEnabled, updateLimitBreakCount } = useDeck();
   const deckSlots = deck?.slots ?? [];
 
   // デッキタイプに応じたスロットマッピングとキャラクターフレームを取得
@@ -191,6 +220,7 @@ export const ExportDeckBuilder: React.FC<ExportDeckBuilderProps> = ({ captureRef
                     isMain={true} 
                     characterColor={characterColor}
                     isAce={deck.aceSlotId === slots[0].slotId}
+                    onLimitBreakChange={updateLimitBreakCount}
                   />
                 )}
 
@@ -202,6 +232,7 @@ export const ExportDeckBuilder: React.FC<ExportDeckBuilderProps> = ({ captureRef
                         slot={slots[1]} 
                         characterColor={characterColor}
                         isAce={deck.aceSlotId === slots[1].slotId}
+                        onLimitBreakChange={updateLimitBreakCount}
                       />
                     </div>
                   )}
@@ -211,6 +242,7 @@ export const ExportDeckBuilder: React.FC<ExportDeckBuilderProps> = ({ captureRef
                         slot={slots[2]} 
                         characterColor={characterColor}
                         isAce={deck.aceSlotId === slots[2].slotId}
+                        onLimitBreakChange={updateLimitBreakCount}
                       />
                     </div>
                   )}
