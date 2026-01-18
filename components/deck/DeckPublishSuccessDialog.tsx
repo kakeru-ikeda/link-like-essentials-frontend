@@ -87,7 +87,7 @@ export const DeckPublishSuccessDialog: React.FC<DeckPublishSuccessDialogProps> =
                 className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm text-gray-900 bg-gray-50"
               />
               <Button onClick={handleCopy} className="whitespace-nowrap">
-                {copied ? 'コピー済み' : 'リンクをコピー'}
+                {copied ? 'コピー済み' : 'コピー'}
               </Button>
             </div>
           </div>
