@@ -28,6 +28,12 @@ export const LimitBreakBadge: React.FC<LimitBreakBadgeProps> = ({
   const canIncrease = onIncrease && value < max;
   const canDecrease = onDecrease && value > min;
 
+  const buttonPaddingClass = variant === 'export'
+    ? (isMain ? 'p-2.5' : 'p-2')
+    : (isMain ? 'p-1.5' : 'p-1');
+
+  const iconSizeClass = variant === 'export' ? 'w-4 h-4' : 'w-3 h-3';
+
   const badgeClassName =
     variant === 'export'
       ? `${isMain ? 'text-8xl px-5 py-3' : 'text-7xl px-4 py-2.5'} bg-black/50 text-white font-black rounded-xl tabular-nums shadow-2xl`
@@ -44,11 +50,11 @@ export const LimitBreakBadge: React.FC<LimitBreakBadgeProps> = ({
             type="button"
             onClick={onIncrease}
             disabled={!canIncrease}
-            className="bg-white/90 hover:bg-white disabled:bg-gray-400 disabled:cursor-not-allowed text-gray-800 rounded-full p-1 transition-colors shadow-lg"
+            className={`bg-white/90 hover:bg-white disabled:bg-gray-400 disabled:cursor-not-allowed text-gray-800 rounded-full ${buttonPaddingClass} transition-colors shadow-lg`}
             aria-label="上限解放数を増やす"
           >
             <svg
-              className="w-3 h-3"
+              className={iconSizeClass}
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -65,11 +71,11 @@ export const LimitBreakBadge: React.FC<LimitBreakBadgeProps> = ({
             type="button"
             onClick={onDecrease}
             disabled={!canDecrease}
-            className="bg-white/90 hover:bg-white disabled:bg-gray-400 disabled:cursor-not-allowed text-gray-800 rounded-full p-1 transition-colors shadow-lg"
+            className={`bg-white/90 hover:bg-white disabled:bg-gray-400 disabled:cursor-not-allowed text-gray-800 rounded-full ${buttonPaddingClass} transition-colors shadow-lg`}
             aria-label="上限解放数を減らす"
           >
             <svg
-              className="w-3 h-3"
+              className={iconSizeClass}
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"

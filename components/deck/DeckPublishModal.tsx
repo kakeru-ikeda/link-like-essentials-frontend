@@ -9,6 +9,7 @@ import { useDeck } from '@/hooks/useDeck';
 import { useDeckPublish } from '@/hooks/useDeckPublish';
 import { useLiveGrandPrixById } from '@/hooks/useLiveGrandPrix';
 import { PublishedDeck } from '@/models/PublishedDeck';
+import { FRIEND_SLOT_ID } from '@/config/deckSlots';
 
 interface DeckPublishModalProps {
   isOpen: boolean;
@@ -21,7 +22,7 @@ export const DeckPublishModal: React.FC<DeckPublishModalProps> = ({
   onClose,
   onPublished,
 }) => {
-  const { deck } = useDeck();
+  const { deck, setFriendSlotEnabled } = useDeck();
   const exportViewRef = useRef<HTMLDivElement>(null);
   const exportBuilderRef = useRef<HTMLDivElement>(null);
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState<boolean>(false);
@@ -52,8 +53,8 @@ export const DeckPublishModal: React.FC<DeckPublishModalProps> = ({
   } = useDeckPublish(
     isOpen,
     deck,
-    exportViewRef,
     exportBuilderRef,
+    setFriendSlotEnabled,
     handlePublishSuccess
   );
 
@@ -62,6 +63,27 @@ export const DeckPublishModal: React.FC<DeckPublishModalProps> = ({
     deck?.liveGrandPrixId || '',
     !deck?.liveGrandPrixId
   );
+
+  const isAceUnset = React.useMemo(() => {
+    if (!deck?.aceSlotId || !deck?.slots) return true;
+    const aceSlot = deck.slots.find((slot) => slot.slotId === deck.aceSlotId);
+    return !aceSlot?.card;
+  }, [deck?.aceSlotId, deck?.slots]);
+
+  const isAllLimitBreakDefault = React.useMemo(() => {
+    if (!deck?.slots) return false;
+    const slotsWithCard = deck.slots.filter((slot) => Boolean(slot.card));
+    if (slotsWithCard.length === 0) return false;
+    return slotsWithCard.every((slot) => (slot.limitBreak ?? 14) === 14);
+  }, [deck?.slots]);
+
+  const isFriendUnset = React.useMemo(() => {
+    if (!deck?.slots) return false;
+    if (deck?.isFriendSlotEnabled === false) return false;
+    const friendSlot = deck.slots.find((slot) => slot.slotId === FRIEND_SLOT_ID);
+    if (!friendSlot) return false;
+    return !friendSlot.card;
+  }, [deck?.slots, deck?.isFriendSlotEnabled]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -146,6 +168,21 @@ export const DeckPublishModal: React.FC<DeckPublishModalProps> = ({
         }
       >
         <div className="space-y-2 text-sm text-gray-700">
+          {isAceUnset && (
+            <div className="flex items-center gap-2 text-red-600">
+              ⚠ エースカードが未設定です。
+            </div>
+          )}
+          {isAllLimitBreakDefault && (
+            <div className="flex items-center gap-2 text-yellow-600">
+              ⚠ 全スロットの上限解放数が14のままです。設定漏れがないか確認してください。
+            </div>
+          )}
+          {isFriendUnset && (
+            <div className="flex items-center gap-2 text-yellow-600">
+              ⚠ フレンド枠が未設定です。未設定のフレンド枠は無効化されます。
+            </div>
+          )}
           <div className="flex items-center justify-between gap-3">
             <span className="text-gray-500">投稿者</span>
             <span className="font-medium text-gray-900 truncate max-w-[220px]">
