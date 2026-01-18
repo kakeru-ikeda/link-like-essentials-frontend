@@ -8,7 +8,7 @@ export const MICROCMS_SANITIZE_OPTIONS: sanitizeHtml.IOptions = {
   allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img']),
   allowedAttributes: {
     ...sanitizeHtml.defaults.allowedAttributes,
-    img: ['src', 'alt', 'title', 'width', 'height', 'loading', 'style'],
+    img: ['src', 'alt', 'title', 'loading', 'style'],
   },
   allowedStyles: {
     '*': {
