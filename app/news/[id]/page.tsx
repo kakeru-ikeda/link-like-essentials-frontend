@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import sanitizeHtml from 'sanitize-html';
-import { DEFAULT_MICROCMS_REVALIDATE_SECONDS } from '@/config/microcms';
 import { News } from '@/models/News';
 import { newsService } from '@/services/newsService';
 import { formatNewsDate } from '@/utils/dateUtils';
@@ -11,13 +10,14 @@ interface NewsPageProps {
   params: { id: string };
 }
 
-export const revalidate = DEFAULT_MICROCMS_REVALIDATE_SECONDS;
-
-export async function generateMetadata({ params }: NewsPageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: NewsPageProps): Promise<Metadata> {
   try {
     const newsArticle = await newsService.getNews(params.id);
     const rawDescription = newsArticle.content ?? newsArticle.body ?? '';
-    const plainDescription = rawDescription.replace(/<[^>]*>/g, '').slice(0, 120) || undefined;
+    const plainDescription =
+      rawDescription.replace(/<[^>]*>/g, '').slice(0, 120) || undefined;
     const ogImagePath = newsArticle.thumbnail?.url;
 
     return buildPageMetadata({
@@ -42,16 +42,26 @@ export default async function NewsDetailPage({ params }: NewsPageProps) {
     notFound();
   }
 
-  const publishedText = formatNewsDate(newsArticle.publishedAt ?? newsArticle.createdAt);
+  const publishedText = formatNewsDate(
+    newsArticle.publishedAt ?? newsArticle.createdAt
+  );
   const category = newsArticle.category?.name;
   const html = newsArticle.content ?? newsArticle.body ?? '';
-  const sanitizedHtml = sanitizeHtml(html);
+  const sanitizedHtml = sanitizeHtml(html, {
+    allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img']),
+    allowedAttributes: {
+      ...sanitizeHtml.defaults.allowedAttributes,
+      img: ['src', 'alt', 'title', 'width', 'height', 'loading'],
+    },
+  });
 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-6 space-y-2">
         <p className="text-xs text-slate-500">公開日: {publishedText}</p>
-        <h1 className="text-3xl font-bold text-gray-900 leading-snug">{newsArticle.title}</h1>
+        <h1 className="text-3xl font-bold text-gray-900 leading-snug">
+          {newsArticle.title}
+        </h1>
       </div>
 
       <div
