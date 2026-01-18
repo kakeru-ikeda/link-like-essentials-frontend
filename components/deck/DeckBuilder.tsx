@@ -22,7 +22,6 @@ import { useSideModal } from '@/hooks/useSideModal';
 import { useFilter } from '@/hooks/useFilter';
 import type { Card } from '@/models/Card';
 import type { DeckSlot } from '@/models/Deck';
-import { DeckType } from '@/models/enums';
 import {
   filterCardsBySlot,
   getAssignedCardsForSlot,
