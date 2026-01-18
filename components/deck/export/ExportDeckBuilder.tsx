@@ -21,6 +21,7 @@ interface ExportCardSlotProps {
   characterColor: string;
   isAce?: boolean;
   onLimitBreakChange?: (slotId: number, count: number) => void;
+  onToggleAce?: (slotId: number) => void;
 }
 
 // 画像表示専用のカードスロットコンポーネント(メモ化)
@@ -31,6 +32,7 @@ const ExportCardSlot = React.memo<ExportCardSlotProps>((
     characterColor,
     isAce = false,
     onLimitBreakChange,
+    onToggleAce,
   }
 ) => {
   const limitBreakValue = slot.limitBreak ?? 14;
@@ -68,11 +70,12 @@ const ExportCardSlot = React.memo<ExportCardSlotProps>((
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* エースバッジ（フレンドカードは除外） */}
-      {slot.slotId !== 99 && isAce && (
+      {slot.card && slot.slotId !== 99 && (isAce || isHovered) && (
         <AceBadge
-          isAce={true}
+          isAce={isAce}
           disabled={false}
           size="xlarge"
+          onToggle={() => onToggleAce?.(slot.slotId)}
         />
       )}
 
@@ -114,7 +117,7 @@ const ExportCardSlot = React.memo<ExportCardSlotProps>((
 ExportCardSlot.displayName = 'ExportCardSlot';
 
 export const ExportDeckBuilder: React.FC<ExportDeckBuilderProps> = ({ captureRef }) => {
-  const { deck, isFriendSlotEnabled, updateLimitBreakCount } = useDeck();
+  const { deck, isFriendSlotEnabled, updateLimitBreakCount, toggleAceCard } = useDeck();
   const deckSlots = deck?.slots ?? [];
 
   // デッキタイプに応じたスロットマッピングとキャラクターフレームを取得
@@ -221,6 +224,7 @@ export const ExportDeckBuilder: React.FC<ExportDeckBuilderProps> = ({ captureRef
                     characterColor={characterColor}
                     isAce={deck.aceSlotId === slots[0].slotId}
                     onLimitBreakChange={updateLimitBreakCount}
+                    onToggleAce={toggleAceCard}
                   />
                 )}
 
@@ -233,6 +237,7 @@ export const ExportDeckBuilder: React.FC<ExportDeckBuilderProps> = ({ captureRef
                         characterColor={characterColor}
                         isAce={deck.aceSlotId === slots[1].slotId}
                         onLimitBreakChange={updateLimitBreakCount}
+                        onToggleAce={toggleAceCard}
                       />
                     </div>
                   )}
@@ -243,6 +248,7 @@ export const ExportDeckBuilder: React.FC<ExportDeckBuilderProps> = ({ captureRef
                         characterColor={characterColor}
                         isAce={deck.aceSlotId === slots[2].slotId}
                         onLimitBreakChange={updateLimitBreakCount}
+                        onToggleAce={toggleAceCard}
                       />
                     </div>
                   )}
