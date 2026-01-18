@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import sanitizeHtml from 'sanitize-html';
 import { News } from '@/models/News';
 import { newsService } from '@/services/newsService';
 import { formatNewsDate } from '@/utils/dateUtils';
 import { buildPageMetadata } from '@/utils/metadataUtils';
+import { sanitizeMicroCMSContent } from '@/utils/sanitizeHtmlUtils';
 
 interface NewsPageProps {
   params: { id: string };
@@ -47,13 +47,7 @@ export default async function NewsDetailPage({ params }: NewsPageProps) {
   );
   const category = newsArticle.category?.name;
   const html = newsArticle.content ?? newsArticle.body ?? '';
-  const sanitizedHtml = sanitizeHtml(html, {
-    allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img']),
-    allowedAttributes: {
-      ...sanitizeHtml.defaults.allowedAttributes,
-      img: ['src', 'alt', 'title', 'width', 'height', 'loading'],
-    },
-  });
+  const sanitizedHtml = sanitizeMicroCMSContent(html);
 
   return (
     <div className="container mx-auto px-4 py-8">
