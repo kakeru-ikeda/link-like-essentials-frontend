@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import sanitizeHtml from 'sanitize-html';
+import { DEFAULT_MICROCMS_REVALIDATE_SECONDS } from '@/config/microcms';
 import { News } from '@/models/News';
-import { DEFAULT_MICROCMS_REVALIDATE_SECONDS } from '@/repositories/api/newsRepository';
 import { newsService } from '@/services/newsService';
 import { formatNewsDate } from '@/utils/dateUtils';
 import { buildPageMetadata } from '@/utils/metadataUtils';

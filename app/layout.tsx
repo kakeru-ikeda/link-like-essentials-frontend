@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import '@/styles/globals.css';
 import { Providers } from './providers';
+import { MaintenanceGate } from './MaintenanceGate';
 import { Sidebar } from '@/components/common/Sidebar';
 import { buildPageMetadata } from '@/utils/metadataUtils';
 
@@ -23,7 +24,9 @@ export default function RootLayout({
     <html lang="ja">
       <body className={inter.className}>
         <Providers>
-          <Sidebar>{children}</Sidebar>
+          <MaintenanceGate>
+            <Sidebar>{children}</Sidebar>
+          </MaintenanceGate>
         </Providers>
       </body>
     </html>

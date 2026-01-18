@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
+import { DEFAULT_MICROCMS_REVALIDATE_SECONDS } from '@/config/microcms';
 import { NewsList } from '@/components/news/NewsList';
-import { DEFAULT_MICROCMS_REVALIDATE_SECONDS } from '@/repositories/api/newsRepository';
 import { newsService } from '@/services/newsService';
 import { buildPageMetadata } from '@/utils/metadataUtils';
 
