@@ -28,8 +28,7 @@ body {
 
 /* microCMSのニュース記事内の画像サイズを保持 */
 .prose img {
-  max-width: 100% !important;
-  width: auto !important;
-  height: auto !important;
+  max-width: 100% ;
+  height: auto;
   display: inline-block;
 }
