@@ -7,6 +7,7 @@ import { ApBadge } from '@/components/common/ApBadge';
 import { RarityBadge } from '@/components/common/RarityBadge';
 import { AceBadge } from '@/components/common/AceBadge';
 import { LimitBreakBadge } from '@/components/deck/LimitBreakBadge';
+import { useResponsiveDevice } from '@/hooks/useResponsiveDevice';
 
 interface DeckSlotProps {
   slot: DeckSlotType;
@@ -47,6 +48,9 @@ export const DeckSlot: React.FC<DeckSlotProps> = ({
 }) => {
   const [imageError, setImageError] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const { isSp } = useResponsiveDevice();
+
+  const shouldShowHoverActions = isHovered || isSp;
 
   // キャラクターカラーを取得（画像枠線用）
   const characterColor = getCharacterColor(slot.characterName);
@@ -146,7 +150,7 @@ export const DeckSlot: React.FC<DeckSlotProps> = ({
               <LimitBreakBadge
                 value={limitBreakCount}
                 isMain={isMain}
-                showControls={isHovered}
+                showControls={shouldShowHoverActions}
                 onIncrease={handleLimitIncrease}
                 onDecrease={handleLimitDecrease}
                 min={1}
@@ -170,7 +174,7 @@ export const DeckSlot: React.FC<DeckSlotProps> = ({
           </div>
 
           {/* エースバッジ（ホバー時 or エース設定済みの場合のみ表示、フレンドカードは除外） */}
-          {slot.slotId !== 99 && (isHovered || isAce) && (
+          {slot.slotId !== 99 && (shouldShowHoverActions || isAce) && (
             <AceBadge
               isAce={isAce}
               onToggle={() => onToggleAce?.(slot.slotId)}
@@ -180,7 +184,7 @@ export const DeckSlot: React.FC<DeckSlotProps> = ({
           )}
           
           {/* ホバー時のボタングループ */}
-          {isHovered && (
+          {shouldShowHoverActions && !(isSp && showLimitBreak) && (
             <div className="absolute top-1 right-1 z-10 flex gap-1">
               {/* 詳細ボタン */}
               {onShowDetail && (
