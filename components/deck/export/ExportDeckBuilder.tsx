@@ -10,6 +10,7 @@ import { LimitBreakBadge } from '@/components/deck/LimitBreakBadge';
 import type { DeckSlot } from '@/models/Deck';
 import type { CharacterName } from '@/config/characters';
 import type { DeckSlotMapping } from '@/config/deckSlots';
+import { FRIEND_SLOT_ID } from '@/config/deckSlots';
 
 interface ExportDeckBuilderProps {
   captureRef?: React.Ref<HTMLDivElement>;
@@ -70,7 +71,7 @@ const ExportCardSlot = React.memo<ExportCardSlotProps>((
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* エースバッジ（フレンドカードは除外） */}
-      {slot.card && slot.slotId !== 99 && (isAce || isHovered) && (
+      {slot.slotId !== FRIEND_SLOT_ID && (isAce || isHovered) && (
         <AceBadge
           isAce={isAce}
           disabled={false}

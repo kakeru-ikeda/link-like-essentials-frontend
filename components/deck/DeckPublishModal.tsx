@@ -9,6 +9,7 @@ import { useDeck } from '@/hooks/useDeck';
 import { useDeckPublish } from '@/hooks/useDeckPublish';
 import { useLiveGrandPrixById } from '@/hooks/useLiveGrandPrix';
 import { PublishedDeck } from '@/models/PublishedDeck';
+import { FRIEND_SLOT_ID } from '@/config/deckSlots';
 
 interface DeckPublishModalProps {
   isOpen: boolean;
@@ -79,7 +80,7 @@ export const DeckPublishModal: React.FC<DeckPublishModalProps> = ({
   const isFriendUnset = React.useMemo(() => {
     if (!deck?.slots) return false;
     if (deck?.isFriendSlotEnabled === false) return false;
-    const friendSlot = deck.slots.find((slot) => slot.characterName === 'フレンド');
+    const friendSlot = deck.slots.find((slot) => slot.slotId === FRIEND_SLOT_ID);
     if (!friendSlot) return false;
     return !friendSlot.card;
   }, [deck?.slots, deck?.isFriendSlotEnabled]);
