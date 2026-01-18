@@ -9,7 +9,7 @@ interface MaintenanceGateProps {
 }
 
 export const MaintenanceGate: React.FC<MaintenanceGateProps> = ({ children }) => {
-  const { isChecking, isMaintenance, isMaintenancePath } = useMaintenanceGuard();
+  const { isChecking, isMaintenancePath } = useMaintenanceGuard();
 
   if (isMaintenancePath) {
     return <>{children}</>;
@@ -17,10 +17,6 @@ export const MaintenanceGate: React.FC<MaintenanceGateProps> = ({ children }) =>
 
   if (isChecking) {
     return <Loading fullScreen message="Loading..." />;
-  }
-
-  if (isMaintenance) {
-    return <Loading fullScreen message="Maintenance in progress..." />;
   }
 
   return <>{children}</>;

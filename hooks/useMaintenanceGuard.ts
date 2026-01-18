@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { getMaintenanceFlag } from '@/repositories/firebase/remoteConfig';
+import { maintenanceService } from '@/services/maintenanceService';
 
 const MAINTENANCE_PATH = '/maintenance';
 
@@ -17,37 +17,42 @@ export function useMaintenanceGuard(): MaintenanceGuardState {
   const router = useRouter();
   const [isChecking, setIsChecking] = useState(true);
   const [isMaintenance, setIsMaintenance] = useState(false);
+  const hasCheckedRef = useRef(false);
 
   useEffect(() => {
     let active = true;
-
     const evaluate = async () => {
       try {
-        const flag = await getMaintenanceFlag();
+        const flag = await maintenanceService.getMaintenanceFlag();
         if (!active) return;
         setIsMaintenance(flag);
-
-        const onMaintenancePage = pathname?.startsWith(MAINTENANCE_PATH) ?? false;
-        if (flag && pathname && !onMaintenancePage) {
-          router.replace(MAINTENANCE_PATH);
-        } else if (!flag && onMaintenancePage) {
-          router.replace('/');
-        }
       } catch (error) {
         console.error('メンテナンス判定エラー:', error);
       } finally {
-        if (active) {
+        if (active && !hasCheckedRef.current) {
           setIsChecking(false);
+          hasCheckedRef.current = true;
         }
       }
     };
 
     evaluate();
+    const timer = setInterval(evaluate, 60_000);
 
     return () => {
       active = false;
+      clearInterval(timer);
     };
-  }, [pathname, router]);
+  }, []);
+
+  useEffect(() => {
+    const onMaintenancePage = pathname?.startsWith(MAINTENANCE_PATH) ?? false;
+    if (isMaintenance && pathname && !onMaintenancePage) {
+      router.replace(MAINTENANCE_PATH);
+    } else if (!isMaintenance && onMaintenancePage) {
+      router.replace('/');
+    }
+  }, [isMaintenance, pathname, router]);
 
   return {
     isChecking,

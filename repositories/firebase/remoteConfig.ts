@@ -12,8 +12,10 @@ const isBrowser = () => typeof window !== 'undefined';
 function getRemoteConfigInstance(): RemoteConfig | null {
   if (!isBrowser()) return null;
 
-  // Firebase app はクライアントでのみ初期化されるため、未初期化の場合は無視
-  if (!app) return null;
+  // ブラウザ環境でこの時点で app が未初期化なのは想定外の状態とみなし、明示的にエラーとする
+  if (!app) {
+    throw new Error('Firebase app is not initialized. Ensure Firebase is initialized on the client before using Remote Config.');
+  }
 
   if (!remoteConfigInstance) {
     remoteConfigInstance = getRemoteConfig(app);
@@ -37,7 +39,6 @@ export async function getMaintenanceFlag(): Promise<boolean> {
     await fetchAndActivate(remoteConfig);
     return getValue(remoteConfig, 'maintenance_enabled').asBoolean();
   } catch (error) {
-    console.error('Remote Config fetch error:', error);
     return DEFAULT_MAINTENANCE_FLAG;
   }
 }

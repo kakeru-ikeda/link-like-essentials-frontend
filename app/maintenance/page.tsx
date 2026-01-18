@@ -1,8 +1,11 @@
 import type { Metadata } from 'next';
+import { DEFAULT_MICROCMS_REVALIDATE_SECONDS } from '@/config/microcms';
 import sanitizeHtml from 'sanitize-html';
 import { maintenanceService } from '@/services/maintenanceService';
 import { formatDate } from '@/utils/dateUtils';
 import { buildPageMetadata } from '@/utils/metadataUtils';
+
+export const revalidate = DEFAULT_MICROCMS_REVALIDATE_SECONDS;
 
 export const metadata: Metadata = buildPageMetadata({
   title: 'メンテナンス中',
@@ -51,7 +54,7 @@ export default async function MaintenancePage() {
                 className="inline-flex items-center justify-center rounded-full bg-amber-500 px-6 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-amber-600"
                 href={maintenance.ctaUrl}
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
               >
                 {maintenance.ctaLabel}
               </a>
