@@ -1,11 +1,8 @@
 import { MicroCMSQueries } from 'microcms-js-sdk';
+import { DEFAULT_MICROCMS_REVALIDATE_SECONDS } from '@/config/microcms';
 import { MicrocmsListResponse } from '@/models/Microcms';
 import { News } from '@/models/News';
-import {
-  DEFAULT_MICROCMS_REVALIDATE_SECONDS,
-  getMicrocmsList,
-  getMicrocmsObject,
-} from './microcmsRepository';
+import { getMicrocmsList, getMicrocmsObject } from './microcmsRepository';
 
 const NEWS_ENDPOINT = 'news';
 
@@ -38,6 +35,4 @@ export const newsRepository = {
     });
   },
 };
-
-export { DEFAULT_MICROCMS_REVALIDATE_SECONDS } from './microcmsRepository';
 export type { MicroCMSQueries };
