@@ -21,7 +21,7 @@ export const DeckPublishModal: React.FC<DeckPublishModalProps> = ({
   onClose,
   onPublished,
 }) => {
-  const { deck } = useDeck();
+  const { deck, setFriendSlotEnabled } = useDeck();
   const exportViewRef = useRef<HTMLDivElement>(null);
   const exportBuilderRef = useRef<HTMLDivElement>(null);
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState<boolean>(false);
@@ -52,8 +52,8 @@ export const DeckPublishModal: React.FC<DeckPublishModalProps> = ({
   } = useDeckPublish(
     isOpen,
     deck,
-    exportViewRef,
     exportBuilderRef,
+    setFriendSlotEnabled,
     handlePublishSuccess
   );
 

@@ -7,6 +7,7 @@ import { useImageUpload } from './useImageUpload';
 import { useScreenshot } from './useScreenshot';
 import { deckPublishService } from '@/services/deckPublishService';
 import { useUserProfile } from './useUserProfile';
+import { FRIEND_SLOT_ID } from '@/config/deckSlots';
 
 export interface UseDeckPublishReturn {
   /** 表示名 */
@@ -56,8 +57,8 @@ export interface UseDeckPublishReturn {
 export const useDeckPublish = (
   isOpen: boolean,
   deck: Deck | null,
-  exportViewRef: RefObject<HTMLDivElement>,
   exportBuilderRef: RefObject<HTMLDivElement>,
+  setFriendSlotEnabled?: (enabled: boolean) => void,
   onPublished?: (publishedDeck: PublishedDeck) => void
 ): UseDeckPublishReturn => {
   const { profile, isLoadingProfile, fetchProfile } = useUserProfile();
@@ -178,6 +179,25 @@ export const useDeckPublish = (
       return;
     }
 
+    const friendSlot = deck.slots.find((slot) => slot.slotId === FRIEND_SLOT_ID);
+    const isFriendSlotEnabled = deck.isFriendSlotEnabled ?? true;
+    const hasFriendCard = Boolean(friendSlot?.cardId);
+    const shouldDisableFriendSlot = isFriendSlotEnabled && !hasFriendCard;
+
+    // デッキをローカルで正規化（フレンド枠を空のまま公開しない）
+    const deckForPublish: Deck = shouldDisableFriendSlot
+      ? {
+          ...deck,
+          isFriendSlotEnabled: false,
+        }
+      : deck;
+
+    // プレビュー用のUIにも反映させるため、再描画を待ってからキャプチャ
+    if (shouldDisableFriendSlot && setFriendSlotEnabled) {
+      setFriendSlotEnabled(false);
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+    }
+
     setIsPublishing(true);
     setPublishError(null);
 
@@ -196,7 +216,7 @@ export const useDeckPublish = (
       }
 
       const publishedDeck: PublishedDeck = await deckPublishService.publishDeck(
-        deck,
+        deckForPublish,
         {
           comment: comment || undefined,
           hashtags,
@@ -220,7 +240,7 @@ export const useDeckPublish = (
     } finally {
       setIsPublishing(false);
     }
-  }, [captureThumbnail, comment, deck, hashtags, isUnlisted, onPublished, uploadedImageUrls]);
+  }, [captureThumbnail, comment, deck, hashtags, isUnlisted, onPublished, setFriendSlotEnabled, uploadedImageUrls]);
 
   return {
     displayName,
