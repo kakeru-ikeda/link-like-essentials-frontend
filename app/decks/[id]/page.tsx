@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useParams, useRouter } from 'next/navigation';
 import { useState, useCallback, useEffect } from 'react';
@@ -59,17 +59,21 @@ export default function DeckDetailPage() {
   const [importError, setImportError] = useState<string | null>(null);
   const [deckReportModalOpen, setDeckReportModalOpen] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
-  const [deleting, setDeleting] = useState(false);
 
-  const isOwnDeck = publishedDeck?.userId === user?.uid;
+  const isOwnDeck = publishedDeck?.userProfile.uid === user?.uid;
 
   // 取得完了後にクライアント側メタデータを書き換え（サーバーでの認証フェッチは不可のため）
   useEffect(() => {
     if (!publishedDeck?.deck?.name) return;
-    const description = publishedDeck.comment ?? '公開デッキの詳細を表示します。';
+    const description =
+      publishedDeck.comment ?? '公開デッキの詳細を表示します。';
     const ogImage = publishedDeck.thumbnail ?? publishedDeck.imageUrls?.[0];
     // buildPageTitleはsyncClientMetadata内で付与するので生のタイトルを渡す
-    syncClientMetadata({ title: publishedDeck.deck.name, description, ogImagePath: ogImage });
+    syncClientMetadata({
+      title: publishedDeck.deck.name,
+      description,
+      ogImagePath: ogImage,
+    });
   }, [publishedDeck]);
 
   const handleImport = useCallback(async () => {
@@ -80,26 +84,31 @@ export default function DeckDetailPage() {
       await publishedDeckImportService.importToLocal(publishedDeck);
       router.push('/deck');
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'インポートに失敗しました';
+      const message =
+        err instanceof Error ? err.message : 'インポートに失敗しました';
       setImportError(message);
     } finally {
       setImporting(false);
     }
   }, [publishedDeck, router]);
 
-  const handleReportDeck = useCallback(async (reason: ReportReason, details?: string) => {
-    if (!deckId) return;
-    try {
-      await publishedDeckService.reportDeck(deckId, reason, details);
-    } catch (err) {
-      console.error('デッキの通報に失敗しました', err);
-      alert(err instanceof Error ? err.message : 'デッキの通報に失敗しました');
-    }
-  }, [deckId]);
+  const handleReportDeck = useCallback(
+    async (reason: ReportReason, details?: string) => {
+      if (!deckId) return;
+      try {
+        await publishedDeckService.reportDeck(deckId, reason, details);
+      } catch (err) {
+        console.error('デッキの通報に失敗しました', err);
+        alert(
+          err instanceof Error ? err.message : 'デッキの通報に失敗しました'
+        );
+      }
+    },
+    [deckId]
+  );
 
   const handleDeleteDeck = useCallback(async () => {
     if (!deckId) return;
-    setDeleting(true);
     try {
       await publishedDeckService.deleteDeck(deckId);
       router.push('/decks');
@@ -107,8 +116,6 @@ export default function DeckDetailPage() {
     } catch (err) {
       console.error('デッキの削除に失敗しました', err);
       alert(err instanceof Error ? err.message : 'デッキの削除に失敗しました');
-    } finally {
-      setDeleting(false);
     }
   }, [deckId, router]);
 
@@ -136,51 +143,26 @@ export default function DeckDetailPage() {
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="space-y-1">
           <h1 className="text-3xl font-bold text-gray-900">公開デッキ詳細</h1>
-          <p className="text-sm text-gray-600">閲覧専用ビューとSNS操作を順次追加します。</p>
+          <p className="text-sm text-gray-600">
+            閲覧専用ビューとSNS操作を順次追加します。
+          </p>
         </div>
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-start">
-          {publishedDeck && (
-            <PublishedDeckActions
-              deck={publishedDeck}
-              compiledDeck={compiledDeck}
-              onImport={handleImport}
-              importing={importing}
-              importError={importError}
-              compiling={compiling}
-            />
-          )}
-          {publishedDeck && user && (
-            isOwnDeck ? (
-              <button
-                type="button"
-                onClick={() => setDeleteConfirmOpen(true)}
-                disabled={deleting}
-                className="inline-flex items-center justify-center gap-2 rounded-full border border-red-300 bg-white px-4 py-2 text-sm font-semibold text-red-600 shadow-sm transition hover:border-red-400 hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300 focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                <span className="text-base">🗑️</span>
-                <span>{deleting ? '削除中...' : '削除'}</span>
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={() => setDeckReportModalOpen(true)}
-                className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-400 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 focus-visible:ring-offset-1"
-              >
-                <span className="text-base">⚠️</span>
-                <span>通報</span>
-              </button>
-            )
-          )}
-        </div>
+        {publishedDeck && (
+          <PublishedDeckActions
+            deck={publishedDeck}
+            compiledDeck={compiledDeck}
+            onImport={handleImport}
+            importing={importing}
+            importError={importError}
+            compiling={compiling}
+            isOwnDeck={isOwnDeck}
+            onReport={() => setDeckReportModalOpen(true)}
+            onDelete={() => setDeleteConfirmOpen(true)}
+          />
+        )}
       </div>
 
       {!deckId && (
-        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-          デッキIDが不正です。
-        </div>
-      )}
-
-      {(publishedDeckError || compileError) && (
         <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           {publishedDeckError || compileError}
         </div>
@@ -194,7 +176,10 @@ export default function DeckDetailPage() {
 
       {!publishedDeckLoading && publishedDeck && (
         <div>
-          <PublishedDeckDetail deck={publishedDeck} compiledDeck={compiledDeck} />
+          <PublishedDeckDetail
+            deck={publishedDeck}
+            compiledDeck={compiledDeck}
+          />
           <DeckCommentSection
             comments={comments}
             loading={commentsLoading}
