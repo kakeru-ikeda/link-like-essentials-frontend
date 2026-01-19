@@ -7,6 +7,7 @@ import { useAuthStore } from '@/store/authStore';
 import { useUserProfileStore } from '@/store/userProfileStore';
 import type { UpgradeAnonymousRequest, UpgradeAnonymousResponse } from '@/repositories/api/authRepository';
 import { UserRole } from '@/models/enums';
+import { logLogin, logSignUp } from '@/services/analyticsService';
 
 export const useAuthUpgrade = () => {
   const { execute, isLoading, error, reset } = useApiBase();
@@ -23,6 +24,8 @@ export const useAuthUpgrade = () => {
       setToken(result.token);
       setRole(result.role ?? UserRole.EMAIL);
       setProfile(result.profile);
+      logSignUp('email');
+      logLogin('upgrade');
 
       return result.upgradeResult;
     },

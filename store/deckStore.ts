@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import { Deck, DeckSlot } from '@/models/Deck';
+import { Deck } from '@/models/Deck';
 import { Card } from '@/models/Card';
 import { Song } from '@/models/Song';
 import { DeckType } from '@/models/enums';
@@ -33,7 +33,7 @@ interface DeckState {
 }
 
 export const useDeckStore = create<DeckState>()(
-  immer((set, get) => ({
+  immer((set, _) => ({
     deck: null,
 
     setDeck: (deck) =>

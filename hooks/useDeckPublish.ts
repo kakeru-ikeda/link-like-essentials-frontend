@@ -8,6 +8,7 @@ import { useScreenshot } from './useScreenshot';
 import { deckPublishService } from '@/services/deckPublishService';
 import { useUserProfile } from './useUserProfile';
 import { FRIEND_SLOT_ID } from '@/config/deckSlots';
+import { logDeckExported } from '@/services/analyticsService';
 
 export interface UseDeckPublishReturn {
   /** 表示名 */
@@ -143,11 +144,15 @@ export const useDeckPublish = (
 
         await captureElement(exportViewRef.current, `${deckName}.png`);
 
+        if (deck?.id) {
+          logDeckExported(deck.id, 'image');
+        }
+
         // zoomを元に戻す
         exportViewRef.current.style.zoom = originalZoom;
       }
     },
-    [captureElement]
+    [captureElement, deck?.id]
   );
 
   const captureThumbnail = useCallback(async (): Promise<string> => {

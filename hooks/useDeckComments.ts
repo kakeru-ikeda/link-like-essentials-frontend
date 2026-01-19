@@ -10,6 +10,7 @@ import { deckCommentService } from '@/services/deckCommentService';
 import { ReportReason } from '@/models/Comment';
 import { useAuth } from './useAuth';
 import { useBatchUserProfiles } from './useBatchUserProfiles';
+import { logDeckCommented } from '@/services/analyticsService';
 
 export const MAX_COMMENT_LENGTH = 1000;
 export const COMMENTS_PER_PAGE = 20;
@@ -132,6 +133,7 @@ export const useDeckComments = (deckId: string | null): UseDeckCommentsResult =>
 
     try {
       await publishedDeckService.postComment(deckId, text);
+      logDeckCommented(deckId);
       setCommentText('');
       await fetchComments(1, false);
     } catch (err) {

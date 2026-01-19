@@ -5,6 +5,7 @@ import { authService } from '@/services/authService';
 import { useAuthStore } from '@/store/authStore';
 import { useUserProfileStore } from '@/store/userProfileStore';
 import { UserRole } from '@/models/enums';
+import { logLogin } from '@/services/analyticsService';
 
 export const useAuth = () => {
   const {
@@ -32,6 +33,7 @@ export const useAuth = () => {
       const profile = await authService.fetchOrCreateProfile();
       const role = profile.role ?? UserRole.ANONYMOUS;
       setRole(role);
+      logLogin('email');
       return { user: signedInUser, token, role, profile };
     },
     [setRole, setToken, setUser]

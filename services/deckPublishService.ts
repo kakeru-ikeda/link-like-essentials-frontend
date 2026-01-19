@@ -2,6 +2,7 @@ import { Deck, DeckForCloud, DeckSlotForCloud } from '@/models/Deck';
 import { DeckPublicationRequest, PublishedDeck } from '@/models/PublishedDeck';
 import { deckRepository } from '@/repositories/api/deckRepository';
 import { nanoid } from 'nanoid';
+import { logDeckPublished } from '@/services/analyticsService';
 
 /**
  * Deckをクラウド送信用の形式に変換
@@ -62,6 +63,8 @@ export const deckPublishService = {
     };
 
     // Repositoryを通じて公開
-    return await deckRepository.publishDeck(publication);
+    const published = await deckRepository.publishDeck(publication);
+    logDeckPublished(published.id);
+    return published;
   },
 };
