@@ -52,8 +52,18 @@ export const useDeckTabs = () => {
 
   /**
    * タブを切り替え
+   * 切り替え前に現在のデッキを保存
    */
   const handleSwitchTab = (id: string): void => {
+    // 現在のデッキを保存してからタブ切り替え
+    const currentDeck = useDeckStore.getState().deck;
+    const { activeTabId: currentActiveTabId, updateCurrentTab } =
+      useDeckTabsStore.getState();
+    if (currentDeck && currentDeck.id === currentActiveTabId) {
+      updateCurrentTab(currentDeck);
+    }
+
+    // タブを切り替え
     switchTab(id);
     saveTabsToLocal();
   };
