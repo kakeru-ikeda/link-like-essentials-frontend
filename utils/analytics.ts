@@ -92,7 +92,7 @@ export const logDeckExported = (deckId: string, format: 'image' | 'screenshot') 
 /**
  * ログインイベント
  */
-export const logLogin = (method: 'anonymous' | 'upgrade') => {
+export const logLogin = (method: 'anonymous' | 'email' | 'upgrade') => {
   logCustomEvent('login', {
     method,
   });

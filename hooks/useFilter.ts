@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
+import { logCardFiltered } from '@/utils/analytics';
 import { CardFilter } from '@/models/Filter';
 
 export interface UseFilterReturn {
@@ -26,6 +27,13 @@ export function useFilter(): UseFilterReturn {
 
   // フィルター更新（immediate オプションで即座適用を制御）
   const updateFilter = useCallback((updates: Partial<CardFilter>): void => {
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value !== undefined) {
+        const serialized = Array.isArray(value) ? value.join(',') : String(value);
+        logCardFiltered(key, serialized);
+      }
+    });
+
     setFilter((prev) => ({ ...prev, ...updates }));
   }, []);
 

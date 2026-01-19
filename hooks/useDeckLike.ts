@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { publishedDeckService } from '@/services/publishedDeckService';
 import { useAuth } from './useAuth';
+import { logDeckLiked } from '@/utils/analytics';
 
 interface UseDeckLikeOptions {
   deckId: string;
@@ -43,6 +44,9 @@ export const useDeckLike = ({ deckId, initialLiked = false, initialLikeCount = 0
     setLoading(true);
 
     try {
+      if (optimisticLiked) {
+        logDeckLiked(deckId);
+      }
       const latestCount = optimisticLiked
         ? await publishedDeckService.likeDeck(deckId)
         : await publishedDeckService.unlikeDeck(deckId);

@@ -3,6 +3,7 @@ import { immer } from 'zustand/middleware/immer';
 import { Deck } from '@/models/Deck';
 import { DeckService } from '@/services/deckService';
 import { DeckTabsRepository } from '@/repositories/localStorage/deckTabsRepository';
+import { logDeckCreated } from '@/utils/analytics';
 
 /**
  * デッキタブ管理専用ストア
@@ -34,6 +35,7 @@ export const useDeckTabsStore = create<DeckTabsState>()(
         const newDeck = DeckService.createEmptyDeck(deckName);
         state.tabs.push(newDeck);
         state.activeTabId = newDeck.id;
+        logDeckCreated(newDeck.id, newDeck.slots.length);
       }),
 
     /**
@@ -104,6 +106,7 @@ export const useDeckTabsStore = create<DeckTabsState>()(
           const initialDeck = DeckService.createEmptyDeck(deckName);
           state.tabs = [initialDeck];
           state.activeTabId = initialDeck.id;
+          logDeckCreated(initialDeck.id, initialDeck.slots.length);
         }
       }),
 

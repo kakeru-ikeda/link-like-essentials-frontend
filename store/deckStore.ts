@@ -6,6 +6,7 @@ import { Song } from '@/models/Song';
 import { DeckType } from '@/models/enums';
 import { DeckRepository } from '@/repositories/localStorage/deckRepository';
 import { DeckService } from '@/services/deckService';
+import { logCardAdded } from '@/utils/analytics';
 
 /**
  * デッキストアの状態管理インターフェース
@@ -49,6 +50,9 @@ export const useDeckStore = create<DeckState>()(
             slot.card = card;
             slot.cardId = card?.id ?? null;
             slot.limitBreak = card ? (slot.limitBreak ?? 14) : undefined;
+            if (card) {
+              logCardAdded(card.id, slotId);
+            }
             state.deck.updatedAt = new Date().toISOString();
           }
         }
