@@ -28,14 +28,11 @@ export const useDeckTabs = () => {
   useEffect(() => {
     if (tabs.length > 0 && activeTabId) {
       const activeDeck = tabs.find((tab) => tab.id === activeTabId);
-      if (activeDeck) {
-        // IDが異なる場合のみ更新（同じタブ内での編集時は更新しない）
-        if (activeDeck.id !== deck?.id) {
-          setDeck(activeDeck);
-        }
+      if (activeDeck && activeDeck.id !== deck?.id) {
+        setDeck(activeDeck);
       }
     }
-  }, [activeTabId]); // tabsを依存配列から除外して、タブ切り替え時のみ実行
+  }, [tabs, activeTabId, deck?.id, setDeck]);
 
   /**
    * タブを追加
@@ -60,10 +57,12 @@ export const useDeckTabs = () => {
   const handleSwitchTab = (id: string): void => {
     // 現在のデッキを保存してからタブ切り替え
     const currentDeck = useDeckStore.getState().deck;
-    if (currentDeck) {
-      useDeckTabsStore.getState().updateCurrentTab(currentDeck);
+    const { activeTabId: currentActiveTabId, updateCurrentTab } =
+      useDeckTabsStore.getState();
+    if (currentDeck && currentDeck.id === currentActiveTabId) {
+      updateCurrentTab(currentDeck);
     }
-    
+
     // タブを切り替え
     switchTab(id);
     saveTabsToLocal();
