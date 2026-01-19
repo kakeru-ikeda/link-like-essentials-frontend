@@ -6,7 +6,7 @@ import { Song } from '@/models/Song';
 import { DeckType } from '@/models/enums';
 import { DeckRepository } from '@/repositories/localStorage/deckRepository';
 import { DeckService } from '@/services/deckService';
-import { logCardAdded } from '@/utils/analytics';
+import { logCardAdded } from '@/services/analyticsService';
 
 /**
  * デッキストアの状態管理インターフェース

@@ -2,7 +2,7 @@ import { Deck, DeckForCloud, DeckSlotForCloud } from '@/models/Deck';
 import { DeckPublicationRequest, PublishedDeck } from '@/models/PublishedDeck';
 import { deckRepository } from '@/repositories/api/deckRepository';
 import { nanoid } from 'nanoid';
-import { logDeckPublished } from '@/utils/analytics';
+import { logDeckPublished } from '@/services/analyticsService';
 
 /**
  * Deckをクラウド送信用の形式に変換

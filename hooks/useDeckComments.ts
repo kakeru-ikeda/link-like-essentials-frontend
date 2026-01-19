@@ -10,7 +10,7 @@ import { deckCommentService } from '@/services/deckCommentService';
 import { ReportReason } from '@/models/Comment';
 import { useAuth } from './useAuth';
 import { useBatchUserProfiles } from './useBatchUserProfiles';
-import { logDeckCommented } from '@/utils/analytics';
+import { logDeckCommented } from '@/services/analyticsService';
 
 export const MAX_COMMENT_LENGTH = 1000;
 export const COMMENTS_PER_PAGE = 20;

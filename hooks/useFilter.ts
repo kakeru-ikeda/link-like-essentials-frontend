@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { logCardFiltered } from '@/utils/analytics';
+import { logCardFiltered } from '@/services/analyticsService';
 import { CardFilter } from '@/models/Filter';
 
 export interface UseFilterReturn {

@@ -5,7 +5,7 @@ import { authService } from '@/services/authService';
 import { useAuthStore } from '@/store/authStore';
 import { useUserProfileStore } from '@/store/userProfileStore';
 import { UserRole } from '@/models/enums';
-import { logLogin } from '@/utils/analytics';
+import { logLogin } from '@/services/analyticsService';
 
 export const useAuth = () => {
   const {

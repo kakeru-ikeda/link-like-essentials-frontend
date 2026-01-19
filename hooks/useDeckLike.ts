@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { publishedDeckService } from '@/services/publishedDeckService';
 import { useAuth } from './useAuth';
-import { logDeckLiked } from '@/utils/analytics';
+import { logDeckLiked } from '@/services/analyticsService';
 
 interface UseDeckLikeOptions {
   deckId: string;

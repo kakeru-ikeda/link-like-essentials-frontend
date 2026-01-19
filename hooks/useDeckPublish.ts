@@ -8,7 +8,7 @@ import { useScreenshot } from './useScreenshot';
 import { deckPublishService } from '@/services/deckPublishService';
 import { useUserProfile } from './useUserProfile';
 import { FRIEND_SLOT_ID } from '@/config/deckSlots';
-import { logDeckExported } from '@/utils/analytics';
+import { logDeckExported } from '@/services/analyticsService';
 
 export interface UseDeckPublishReturn {
   /** 表示名 */

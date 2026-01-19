@@ -3,7 +3,7 @@ import { immer } from 'zustand/middleware/immer';
 import { Deck } from '@/models/Deck';
 import { DeckService } from '@/services/deckService';
 import { DeckTabsRepository } from '@/repositories/localStorage/deckTabsRepository';
-import { logDeckCreated } from '@/utils/analytics';
+import { logDeckCreated } from '@/services/analyticsService';
 
 /**
  * デッキタブ管理専用ストア
