@@ -13,6 +13,9 @@ interface PublishedDeckActionsProps {
   importing?: boolean;
   importError?: string | null;
   compiling?: boolean;
+  isOwnDeck: boolean;
+  onReport?: () => void;
+  onDelete?: () => void;
 }
 
 const formatNumber = (value: number) => value.toLocaleString('ja-JP');
@@ -24,6 +27,9 @@ export const PublishedDeckActions: React.FC<PublishedDeckActionsProps> = ({
   importing = false,
   importError,
   compiling = false,
+  isOwnDeck,
+  onReport,
+  onDelete,
 }) => {
   const [viewCount, setViewCount] = useState(deck.viewCount);
 
@@ -106,7 +112,9 @@ export const PublishedDeckActions: React.FC<PublishedDeckActionsProps> = ({
           <span className="text-base" aria-hidden>
             👁
           </span>
-          <span className="text-sm font-semibold">{formatNumber(viewCount)}</span>
+          <span className="text-sm font-semibold">
+            {formatNumber(viewCount)}
+          </span>
           <span className="text-xs text-slate-500">閲覧</span>
         </div>
       </div>
@@ -116,11 +124,39 @@ export const PublishedDeckActions: React.FC<PublishedDeckActionsProps> = ({
           type="button"
           onClick={handleImport}
           disabled={!canImport}
-          className={`${importButtonClasses} bg-gradient-to-r from-slate-900 via-slate-800 to-slate-700 hover:from-slate-800 hover:to-slate-700`}
+          className={`${importButtonClasses} flex-1 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-700 hover:from-slate-800 hover:to-slate-700`}
         >
           <span>📥</span>
-          <span>{importing ? 'インポート中...' : compiling ? 'コンパイル中...' : 'インポートして編集'}</span>
+          <span>
+            {importing
+              ? 'インポート中...'
+              : compiling
+                ? 'コンパイル中...'
+                : 'インポートして編集'}
+          </span>
         </button>
+
+        {isOwnDeck
+          ? onDelete && (
+              <button
+                type="button"
+                onClick={onDelete}
+                className={`${actionPillBase} bg-red-600 text-white hover:bg-red-700`}
+              >
+                <span className="text-base">🗑️</span>
+                <span className="text-xs font-normal opacity-80">削除</span>
+              </button>
+            )
+          : onReport && (
+              <button
+                type="button"
+                onClick={onReport}
+                className={`${actionPillBase} bg-amber-600 text-white hover:bg-amber-700`}
+              >
+                <span className="text-base">⚠️</span>
+                <span className="text-xs font-normal opacity-80">通報</span>
+              </button>
+            )}
 
         {(likeError || importError) && (
           <div className="text-xs text-red-600" role="alert">
