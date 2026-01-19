@@ -40,8 +40,9 @@ export const useDeck = () => {
 
   // タブ同期用のヘルパー関数
   const syncCurrentTab = () => {
-    if (deck) {
-      updateCurrentTab(deck);
+    const latestDeck = useDeckStore.getState().deck;
+    if (latestDeck) {
+      updateCurrentTab(latestDeck);
       saveTabsToLocal();
     }
   };

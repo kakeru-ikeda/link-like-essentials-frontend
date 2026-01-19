@@ -3,6 +3,7 @@
 import { Deck } from '@/models/Deck';
 import React from 'react';
 import { useResponsiveDevice } from '@/hooks/useResponsiveDevice';
+import { Tooltip } from '@/components/common/Tooltip';
 
 interface DeckTabsProps {
   tabs: Pick<Deck, 'id' | 'name'>[];
@@ -13,16 +14,16 @@ interface DeckTabsProps {
   children: React.ReactNode;
 }
 
-export const DeckTabs: React.FC<DeckTabsProps> = ({ 
+export const DeckTabs: React.FC<DeckTabsProps> = ({
   tabs,
   activeTabId,
   onChangeTab,
   onAddTab,
   onDeleteTab,
-  children 
+  children,
 }) => {
   const { isSp } = useResponsiveDevice();
-  
+
   if (isSp) {
     return (
       <div className="flex h-full flex-col overflow-hidden">
@@ -35,16 +36,23 @@ export const DeckTabs: React.FC<DeckTabsProps> = ({
               <div className="flex gap-2">
                 {tabs.map((tab) => (
                   <div key={tab.id} className="relative group">
-                    <button
-                      onClick={() => onChangeTab(tab.id)}
-                      className={`px-3 py-2 rounded-md text-sm font-medium whitespace-nowrap transition ${
-                        activeTabId === tab.id
-                          ? 'bg-blue-500 text-white'
-                          : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
-                      }`}
-                    >
-                      {tab.name}
-                    </button>
+                    <Tooltip content={tab.name} position="top">
+                      <button
+                        onClick={() => onChangeTab(tab.id)}
+                        className={`px-3 py-2 rounded-md text-sm font-medium transition ${
+                          activeTabId === tab.id
+                            ? 'bg-blue-500 text-white'
+                            : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
+                        }`}
+                      >
+                        <span
+                          className="inline-block max-w-[120px] truncate"
+                          style={{ letterSpacing: '-0.05em' }}
+                        >
+                          {tab.name}
+                        </span>
+                      </button>
+                    </Tooltip>
                     {tabs.length > 1 && (
                       <button
                         onClick={() => onDeleteTab(tab.id)}
@@ -97,17 +105,33 @@ export const DeckTabs: React.FC<DeckTabsProps> = ({
           <div className="space-y-2">
             {tabs.map((tab) => (
               <div key={tab.id} className="relative group">
-                <button
-                  onClick={() => onChangeTab(tab.id)}
-                  className={`w-full px-2 py-5 rounded-md text-sm font-medium transition ${
-                    activeTabId === tab.id
-                      ? 'bg-blue-500 text-white'
-                      : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
-                  }`}
-                  style={{ writingMode: 'vertical-rl', textOrientation: 'upright' }}
-                >
-                  {tab.name}
-                </button>
+                <Tooltip content={tab.name} position="left">
+                  <button
+                    onClick={() => onChangeTab(tab.id)}
+                    className={`w-full px-2 py-5 rounded-md text-sm font-medium transition ${
+                      activeTabId === tab.id
+                        ? 'bg-blue-500 text-white'
+                        : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
+                    }`}
+                    style={{
+                      writingMode: 'vertical-rl',
+                      textOrientation: 'upright',
+                    }}
+                  >
+                    <span
+                      className="inline-block max-h-[200px] overflow-hidden"
+                      style={{
+                        writingMode: 'vertical-rl',
+                        textOrientation: 'upright',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                        letterSpacing: '-0.05em',
+                      }}
+                    >
+                      {tab.name}
+                    </span>
+                  </button>
+                </Tooltip>
                 {/* 削除ボタン（ホバー時のみ表示） */}
                 {tabs.length > 1 && (
                   <button
