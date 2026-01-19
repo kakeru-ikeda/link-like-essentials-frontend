@@ -12,10 +12,10 @@ export const logCustomEvent = (eventName: string, params?: Record<string, unknow
   logAnalyticsEvent(eventName, params);
 };
 
-export const logDeckCreated = (deckId: string, characterCount: number) => {
+export const logDeckCreated = (deckId: string, slotCount: number) => {
   logCustomEvent('deck_created', {
     deck_id: deckId,
-    character_count: characterCount,
+    slot_count: slotCount,
   });
 };
 
@@ -34,20 +34,6 @@ export const logDeckLiked = (deckId: string) => {
 export const logDeckCommented = (deckId: string) => {
   logCustomEvent('deck_commented', {
     deck_id: deckId,
-  });
-};
-
-export const logCardFiltered = (filterType: string, value: string) => {
-  logCustomEvent('card_filtered', {
-    filter_type: filterType,
-    filter_value: value,
-  });
-};
-
-export const logCardAdded = (cardId: string, slotId: number) => {
-  logCustomEvent('card_added_to_deck', {
-    card_id: cardId,
-    slot_id: slotId,
   });
 };
 

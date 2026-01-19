@@ -1,12 +1,11 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import { Deck, DeckSlot } from '@/models/Deck';
+import { Deck } from '@/models/Deck';
 import { Card } from '@/models/Card';
 import { Song } from '@/models/Song';
 import { DeckType } from '@/models/enums';
 import { DeckRepository } from '@/repositories/localStorage/deckRepository';
 import { DeckService } from '@/services/deckService';
-import { logCardAdded } from '@/services/analyticsService';
 
 /**
  * デッキストアの状態管理インターフェース
@@ -34,7 +33,7 @@ interface DeckState {
 }
 
 export const useDeckStore = create<DeckState>()(
-  immer((set, get) => ({
+  immer((set, _) => ({
     deck: null,
 
     setDeck: (deck) =>
@@ -50,9 +49,6 @@ export const useDeckStore = create<DeckState>()(
             slot.card = card;
             slot.cardId = card?.id ?? null;
             slot.limitBreak = card ? (slot.limitBreak ?? 14) : undefined;
-            if (card) {
-              logCardAdded(card.id, slotId);
-            }
             state.deck.updatedAt = new Date().toISOString();
           }
         }
