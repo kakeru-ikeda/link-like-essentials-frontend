@@ -140,11 +140,11 @@ export const DeckPublishModal: React.FC<DeckPublishModalProps> = ({
       title="デッキを公開する"
       maxWidth="max-w-7xl"
     >
-      <div className="flex flex-col lg:flex-row gap-6">
-        {/* 左側: プレビュー（SPでは非表示。キャプチャ中のみ表示） */}
+      <div className="flex gap-6">
+        {/* 左側: プレビュー */}
         {shouldShowExportView && (
-          <div className={previewContainerClass} aria-hidden={!shouldShowExportView}>
-            <div className="min-w-[1700px]" style={{ zoom: 0.5 }}>
+          <div className="flex-shrink-0 overflow-auto max-h-[70vh] relative">
+            <div style={{ zoom: 0.5, width: '1700px' }}>
               <DeckExportView
                 captureRef={exportViewRef}
                 builderCaptureRef={exportBuilderRef}
