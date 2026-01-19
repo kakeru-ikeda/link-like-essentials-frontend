@@ -12,9 +12,6 @@ export interface PublishedDeck {
   /** 基本デッキ情報 */
   deck: DeckForCloud;
 
-  /** 公開者のAuthUID */
-  userId: string;
-
   /** 公開者のユーザープロフィール情報 */
   userProfile: UserProfile;
 
@@ -53,5 +50,11 @@ export interface PublishedDeck {
  */
 export type DeckPublicationRequest = Pick<
   PublishedDeck,
-  'id' | 'deck' | 'comment' | 'hashtags' | 'isUnlisted' | 'imageUrls' | 'thumbnail'
+  | 'id'
+  | 'deck'
+  | 'comment'
+  | 'hashtags'
+  | 'isUnlisted'
+  | 'imageUrls'
+  | 'thumbnail'
 >;
