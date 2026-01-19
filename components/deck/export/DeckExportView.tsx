@@ -6,6 +6,8 @@ import { ExportDeckBuilder } from './ExportDeckBuilder';
 import { ExportDashboard } from './ExportDashboard';
 import { useDeck } from '@/hooks/useDeck';
 
+const EXPORT_VIEW_WIDTH = 1700;
+
 interface DeckExportViewProps {
   captureRef?: React.Ref<HTMLDivElement>;
   builderCaptureRef?: React.Ref<HTMLDivElement>;
@@ -16,11 +18,14 @@ export const DeckExportView: React.FC<DeckExportViewProps> = ({ captureRef, buil
   
   return (
     <div 
-      className="bg-gradient-to-br from-slate-50 to-slate-100 p-8"
+      className="bg-gradient-to-br from-slate-50 to-slate-100 p-8 flex flex-col gap-8 flex-none"
       ref={captureRef}
       style={{ 
         letterSpacing: '0',
         lineHeight: '1.5',
+        width: `${EXPORT_VIEW_WIDTH}px`,
+        minWidth: `${EXPORT_VIEW_WIDTH}px`,
+        maxWidth: `${EXPORT_VIEW_WIDTH}px`,
       }}
     >
       <ExportHeader deckName={deck?.name} />
