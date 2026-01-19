@@ -159,14 +159,9 @@ export const DeckDashboard: React.FC = () => {
             onTitleChange={updateDeckName}
           />
         </div>
-        <div className="flex gap-2 flex-shrink-0">
-          <Button variant="secondary" onClick={clearDeck}>
-            クリア
-          </Button>
-          <Button onClick={handleOpenPublishModal} className="bg-green-600 hover:bg-green-700 disabled:bg-green-400">
-            公開
-          </Button>
-        </div>
+        <Button onClick={handleOpenPublishModal} className="bg-green-600 hover:bg-green-700 disabled:bg-green-400">
+          公開
+        </Button>
       </div>
       
       {/* デッキタイプ＆楽曲選択 */}
