@@ -55,7 +55,6 @@ export const DeckPublishModal: React.FC<DeckPublishModalProps> = ({
   } = useDeckPublish(
     isOpen,
     deck,
-    exportBuilderRef,
     setFriendSlotEnabled,
     handlePublishSuccess
   );

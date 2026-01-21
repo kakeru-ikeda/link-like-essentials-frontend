@@ -6,6 +6,7 @@ import { PublishedDeck } from '@/models/PublishedDeck';
 import { useImageUpload } from './useImageUpload';
 import { useScreenshot } from './useScreenshot';
 import { deckPublishService } from '@/services/deckPublishService';
+import { thumbnailService } from '@/services/thumbnailService';
 import { useUserProfile } from './useUserProfile';
 import { FRIEND_SLOT_ID } from '@/config/deckSlots';
 import { logDeckExported } from '@/services/analyticsService';
@@ -58,7 +59,6 @@ export interface UseDeckPublishReturn {
 export const useDeckPublish = (
   isOpen: boolean,
   deck: Deck | null,
-  exportBuilderRef: RefObject<HTMLDivElement>,
   setFriendSlotEnabled?: (enabled: boolean) => void,
   onPublished?: (publishedDeck: PublishedDeck) => void
 ): UseDeckPublishReturn => {
@@ -66,7 +66,7 @@ export const useDeckPublish = (
   const { uploadImage, error: uploadError } = useImageUpload({
     enableCropping: false,
   });
-  const { captureElement, captureElementAsDataUrl, isCapturing } = useScreenshot();
+  const { captureElement, isCapturing } = useScreenshot();
 
   const [displayName, setDisplayName] = useState<string>('');
   const [comment, setComment] = useState<string>('');
@@ -155,28 +155,6 @@ export const useDeckPublish = (
     [captureElement, deck?.id]
   );
 
-  const captureThumbnail = useCallback(async (): Promise<string> => {
-    if (!exportBuilderRef.current) {
-      throw new Error('プレビューの準備が完了していません');
-    }
-
-    const target = exportBuilderRef.current;
-    const originalZoom = target.style.zoom;
-    target.style.zoom = '1';
-
-    try {
-      const dataUrl = await captureElementAsDataUrl(target);
-      const response = await fetch(dataUrl);
-      const blob = await response.blob();
-      const fileName = `${deck?.name ?? 'deck'}-thumbnail.png`;
-      const file = new File([blob], fileName, { type: 'image/png' });
-      return await uploadImage(file);
-    } finally {
-      target.style.zoom = originalZoom;
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [captureElementAsDataUrl, deck?.name, uploadImage]);
-
   // デッキ公開処理
   const handlePublishDeck = useCallback(async (): Promise<void> => {
     if (!deck) {
@@ -209,7 +187,7 @@ export const useDeckPublish = (
     try {
       let thumbnailUrl: string | undefined;
       try {
-        thumbnailUrl = await captureThumbnail();
+        thumbnailUrl = await thumbnailService.generateThumbnail(deckForPublish);
       } catch (captureError) {
         const errorMessage =
           captureError instanceof Error
@@ -245,7 +223,7 @@ export const useDeckPublish = (
     } finally {
       setIsPublishing(false);
     }
-  }, [captureThumbnail, comment, deck, hashtags, isUnlisted, onPublished, setFriendSlotEnabled, uploadedImageUrls]);
+  }, [comment, deck, hashtags, isUnlisted, onPublished, setFriendSlotEnabled, uploadedImageUrls]);
 
   return {
     displayName,
