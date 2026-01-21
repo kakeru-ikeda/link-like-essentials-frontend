@@ -29,7 +29,7 @@ export const ExportDashboard: React.FC<ExportDashboardProps> = ({
     const aceSlot = deck.slots.find((slot) => slot.slotId === deck.aceSlotId);
     if (!aceSlot || !aceSlot.card) return null;
     return {
-      characterName: aceSlot.characterName,
+      characterName: aceSlot.card.characterName,
       cardName: aceSlot.card.cardName,
     };
   }, [deck?.aceSlotId, deck?.slots]);
