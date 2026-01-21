@@ -28,6 +28,7 @@ import {
 } from '@/services/deckFilterService';
 import { filterAvailableCards } from '@/services/characterFilterService';
 import { useResponsiveDevice } from '@/hooks/useResponsiveDevice';
+import { HelpTooltip } from '../common/HelpTooltip';
 
 export const DeckBuilder: React.FC = () => {
   const { deck, removeCard, toggleAceCard, swapCards, addCard, updateLimitBreakCount, isFriendSlotEnabled, setFriendSlotEnabled } = useDeck();
@@ -416,16 +417,26 @@ export const DeckBuilder: React.FC = () => {
 
       {/* ツールバー */}
       <div className="w-full border-t border-gray-300 py-2 px-4 bg-gray-50 flex-shrink-0">
-        <div className="flex gap-4">
+        <div className="flex items-center gap-1">
           <Checkbox
             checked={isFriendSlotEnabled}
             onChange={setFriendSlotEnabled}
             label="フレンドカード枠有効"
           />
+          <HelpTooltip
+            content="フレンドカード枠を編成に含めるかどうかを切り替えます。"
+            className="mb-1 mr-2"
+            size={4}
+          />
           <Checkbox
             checked={showLimitBreak}
             onChange={setShowLimitBreak}
             label="上限解放数を表示"
+          />
+          <HelpTooltip
+            content="編成内の各カードの上限解放数(スキルレベル)を設定します。デッキ共有時にも反映されます。"
+            className="mb-1"
+            size={4}
           />
         </div>
       </div>
