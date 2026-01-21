@@ -13,7 +13,6 @@ import type { DeckSlotMapping } from '@/config/deckSlots';
 import { FRIEND_SLOT_ID } from '@/config/deckSlots';
 
 interface ExportDeckBuilderProps {
-  captureRef?: React.Ref<HTMLDivElement>;
 }
 
 interface ExportCardSlotProps {
@@ -117,7 +116,7 @@ const ExportCardSlot = React.memo<ExportCardSlotProps>((
 
 ExportCardSlot.displayName = 'ExportCardSlot';
 
-export const ExportDeckBuilder: React.FC<ExportDeckBuilderProps> = ({ captureRef }) => {
+export const ExportDeckBuilder: React.FC<ExportDeckBuilderProps> = () => {
   const { deck, isFriendSlotEnabled, updateLimitBreakCount, toggleAceCard } = useDeck();
   const deckSlots = deck?.slots ?? [];
 
@@ -185,7 +184,7 @@ export const ExportDeckBuilder: React.FC<ExportDeckBuilderProps> = ({ captureRef
   if (!deck) return null;
 
   return (
-    <div className="w-full" ref={captureRef}>
+    <div className="w-full">
       {/* デッキグリッド */}
       <div className="grid grid-cols-3 gap-8">
         {characterSlots.map(({ character, slots, key }) => {

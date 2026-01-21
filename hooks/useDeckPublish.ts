@@ -1,15 +1,13 @@
 'use client';
 
-import { useState, useEffect, useCallback, RefObject } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Deck } from '@/models/Deck';
 import { PublishedDeck } from '@/models/PublishedDeck';
 import { useImageUpload } from './useImageUpload';
-import { useScreenshot } from './useScreenshot';
 import { deckPublishService } from '@/services/deckPublishService';
 import { thumbnailService } from '@/services/thumbnailService';
 import { useUserProfile } from './useUserProfile';
 import { FRIEND_SLOT_ID } from '@/config/deckSlots';
-import { logDeckExported } from '@/services/analyticsService';
 
 export interface UseDeckPublishReturn {
   /** 表示名 */
@@ -38,13 +36,6 @@ export interface UseDeckPublishReturn {
   handleImageUpload: (event: React.ChangeEvent<HTMLInputElement>) => Promise<void>;
   /** 画像を削除 */
   handleRemoveImage: (index: number) => void;
-  /** デッキ画像をダウンロード */
-  handleDownloadImage: (
-    exportViewRef: RefObject<HTMLDivElement>,
-    deckName: string
-  ) => Promise<void>;
-  /** キャプチャ中かどうか */
-  isCapturing: boolean;
   /** デッキを公開 */
   handlePublishDeck: () => Promise<void>;
   /** 公開中かどうか */
@@ -66,7 +57,6 @@ export const useDeckPublish = (
   const { uploadImage, error: uploadError } = useImageUpload({
     enableCropping: false,
   });
-  const { captureElement, isCapturing } = useScreenshot();
 
   const [displayName, setDisplayName] = useState<string>('');
   const [comment, setComment] = useState<string>('');
@@ -130,30 +120,6 @@ export const useDeckPublish = (
   const handleRemoveImage = useCallback((index: number): void => {
     setUploadedImageUrls((prev) => prev.filter((_, i) => i !== index));
   }, []);
-
-  // デッキ画像ダウンロード処理
-  const handleDownloadImage = useCallback(
-    async (
-      exportViewRef: RefObject<HTMLDivElement>,
-      deckName: string
-    ): Promise<void> => {
-      if (exportViewRef.current) {
-        // 一時的にzoomを1.0に戻して元の解像度でキャプチャ
-        const originalZoom = exportViewRef.current.style.zoom;
-        exportViewRef.current.style.zoom = '1';
-
-        await captureElement(exportViewRef.current, `${deckName}.png`);
-
-        if (deck?.id) {
-          logDeckExported(deck.id, 'image');
-        }
-
-        // zoomを元に戻す
-        exportViewRef.current.style.zoom = originalZoom;
-      }
-    },
-    [captureElement, deck?.id]
-  );
 
   // デッキ公開処理
   const handlePublishDeck = useCallback(async (): Promise<void> => {
@@ -239,8 +205,6 @@ export const useDeckPublish = (
     setIsUnlisted,
     handleImageUpload,
     handleRemoveImage,
-    handleDownloadImage,
-    isCapturing,
     handlePublishDeck,
     isPublishing,
     publishError,

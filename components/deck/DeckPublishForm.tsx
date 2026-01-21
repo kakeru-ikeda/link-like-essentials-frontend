@@ -22,12 +22,6 @@ interface DeckPublishFormProps {
   setIsUnlisted: (value: boolean) => void;
   handleImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleRemoveImage: (index: number) => void;
-  handleDownloadImage: (
-    ref: React.RefObject<HTMLDivElement>,
-    deckName: string
-  ) => void;
-  isCapturing: boolean;
-  exportViewRef: React.RefObject<HTMLDivElement>;
   onRequestPublish: () => void;
   isPublishing: boolean;
   publishError: string | null;
@@ -48,9 +42,6 @@ export const DeckPublishForm: React.FC<DeckPublishFormProps> = ({
   setIsUnlisted,
   handleImageUpload,
   handleRemoveImage,
-  handleDownloadImage,
-  isCapturing,
-  exportViewRef,
   onRequestPublish,
   isPublishing,
   publishError,
@@ -173,17 +164,8 @@ export const DeckPublishForm: React.FC<DeckPublishFormProps> = ({
         )}
         <div className="flex gap-3">
           <Button
-            onClick={() =>
-              handleDownloadImage(exportViewRef, deck?.name || 'deck')
-            }
-            disabled={isCapturing || isPublishing}
-            className="flex-1"
-          >
-            {isCapturing ? '保存中...' : '画像として保存'}
-          </Button>
-          <Button
             onClick={onRequestPublish}
-            disabled={isCapturing || isPublishing}
+            disabled={isPublishing}
             className="flex-1 bg-green-600 hover:bg-green-700 disabled:bg-green-400"
           >
             {isPublishing ? '公開中...' : '公開'}
