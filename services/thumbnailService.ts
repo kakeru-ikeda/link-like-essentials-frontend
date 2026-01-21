@@ -26,7 +26,7 @@ function buildThumbnailCardsPayload(deck: Deck): ThumbnailCardPayload[] {
     if (!slot.cardId) return;
 
     if (!slot.card) {
-      throw new Error('カード情報が不足しています');
+      throw new Error(`カード情報が不足しています: slotId=${slot.slotId}, cardId=${slot.cardId}`);
     }
 
     if (cardMap.has(slot.card.id)) return;

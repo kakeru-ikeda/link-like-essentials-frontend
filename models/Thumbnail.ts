@@ -1,8 +1,6 @@
 import { Rarity } from '@/models/enums';
 import { Deck, DeckSlotForCloud } from '@/models/Deck';
 
-export interface ThumbnailDeckSlotPayload extends DeckSlotForCloud {}
-
 export interface ThumbnailDeckPayload
   extends Pick<
     Deck,
@@ -14,7 +12,7 @@ export interface ThumbnailDeckPayload
     | 'centerCharacter'
     | 'participations'
   > {
-  slots: ThumbnailDeckSlotPayload[];
+  slots: DeckSlotForCloud[];
 }
 
 export interface ThumbnailCardDetailPayload {
