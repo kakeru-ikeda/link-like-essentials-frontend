@@ -4,6 +4,7 @@ import React from 'react';
 import { Deck } from '@/models/Deck';
 import { LiveGrandPrix } from '@/models/LiveGrandPrix';
 import { useHashtag } from '@/hooks/useHashtag';
+import { HelpTooltip } from '@/components/common/HelpTooltip';
 
 interface HashtagInputProps {
   deck: Deck | null;
@@ -28,9 +29,15 @@ export const HashtagInput: React.FC<HashtagInputProps> = ({
 
   return (
     <div className="space-y-3">
-      <label className="block text-sm font-medium text-gray-700">
-        タグ
-      </label>
+      <div className="flex items-center gap-2">
+        <label className="block text-sm font-medium text-gray-700">タグ</label>
+        <HelpTooltip
+          content="公開デッキを検索する際に使用する、絞り込み用タグを設定します。"
+          position="top"
+          className="mb-0.5"
+          size={4}
+        />
+      </div>
 
       {/* 自動生成されたハッシュタグ */}
       {autoHashtags.length > 0 && (

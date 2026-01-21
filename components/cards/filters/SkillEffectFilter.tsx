@@ -13,6 +13,7 @@ import {
   FILTER_COLOR_SKILL_EFFECT,
   FILTER_COLOR_SKILL_SEARCH_TARGET,
 } from '@/styles/colors';
+import { HelpTooltip } from '@/components/common/HelpTooltip';
 
 interface SkillEffectFilterProps {
   selectedEffects: SkillEffectType[] | undefined;
@@ -36,9 +37,17 @@ export const SkillEffectFilter: React.FC<SkillEffectFilterProps> = ({
 
   return (
     <div className="p-4">
-      <label className="block text-sm font-medium text-gray-700 mb-3">
-        スキル効果
-      </label>
+      <div className="flex items-center">
+        <label className="block text-sm font-medium text-gray-700 mb-3">
+          スキル効果
+        </label>
+        <HelpTooltip
+          content="スキル効果を選択して、該当するカードのみを表示します。検索対象は下の検索範囲で指定します。"
+          className="ml-2 mb-3"
+          size={4}
+        />
+      </div>
+      
       {/* スキル効果の選択 */}
       <div className="mb-4">
         <MultiSelectFilter

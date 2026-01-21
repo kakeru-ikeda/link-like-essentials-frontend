@@ -10,7 +10,10 @@ interface ExportDashboardProps {
   variant?: 'default' | 'compact';
 }
 
-export const ExportDashboard: React.FC<ExportDashboardProps> = ({ deck: deckProp, variant = 'default' }) => {
+export const ExportDashboard: React.FC<ExportDashboardProps> = ({
+  deck: deckProp,
+  variant = 'default',
+}) => {
   const { deck: deckFromStore } = useDeck();
   const deck = deckProp ?? deckFromStore;
   const isCompact = variant === 'compact';
@@ -40,7 +43,11 @@ export const ExportDashboard: React.FC<ExportDashboardProps> = ({ deck: deckProp
   // 選択中のステージ詳細を取得
   const selectedStageDetail = React.useMemo(() => {
     if (!liveGrandPrix || !deck?.liveGrandPrixDetailId) return null;
-    return liveGrandPrix.details.find((detail) => detail.id === deck.liveGrandPrixDetailId) || null;
+    return (
+      liveGrandPrix.details.find(
+        (detail) => detail.id === deck.liveGrandPrixDetailId
+      ) || null
+    );
   }, [liveGrandPrix, deck?.liveGrandPrixDetailId]);
 
   if (!deck) return null;
@@ -50,35 +57,60 @@ export const ExportDashboard: React.FC<ExportDashboardProps> = ({ deck: deckProp
       {/* デッキ情報 */}
       <div className={`grid grid-cols-2 gap-4 ${gridTextSize}`}>
         <div>
-          <span className={`${headingSize} font-semibold text-slate-700`}>楽曲: </span>
-          <span className={`${headingSize} text-slate-600`}>{deck.songName || '未設定'}</span>
+          <span className={`${headingSize} font-semibold text-slate-700`}>
+            楽曲:
+          </span>
+          <span className={`${headingSize} text-slate-600`}>
+            {deck.songName || '未設定'}
+          </span>
         </div>
         {deck.liveGrandPrixEventName && (
           <div className="col-span-2">
-            <span className={`${headingSize} font-semibold text-slate-700`}>ライブグランプリ: </span>
+            <span className={`${headingSize} font-semibold text-slate-700`}>
+              ライブグランプリ:
+            </span>
             <span className={`${headingSize} text-slate-600`}>
               {deck.liveGrandPrixEventName}
-              {deck.liveGrandPrixStageName ? ` ステージ${deck.liveGrandPrixStageName}` : ''}
+              {deck.liveGrandPrixStageName
+                ? ` ステージ${deck.liveGrandPrixStageName}`
+                : ''}
             </span>
             {selectedStageDetail && (
               <div className="mt-3 space-y-2">
                 {selectedStageDetail.specialEffect && (
                   <div className="bg-purple-50 border border-purple-200 rounded-lg px-3 py-2">
-                    <span className={`${subHeadingSize} font-semibold text-purple-800`}>ステージ効果: </span><br/>
-                    <span className={`${isCompact ? 'text-[11px]' : 'text-lg'} text-purple-700`}>{selectedStageDetail.specialEffect}</span>
+                    <span
+                      className={`${subHeadingSize} font-semibold text-purple-800`}
+                    >
+                      ステージ効果:
+                    </span>
+                    <br />
+                    <span
+                      className={`${isCompact ? 'text-[11px]' : 'text-lg'} text-purple-700`}
+                    >
+                      {selectedStageDetail.specialEffect}
+                    </span>
                   </div>
                 )}
                 {selectedStageDetail.sectionEffects.length > 0 && (
                   <div className="bg-blue-50 border border-blue-200 rounded-lg px-3 py-2">
-                    <div className={`${subHeadingSize} font-semibold text-blue-800 mb-1.5`}>セクション効果:</div>
+                    <div
+                      className={`${subHeadingSize} font-semibold text-blue-800 mb-1.5`}
+                    >
+                      セクション効果:
+                    </div>
                     <div className="flex flex-wrap gap-2">
                       {selectedStageDetail.sectionEffects.map((section) => (
                         <div
                           key={section.id}
                           className={`bg-white border border-blue-300 rounded px-2 py-1 ${badgeTextSize}`}
                         >
-                          <span className="font-medium text-blue-900">{section.sectionName}: </span>
-                          <span className="text-blue-700">{section.effect}</span>
+                          <span className="font-medium text-blue-900">
+                            {section.sectionName}:{' '}
+                          </span>
+                          <span className="text-blue-700">
+                            {section.effect}
+                          </span>
                         </div>
                       ))}
                     </div>
@@ -89,15 +121,23 @@ export const ExportDashboard: React.FC<ExportDashboardProps> = ({ deck: deckProp
           </div>
         )}
         <div className="col-span-2">
-          <span className={`${headingSize} font-semibold text-slate-700`}>エースカード: </span>
+          <span className={`${headingSize} font-semibold text-slate-700`}>
+            エースカード:
+          </span>
           <span className={`${headingSize} text-slate-600`}>
-            {aceInfo ? `[${aceInfo.cardName}] ${aceInfo.characterName}` : '未設定'}
+            {aceInfo
+              ? `[${aceInfo.cardName}] ${aceInfo.characterName}`
+              : '未設定'}
           </span>
         </div>
         {deck.score && (
           <div>
-            <span className={`${headingSize} font-semibold text-slate-700`}>参考スコア: </span>
-            <span className={`${headingSize} text-slate-600`}>{deck.score} 兆</span>
+            <span className={`${headingSize} font-semibold text-slate-700`}>
+              参考スコア:
+            </span>
+            <span className={`${headingSize} text-slate-600`}>
+              {deck.score} 兆 <span className="text-[0.85em]">LOVE</span>
+            </span>
           </div>
         )}
       </div>
@@ -105,7 +145,9 @@ export const ExportDashboard: React.FC<ExportDashboardProps> = ({ deck: deckProp
       {/* ライブアナライザ */}
       {deck.liveAnalyzerImageUrl && (
         <div>
-          <h3 className={`${headingSize} font-semibold text-slate-700 mb-2`}>ライブアナライザ</h3>
+          <h3 className={`${headingSize} font-semibold text-slate-700 mb-2`}>
+            ライブアナライザ
+          </h3>
           <img
             src={deck.liveAnalyzerImageUrl}
             alt="ライブアナライザ"
@@ -118,9 +160,12 @@ export const ExportDashboard: React.FC<ExportDashboardProps> = ({ deck: deckProp
       {/* チャート */}
       {deck.memo && (
         <div>
-          <h3 className={`${headingSize} font-semibold text-slate-700 mb-2`}>チャート</h3>
+          <h3 className={`${headingSize} font-semibold text-slate-700 mb-2`}>
+            チャート
+          </h3>
           <div className="border border-gray-200 rounded-lg p-3 bg-gray-50">
-            <pre className={`${chartTextSize} text-slate-600 whitespace-pre-wrap font-mono`}
+            <pre
+              className={`${chartTextSize} text-slate-600 whitespace-pre-wrap font-mono`}
             >
               {deck.memo}
             </pre>

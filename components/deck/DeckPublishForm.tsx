@@ -6,6 +6,7 @@ import { HashtagInput } from '@/components/deck/HashtagInput';
 import { ImagePreviewGrid } from '@/components/deck/ImagePreviewGrid';
 import { Deck } from '@/models/Deck';
 import { LiveGrandPrix } from '@/models/LiveGrandPrix';
+import { HelpTooltip } from '@/components/common/HelpTooltip';
 
 interface DeckPublishFormProps {
   deck: Deck | null;
@@ -72,22 +73,26 @@ export const DeckPublishForm: React.FC<DeckPublishFormProps> = ({
         />
 
         {/* 限定公開切り替え */}
-        <div className="flex items-start gap-3">
+        <div className="flex items-center gap-2">
           <input
             id="is-unlisted"
             type="checkbox"
             checked={isUnlisted}
             onChange={(e) => setIsUnlisted(e.target.checked)}
-            className="mt-1 h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+            className="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
           />
-          <div>
-            <label htmlFor="is-unlisted" className="block text-sm font-medium text-gray-700">
-              限定公開にする
-            </label>
-            <p className="text-sm text-gray-500">
-              リンクを知っている人だけが閲覧できます。公開デッキ一覧には表示されません。
-            </p>
-          </div>
+          <label
+            htmlFor="is-unlisted"
+            className="block text-sm font-medium text-gray-700"
+          >
+            限定公開にする
+          </label>
+          <HelpTooltip
+            content="リンクを知っている人だけが閲覧できます。公開デッキ一覧には表示されません。"
+            position="top"
+            className="mb-0.5"
+            size={4}
+          />
         </div>
 
         {/* コメント入力 */}
@@ -110,9 +115,16 @@ export const DeckPublishForm: React.FC<DeckPublishFormProps> = ({
 
         {/* 画像アップロード */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            画像を追加（任意・最大3枚）
-          </label>
+          <div className="flex items-center">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              画像を追加（任意・最大3枚）
+            </label>
+            <HelpTooltip
+              content="実際のプレイリザルトのスクリーンショットなどをアップロードできます。アップロードした画像はデッキ公開ページに表示されます。"
+              className="mb-2"
+              size={4}
+            />
+          </div>
           <div className="space-y-3">
             {uploadedImageUrls.length < 3 && (
               <input

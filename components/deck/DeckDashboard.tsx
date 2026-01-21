@@ -18,7 +18,10 @@ import { DeckService } from '@/services/deckService';
 import { DeckSlotMapping } from '@/config/deckSlots';
 import { LiveGrandPrixSelect } from './LiveGrandPrixSelect';
 import { LiveGrandPrixStageSelect } from './LiveGrandPrixStageSelect';
-import { useLiveGrandPrixById, useActiveLiveGrandPrix } from '@/hooks/useLiveGrandPrix';
+import {
+  useLiveGrandPrixById,
+  useActiveLiveGrandPrix,
+} from '@/hooks/useLiveGrandPrix';
 import { LiveGrandPrix, LiveGrandPrixDetail } from '@/models/LiveGrandPrix';
 import { ExpansionPanel } from '@/components/common/ExpansionPanel';
 import { EffectBadge } from '@/components/common/EffectBadge';
@@ -27,28 +30,40 @@ import { DeckPublishSuccessDialog } from '@/components/deck/DeckPublishSuccessDi
 import { useModal } from '@/hooks/useModal';
 import { PublishedDeck } from '@/models/PublishedDeck';
 import { useResponsiveDevice } from '@/hooks/useResponsiveDevice';
+import { HelpTooltip } from '@/components/common/HelpTooltip';
 
 export const DeckDashboard: React.FC = () => {
-  const { 
-    deck, 
-    updateDeckType, 
-    updateDeckName, 
-    updateDeckMemo, 
+  const {
+    deck,
+    updateDeckType,
+    updateDeckName,
+    updateDeckMemo,
     updateScore,
     updateSong,
     updateLiveGrandPrix,
     updateLiveGrandPrixStage,
     clearAllCards,
   } = useDeck();
-  
-  const { isPublishModalOpen, openPublishModal, closePublishModal } = useModal();
-  const [selectedDeckType, setSelectedDeckType] = useState<DeckType | undefined>(deck?.deckType);
-  const [publishSuccessLink, setPublishSuccessLink] = useState<string | null>(null);
-  const [publishSuccessUnlisted, setPublishSuccessUnlisted] = useState<boolean>(false);
-  const [publishSuccessName, setPublishSuccessName] = useState<string | null>(null);
+
+  const { isPublishModalOpen, openPublishModal, closePublishModal } =
+    useModal();
+  const [selectedDeckType, setSelectedDeckType] = useState<
+    DeckType | undefined
+  >(deck?.deckType);
+  const [publishSuccessLink, setPublishSuccessLink] = useState<string | null>(
+    null
+  );
+  const [publishSuccessUnlisted, setPublishSuccessUnlisted] =
+    useState<boolean>(false);
+  const [publishSuccessName, setPublishSuccessName] = useState<string | null>(
+    null
+  );
   const [isSuccessDialogOpen, setSuccessDialogOpen] = useState<boolean>(false);
-  const [isMainSlotWarningOpen, setMainSlotWarningOpen] = useState<boolean>(false);
-  const [unfilledMainSlots, setUnfilledMainSlots] = useState<DeckSlotMapping[]>([]);
+  const [isMainSlotWarningOpen, setMainSlotWarningOpen] =
+    useState<boolean>(false);
+  const [unfilledMainSlots, setUnfilledMainSlots] = useState<DeckSlotMapping[]>(
+    []
+  );
   const { isSp } = useResponsiveDevice();
 
   // ライブグランプリの詳細を取得（選択されている場合のみ）
@@ -63,14 +78,21 @@ export const DeckDashboard: React.FC = () => {
   // 選択中のステージ詳細を取得
   const selectedStageDetail = React.useMemo(() => {
     if (!liveGrandPrix || !deck?.liveGrandPrixDetailId) return null;
-    return liveGrandPrix.details.find((detail) => detail.id === deck.liveGrandPrixDetailId) || null;
+    return (
+      liveGrandPrix.details.find(
+        (detail) => detail.id === deck.liveGrandPrixDetailId
+      ) || null
+    );
   }, [liveGrandPrix, deck?.liveGrandPrixDetailId]);
 
   // センターカードを取得（ビジネスロジックはserviceに委譲）
   const centerCard = React.useMemo(() => getCenterCard(deck), [deck]);
 
   // センター以外のLRカードを取得（ビジネスロジックはserviceに委譲）
-  const otherLRCards = React.useMemo(() => getOtherLRCards(deck, centerCard), [deck, centerCard]);
+  const otherLRCards = React.useMemo(
+    () => getOtherLRCards(deck, centerCard),
+    [deck, centerCard]
+  );
 
   // deckが変更されたら同期
   useEffect(() => {
@@ -95,7 +117,9 @@ export const DeckDashboard: React.FC = () => {
     }
   };
 
-  const handleLiveGrandPrixStageChange = (detail: LiveGrandPrixDetail | null): void => {
+  const handleLiveGrandPrixStageChange = (
+    detail: LiveGrandPrixDetail | null
+  ): void => {
     updateLiveGrandPrixStage(detail);
   };
 
@@ -154,16 +178,19 @@ export const DeckDashboard: React.FC = () => {
       {/* タイトル＆ボタン */}
       <div className="flex items-center gap-4 min-w-0">
         <div className="flex-1 min-w-0">
-          <DeckTitle 
+          <DeckTitle
             title={deck?.name || '新しいデッキ'}
             onTitleChange={updateDeckName}
           />
         </div>
-        <Button onClick={handleOpenPublishModal} className="bg-green-600 hover:bg-green-700 disabled:bg-green-400">
+        <Button
+          onClick={handleOpenPublishModal}
+          className="bg-green-600 hover:bg-green-700 disabled:bg-green-400"
+        >
           公開
         </Button>
       </div>
-      
+
       {/* デッキタイプ＆楽曲選択 */}
       <div className="flex gap-4 min-w-0">
         <DeckTypeSelect
@@ -182,15 +209,23 @@ export const DeckDashboard: React.FC = () => {
       </div>
 
       {/* ライブグランプリ選択 */}
-      <ExpansionPanel 
+      <ExpansionPanel
         title={
           <div className="flex items-center gap-2">
             <span>ライブグランプリ設定</span>
+            <HelpTooltip
+              content="ライブグランプリを選択すると、対応する楽曲が自動的に指定されます。また、楽曲を選択すると、ステージ効果およびセクション効果が自動的に設定されます。"
+              position="top"
+              className="mb-0.5"
+              size={4}
+            />
             {activeLiveGrandPrix && <ActiveEventBadge />}
           </div>
         }
       >
-        <div className={`flex min-w-0 ${isSp ? 'flex-col gap-3' : 'flex-row gap-4'}`}>
+        <div
+          className={`flex min-w-0 ${isSp ? 'flex-col gap-3' : 'flex-row gap-4'}`}
+        >
           <LiveGrandPrixSelect
             deckType={deck?.deckType}
             value={deck?.liveGrandPrixId}
@@ -238,7 +273,9 @@ export const DeckDashboard: React.FC = () => {
             <div className="flex items-center justify-center py-8 bg-gray-50 rounded-lg text-gray-400">
               <div className="text-center">
                 <div className="text-sm">楽曲未設定</div>
-                <div className="text-xs mt-1">ライブアナライザが表示されます</div>
+                <div className="text-xs mt-1">
+                  ライブアナライザが表示されます
+                </div>
               </div>
             </div>
           )}
@@ -253,8 +290,14 @@ export const DeckDashboard: React.FC = () => {
 
       {/* 参考スコア */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-700 mb-1">
           参考スコア
+          <HelpTooltip
+            content="このデッキでプレイしたときのスコアを、参考スコアとして入力してください。デッキ公開時に表示されます。"
+            position="top"
+            className="mb-0.5"
+            size={4}
+          />
         </label>
         <div className="relative">
           <input
@@ -264,10 +307,10 @@ export const DeckDashboard: React.FC = () => {
             value={deck?.score ?? ''}
             onChange={handleScoreChange}
             placeholder="0"
-            className="w-full px-3 py-2 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+            className="w-full px-3 py-2 pr-16 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
           />
           <div className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-700 pointer-events-none font-medium">
-            兆
+            兆 <span className="text-[0.85em]">LOVE</span>
           </div>
         </div>
       </div>
