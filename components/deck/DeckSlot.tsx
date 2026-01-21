@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { DeckSlot as DeckSlotType } from '@/models/Deck';
 import { getCharacterColor } from '@/utils/colorUtils';
 import { ApBadge } from '@/components/common/ApBadge';
@@ -48,9 +48,11 @@ export const DeckSlot: React.FC<DeckSlotProps> = ({
 }) => {
   const [imageError, setImageError] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [isSpHoverActive, setIsSpHoverActive] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
   const { isSp } = useResponsiveDevice();
 
-  const shouldShowHoverActions = isHovered || isSp;
+  const shouldShowHoverActions = isHovered || (isSp && isSpHoverActive);
 
   // キャラクターカラーを取得（画像枠線用）
   const characterColor = getCharacterColor(slot.characterName);
@@ -76,6 +78,13 @@ export const DeckSlot: React.FC<DeckSlotProps> = ({
   };
 
   const handleSlotClick = (): void => {
+    if (isSp && slot.card && !isSpHoverActive) {
+      setIsSpHoverActive(true);
+      return;
+    }
+    if (isSp) {
+      setIsSpHoverActive(false);
+    }
     onSlotClick(slot.slotId);
   };
 
@@ -123,6 +132,26 @@ export const DeckSlot: React.FC<DeckSlotProps> = ({
       onDrop(slot.slotId);
     }
   };
+
+  useEffect(() => {
+    if (!isSp || !isSpHoverActive) return;
+
+    const handleOutsideClick = (event: MouseEvent | TouchEvent): void => {
+      if (!containerRef.current) return;
+      const target = event.target as Node | null;
+      if (target && !containerRef.current.contains(target)) {
+        setIsSpHoverActive(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleOutsideClick);
+    document.addEventListener('touchstart', handleOutsideClick);
+
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+      document.removeEventListener('touchstart', handleOutsideClick);
+    };
+  }, [isSp, isSpHoverActive]);
 
   // ドラッグ中の透明度とドロップ可能時のハイライト
   const dragClass = isDragging ? 'opacity-50' : '';
@@ -187,6 +216,7 @@ export const DeckSlot: React.FC<DeckSlotProps> = ({
 
   return (
     <div
+      ref={containerRef}
       draggable={!!slot.card}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
