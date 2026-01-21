@@ -124,9 +124,16 @@ export const DeckPublishForm: React.FC<DeckPublishFormProps> = ({
 
         {/* 画像アップロード */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            画像を追加（任意・最大3枚）
-          </label>
+          <div className="flex items-center">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              画像を追加（任意・最大3枚）
+            </label>
+            <HelpTooltip
+              content="実際のプレイリザルトのスクリーンショットなどをアップロードできます。アップロードした画像はデッキ公開ページに表示されます。"
+              className="mb-2"
+              size={4}
+            />
+          </div>
           <div className="space-y-3">
             {uploadedImageUrls.length < 3 && (
               <input
