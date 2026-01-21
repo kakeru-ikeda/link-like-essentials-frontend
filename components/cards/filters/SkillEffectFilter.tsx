@@ -37,7 +37,7 @@ export const SkillEffectFilter: React.FC<SkillEffectFilterProps> = ({
 
   return (
     <div className="p-4">
-      <div className='flex items-center'>
+      <div className="flex items-center">
         <label className="block text-sm font-medium text-gray-700 mb-3">
           スキル効果
         </label>
