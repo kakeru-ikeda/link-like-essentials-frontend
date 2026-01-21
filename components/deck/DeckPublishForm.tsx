@@ -88,7 +88,7 @@ export const DeckPublishForm: React.FC<DeckPublishFormProps> = ({
             type="checkbox"
             checked={isUnlisted}
             onChange={(e) => setIsUnlisted(e.target.checked)}
-            className="h-5 w-5 roundedborder-gray-300 text-blue-600 focus:ring-blue-500"
+            className="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
           />
           <label
             htmlFor="is-unlisted"
