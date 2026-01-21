@@ -15,7 +15,7 @@ export const TokenCardFilter: React.FC<TokenCardFilterProps> = ({
 }) => {
   return (
     <div className="p-4">
-      <div className='flex items-center'>
+      <div className="flex items-center">
         <label className="block text-sm font-medium text-gray-700 mb-3">
           トークンカード
         </label>
