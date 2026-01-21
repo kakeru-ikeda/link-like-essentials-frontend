@@ -15,9 +15,10 @@ interface NavItem {
   label: string;
   href: string;
   icon?: React.ReactNode;
+  isExternal?: boolean;
 }
 
-const NAV_ITEMS: NavItem[] = [
+const PRIMARY_NAV_ITEMS: NavItem[] = [
   {
     label: 'デッキビルダー',
     href: '/',
@@ -64,6 +65,37 @@ const NAV_ITEMS: NavItem[] = [
       <Image
         src="/images/icons/news.png"
         alt="お知らせ"
+        width={24}
+        height={24}
+        className="w-6 h-6"
+      />
+    ),
+  },
+];
+
+const EXTERNAL_NAV_ITEMS: NavItem[] = [
+  {
+    label: '運営Twitter (X)',
+    href: 'https://x.com/LinkLikeDeck',
+    isExternal: true,
+    icon: (
+      <Image
+        src="/images/icons/twitter.png"
+        alt="運営Twitter (X)"
+        width={24}
+        height={24}
+        className="w-6 h-6"
+      />
+    ),
+  },
+  {
+    label: 'お問い合わせ',
+    href: 'https://forms.gle/Y3Q6vpwC4bKtBsXh8',
+    isExternal: true,
+    icon: (
+      <Image
+        src="/images/icons/inquiry.png"
+        alt="お問い合わせ"
         width={24}
         height={24}
         className="w-6 h-6"
@@ -151,13 +183,9 @@ export function Sidebar({ children }: SidebarProps): JSX.Element {
 
             {/* ナビゲーション */}
             <nav className="flex-1 px-2 py-5 space-y-1">
-              {NAV_ITEMS.map((item) => {
-                const isActive = pathname === item.href;
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={`
+              {PRIMARY_NAV_ITEMS.map((item) => {
+                const isActive = !item.isExternal && pathname === item.href;
+                const classes = `
                       flex items-center py-3 rounded-lg transition-colors
                       ${
                         isActive
@@ -165,9 +193,9 @@ export function Sidebar({ children }: SidebarProps): JSX.Element {
                           : 'text-gray-700 hover:bg-gray-100'
                       }
                       ${isSidebarExpanded ? 'px-3' : 'px-2 justify-center'}
-                    `}
-                    title={!isSidebarExpanded ? item.label : undefined}
-                  >
+                    `;
+                const content = (
+                  <>
                     <span
                       className={`flex items-center justify-center shrink-0 ${
                         isSidebarExpanded ? 'mr-3' : ''
@@ -176,7 +204,71 @@ export function Sidebar({ children }: SidebarProps): JSX.Element {
                       {item.icon}
                     </span>
                     {isSidebarExpanded && <span className="whitespace-nowrap">{item.label}</span>}
+                  </>
+                );
+
+                if (item.isExternal) {
+                  return (
+                    <a
+                      key={item.href}
+                      href={item.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={classes}
+                      title={!isSidebarExpanded ? item.label : undefined}
+                    >
+                      {content}
+                    </a>
+                  );
+                }
+
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={classes}
+                    title={!isSidebarExpanded ? item.label : undefined}
+                  >
+                    {content}
                   </Link>
+                );
+              })}
+              <div className="my-3 border-t border-gray-200" />
+              {EXTERNAL_NAV_ITEMS.map((item) => {
+                const isActive = !item.isExternal && pathname === item.href;
+                const classes = `
+                      flex items-center py-3 rounded-lg transition-colors
+                      ${
+                        isActive
+                          ? 'bg-blue-50 text-blue-700 font-semibold'
+                          : 'text-gray-700 hover:bg-gray-100'
+                      }
+                      ${isSidebarExpanded ? 'px-3' : 'px-2 justify-center'}
+                    `;
+                const content = (
+                  <>
+                    <span
+                      className={`flex items-center justify-center shrink-0 ${
+                        isSidebarExpanded ? 'mr-3' : ''
+                      }`}
+                    >
+                      {item.icon}
+                    </span>
+                    {isSidebarExpanded && <span className="whitespace-nowrap">{item.label}</span>}
+                  </>
+                );
+
+                return (
+                  <a
+                    key={item.href}
+                    href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={classes}
+                    title={!isSidebarExpanded ? item.label : undefined}
+                  >
+                    {content}
+                  </a>
                 );
               })}
             </nav>
@@ -321,27 +413,82 @@ export function Sidebar({ children }: SidebarProps): JSX.Element {
 
                 {/* ナビゲーション */}
                 <nav className="flex-1 px-4 py-5 space-y-1 overflow-y-auto">
-                  {NAV_ITEMS.map((item) => {
-                    const isActive = pathname === item.href;
-                    return (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        onClick={closeMobileMenu}
-                        className={`
+                  {PRIMARY_NAV_ITEMS.map((item) => {
+                    const isActive = !item.isExternal && pathname === item.href;
+                    const classes = `
                           flex items-center px-4 py-3 rounded-lg transition-colors
                           ${
                             isActive
                               ? 'bg-blue-50 text-blue-700 font-semibold'
                               : 'text-gray-700 hover:bg-gray-100'
                           }
-                        `}
-                      >
+                        `;
+                    const content = (
+                      <>
                         <span className="mr-3 flex items-center justify-center">
                           {item.icon}
                         </span>
                         <span>{item.label}</span>
+                      </>
+                    );
+
+                    if (item.isExternal) {
+                      return (
+                        <a
+                          key={item.href}
+                          href={item.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={closeMobileMenu}
+                          className={classes}
+                        >
+                          {content}
+                        </a>
+                      );
+                    }
+
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={closeMobileMenu}
+                        className={classes}
+                      >
+                        {content}
                       </Link>
+                    );
+                  })}
+                  <div className="my-3 border-t border-gray-200" />
+                  {EXTERNAL_NAV_ITEMS.map((item) => {
+                    const isActive = !item.isExternal && pathname === item.href;
+                    const classes = `
+                          flex items-center px-4 py-3 rounded-lg transition-colors
+                          ${
+                            isActive
+                              ? 'bg-blue-50 text-blue-700 font-semibold'
+                              : 'text-gray-700 hover:bg-gray-100'
+                          }
+                        `;
+                    const content = (
+                      <>
+                        <span className="mr-3 flex items-center justify-center">
+                          {item.icon}
+                        </span>
+                        <span>{item.label}</span>
+                      </>
+                    );
+
+                    return (
+                      <a
+                        key={item.href}
+                        href={item.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={closeMobileMenu}
+                        className={classes}
+                      >
+                        {content}
+                      </a>
                     );
                   })}
                 </nav>
