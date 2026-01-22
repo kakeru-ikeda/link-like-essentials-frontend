@@ -232,7 +232,7 @@ export const PublishedDeckCard: React.FC<PublishedDeckCardProps> = ({
               公開日: {publishedAt ? formatDate(publishedAt) : '不明'}
             </p>
           </div>
-          {baseDeck.score && (
+          {typeof baseDeck.score === 'number' && baseDeck.score > 0 && (
             <div className="flex flex-col items-end gap-1 text-xs text-slate-600">
               <Tooltip content="参考スコア" position="bottom">
                 <div className="flex items-center gap-2 rounded-full bg-slate-100 px-2 py-1 text-slate-700">
