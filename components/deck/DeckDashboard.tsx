@@ -158,8 +158,10 @@ export const DeckDashboard: React.FC = () => {
 
   const handleOpenPublishModal = (): void => {
     const emptyMainSlots = DeckService.getUnfilledMainSlots(deck);
+    const isDefaultDeckName = deck?.name?.startsWith('デッキ');
+    const isSongNotSelected = !deck?.songId;
 
-    if (emptyMainSlots.length > 0) {
+    if (emptyMainSlots.length > 0 || isDefaultDeckName || isSongNotSelected) {
       setUnfilledMainSlots(emptyMainSlots);
       setMainSlotWarningOpen(true);
       return;
@@ -348,20 +350,43 @@ export const DeckDashboard: React.FC = () => {
       <Modal
         isOpen={isMainSlotWarningOpen}
         onClose={handleCloseMainSlotWarning}
-        title="メイン枠が未編成です"
+        title="未設定の項目があります。"
       >
         <div className="space-y-4">
-          <p className="text-sm text-gray-700">
-            公開する前にメイン枠すべてにカードを編成してください。
-            以下の枠が未設定です。
-          </p>
-          <ul className="list-disc list-inside space-y-1">
-            {unfilledMainSlots.map((slot) => (
-              <li key={slot.slotId} className="text-sm text-gray-900">
-                {slot.characterName}
-              </li>
-            ))}
-          </ul>
+          {unfilledMainSlots.length > 0 && (
+            <>
+              <p className="text-sm text-gray-700">
+                公開する前にメイン枠すべてにカードを編成してください。
+                以下の枠が未設定です。
+              </p>
+              <ul className="list-disc list-inside space-y-1">
+                {unfilledMainSlots.map((slot) => (
+                  <li key={slot.slotId} className="text-sm text-gray-900">
+                    {slot.characterName}
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+
+          {deck?.name?.startsWith('デッキ') && (
+            <div className="flex items-center gap-2">
+              <p className="text-sm text-gray-700">
+                公開する前に、初期デッキ名を変更してください。
+              </p>
+              <HelpTooltip
+                content="初期デッキ名とは「デッキ1」「デッキ2」のように「デッキ」から始まる名前です。わかりやすい名前に変更してから公開してください。"
+                position="right"
+                size={4}
+              />
+            </div>
+          )}
+
+          {!deck?.songId && (
+            <p className="text-sm text-gray-700">
+              公開する前に、楽曲を選択してください。
+            </p>
+          )}
           <div className="flex justify-end">
             <Button onClick={handleCloseMainSlotWarning}>編成に戻る</Button>
           </div>
