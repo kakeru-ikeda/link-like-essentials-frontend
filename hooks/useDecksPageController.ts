@@ -2,9 +2,16 @@ import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { GetDecksParams } from '@/models/DeckQueryParams';
 import { usePublishedDecks } from '@/hooks/usePublishedDecks';
-import { buildQueryString, parseQueryParams, QuerySchema } from '@/utils/queryParams';
+import {
+  buildQueryString,
+  parseQueryParams,
+  QuerySchema,
+} from '@/utils/queryParams';
 
-type DeckQuerySyncParams = Pick<GetDecksParams, 'page' | 'orderBy' | 'order' | 'tag'>;
+type DeckQuerySyncParams = Pick<
+  GetDecksParams,
+  'page' | 'orderBy' | 'order' | 'tag'
+>;
 
 const stripLeadingHash = (value?: string | null): string | undefined => {
   if (!value) return undefined;
@@ -32,7 +39,12 @@ const decksQuerySchema: QuerySchema<DeckQuerySyncParams> = {
   orderBy: {
     defaultValue: 'publishedAt',
     parse: (value) => {
-      if (value === 'viewCount' || value === 'likeCount' || value === 'publishedAt') return value;
+      if (
+        value === 'viewCount' ||
+        value === 'likeCount' ||
+        value === 'publishedAt'
+      )
+        return value;
       return undefined;
     },
     serialize: (value) => value ?? null,
@@ -66,9 +78,12 @@ export const useDecksPageController = () => {
     return parsed;
   }, [searchParams]);
 
-  const { decks, pageInfo, loading, error, goToPage, params, setParams } = usePublishedDecks(initialParams);
+  const { decks, pageInfo, loading, error, goToPage, params, setParams } =
+    usePublishedDecks(initialParams);
 
-  const [tagInput, setTagInput] = useState(withLeadingHash(initialParams.tag) ?? '');
+  const [tagInput, setTagInput] = useState(
+    withLeadingHash(initialParams.tag) ?? ''
+  );
 
   useEffect(() => {
     setTagInput(withLeadingHash(params.tag) ?? '');
@@ -148,7 +163,14 @@ export const useDecksPageController = () => {
     const currentQuery = searchParams.toString();
     if (nextQuery === currentQuery) return;
     router.replace(nextQuery ? `?${nextQuery}` : '?', { scroll: false });
-  }, [params.page, params.orderBy, params.order, params.tag, router, searchParams]);
+  }, [
+    params.page,
+    params.orderBy,
+    params.order,
+    params.tag,
+    router,
+    searchParams,
+  ]);
 
   return {
     decks,
