@@ -135,7 +135,7 @@ export const useDecksPageController = () => {
         ...prev,
         ...nextParams,
         page: nextParams.page ?? prev.page ?? 1,
-        orderBy: nextParams.orderBy ?? prev.orderBy ?? 'viewCount',
+        orderBy: nextParams.orderBy ?? prev.orderBy ?? 'publishedAt',
         order: nextParams.order ?? prev.order ?? 'desc',
         tag: nextParams.tag ?? undefined,
       };
