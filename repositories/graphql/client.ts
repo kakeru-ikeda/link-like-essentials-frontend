@@ -27,12 +27,6 @@ const errorLink = onError(({ graphQLErrors, networkError, operation }) => {
   // GraphQLエラー（バックエンドからの応答エラー）
   if (graphQLErrors && graphQLErrors.length > 0) {
     graphQLErrors.forEach(({ message, locations, path, extensions }) => {
-      console.error(
-        `[GraphQL Error]: Operation: ${operationName}, Message: ${message}, Location: ${locations}, Path: ${path}`
-      );
-
-      console.log('[Sentry] Sending GraphQL error to Sentry...');
-
       // Sentryに送信
       Sentry.withScope((scope) => {
         scope.setTags({
@@ -51,19 +45,12 @@ const errorLink = onError(({ graphQLErrors, networkError, operation }) => {
         const error = new Error(`GraphQL Error: ${message}`);
         error.name = 'GraphQLError';
         Sentry.captureException(error);
-        console.log('[Sentry] GraphQL error sent');
       });
     });
   }
 
   // ネットワークエラー（バックエンドへの接続失敗）
   if (networkError) {
-    console.error(
-      `[Network Error]: Operation: ${operationName}, Error: ${networkError.message}`
-    );
-
-    console.log('[Sentry] Sending network error to Sentry...');
-
     // Sentryに送信
     Sentry.withScope((scope) => {
       scope.setTags({
@@ -76,7 +63,6 @@ const errorLink = onError(({ graphQLErrors, networkError, operation }) => {
         variables: operation.variables,
       });
       Sentry.captureException(networkError);
-      console.log('[Sentry] Network error sent');
     });
   }
 });
