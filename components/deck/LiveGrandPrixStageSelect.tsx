@@ -37,21 +37,29 @@ export const LiveGrandPrixStageSelect: React.FC<LiveGrandPrixStageSelectProps> =
   }, [details, value, onChange]);
 
   const handleChange = (detailId: string): void => {
+    if (!detailId) {
+      onChange(null);
+      return;
+    }
     const selectedDetail = details.find((detail) => detail.id === detailId);
     if (selectedDetail) {
       onChange(selectedDetail);
     }
   };
 
-  const stageOptions: DropdownOption[] = details.map((detail) => {
-    const songName = detail.song?.songName || '楽曲未設定';
-    
-    return {
-      value: detail.id,
-      label: `ステージ${detail.stageName}`,
-      description: songName,
-    };
-  });
+  const hasSelection = Boolean(value);
+  const stageOptions: DropdownOption[] = [
+    ...(hasSelection ? [{ value: '', label: '選択を解除' }] : []),
+    ...details.map((detail) => {
+      const songName = detail.song?.songName || '楽曲未設定';
+      
+      return {
+        value: detail.id,
+        label: `ステージ${detail.stageName}`,
+        description: songName,
+      };
+    }),
+  ];
 
   return (
     <Dropdown

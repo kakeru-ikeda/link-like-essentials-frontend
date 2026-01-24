@@ -34,6 +34,10 @@ export const LiveGrandPrixSelect: React.FC<LiveGrandPrixSelectProps> = ({
   );
 
   const handleChange = (eventId: string): void => {
+    if (!eventId) {
+      onChange({});
+      return;
+    }
     const selectedEvent = liveGrandPrix.find((event) => event.id === eventId);
     if (selectedEvent) {
       onChange({
@@ -48,16 +52,20 @@ export const LiveGrandPrixSelect: React.FC<LiveGrandPrixSelectProps> = ({
     }
   };
 
-  const eventOptions: DropdownOption[] = liveGrandPrix.map((event) => {
-    // 日付フォーマットはserviceに委譲
-    const dateRange = LiveGrandPrixService.formatEventDateRange(event.startDate, event.endDate);
+  const hasSelection = Boolean(value);
+  const eventOptions: DropdownOption[] = [
+    ...(hasSelection ? [{ value: '', label: '選択を解除' }] : []),
+    ...liveGrandPrix.map((event) => {
+      // 日付フォーマットはserviceに委譲
+      const dateRange = LiveGrandPrixService.formatEventDateRange(event.startDate, event.endDate);
 
-    return {
-      value: event.id,
-      label: event.eventName,
-      description: `${event.yearTerm} (${dateRange})`,
-    };
-  });
+      return {
+        value: event.id,
+        label: event.eventName,
+        description: `${event.yearTerm} (${dateRange})`,
+      };
+    }),
+  ];
 
   if (loading) {
     return (
