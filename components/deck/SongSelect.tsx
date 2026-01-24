@@ -44,6 +44,10 @@ export const SongSelect: React.FC<SongSelectProps> = ({
   }, [deckType, songs, value, onChange]);
 
   const handleChange = (songId: string): void => {
+    if (!songId) {
+      onChange({});
+      return;
+    }
     const selectedSong = songs.find((song) => song.id === songId);
     if (selectedSong) {
       onChange({
@@ -56,12 +60,16 @@ export const SongSelect: React.FC<SongSelectProps> = ({
     }
   };
 
-  const songOptions: DropdownOption[] = songs.map((song) => ({
-    value: song.id,
-    label: song.songName,
-    image: song.jacketImageUrl,
-    description: `${song.singers}（${song.centerCharacter}）`,
-  }));
+  const hasSelection = Boolean(value);
+  const songOptions: DropdownOption[] = [
+    ...(hasSelection ? [{ value: '', label: '選択を解除' }] : []),
+    ...songs.map((song) => ({
+      value: song.id,
+      label: song.songName,
+      image: song.jacketImageUrl,
+      description: `${song.singers}（${song.centerCharacter}）`,
+    })),
+  ];
 
   if (loading) {
     return (
