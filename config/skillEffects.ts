@@ -76,7 +76,7 @@ export const SKILL_EFFECT_KEYWORDS: Record<SkillEffectType, string[]> = {
   ],
   [SkillEffectType.IMITATION]: ['カードがステージにセットされ'],
   [SkillEffectType.AP_GAIN]: ['APを\\d+回復'],
-  [SkillEffectType.HEAT_UP]: ['AP回復速度を'],
+  [SkillEffectType.HEAT_UP]: ['AP回復速度を+\\d+%増加', 'AP回復速度を+'],
   [SkillEffectType.BELIEF]: ['メンタルダウンしなくなり'],
   [SkillEffectType.IGNITION]: ['イグニッションモード'],
 };
