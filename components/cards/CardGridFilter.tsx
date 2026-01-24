@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { CardFilter as CardFilterType } from '@/models/Filter';
 import { FilterButton } from '@/components/common/FilterButton';
+import { useResponsiveDevice } from '@/hooks/useResponsiveDevice';
 import { Button } from '@/components/common/Button';
 import { ActiveFilters } from '@/components/common/ActiveFilters';
 import { CardFilter } from '@/components/common/CardFilter';
@@ -39,13 +40,16 @@ export const CardGridFilter: React.FC<CardGridFilterProps> = ({
   onFilterClear,
 }) => {
   const [isFilterVisible, setIsFilterVisible] = useState(false);
+  const { isSp } = useResponsiveDevice();
 
   const toggleCharacter = (characterName: string) => {
     updateFilter(toggleFilterList(filter, 'characterNames', characterName));
   };
 
   return (
-    <div className="sticky top-4 z-10 bg-white rounded-lg shadow-md mb-6">
+    <div
+      className={`${isSp ? '' : 'sticky top-4'} z-10 bg-white rounded-lg shadow-md mb-6`}
+    >
       <div className="flex flex-wrap items-center gap-2 pt-4 px-4">
         {/* キーワード検索入力 */}
         <div className="flex w-full min-w-[200px] gap-2">
