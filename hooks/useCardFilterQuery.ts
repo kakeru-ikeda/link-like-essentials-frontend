@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useFilter, UseFilterReturn } from '@/hooks/useFilter';
 import type { CardFilter } from '@/models/Filter';
@@ -220,7 +220,7 @@ export const useCardFilterQuery = (): UseFilterReturn => {
       cardFilterQuerySchema
     );
     const currentQuery = searchParams.toString();
-    
+
     // 同じならスキップ
     if (nextQuery === currentQuery) return;
 
