@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useCards } from '@/hooks/useCards';
-import { useFilter } from '@/hooks/useFilter';
+import { useCardFilterQuery } from '@/hooks/useCardFilterQuery';
 import { CardGridView } from '@/components/cards/CardGridView';
 import { CardListView } from '@/components/cards/CardListView';
 import { CardDetailView } from '@/components/deck/CardDetailView';
@@ -20,7 +20,7 @@ export default function CardsPage(): JSX.Element {
     resetFilter,
     clearFilterKey,
     countActiveFilters,
-  } = useFilter();
+  } = useCardFilterQuery();
   const hasActiveFilter = filter && Object.keys(filter).length > 0;
   const { highlightKeywords } = useCardHighlight({
     syncFilter: hasActiveFilter ? filter : null,
