@@ -22,21 +22,26 @@ export interface UseFilterReturn {
 }
 
 export function useFilter(): UseFilterReturn {
-  const [filter, setFilter] = useState<CardFilter>({});
+  const [filter, setFilterState] = useState<CardFilter>({});
+
+  // setFilterをメモ化
+  const setFilter = useCallback((newFilter: CardFilter): void => {
+    setFilterState(newFilter);
+  }, []);
 
   // フィルター更新（immediate オプションで即座適用を制御）
   const updateFilter = useCallback((updates: Partial<CardFilter>): void => {
-    setFilter((prev) => ({ ...prev, ...updates }));
+    setFilterState((prev) => ({ ...prev, ...updates }));
   }, []);
 
   // フィルターリセット
   const resetFilter = useCallback((): void => {
-    setFilter({});
+    setFilterState({});
   }, []);
 
   // 個別キーをクリア
   const clearFilterKey = useCallback((key: keyof CardFilter): void => {
-    setFilter((prev) => {
+    setFilterState((prev) => {
       const newFilter = { ...prev };
       delete newFilter[key];
       return newFilter;
