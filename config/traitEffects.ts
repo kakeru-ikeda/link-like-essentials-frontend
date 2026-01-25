@@ -42,6 +42,7 @@ export const TRAIT_EFFECT_KEYWORDS: Record<TraitEffectType, string[]> = {
     'スキル使用時\\d+回まで',
   ],
   [TraitEffectType.DRAW]: [
+    'ドローしたとき',
     'ドローした時',
     'ドローしたセクションの間',
     'までにドローした時',
