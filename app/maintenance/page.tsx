@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { maintenanceService } from '@/services/maintenanceService';
+import { maintenanceService } from '@/services/infrastructure/maintenanceService';
 import { formatDate } from '@/utils/dateUtils';
 import { buildPageMetadata } from '@/utils/metadataUtils';
 import { sanitizeMicroCMSContent } from '@/utils/sanitizeHtmlUtils';

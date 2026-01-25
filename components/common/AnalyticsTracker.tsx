@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
-import { logPageView } from '@/services/analyticsService';
+import { logPageView } from '@/services/infrastructure/analyticsService';
 
 /**
  * ページ遷移を自動追跡するコンポーネント

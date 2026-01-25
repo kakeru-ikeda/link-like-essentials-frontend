@@ -1,8 +1,8 @@
-import { DeckPublicationRequest, PublishedDeck } from '@/models/PublishedDeck';
-import { Comment, ReportReason } from '@/models/Comment';
-import { GetDecksParams, GetLikedDecksParams } from '@/models/DeckQueryParams';
-import { PaginatedResponse } from '@/models/Pagination';
-import { PopularHashtagSummary } from '@/models/Hashtag';
+import { DeckPublicationRequest, PublishedDeck } from '@/models/published-deck/PublishedDeck';
+import { Comment, ReportReason } from '@/models/comment/Comment';
+import { GetDecksParams, GetLikedDecksParams } from '@/models/deck/DeckQueryParams';
+import { PaginatedResponse } from '@/models/shared/Pagination';
+import { PopularHashtagSummary } from '@/models/published-deck/Hashtag';
 import { DECK_API_ENDPOINT } from '@/config/api';
 import { getAuthToken } from './authUtils';
 import { auth } from '@/repositories/firebase/config';

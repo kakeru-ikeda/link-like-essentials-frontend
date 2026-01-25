@@ -1,0 +1,397 @@
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import { DeckTitle } from '@/components/deck-builder/DeckTitle';
+import { DeckTypeSelect } from '@/components/deck-builder/DeckTypeSelect';
+import { SongSelect } from '@/components/deck-builder/SongSelect';
+import { Button } from '@/components/common/Button';
+import { Modal } from '@/components/common/Modal';
+import { CenterCardDisplay } from '@/components/deck-builder/CenterCardDisplay';
+import { LRCardsList } from '@/components/deck-builder/LRCardsList';
+import { ExpandableTextArea } from '@/components/common/ExpandableTextArea';
+import { ActiveEventBadge } from '@/components/shared/ActiveEventBadge';
+import { Song } from '@/models/song/Song';
+import { DeckType } from '@/models/shared/enums';
+import { useDeck } from '@/hooks/deck/useDeck';
+import { getCenterCard, getOtherLRCards } from '@/services/deck/deckAnalysisService';
+import { DeckService } from '@/services/deck/deckService';
+import { DeckSlotMapping } from '@/config/deckSlots';
+import { LiveGrandPrixSelect } from './LiveGrandPrixSelect';
+import { LiveGrandPrixStageSelect } from './LiveGrandPrixStageSelect';
+import {
+  useLiveGrandPrixById,
+  useActiveLiveGrandPrix,
+} from '@/hooks/deck/useLiveGrandPrix';
+import { LiveGrandPrix, LiveGrandPrixDetail } from '@/models/live-grand-prix/LiveGrandPrix';
+import { ExpansionPanel } from '@/components/common/ExpansionPanel';
+import { EffectBadge } from '@/components/shared/EffectBadge';
+import { DeckPublishModal } from '@/components/deck-publish/DeckPublishModal';
+import { DeckPublishSuccessDialog } from '@/components/deck-publish/DeckPublishSuccessDialog';
+import { useModal } from '@/hooks/ui/useModal';
+import { PublishedDeck } from '@/models/published-deck/PublishedDeck';
+import { useResponsiveDevice } from '@/hooks/ui/useResponsiveDevice';
+import { HelpTooltip } from '@/components/common/HelpTooltip';
+
+export const DeckDashboard: React.FC = () => {
+  const {
+    deck,
+    updateDeckType,
+    updateDeckName,
+    updateDeckMemo,
+    updateScore,
+    updateSong,
+    updateLiveGrandPrix,
+    updateLiveGrandPrixStage,
+    clearAllCards,
+  } = useDeck();
+
+  const { isPublishModalOpen, openPublishModal, closePublishModal } =
+    useModal();
+  const [selectedDeckType, setSelectedDeckType] = useState<
+    DeckType | undefined
+  >(deck?.deckType);
+  const [publishSuccessLink, setPublishSuccessLink] = useState<string | null>(
+    null
+  );
+  const [publishSuccessUnlisted, setPublishSuccessUnlisted] =
+    useState<boolean>(false);
+  const [publishSuccessName, setPublishSuccessName] = useState<string | null>(
+    null
+  );
+  const [isSuccessDialogOpen, setSuccessDialogOpen] = useState<boolean>(false);
+  const [isMainSlotWarningOpen, setMainSlotWarningOpen] =
+    useState<boolean>(false);
+  const [unfilledMainSlots, setUnfilledMainSlots] = useState<DeckSlotMapping[]>(
+    []
+  );
+  const { isSp } = useResponsiveDevice();
+
+  // ライブグランプリの詳細を取得（選択されている場合のみ）
+  const { liveGrandPrix, loading: lgpLoading } = useLiveGrandPrixById(
+    deck?.liveGrandPrixId || '',
+    !deck?.liveGrandPrixId
+  );
+
+  // 開催中のライブグランプリを取得
+  const { activeLiveGrandPrix } = useActiveLiveGrandPrix();
+
+  // 選択中のステージ詳細を取得
+  const selectedStageDetail = React.useMemo(() => {
+    if (!liveGrandPrix || !deck?.liveGrandPrixDetailId) return null;
+    return (
+      liveGrandPrix.details.find(
+        (detail) => detail.id === deck.liveGrandPrixDetailId
+      ) || null
+    );
+  }, [liveGrandPrix, deck?.liveGrandPrixDetailId]);
+
+  // センターカードを取得（ビジネスロジックはserviceに委譲）
+  const centerCard = React.useMemo(() => getCenterCard(deck), [deck]);
+
+  // センター以外のLRカードを取得（ビジネスロジックはserviceに委譲）
+  const otherLRCards = React.useMemo(
+    () => getOtherLRCards(deck, centerCard),
+    [deck, centerCard]
+  );
+
+  // deckが変更されたら同期
+  useEffect(() => {
+    setSelectedDeckType(deck?.deckType);
+  }, [deck?.deckType]);
+
+  const handleDeckTypeChange = (newDeckType: DeckType): void => {
+    updateDeckType(newDeckType);
+    setSelectedDeckType(newDeckType);
+  };
+
+  const handleSongChange = (song: Partial<Song>): void => {
+    updateSong(song);
+  };
+
+  const handleLiveGrandPrixChange = (event: Partial<LiveGrandPrix>): void => {
+    if (event.id && event.eventName) {
+      updateLiveGrandPrix(event.id, event.eventName);
+    } else {
+      // クリア時
+      updateLiveGrandPrix('', '');
+    }
+  };
+
+  const handleLiveGrandPrixStageChange = (
+    detail: LiveGrandPrixDetail | null
+  ): void => {
+    updateLiveGrandPrixStage(detail);
+  };
+
+  const handleScoreChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    const value = e.target.value;
+    if (value === '') {
+      updateScore(undefined);
+    } else {
+      const numValue = parseFloat(value);
+      if (!isNaN(numValue) && numValue >= 0) {
+        updateScore(numValue);
+      }
+    }
+  };
+
+  const clearDeck = (): void => {
+    clearAllCards();
+  };
+
+  const handlePublished = (publishedDeck: PublishedDeck): void => {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL;
+    const deckPath = `/decks/${publishedDeck.id}`;
+    const fullUrl = baseUrl ? `${baseUrl}${deckPath}` : deckPath;
+    setPublishSuccessLink(fullUrl);
+    setPublishSuccessUnlisted(publishedDeck.isUnlisted);
+    setPublishSuccessName(publishedDeck.deck.name);
+    setSuccessDialogOpen(true);
+  };
+
+  const handleCloseSuccessDialog = (): void => {
+    setSuccessDialogOpen(false);
+    setPublishSuccessLink(null);
+    setPublishSuccessUnlisted(false);
+    setPublishSuccessName(null);
+  };
+
+  const handleOpenPublishModal = (): void => {
+    const emptyMainSlots = DeckService.getUnfilledMainSlots(deck);
+    const isDefaultDeckName = deck?.name?.startsWith('デッキ');
+    const isSongNotSelected = !deck?.songId;
+
+    if (emptyMainSlots.length > 0 || isDefaultDeckName || isSongNotSelected) {
+      setUnfilledMainSlots(emptyMainSlots);
+      setMainSlotWarningOpen(true);
+      return;
+    }
+
+    openPublishModal();
+  };
+
+  const handleCloseMainSlotWarning = (): void => {
+    setMainSlotWarningOpen(false);
+    setUnfilledMainSlots([]);
+  };
+
+  return (
+    <div className="flex-1 flex flex-col gap-4 p-4 border-2 border-gray-300 rounded-lg overflow-hidden min-w-0">
+      {/* タイトル＆ボタン */}
+      <div className="flex items-center gap-4 min-w-0">
+        <div className="flex-1 min-w-0">
+          <DeckTitle
+            title={deck?.name || '新しいデッキ'}
+            onTitleChange={updateDeckName}
+          />
+        </div>
+        <Button
+          onClick={handleOpenPublishModal}
+          className="bg-green-600 hover:bg-green-700 disabled:bg-green-400"
+        >
+          公開
+        </Button>
+      </div>
+
+      {/* デッキタイプ＆楽曲選択 */}
+      <div className="flex gap-4 min-w-0">
+        <DeckTypeSelect
+          value={selectedDeckType}
+          onChange={handleDeckTypeChange}
+          className="w-40 flex-shrink-0"
+        />
+
+        <SongSelect
+          deckType={deck?.deckType}
+          value={deck?.songId}
+          onChange={handleSongChange}
+          className="flex-1 min-w-0"
+          disabled={!!deck?.liveGrandPrixDetailId}
+        />
+      </div>
+
+      {/* ライブグランプリ選択 */}
+      <ExpansionPanel
+        title={
+          <div className="flex items-center gap-2">
+            <span>ライブグランプリ設定</span>
+            <HelpTooltip
+              content="ライブグランプリを選択すると、対応する楽曲が自動的に指定されます。また、楽曲を選択すると、ステージ効果およびセクション効果が自動的に設定されます。"
+              position="top"
+              className="mb-0.5"
+              size={4}
+            />
+            {activeLiveGrandPrix && <ActiveEventBadge />}
+          </div>
+        }
+      >
+        <div
+          className={`flex min-w-0 ${isSp ? 'flex-col gap-3' : 'flex-row gap-4'}`}
+        >
+          <LiveGrandPrixSelect
+            deckType={deck?.deckType}
+            value={deck?.liveGrandPrixId}
+            onChange={handleLiveGrandPrixChange}
+            className={isSp ? 'w-full' : 'flex-1 min-w-0'}
+          />
+
+          <LiveGrandPrixStageSelect
+            details={liveGrandPrix?.details}
+            value={deck?.liveGrandPrixDetailId}
+            onChange={handleLiveGrandPrixStageChange}
+            disabled={lgpLoading || !deck?.liveGrandPrixId}
+            className={isSp ? 'w-full' : 'w-48 flex-shrink-0'}
+          />
+        </div>
+      </ExpansionPanel>
+
+      {/* ライブアナライザ */}
+      <div>
+        <div className="flex items-center gap-2 mb-1">
+          <label className="block text-sm font-medium text-gray-700">
+            ライブアナライザ
+          </label>
+          {selectedStageDetail && (
+            <div className="flex items-center gap-1">
+              <EffectBadge
+                type="stage"
+                specialEffect={selectedStageDetail.specialEffect}
+              />
+              <EffectBadge
+                type="section"
+                sectionEffects={selectedStageDetail.sectionEffects}
+              />
+            </div>
+          )}
+        </div>
+        <div className="border border-gray-200 rounded-lg p-2">
+          {deck?.liveAnalyzerImageUrl ? (
+            <img
+              src={deck.liveAnalyzerImageUrl}
+              alt="ライブアナライザ"
+              className="w-full h-auto rounded-lg border border-gray-300"
+            />
+          ) : (
+            <div className="flex items-center justify-center py-8 bg-gray-50 rounded-lg text-gray-400">
+              <div className="text-center">
+                <div className="text-sm">楽曲未設定</div>
+                <div className="text-xs mt-1">
+                  ライブアナライザが表示されます
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* センターカードのスペシャルアピール */}
+      <div className="border border-gray-200 rounded-lg p-2">
+        <CenterCardDisplay centerCard={centerCard} />
+        <LRCardsList lrCards={otherLRCards} />
+      </div>
+
+      {/* 参考スコア */}
+      <div>
+        <label className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-700 mb-1">
+          参考スコア
+          <HelpTooltip
+            content="このデッキでプレイしたときのスコアを、参考スコアとして入力してください。デッキ公開時に表示されます。"
+            position="top"
+            className="mb-0.5"
+            size={4}
+          />
+        </label>
+        <div className="relative">
+          <input
+            type="number"
+            min="0"
+            step="1"
+            value={deck?.score ?? ''}
+            onChange={handleScoreChange}
+            placeholder="0"
+            className="w-full px-3 py-2 pr-16 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+          />
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-700 pointer-events-none font-medium">
+            兆 <span className="text-[0.85em]">LOVE</span>
+          </div>
+        </div>
+      </div>
+
+      {/* チャート */}
+      <div className="flex-1 flex flex-col min-h-0 border-gray-200">
+        <ExpandableTextArea
+          value={deck?.memo || ''}
+          onChange={updateDeckMemo}
+          label="チャート"
+          placeholder="チャートを入力..."
+          rows={3}
+          modalTitle="チャート"
+          modalRows={15}
+          className="flex-1"
+          template={`[1セク]\n\n[2セク]\n\n[3セク]\n\n[4セク]\n\n[5セク]\n`}
+        />
+      </div>
+
+      {/* 公開確認モーダル */}
+      <DeckPublishModal
+        isOpen={isPublishModalOpen}
+        onClose={closePublishModal}
+        onPublished={handlePublished}
+      />
+
+      <DeckPublishSuccessDialog
+        isOpen={isSuccessDialogOpen}
+        shareUrl={publishSuccessLink}
+        isUnlisted={publishSuccessUnlisted}
+        deckName={publishSuccessName}
+        onClose={handleCloseSuccessDialog}
+      />
+
+      <Modal
+        isOpen={isMainSlotWarningOpen}
+        onClose={handleCloseMainSlotWarning}
+        title="未設定の項目があります。"
+      >
+        <div className="space-y-4">
+          {unfilledMainSlots.length > 0 && (
+            <>
+              <p className="text-sm text-gray-700">
+                公開する前にメイン枠すべてにカードを編成してください。
+                以下の枠が未設定です。
+              </p>
+              <ul className="list-disc list-inside space-y-1">
+                {unfilledMainSlots.map((slot) => (
+                  <li key={slot.slotId} className="text-sm text-gray-900">
+                    {slot.characterName}
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+
+          {deck?.name?.startsWith('デッキ') && (
+            <div className="flex items-center gap-2">
+              <p className="text-sm text-gray-700">
+                公開する前に、初期デッキ名を変更してください。
+              </p>
+              <HelpTooltip
+                content="初期デッキ名とは「デッキ1」「デッキ2」のように「デッキ」から始まる名前です。わかりやすい名前に変更してから公開してください。"
+                position="right"
+                size={4}
+              />
+            </div>
+          )}
+
+          {!deck?.songId && (
+            <p className="text-sm text-gray-700">
+              公開する前に、楽曲を選択してください。
+            </p>
+          )}
+          <div className="flex justify-end">
+            <Button onClick={handleCloseMainSlotWarning}>編成に戻る</Button>
+          </div>
+        </div>
+      </Modal>
+    </div>
+  );
+};

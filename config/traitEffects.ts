@@ -1,4 +1,4 @@
-import { TraitEffectType } from '@/models/enums';
+import { TraitEffectType } from '@/models/shared/enums';
 
 /**
  * 特性効果の説明

@@ -1,15 +1,15 @@
 'use client';
 
 import React, { useState } from 'react';
-import { CardFilter as CardFilterType } from '@/models/Filter';
+import { CardFilter as CardFilterType } from '@/models/shared/Filter';
 import { FilterButton } from '@/components/common/FilterButton';
-import { useResponsiveDevice } from '@/hooks/useResponsiveDevice';
+import { useResponsiveDevice } from '@/hooks/ui/useResponsiveDevice';
 import { Button } from '@/components/common/Button';
 import { ActiveFilters } from '@/components/common/ActiveFilters';
 import { CardFilter } from '@/components/common/CardFilter';
 import { KeywordSearchInput } from '@/components/common/KeywordSearchInput';
 import { CharacterFilter } from '@/components/cards/filters/CharacterFilter';
-import { toggleFilterList } from '@/services/cardFilterService';
+import { toggleFilterList } from '@/services/card/cardFilterService';
 import { FilterWrapper } from '../common/filters/FilterWrapper';
 
 interface CardGridFilterProps {

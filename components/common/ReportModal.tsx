@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { ReportReason, REPORT_REASONS } from '@/models/Comment';
+import { ReportReason, REPORT_REASONS } from '@/models/comment/Comment';
 
 interface ReportModalProps {
   isOpen: boolean;

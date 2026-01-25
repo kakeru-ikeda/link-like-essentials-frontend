@@ -4,8 +4,8 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { useUserProfile } from '@/hooks/useUserProfile';
-import { useResponsiveDevice } from '@/hooks/useResponsiveDevice';
+import { useUserProfile } from '@/hooks/user/useUserProfile';
+import { useResponsiveDevice } from '@/hooks/ui/useResponsiveDevice';
 
 interface SidebarProps {
   children?: React.ReactNode;
