@@ -13,6 +13,8 @@ type DeckQuerySyncParams = Pick<
   'page' | 'orderBy' | 'order' | 'tag'
 >;
 
+const DEFAULT_PER_PAGE = 12;
+
 const stripLeadingHash = (value?: string | null): string | undefined => {
   if (!value) return undefined;
   const trimmed = value.trim();
@@ -73,34 +75,69 @@ export const useDecksPageController = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const initialParams = useMemo<Partial<GetDecksParams>>(() => {
+  // URLから現在のパラメータを取得（URLを唯一の真実の源とする）
+  const currentParams = useMemo<GetDecksParams>(() => {
     const parsed = parseQueryParams(searchParams, decksQuerySchema);
-    return parsed;
+    return {
+      page: parsed.page ?? 1,
+      perPage: DEFAULT_PER_PAGE,
+      orderBy: parsed.orderBy ?? 'publishedAt',
+      order: parsed.order ?? 'desc',
+      tag: parsed.tag,
+    };
   }, [searchParams]);
 
   const { decks, pageInfo, loading, error, goToPage, params, setParams } =
-    usePublishedDecks(initialParams);
+    usePublishedDecks(currentParams);
 
   const [tagInput, setTagInput] = useState(
-    withLeadingHash(initialParams.tag) ?? ''
+    withLeadingHash(currentParams.tag) ?? ''
   );
 
+  // URLのtagが変更されたらinput値も更新
   useEffect(() => {
-    setTagInput(withLeadingHash(params.tag) ?? '');
-  }, [params.tag]);
+    setTagInput(withLeadingHash(currentParams.tag) ?? '');
+  }, [currentParams.tag]);
+
+  // URLを更新する共通関数
+  const updateUrl = useCallback(
+    (updates: Partial<DeckQuerySyncParams>) => {
+      const parsed = parseQueryParams(searchParams, decksQuerySchema);
+      const current = {
+        page: parsed.page ?? 1,
+        orderBy: parsed.orderBy ?? 'publishedAt',
+        order: parsed.order ?? 'desc',
+        tag: parsed.tag,
+      };
+      const newParams = { ...current, ...updates };
+      const nextQuery = buildQueryString(
+        {
+          page: newParams.page,
+          orderBy: newParams.orderBy,
+          order: newParams.order,
+          tag: newParams.tag,
+        },
+        decksQuerySchema
+      );
+      router.replace(nextQuery ? `/decks?${nextQuery}` : '/decks', {
+        scroll: false,
+      });
+    },
+    [router, searchParams]
+  );
 
   const handleSortChange = useCallback(
     (orderBy: 'publishedAt' | 'viewCount' | 'likeCount') => {
-      setParams((prev) => ({ ...prev, orderBy, page: 1 }));
+      updateUrl({ orderBy, page: 1 });
     },
-    [setParams]
+    [updateUrl]
   );
 
   const handleOrderChange = useCallback(
     (order: 'asc' | 'desc') => {
-      setParams((prev) => ({ ...prev, order, page: 1 }));
+      updateUrl({ order, page: 1 });
     },
-    [setParams]
+    [updateUrl]
   );
 
   const handleTagSubmit = useCallback(
@@ -108,78 +145,39 @@ export const useDecksPageController = () => {
       event.preventDefault();
       const normalized = stripLeadingHash(tagInput);
       setTagInput(withLeadingHash(normalized) ?? '');
-      setParams((prev) => ({ ...prev, tag: normalized, page: 1 }));
+      updateUrl({ tag: normalized, page: 1 });
     },
-    [setParams, tagInput]
+    [tagInput, updateUrl]
   );
 
   const handleTagReset = useCallback(() => {
     setTagInput('');
-    setParams((prev) => ({ ...prev, tag: undefined, page: 1 }));
-  }, [setParams]);
+    updateUrl({ tag: undefined, page: 1 });
+  }, [updateUrl]);
 
   const handleHashtagSelect = useCallback(
     (selected: string) => {
       const normalized = stripLeadingHash(selected);
       setTagInput(withLeadingHash(normalized) ?? '');
-      setParams((prev) => ({ ...prev, tag: normalized, page: 1 }));
+      updateUrl({ tag: normalized, page: 1 });
     },
-    [setParams, setTagInput]
+    [updateUrl]
   );
 
-  useEffect(() => {
-    const nextParams = parseQueryParams(searchParams, decksQuerySchema);
-
-    setParams((prev) => {
-      const merged: GetDecksParams = {
-        ...prev,
-        ...nextParams,
-        page: nextParams.page ?? prev.page ?? 1,
-        orderBy: nextParams.orderBy ?? prev.orderBy ?? 'publishedAt',
-        order: nextParams.order ?? prev.order ?? 'desc',
-        tag: nextParams.tag ?? undefined,
-      };
-
-      const isSame =
-        merged.page === prev.page &&
-        merged.orderBy === prev.orderBy &&
-        merged.order === prev.order &&
-        merged.tag === prev.tag;
-
-      return isSame ? prev : merged;
-    });
-  }, [searchParams, setParams]);
-
-  useEffect(() => {
-    const nextQuery = buildQueryString(
-      {
-        page: params.page,
-        orderBy: params.orderBy,
-        order: params.order,
-        tag: params.tag,
-      },
-      decksQuerySchema
-    );
-    const currentQuery = searchParams.toString();
-    if (nextQuery === currentQuery) return;
-    router.replace(nextQuery ? `?${nextQuery}` : '?', { scroll: false });
-  }, [
-    params.page,
-    params.orderBy,
-    params.order,
-    params.tag,
-    router,
-    searchParams,
-  ]);
+  const handlePageChange = useCallback(
+    (page: number) => {
+      updateUrl({ page });
+    },
+    [updateUrl]
+  );
 
   return {
     decks,
     pageInfo,
     loading,
     error,
-    goToPage,
-    params,
-    setParams,
+    goToPage: handlePageChange,
+    params: currentParams,
     tagInput,
     setTagInput,
     handleSortChange,

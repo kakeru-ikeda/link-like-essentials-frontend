@@ -12,9 +12,7 @@ interface UsePublishedDecksState {
   error: string | null;
 }
 
-const DEFAULT_PER_PAGE = 12;
-
-export const usePublishedDecks = (initialParams?: Partial<GetDecksParams>) => {
+export const usePublishedDecks = (requestParams: GetDecksParams) => {
   const { isAuthenticated } = useAuth();
 
   const [{ decks, pageInfo, loading, error }, setState] = useState<UsePublishedDecksState>(
@@ -26,31 +24,10 @@ export const usePublishedDecks = (initialParams?: Partial<GetDecksParams>) => {
     }
   );
 
-  const [params, setParams] = useState<GetDecksParams>({
-    page: 1,
-    perPage: DEFAULT_PER_PAGE,
-    orderBy: 'publishedAt',
-    order: 'desc',
-    ...initialParams,
-  });
-
-  const requestParams: GetDecksParams = useMemo(
-    () => ({
-      page: params.page,
-      perPage: params.perPage,
-      orderBy: params.orderBy,
-      order: params.order,
-      tag: params.tag,
-      userId: params.userId,
-      songId: params.songId,
-    }),
-    [params.order, params.orderBy, params.page, params.perPage, params.songId, params.tag, params.userId]
-  );
-
-  const fetchDecks = useCallback(async (nextParams: GetDecksParams) => {
+  const fetchDecks = useCallback(async (params: GetDecksParams) => {
     setState((prev) => ({ ...prev, loading: true, error: null }));
     try {
-      const response = await publishedDeckService.getDecks(nextParams);
+      const response = await publishedDeckService.getDecks(params);
       setState({
         decks: response.data,
         pageInfo: response.pageInfo,
@@ -63,13 +40,37 @@ export const usePublishedDecks = (initialParams?: Partial<GetDecksParams>) => {
     }
   }, []);
 
+  // requestParamsのプロパティごとに依存配列を指定することで、型安全な比較を実現
+  const paramsKey = useMemo(
+    () => ({
+      page: requestParams.page,
+      perPage: requestParams.perPage,
+      orderBy: requestParams.orderBy,
+      order: requestParams.order,
+      tag: requestParams.tag,
+      userId: requestParams.userId,
+      songId: requestParams.songId,
+    }),
+    [
+      requestParams.page,
+      requestParams.perPage,
+      requestParams.orderBy,
+      requestParams.order,
+      requestParams.tag,
+      requestParams.userId,
+      requestParams.songId,
+    ]
+  );
+
   useEffect(() => {
     if (!isAuthenticated) return;
     fetchDecks(requestParams);
-  }, [fetchDecks, isAuthenticated, requestParams]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated, fetchDecks, paramsKey]);
 
   const goToPage = useCallback((page: number) => {
-    setParams((prev) => ({ ...prev, page }));
+    // この関数は使われなくなるが、後方互換性のため残す
+    console.warn('usePublishedDecks.goToPage is deprecated. Use URL-based navigation instead.');
   }, []);
 
   const refresh = useCallback(() => {
@@ -83,7 +84,9 @@ export const usePublishedDecks = (initialParams?: Partial<GetDecksParams>) => {
     error,
     goToPage,
     refresh,
-    params,
-    setParams,
+    params: requestParams,
+    setParams: () => {
+      console.warn('usePublishedDecks.setParams is deprecated. Use URL-based navigation instead.');
+    },
   };
 };
