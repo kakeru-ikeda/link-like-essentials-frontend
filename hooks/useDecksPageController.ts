@@ -13,6 +13,8 @@ type DeckQuerySyncParams = Pick<
   'page' | 'orderBy' | 'order' | 'tag'
 >;
 
+const DEFAULT_PER_PAGE = 12;
+
 const stripLeadingHash = (value?: string | null): string | undefined => {
   if (!value) return undefined;
   const trimmed = value.trim();
@@ -78,7 +80,7 @@ export const useDecksPageController = () => {
     const parsed = parseQueryParams(searchParams, decksQuerySchema);
     return {
       page: parsed.page ?? 1,
-      perPage: 12,
+      perPage: DEFAULT_PER_PAGE,
       orderBy: parsed.orderBy ?? 'publishedAt',
       order: parsed.order ?? 'desc',
       tag: parsed.tag,
@@ -100,7 +102,14 @@ export const useDecksPageController = () => {
   // URLを更新する共通関数
   const updateUrl = useCallback(
     (updates: Partial<DeckQuerySyncParams>) => {
-      const newParams = { ...currentParams, ...updates };
+      const parsed = parseQueryParams(searchParams, decksQuerySchema);
+      const current = {
+        page: parsed.page ?? 1,
+        orderBy: parsed.orderBy ?? 'publishedAt',
+        order: parsed.order ?? 'desc',
+        tag: parsed.tag,
+      };
+      const newParams = { ...current, ...updates };
       const nextQuery = buildQueryString(
         {
           page: newParams.page,
@@ -114,7 +123,7 @@ export const useDecksPageController = () => {
         scroll: false,
       });
     },
-    [currentParams, router]
+    [router, searchParams]
   );
 
   const handleSortChange = useCallback(

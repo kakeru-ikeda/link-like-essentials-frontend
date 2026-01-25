@@ -40,14 +40,33 @@ export const usePublishedDecks = (requestParams: GetDecksParams) => {
     }
   }, []);
 
-  // requestParamsをJSON文字列化して依存配列に入れることで、オブジェクトの内容で比較
-  const paramsKey = JSON.stringify(requestParams);
+  // requestParamsのプロパティごとに依存配列を指定することで、型安全な比較を実現
+  const paramsKey = useMemo(
+    () => ({
+      page: requestParams.page,
+      perPage: requestParams.perPage,
+      orderBy: requestParams.orderBy,
+      order: requestParams.order,
+      tag: requestParams.tag,
+      userId: requestParams.userId,
+      songId: requestParams.songId,
+    }),
+    [
+      requestParams.page,
+      requestParams.perPage,
+      requestParams.orderBy,
+      requestParams.order,
+      requestParams.tag,
+      requestParams.userId,
+      requestParams.songId,
+    ]
+  );
 
   useEffect(() => {
     if (!isAuthenticated) return;
     fetchDecks(requestParams);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthenticated, paramsKey]);
+  }, [isAuthenticated, fetchDecks, paramsKey]);
 
   const goToPage = useCallback((page: number) => {
     // この関数は使われなくなるが、後方互換性のため残す
