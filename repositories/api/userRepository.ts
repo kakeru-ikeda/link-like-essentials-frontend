@@ -1,7 +1,7 @@
 import {
   UserProfile,
   UserProfileInput,
-} from '@/models/User';
+} from '@/models/domain/User';
 import { USER_API_ENDPOINT } from '@/config/api';
 import { getAuthToken } from './authUtils';
 

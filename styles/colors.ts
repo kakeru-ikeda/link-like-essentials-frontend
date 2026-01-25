@@ -1,4 +1,4 @@
-import { Rarity, StyleType, LimitedType, FavoriteMode } from '@/models/enums';
+import { Rarity, StyleType, LimitedType, FavoriteMode } from '@/models/shared/enums';
 
 /**
  * キャラクターごとのテーマカラー定義

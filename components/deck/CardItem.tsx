@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Card } from '@/models/Card';
+import { Card } from '@/models/domain/Card';
 import { RarityBadge } from '@/components/common/RarityBadge';
 import { ApBadge } from '@/components/common/ApBadge';
 import { StyleTypeBadge } from '@/components/common/StyleTypeBadge';

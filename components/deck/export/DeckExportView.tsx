@@ -4,7 +4,7 @@ import { ExportHeader } from './ExportHeader';
 import { ExportFooter } from './ExportFooter';
 import { ExportDeckBuilder } from './ExportDeckBuilder';
 import { ExportDashboard } from './ExportDashboard';
-import { useDeck } from '@/hooks/useDeck';
+import { useDeck } from '@/hooks/deck/useDeck';
 
 const EXPORT_VIEW_WIDTH = 1700;
 

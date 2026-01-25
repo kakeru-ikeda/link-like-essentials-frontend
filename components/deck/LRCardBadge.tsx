@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Card } from '@/models/Card';
+import { Card } from '@/models/domain/Card';
 import { Tooltip } from '@/components/common/Tooltip';
 import { getCharacterBackgroundColor } from '@/utils/colorUtils';
 

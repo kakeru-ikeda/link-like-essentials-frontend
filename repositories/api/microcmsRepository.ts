@@ -1,6 +1,6 @@
 import { createClient, MicroCMSQueries } from 'microcms-js-sdk';
 import { DEFAULT_MICROCMS_REVALIDATE_SECONDS } from '@/config/microcms';
-import { MicrocmsListResponse } from '@/models/Microcms';
+import { MicrocmsListResponse } from '@/models/shared/Microcms';
 
 const serviceDomain = process.env.MICROCMS_SERVICE_DOMAIN;
 const apiKey = process.env.MICROCMS_API_KEY;

@@ -3,8 +3,8 @@
 import { ProfileCard } from '@/components/profile/ProfileCard';
 import { Button } from '@/components/common/Button';
 import { PublishedDeckList } from '@/components/deck/PublishedDeckList';
-import { useMyPage } from '@/hooks/useMyPage';
-import { UserRole } from '@/models/enums';
+import { useMyPage } from '@/hooks/user/useMyPage';
+import { UserRole } from '@/models/shared/enums';
 
 export default function MyPage() {
   const {

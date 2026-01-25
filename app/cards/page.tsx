@@ -1,16 +1,16 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useCards } from '@/hooks/useCards';
-import { useCardFilterQuery } from '@/hooks/useCardFilterQuery';
+import { useCards } from '@/hooks/card/useCards';
+import { useCardFilterQuery } from '@/hooks/card/useCardFilterQuery';
 import { CardGridView } from '@/components/cards/CardGridView';
 import { CardListView } from '@/components/cards/CardListView';
 import { CardDetailView } from '@/components/deck/CardDetailView';
 import { CardGridFilter } from '@/components/cards/CardGridFilter';
 import { SideModal } from '@/components/common/SideModal';
-import { useSideModal } from '@/hooks/useSideModal';
+import { useSideModal } from '@/hooks/ui/useSideModal';
 import { LayoutGrid, List } from 'lucide-react';
-import { useCardHighlight } from '@/hooks/useCardHighlight';
+import { useCardHighlight } from '@/hooks/card/useCardHighlight';
 
 export default function CardsPage(): JSX.Element {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');

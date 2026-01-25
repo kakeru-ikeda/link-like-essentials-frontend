@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { DeckSlot } from '@/components/deck/DeckSlot';
-import { DeckSlot as DeckSlotType } from '@/models/Deck';
+import { DeckSlot as DeckSlotType } from '@/models/domain/Deck';
 import { getCharacterBackgroundColor } from '@/utils/colorUtils';
 import { VerticalBadge } from '@/components/common/VerticalBadge';
 

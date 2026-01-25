@@ -1,9 +1,9 @@
 'use client';
 
 import React from 'react';
-import { Deck } from '@/models/Deck';
-import { LiveGrandPrix } from '@/models/LiveGrandPrix';
-import { useHashtag } from '@/hooks/useHashtag';
+import { Deck } from '@/models/domain/Deck';
+import { LiveGrandPrix } from '@/models/features/LiveGrandPrix';
+import { useHashtag } from '@/hooks/features/useHashtag';
 import { HelpTooltip } from '@/components/common/HelpTooltip';
 
 interface HashtagInputProps {

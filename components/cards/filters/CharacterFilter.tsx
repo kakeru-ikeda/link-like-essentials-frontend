@@ -2,9 +2,9 @@
 
 import React from 'react';
 import { MultiSelectFilter } from '@/components/common/filters/MultiSelectFilter';
-import { getSelectableCharactersForSlot } from '@/services/characterFilterService';
+import { getSelectableCharactersForSlot } from '@/services/card/characterFilterService';
 import { getCharacterColor } from '@/utils/colorUtils';
-import type { DeckType } from '@/models/enums';
+import type { DeckType } from '@/models/shared/enums';
 
 interface CharacterFilterProps {
   selectedCharacters: string[] | undefined;

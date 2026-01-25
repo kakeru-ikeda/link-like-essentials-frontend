@@ -1,13 +1,13 @@
 'use client';
 
 import React from 'react';
-import { useDeck } from '@/hooks/useDeck';
-import { getDeckSlotMapping, getDeckFrame } from '@/services/deckConfigService';
+import { useDeck } from '@/hooks/deck/useDeck';
+import { getDeckSlotMapping, getDeckFrame } from '@/services/deck/deckConfigService';
 import { getCharacterBackgroundColor, getCharacterColor } from '@/utils/colorUtils';
 import { VerticalBadge } from '@/components/common/VerticalBadge';
 import { AceBadge } from '@/components/common/AceBadge';
 import { LimitBreakBadge } from '@/components/deck/LimitBreakBadge';
-import type { DeckSlot } from '@/models/Deck';
+import type { DeckSlot } from '@/models/domain/Deck';
 import type { CharacterName } from '@/config/characters';
 import type { DeckSlotMapping } from '@/config/deckSlots';
 import { FRIEND_SLOT_ID } from '@/config/deckSlots';

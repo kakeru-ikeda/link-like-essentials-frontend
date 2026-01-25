@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
-import { PublishedDeck } from '@/models/PublishedDeck';
+import { PublishedDeck } from '@/models/domain/PublishedDeck';
 import { HashtagChips } from '@/components/deck/HashtagChips';
-import { useDeckLike } from '@/hooks/useDeckLike';
+import { useDeckLike } from '@/hooks/deck/useDeckLike';
 import { Tooltip } from '@/components/common/Tooltip';
 import { UserAvatar } from '@/components/common/UserAvatar';
 import { Loading } from '../common/Loading';

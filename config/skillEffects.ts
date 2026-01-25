@@ -1,4 +1,4 @@
-import { SkillEffectType } from '@/models/enums';
+import { SkillEffectType } from '@/models/shared/enums';
 
 /**
  * スキル効果の説明

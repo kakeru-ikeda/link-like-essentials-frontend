@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import type { CardFilter } from '@/models/Filter';
+import type { CardFilter } from '@/models/shared/Filter';
 import {
   RARITY_LABELS,
   STYLE_TYPE_LABELS,
@@ -11,7 +11,7 @@ import {
   SKILL_SEARCH_TARGET_LABELS,
   TRAIT_EFFECT_LABELS,
 } from '@/mappers/enumMappers';
-import { removeFromFilterList } from '@/services/cardFilterService';
+import { removeFromFilterList } from '@/services/card/cardFilterService';
 import {
   FAVORITE_MODE_COLORS,
   FILTER_COLOR_KEYWORD,

@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import { User } from 'firebase/auth';
-import { UserRole } from '@/models/enums';
+import { UserRole } from '@/models/shared/enums';
 
 interface AuthState {
   user: User | null;

@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { HiArrowsPointingOut, HiOutlineDocumentText } from 'react-icons/hi2';
 import { Tooltip } from '@/components/common/Tooltip';
 import { Modal } from '@/components/common/Modal';
-import { useSimpleModal } from '@/hooks/useModal';
+import { useSimpleModal } from '@/hooks/ui/useModal';
 
 interface ExpandableTextAreaProps {
   value: string;

@@ -1,9 +1,9 @@
 'use client';
 
 import React from 'react';
-import { useDeck } from '@/hooks/useDeck';
-import { useLiveGrandPrixById } from '@/hooks/useLiveGrandPrix';
-import { Deck } from '@/models/Deck';
+import { useDeck } from '@/hooks/deck/useDeck';
+import { useLiveGrandPrixById } from '@/hooks/features/useLiveGrandPrix';
+import { Deck } from '@/models/domain/Deck';
 
 interface ExportDashboardProps {
   deck?: Deck | null;

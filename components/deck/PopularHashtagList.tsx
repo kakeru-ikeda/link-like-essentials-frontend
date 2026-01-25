@@ -1,5 +1,5 @@
 import { HashtagChips } from '@/components/deck/HashtagChips';
-import { PopularHashtag } from '@/models/Hashtag';
+import { PopularHashtag } from '@/models/features/Hashtag';
 
 interface PopularHashtagListProps {
   hashtags: PopularHashtag[];

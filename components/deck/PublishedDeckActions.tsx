@@ -1,10 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Deck } from '@/models/Deck';
-import { PublishedDeck } from '@/models/PublishedDeck';
-import { publishedDeckService } from '@/services/publishedDeckService';
-import { useDeckLike } from '@/hooks/useDeckLike';
+import { Deck } from '@/models/domain/Deck';
+import { PublishedDeck } from '@/models/domain/PublishedDeck';
+import { publishedDeckService } from '@/services/published-deck/publishedDeckService';
+import { useDeckLike } from '@/hooks/deck/useDeckLike';
 
 interface PublishedDeckActionsProps {
   deck: PublishedDeck;

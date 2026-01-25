@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card } from '@/models/Card';
+import { Card } from '@/models/domain/Card';
 import { CardListItem } from '@/components/deck/CardListItem';
 import { Loading } from '@/components/common/Loading';
 

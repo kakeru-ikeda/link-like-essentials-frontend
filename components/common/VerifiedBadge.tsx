@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { UserRole } from '@/models/enums';
+import { UserRole } from '@/models/shared/enums';
 
 interface VerifiedBadgeProps {
   /** ユーザーのロールに応じて表示を切り替え */

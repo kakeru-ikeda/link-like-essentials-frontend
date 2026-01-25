@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Rarity } from '@/models/enums';
+import { Rarity } from '@/models/shared/enums';
 
 interface RarityBadgeProps {
   rarity: Rarity;

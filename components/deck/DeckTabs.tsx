@@ -1,8 +1,8 @@
 'use client';
 
-import { Deck } from '@/models/Deck';
+import { Deck } from '@/models/domain/Deck';
 import React from 'react';
-import { useResponsiveDevice } from '@/hooks/useResponsiveDevice';
+import { useResponsiveDevice } from '@/hooks/ui/useResponsiveDevice';
 import { Tooltip } from '@/components/common/Tooltip';
 
 interface DeckTabsProps {

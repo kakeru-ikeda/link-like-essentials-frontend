@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Card } from '@/models/Card';
+import { Card } from '@/models/domain/Card';
 import { CardList } from '@/components/deck/CardList';
 
 interface AvailableCardDisplayProps {

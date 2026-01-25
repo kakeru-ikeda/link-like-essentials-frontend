@@ -3,7 +3,7 @@
 import { useState, useRef, ChangeEvent } from 'react';
 import { Button } from '@/components/common/Button';
 import { ImageCropModal } from '@/components/common/ImageCropModal';
-import type { UserProfileInput } from '@/models/User';
+import type { UserProfileInput } from '@/models/domain/User';
 
 interface ProfileFormProps {
   /** 初期値（編集時） */

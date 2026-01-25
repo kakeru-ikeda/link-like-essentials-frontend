@@ -2,9 +2,9 @@
 
 import React, { useEffect } from 'react';
 import { Dropdown, DropdownOption } from '@/components/common/Dropdown';
-import { Song } from '@/models/Song';
-import { DeckType } from '@/models/enums';
-import { useSongs } from '@/hooks/useSongs';
+import { Song } from '@/models/features/Song';
+import { DeckType } from '@/models/shared/enums';
+import { useSongs } from '@/hooks/features/useSongs';
 import { Loading } from '@/components/common/Loading';
 
 interface SongSelectProps {

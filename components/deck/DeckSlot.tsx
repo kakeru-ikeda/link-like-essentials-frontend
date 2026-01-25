@@ -1,13 +1,13 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { DeckSlot as DeckSlotType } from '@/models/Deck';
+import { DeckSlot as DeckSlotType } from '@/models/domain/Deck';
 import { getCharacterColor } from '@/utils/colorUtils';
 import { ApBadge } from '@/components/common/ApBadge';
 import { RarityBadge } from '@/components/common/RarityBadge';
 import { AceBadge } from '@/components/common/AceBadge';
 import { LimitBreakBadge } from '@/components/deck/LimitBreakBadge';
-import { useResponsiveDevice } from '@/hooks/useResponsiveDevice';
+import { useResponsiveDevice } from '@/hooks/ui/useResponsiveDevice';
 
 interface DeckSlotProps {
   slot: DeckSlotType;

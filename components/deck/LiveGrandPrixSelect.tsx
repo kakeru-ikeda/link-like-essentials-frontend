@@ -2,11 +2,11 @@
 
 import React from 'react';
 import { Dropdown, DropdownOption } from '@/components/common/Dropdown';
-import { LiveGrandPrix } from '@/models/LiveGrandPrix';
-import { useLiveGrandPrix } from '@/hooks/useLiveGrandPrix';
+import { LiveGrandPrix } from '@/models/features/LiveGrandPrix';
+import { useLiveGrandPrix } from '@/hooks/features/useLiveGrandPrix';
 import { Loading } from '@/components/common/Loading';
-import { DeckType } from '@/models/enums';
-import { LiveGrandPrixService } from '@/services/liveGrandPrixService';
+import { DeckType } from '@/models/shared/enums';
+import { LiveGrandPrixService } from '@/services/catalog/liveGrandPrixService';
 
 interface LiveGrandPrixSelectProps {
   deckType?: DeckType;

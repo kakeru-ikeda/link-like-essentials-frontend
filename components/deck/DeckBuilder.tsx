@@ -1,13 +1,13 @@
 'use client';
 
 import React, { useState, useCallback } from 'react';
-import { useDeck } from '@/hooks/useDeck';
+import { useDeck } from '@/hooks/deck/useDeck';
 import { Checkbox } from '@/components/common/Checkbox';
 import { CharacterDeckGroup } from '@/components/deck/CharacterDeckGroup';
-import { getDeckSlotMapping, getDeckFrame } from '@/services/deckConfigService';
+import { getDeckSlotMapping, getDeckFrame } from '@/services/deck/deckConfigService';
 import type { CharacterName } from '@/config/characters';
 import type { DeckSlotMapping } from '@/config/deckSlots';
-import { canPlaceCardInSlot } from '@/services/deckRulesService';
+import { canPlaceCardInSlot } from '@/services/deck/deckRulesService';
 import { SideModal } from '@/components/common/SideModal';
 import { CurrentCardDisplay } from '@/components/deck/CurrentCardDisplay';
 import { InProgressCardDisplay } from '@/components/deck/InProgressCardDisplay';
@@ -16,18 +16,18 @@ import { CardDetailView } from '@/components/deck/CardDetailView';
 import { CardFilter } from '@/components/common/CardFilter';
 import { FilterButton } from '@/components/common/FilterButton';
 import { ActiveFilters } from '@/components/common/ActiveFilters';
-import { useCards } from '@/hooks/useCards';
+import { useCards } from '@/hooks/card/useCards';
 import { useCardStore } from '@/store/cardStore';
-import { useSideModal } from '@/hooks/useSideModal';
-import { useFilter } from '@/hooks/useFilter';
-import type { Card } from '@/models/Card';
-import type { DeckSlot } from '@/models/Deck';
+import { useSideModal } from '@/hooks/ui/useSideModal';
+import { useFilter } from '@/hooks/ui/useFilter';
+import type { Card } from '@/models/domain/Card';
+import type { DeckSlot } from '@/models/domain/Deck';
 import {
   filterCardsBySlot,
   getAssignedCardsForSlot,
-} from '@/services/deckFilterService';
-import { filterAvailableCards } from '@/services/characterFilterService';
-import { useResponsiveDevice } from '@/hooks/useResponsiveDevice';
+} from '@/services/deck/deckFilterService';
+import { filterAvailableCards } from '@/services/card/characterFilterService';
+import { useResponsiveDevice } from '@/hooks/ui/useResponsiveDevice';
 import { HelpTooltip } from '../common/HelpTooltip';
 
 export const DeckBuilder: React.FC = () => {

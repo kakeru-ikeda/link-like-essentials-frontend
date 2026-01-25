@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/common/Button';
-import type { UserProfile } from '@/models/User';
+import type { UserProfile } from '@/models/domain/User';
 import { formatDate } from '@/utils/dateUtils';
 import { VerifiedBadge } from '@/components/common/VerifiedBadge';
 

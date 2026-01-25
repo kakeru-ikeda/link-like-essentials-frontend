@@ -10,26 +10,26 @@ import { CenterCardDisplay } from '@/components/deck/CenterCardDisplay';
 import { LRCardsList } from '@/components/deck/LRCardsList';
 import { ExpandableTextArea } from '@/components/common/ExpandableTextArea';
 import { ActiveEventBadge } from '@/components/common/ActiveEventBadge';
-import { Song } from '@/models/Song';
-import { DeckType } from '@/models/enums';
-import { useDeck } from '@/hooks/useDeck';
-import { getCenterCard, getOtherLRCards } from '@/services/deckAnalysisService';
-import { DeckService } from '@/services/deckService';
+import { Song } from '@/models/features/Song';
+import { DeckType } from '@/models/shared/enums';
+import { useDeck } from '@/hooks/deck/useDeck';
+import { getCenterCard, getOtherLRCards } from '@/services/deck/deckAnalysisService';
+import { DeckService } from '@/services/deck/deckService';
 import { DeckSlotMapping } from '@/config/deckSlots';
 import { LiveGrandPrixSelect } from './LiveGrandPrixSelect';
 import { LiveGrandPrixStageSelect } from './LiveGrandPrixStageSelect';
 import {
   useLiveGrandPrixById,
   useActiveLiveGrandPrix,
-} from '@/hooks/useLiveGrandPrix';
-import { LiveGrandPrix, LiveGrandPrixDetail } from '@/models/LiveGrandPrix';
+} from '@/hooks/features/useLiveGrandPrix';
+import { LiveGrandPrix, LiveGrandPrixDetail } from '@/models/features/LiveGrandPrix';
 import { ExpansionPanel } from '@/components/common/ExpansionPanel';
 import { EffectBadge } from '@/components/common/EffectBadge';
 import { DeckPublishModal } from '@/components/deck/DeckPublishModal';
 import { DeckPublishSuccessDialog } from '@/components/deck/DeckPublishSuccessDialog';
-import { useModal } from '@/hooks/useModal';
-import { PublishedDeck } from '@/models/PublishedDeck';
-import { useResponsiveDevice } from '@/hooks/useResponsiveDevice';
+import { useModal } from '@/hooks/ui/useModal';
+import { PublishedDeck } from '@/models/domain/PublishedDeck';
+import { useResponsiveDevice } from '@/hooks/ui/useResponsiveDevice';
 import { HelpTooltip } from '@/components/common/HelpTooltip';
 
 export const DeckDashboard: React.FC = () => {

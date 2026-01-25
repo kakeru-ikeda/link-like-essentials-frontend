@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { StyleType } from '@/models/enums';
+import { StyleType } from '@/models/shared/enums';
 import { STYLE_TYPE_LABELS } from '@/mappers/enumMappers';
 import { STYLE_TYPE_COLORS } from '@/styles/colors';
 

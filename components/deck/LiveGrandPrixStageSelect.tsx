@@ -2,8 +2,8 @@
 
 import React, { useEffect } from 'react';
 import { Dropdown, DropdownOption } from '@/components/common/Dropdown';
-import { LiveGrandPrixDetail } from '@/models/LiveGrandPrix';
-import { LiveGrandPrixService } from '@/services/liveGrandPrixService';
+import { LiveGrandPrixDetail } from '@/models/features/LiveGrandPrix';
+import { LiveGrandPrixService } from '@/services/catalog/liveGrandPrixService';
 
 interface LiveGrandPrixStageSelectProps {
   details?: LiveGrandPrixDetail[];

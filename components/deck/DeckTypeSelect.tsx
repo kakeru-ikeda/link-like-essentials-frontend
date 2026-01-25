@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Dropdown, DropdownOption } from '@/components/common/Dropdown';
-import { DeckType } from '@/models/enums';
+import { DeckType } from '@/models/shared/enums';
 
 interface DeckTypeProps {
   value?: DeckType;

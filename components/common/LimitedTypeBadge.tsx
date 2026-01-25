@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { LimitedType } from '@/models/enums';
+import { LimitedType } from '@/models/shared/enums';
 import { LIMITED_TYPE_LABELS } from '@/mappers/enumMappers';
 import { LIMITED_TYPE_COLORS } from '@/styles/colors';
 

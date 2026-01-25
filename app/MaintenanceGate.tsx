@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Loading } from '@/components/common/Loading';
-import { useMaintenanceGuard } from '@/hooks/useMaintenanceGuard';
+import { useMaintenanceGuard } from '@/hooks/features/useMaintenanceGuard';
 
 interface MaintenanceGateProps {
   children: React.ReactNode;

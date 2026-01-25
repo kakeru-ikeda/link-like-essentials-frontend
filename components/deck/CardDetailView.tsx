@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import { Card } from '@/models/Card';
-import { useCardDetail } from '@/hooks/useCards';
+import { Card } from '@/models/domain/Card';
+import { useCardDetail } from '@/hooks/card/useCards';
 import { RarityBadge } from '@/components/common/RarityBadge';
 import { StyleTypeBadge } from '@/components/common/StyleTypeBadge';
 import { FavoriteModeBadge } from '@/components/common/FavoriteModeBadge';

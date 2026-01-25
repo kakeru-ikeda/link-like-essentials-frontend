@@ -2,7 +2,7 @@
 
 import React from 'react';
 
-import { useResponsiveDevice } from '@/hooks/useResponsiveDevice';
+import { useResponsiveDevice } from '@/hooks/ui/useResponsiveDevice';
 
 interface LimitBreakBadgeProps {
   value: number;
