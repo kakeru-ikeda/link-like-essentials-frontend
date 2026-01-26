@@ -6,7 +6,7 @@ import { UserRole } from '@/models/shared/enums';
 import { UserProfile } from '@/models/domain/User';
 import { PageInfo } from '@/models/shared/Pagination';
 import { publishedDeckService } from '@/services/published-deck/publishedDeckService';
-import { deckCommentService } from '@/services/deck/deckCommentService';
+import { deckCommentService } from '@/services/published-deck/deckCommentService';
 import { ReportReason } from '@/models/domain/Comment';
 import { useAuth } from '@/hooks/auth/useAuth';
 import { useBatchUserProfiles } from '@/hooks/user/useBatchUserProfiles';

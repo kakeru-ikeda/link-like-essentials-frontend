@@ -10,7 +10,7 @@ import { PublishedDeckActions } from '@/components/deck/PublishedDeckActions';
 import { DeckCommentSection } from '@/components/deck/DeckCommentSection';
 import { ReportModal } from '@/components/common/ReportModal';
 import { ConfirmDialog } from '@/components/common/ConfirmDialog';
-import { useDeckComments } from '@/hooks/deck/useDeckComments';
+import { useDeckComments } from '@/hooks/published-deck/useDeckComments';
 import { useAuth } from '@/hooks/auth/useAuth';
 import { ReportReason } from '@/models/domain/Comment';
 import { syncClientMetadata } from '@/utils/metadataUtils';

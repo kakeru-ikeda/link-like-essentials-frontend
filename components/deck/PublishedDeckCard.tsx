@@ -2,7 +2,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { PublishedDeck } from '@/models/domain/PublishedDeck';
 import { HashtagChips } from '@/components/deck/HashtagChips';
-import { useDeckLike } from '@/hooks/deck/useDeckLike';
+import { useDeckLike } from '@/hooks/published-deck/useDeckLike';
 import { Tooltip } from '@/components/common/Tooltip';
 import { UserAvatar } from '@/components/common/UserAvatar';
 import { Loading } from '../common/Loading';

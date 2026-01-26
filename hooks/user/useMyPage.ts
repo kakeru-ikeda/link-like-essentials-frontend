@@ -4,8 +4,8 @@ import { useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/auth/useAuth';
 import { useUserProfile } from '@/hooks/user/useUserProfile';
-import { useMyDecks } from '@/hooks/deck/useMyDecks';
-import { useLikedDecks } from '@/hooks/deck/useLikedDecks';
+import { useMyDecks } from '@/hooks/published-deck/useMyDecks';
+import { useLikedDecks } from '@/hooks/published-deck/useLikedDecks';
 
 export const useMyPage = () => {
   const router = useRouter();
