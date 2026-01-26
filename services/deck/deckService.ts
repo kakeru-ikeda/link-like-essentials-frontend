@@ -1,10 +1,10 @@
-import { Card } from '@/models/domain/Card';
-import { Deck, DeckSlot, DeckForCloud } from '@/models/domain/Deck';
+import { Card } from '@/models/card/Card';
+import { Deck, DeckSlot, DeckForCloud } from '@/models/deck/Deck';
 import { DeckType } from '@/models/shared/enums';
 import { canPlaceCardInSlot } from '@/services/deck/deckRulesService';
 import { getDeckSlotMapping } from '@/services/deck/deckConfigService';
 import { DeckSlotMapping } from '@/config/deckSlots';
-import { PublishedDeck } from '@/models/domain/PublishedDeck';
+import { PublishedDeck } from '@/models/published-deck/PublishedDeck';
 import { cardCatalogService } from '@/services/card/cardCatalogService';
 import { CharacterName } from '@/config/characters';
 import { songCatalogService } from '@/services/catalog/songCatalogService';

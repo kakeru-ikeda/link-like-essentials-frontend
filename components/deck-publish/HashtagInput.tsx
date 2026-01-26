@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Deck } from '@/models/domain/Deck';
+import { Deck } from '@/models/deck/Deck';
 import { LiveGrandPrix } from '@/models/live-grand-prix/LiveGrandPrix';
 import { useHashtag } from '@/hooks/published-deck/useHashtag';
 import { HelpTooltip } from '@/components/common/HelpTooltip';

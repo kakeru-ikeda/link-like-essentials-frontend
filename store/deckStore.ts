@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import { Deck } from '@/models/domain/Deck';
-import { Card } from '@/models/domain/Card';
+import { Deck } from '@/models/deck/Deck';
+import { Card } from '@/models/card/Card';
 import { Song } from '@/models/song/Song';
 import { DeckType } from '@/models/shared/enums';
 import { DeckRepository } from '@/repositories/localStorage/deckRepository';

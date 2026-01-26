@@ -1,4 +1,4 @@
-import { Accessory, Card, Skill, Stats, Trait } from '@/models/domain/Card';
+import { Accessory, Card, Skill, Stats, Trait } from '@/models/card/Card';
 
 /**
  * GraphQLクエリのレスポンス型定義

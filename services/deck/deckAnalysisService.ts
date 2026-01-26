@@ -1,5 +1,5 @@
-import { Deck } from '@/models/domain/Deck';
-import { Card } from '@/models/domain/Card';
+import { Deck } from '@/models/deck/Deck';
+import { Card } from '@/models/card/Card';
 import { getDeckSlotMapping } from '@/services/deck/deckConfigService';
 
 /**

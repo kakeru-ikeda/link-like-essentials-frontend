@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Card } from '@/models/domain/Card';
+import { Card } from '@/models/card/Card';
 import { CardListItem } from '@/components/deck-builder/CardListItem';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 

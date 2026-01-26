@@ -12,7 +12,7 @@ import { ReportModal } from '@/components/common/ReportModal';
 import { ConfirmDialog } from '@/components/common/ConfirmDialog';
 import { useDeckComments } from '@/hooks/published-deck/useDeckComments';
 import { useAuth } from '@/hooks/auth/useAuth';
-import { ReportReason } from '@/models/domain/Comment';
+import { ReportReason } from '@/models/comment/Comment';
 import { syncClientMetadata } from '@/utils/metadataUtils';
 
 const getDeckId = (param: string | string[] | undefined): string | null => {

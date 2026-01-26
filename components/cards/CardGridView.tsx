@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Card } from '@/models/domain/Card';
+import { Card } from '@/models/card/Card';
 import { CardGridItem } from '@/components/cards/CardGridItem';
 
 interface CardGridViewProps {

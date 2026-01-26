@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { useApiBase } from '@/hooks/infrastructure/useApiBase';
 import { userService } from '@/services/user/userService';
-import type { UserProfile, UserProfileInput } from '@/models/domain/User';
+import type { UserProfile, UserProfileInput } from '@/models/user/User';
 
 export interface UseUserApiReturn {
   /** 自分のプロフィールを取得 */

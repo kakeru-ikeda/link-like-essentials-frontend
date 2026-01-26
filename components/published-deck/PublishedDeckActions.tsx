@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Deck } from '@/models/domain/Deck';
-import { PublishedDeck } from '@/models/domain/PublishedDeck';
+import { Deck } from '@/models/deck/Deck';
+import { PublishedDeck } from '@/models/published-deck/PublishedDeck';
 import { publishedDeckService } from '@/services/published-deck/publishedDeckService';
 import { useDeckLike } from '@/hooks/published-deck/useDeckLike';
 

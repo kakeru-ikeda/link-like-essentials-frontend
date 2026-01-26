@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { PublishedDeck } from '@/models/domain/PublishedDeck';
+import { PublishedDeck } from '@/models/published-deck/PublishedDeck';
 import { useAuth } from '@/hooks/auth/useAuth';
 import { publishedDeckService } from '@/services/published-deck/publishedDeckService';
 

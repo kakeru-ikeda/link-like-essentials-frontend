@@ -1,5 +1,5 @@
 import { CHARACTERS } from '@/config/characters';
-import { Deck } from '@/models/domain/Deck';
+import { Deck } from '@/models/deck/Deck';
 import { LiveGrandPrix } from '@/models/live-grand-prix/LiveGrandPrix';
 import { getDeckSlotMapping } from '@/services/deck/deckConfigService';
 import type { DeckSlotMapping } from '@/config/deckSlots';

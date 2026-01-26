@@ -3,7 +3,7 @@
 import React from 'react';
 import { useDeck } from '@/hooks/deck/useDeck';
 import { useLiveGrandPrixById } from '@/hooks/deck/useLiveGrandPrix';
-import { Deck } from '@/models/domain/Deck';
+import { Deck } from '@/models/deck/Deck';
 
 interface ExportDashboardProps {
   deck?: Deck | null;

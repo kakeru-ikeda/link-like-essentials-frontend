@@ -1,4 +1,4 @@
-import { UserProfile, UserProfileInput } from '@/models/domain/User';
+import { UserProfile, UserProfileInput } from '@/models/user/User';
 import { userRepository } from '@/repositories/api/userRepository';
 
 /**

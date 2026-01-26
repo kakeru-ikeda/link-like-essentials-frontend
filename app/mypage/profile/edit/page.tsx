@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUserProfile } from '@/hooks/user/useUserProfile';
 import { ProfileForm } from '@/components/profile/ProfileForm';
-import type { UserProfileInput } from '@/models/domain/User';
+import type { UserProfileInput } from '@/models/user/User';
 
 export default function ProfileEditPage() {
   const router = useRouter();

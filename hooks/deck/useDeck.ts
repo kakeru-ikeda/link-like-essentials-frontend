@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useDeckStore } from '@/store/deckStore';
 import { useDeckTabsStore } from '@/store/deckTabsStore';
-import { Card } from '@/models/domain/Card';
+import { Card } from '@/models/card/Card';
 import { Song } from '@/models/song/Song';
 import { DeckType } from '@/models/shared/enums';
 import { DeckService } from '@/services/deck/deckService';

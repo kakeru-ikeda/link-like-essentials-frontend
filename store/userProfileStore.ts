@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import { UserProfile } from '@/models/domain/User';
+import { UserProfile } from '@/models/user/User';
 
 interface UserProfileState {
   profile: UserProfile | null;

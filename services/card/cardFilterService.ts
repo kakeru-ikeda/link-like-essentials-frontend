@@ -1,4 +1,4 @@
-import { Card } from '@/models/domain/Card';
+import { Card } from '@/models/card/Card';
 import { CardFilter, FilterMode } from '@/models/shared/Filter';
 import { FavoriteMode, SkillEffectType, SkillSearchTarget, TraitEffectType } from '@/models/shared/enums';
 import { getSkillEffectKeyword, getSkillEffectKeywords } from '@/services/game/skillEffectService';

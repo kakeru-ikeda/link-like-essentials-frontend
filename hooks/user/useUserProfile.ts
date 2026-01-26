@@ -3,7 +3,7 @@
 import { useState, useCallback } from 'react';
 import { useUserApi } from '@/hooks/user/useUserApi';
 import { useImageUpload } from '@/hooks/infrastructure/useImageUpload';
-import type { UserProfile, UserProfileInput } from '@/models/domain/User';
+import type { UserProfile, UserProfileInput } from '@/models/user/User';
 import { useUserProfileStore } from '@/store/userProfileStore';
 
 export interface UseUserProfileReturn {

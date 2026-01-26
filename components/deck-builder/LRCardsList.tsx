@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Card } from '@/models/domain/Card';
+import { Card } from '@/models/card/Card';
 import { LRCardBadge } from '@/components/deck-builder/LRCardBadge';
 
 interface LRCardsListProps {

@@ -1,4 +1,4 @@
-import { PublishedDeck } from '@/models/domain/PublishedDeck';
+import { PublishedDeck } from '@/models/published-deck/PublishedDeck';
 import { PublishedDeckCard } from './PublishedDeckCard';
 
 interface PublishedDeckListProps {

@@ -1,4 +1,4 @@
-import { Card } from '@/models/domain/Card';
+import { Card } from '@/models/card/Card';
 import { CharacterName } from '@/config/characters';
 import { DeckType } from '@/models/shared/enums';
 

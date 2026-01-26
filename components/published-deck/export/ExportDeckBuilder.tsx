@@ -7,7 +7,7 @@ import { getCharacterBackgroundColor, getCharacterColor } from '@/utils/colorUti
 import { VerticalBadge } from '@/components/shared/VerticalBadge';
 import { AceBadge } from '@/components/shared/AceBadge';
 import { LimitBreakBadge } from '@/components/deck-builder/LimitBreakBadge';
-import type { DeckSlot } from '@/models/domain/Deck';
+import type { DeckSlot } from '@/models/deck/Deck';
 import type { CharacterName } from '@/config/characters';
 import type { DeckSlotMapping } from '@/config/deckSlots';
 import { FRIEND_SLOT_ID } from '@/config/deckSlots';

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { DeckSlot as DeckSlotType } from '@/models/domain/Deck';
+import { DeckSlot as DeckSlotType } from '@/models/deck/Deck';
 import { getCharacterColor } from '@/utils/colorUtils';
 import { ApBadge } from '@/components/shared/ApBadge';
 import { RarityBadge } from '@/components/shared/RarityBadge';

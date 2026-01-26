@@ -1,4 +1,4 @@
-import { Deck } from '@/models/domain/Deck';
+import { Deck } from '@/models/deck/Deck';
 
 const STORAGE_KEY_DECK = 'deck';
 

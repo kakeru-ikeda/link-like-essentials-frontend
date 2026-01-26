@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Card } from '@/models/domain/Card';
+import { Card } from '@/models/card/Card';
 import { RarityBadge } from '@/components/shared/RarityBadge';
 import { ApBadge } from '@/components/shared/ApBadge';
 import { StyleTypeBadge } from '@/components/shared/StyleTypeBadge';

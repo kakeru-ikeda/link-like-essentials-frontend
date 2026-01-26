@@ -1,13 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Comment } from '@/models/domain/Comment';
+import { Comment } from '@/models/comment/Comment';
 import { UserRole } from '@/models/shared/enums';
-import { UserProfile } from '@/models/domain/User';
+import { UserProfile } from '@/models/user/User';
 import { PageInfo } from '@/models/shared/Pagination';
 import { publishedDeckService } from '@/services/published-deck/publishedDeckService';
 import { deckCommentService } from '@/services/published-deck/deckCommentService';
-import { ReportReason } from '@/models/domain/Comment';
+import { ReportReason } from '@/models/comment/Comment';
 import { useAuth } from '@/hooks/auth/useAuth';
 import { useBatchUserProfiles } from '@/hooks/user/useBatchUserProfiles';
 import { logDeckCommented } from '@/services/infrastructure/analyticsService';

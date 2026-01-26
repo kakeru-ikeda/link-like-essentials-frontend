@@ -1,4 +1,4 @@
-import type { Deck } from '@/models/domain/Deck';
+import type { Deck } from '@/models/deck/Deck';
 import type { GenerateThumbnailRequest, ThumbnailCardPayload, ThumbnailDeckPayload } from '@/models/shared/Thumbnail';
 import { thumbnailRepository } from '@/repositories/api/thumbnailRepository';
 

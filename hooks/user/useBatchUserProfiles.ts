@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from 'react';
-import { UserProfile } from '@/models/domain/User';
+import { UserProfile } from '@/models/user/User';
 import { userRepository } from '@/repositories/api/userRepository';
 
 interface UseBatchUserProfilesResult {

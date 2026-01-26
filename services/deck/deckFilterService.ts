@@ -4,9 +4,9 @@
  * スロットに配置可能なカードをフィルタリングするためのロジックを提供します。
  */
 
-import { Card } from '@/models/domain/Card';
+import { Card } from '@/models/card/Card';
 import { canPlaceCardInSlot } from '@/services/deck/deckRulesService';
-import { DeckSlot } from '@/models/domain/Deck';
+import { DeckSlot } from '@/models/deck/Deck';
 import { DeckType } from '@/models/shared/enums';
 
 /**

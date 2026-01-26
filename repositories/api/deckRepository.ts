@@ -1,6 +1,6 @@
-import { DeckPublicationRequest, PublishedDeck } from '@/models/domain/PublishedDeck';
-import { Comment, ReportReason } from '@/models/domain/Comment';
-import { GetDecksParams, GetLikedDecksParams } from '@/models/domain/DeckQueryParams';
+import { DeckPublicationRequest, PublishedDeck } from '@/models/published-deck/PublishedDeck';
+import { Comment, ReportReason } from '@/models/comment/Comment';
+import { GetDecksParams, GetLikedDecksParams } from '@/models/deck/DeckQueryParams';
 import { PaginatedResponse } from '@/models/shared/Pagination';
 import { PopularHashtagSummary } from '@/models/published-deck/Hashtag';
 import { DECK_API_ENDPOINT } from '@/config/api';

@@ -20,8 +20,8 @@ import { useCards } from '@/hooks/card/useCards';
 import { useCardStore } from '@/store/cardStore';
 import { useSideModal } from '@/hooks/ui/useSideModal';
 import { useFilter } from '@/hooks/ui/useFilter';
-import type { Card } from '@/models/domain/Card';
-import type { DeckSlot } from '@/models/domain/Deck';
+import type { Card } from '@/models/card/Card';
+import type { DeckSlot } from '@/models/deck/Deck';
 import {
   filterCardsBySlot,
   getAssignedCardsForSlot,

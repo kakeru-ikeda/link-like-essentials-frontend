@@ -28,7 +28,7 @@ import { EffectBadge } from '@/components/shared/EffectBadge';
 import { DeckPublishModal } from '@/components/deck-publish/DeckPublishModal';
 import { DeckPublishSuccessDialog } from '@/components/deck-publish/DeckPublishSuccessDialog';
 import { useModal } from '@/hooks/ui/useModal';
-import { PublishedDeck } from '@/models/domain/PublishedDeck';
+import { PublishedDeck } from '@/models/published-deck/PublishedDeck';
 import { useResponsiveDevice } from '@/hooks/ui/useResponsiveDevice';
 import { HelpTooltip } from '@/components/common/HelpTooltip';
 

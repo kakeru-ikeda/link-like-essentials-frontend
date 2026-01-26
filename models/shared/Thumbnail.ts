@@ -1,5 +1,5 @@
 import { Rarity } from '@/models/shared/enums';
-import { Deck, DeckSlotForCloud } from '@/models/domain/Deck';
+import { Deck, DeckSlotForCloud } from '@/models/deck/Deck';
 
 export interface ThumbnailDeckPayload
   extends Pick<

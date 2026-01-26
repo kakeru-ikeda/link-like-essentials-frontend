@@ -1,7 +1,7 @@
 import { apolloClient } from '@/repositories/graphql/client';
 import { GET_CARD_DETAILS } from '@/repositories/graphql/queries/cards';
 import { CardDetailNode, CardDetailsQueryData } from '@/types/graphql/cards';
-import { Card } from '@/models/domain/Card';
+import { Card } from '@/models/card/Card';
 
 /**
  * カードカタログ取得用サービス

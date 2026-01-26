@@ -4,7 +4,7 @@ import React from 'react';
 import { Button } from '@/components/common/Button';
 import { HashtagInput } from '@/components/deck-publish/HashtagInput';
 import { ImagePreviewGrid } from '@/components/deck-publish/ImagePreviewGrid';
-import { Deck } from '@/models/domain/Deck';
+import { Deck } from '@/models/deck/Deck';
 import { LiveGrandPrix } from '@/models/live-grand-prix/LiveGrandPrix';
 import { HelpTooltip } from '@/components/common/HelpTooltip';
 

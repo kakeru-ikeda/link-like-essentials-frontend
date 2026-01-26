@@ -1,5 +1,5 @@
-import { PublishedDeck } from '@/models/domain/PublishedDeck';
-import { Deck } from '@/models/domain/Deck';
+import { PublishedDeck } from '@/models/published-deck/PublishedDeck';
+import { Deck } from '@/models/deck/Deck';
 import { ExportDashboard } from '@/components/published-deck/export/ExportDashboard';
 import { ImagePreviewGrid } from '@/components/deck-publish/ImagePreviewGrid';
 import { HashtagChips } from '@/components/deck-publish/HashtagChips';

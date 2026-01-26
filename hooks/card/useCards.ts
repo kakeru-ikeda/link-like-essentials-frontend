@@ -9,7 +9,7 @@ import {
   CardDetailQueryData,
   CardDetailsQueryData,
 } from '@/types/graphql/cards';
-import { Card } from '@/models/domain/Card';
+import { Card } from '@/models/card/Card';
 import { CardFilter } from '@/models/shared/Filter';
 import { filterCardsOnClient } from '@/services/card/cardFilterService';
 import { cardCatalogService } from '@/services/card/cardCatalogService';

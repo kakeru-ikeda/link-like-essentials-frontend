@@ -2,7 +2,7 @@ import type { UpgradeAnonymousRequest, UpgradeAnonymousResponse } from '@/reposi
 import { authRepository } from '@/repositories/api/authRepository';
 import { signInWithEmail as signInWithEmailRepo, signOutUser as signOutUserRepo } from '@/repositories/firebase/auth';
 import { userService } from '@/services/user/userService';
-import type { UserProfile } from '@/models/domain/User';
+import type { UserProfile } from '@/models/user/User';
 import { UserRole } from '@/models/shared/enums';
 
 interface SignInResult {

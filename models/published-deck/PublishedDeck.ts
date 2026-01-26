@@ -1,5 +1,5 @@
-import { DeckForCloud } from '@/models/domain/Deck';
-import { UserProfile } from '@/models/domain/User';
+import { DeckForCloud } from '@/models/deck/Deck';
+import { UserProfile } from '@/models/user/User';
 
 /**
  * 公開済みデッキ型

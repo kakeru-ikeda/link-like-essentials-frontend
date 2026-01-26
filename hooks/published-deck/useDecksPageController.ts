@@ -1,6 +1,6 @@
 import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { GetDecksParams } from '@/models/domain/DeckQueryParams';
+import { GetDecksParams } from '@/models/deck/DeckQueryParams';
 import { usePublishedDecks } from '@/hooks/published-deck/usePublishedDecks';
 import {
   buildQueryString,

@@ -1,10 +1,10 @@
-import { GetDecksParams, GetLikedDecksParams } from '@/models/domain/DeckQueryParams';
-import { PublishedDeck } from '@/models/domain/PublishedDeck';
-import { Comment } from '@/models/domain/Comment';
+import { GetDecksParams, GetLikedDecksParams } from '@/models/deck/DeckQueryParams';
+import { PublishedDeck } from '@/models/published-deck/PublishedDeck';
+import { Comment } from '@/models/comment/Comment';
 import { PaginatedResponse } from '@/models/shared/Pagination';
 import { PopularHashtagSummary } from '@/models/published-deck/Hashtag';
 import { deckRepository } from '@/repositories/api/deckRepository';
-import { ReportReason } from '@/models/domain/Comment';
+import { ReportReason } from '@/models/comment/Comment';
 
 /**
  * 公開デッキの取得・操作をまとめたサービス

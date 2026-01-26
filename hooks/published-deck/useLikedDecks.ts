@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { GetLikedDecksParams } from '@/models/domain/DeckQueryParams';
-import { PublishedDeck } from '@/models/domain/PublishedDeck';
+import { GetLikedDecksParams } from '@/models/deck/DeckQueryParams';
+import { PublishedDeck } from '@/models/published-deck/PublishedDeck';
 import { PageInfo } from '@/models/shared/Pagination';
 import { useAuth } from '@/hooks/auth/useAuth';
 import { publishedDeckService } from '@/services/published-deck/publishedDeckService';

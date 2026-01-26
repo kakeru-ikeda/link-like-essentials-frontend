@@ -1,6 +1,6 @@
 'use client';
 
-import { Deck } from '@/models/domain/Deck';
+import { Deck } from '@/models/deck/Deck';
 import React from 'react';
 import { useResponsiveDevice } from '@/hooks/ui/useResponsiveDevice';
 import { Tooltip } from '@/components/common/Tooltip';

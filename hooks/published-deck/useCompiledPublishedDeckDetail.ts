@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Deck } from '@/models/domain/Deck';
-import { PublishedDeck } from '@/models/domain/PublishedDeck';
+import { Deck } from '@/models/deck/Deck';
+import { PublishedDeck } from '@/models/published-deck/PublishedDeck';
 import { usePublishedDeckDetail } from '@/hooks/published-deck/usePublishedDeckDetail';
 import { DeckService } from '@/services/deck/deckService';
 

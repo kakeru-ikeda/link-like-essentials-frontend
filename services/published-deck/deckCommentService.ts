@@ -1,5 +1,5 @@
 import { deckRepository } from '@/repositories/api/deckRepository';
-import { ReportReason, getReportReasonLabel } from '@/models/domain/Comment';
+import { ReportReason, getReportReasonLabel } from '@/models/comment/Comment';
 
 /**
  * デッキコメントに関するビジネスロジックを提供するサービス

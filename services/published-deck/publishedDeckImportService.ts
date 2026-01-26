@@ -1,4 +1,4 @@
-import { PublishedDeck } from '@/models/domain/PublishedDeck';
+import { PublishedDeck } from '@/models/published-deck/PublishedDeck';
 import { DeckService } from '@/services/deck/deckService';
 import { useDeckStore } from '@/store/deckStore';
 import { useDeckTabsStore } from '@/store/deckTabsStore';

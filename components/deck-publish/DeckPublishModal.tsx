@@ -9,7 +9,7 @@ import { useDeck } from '@/hooks/deck/useDeck';
 import { useDeckPublish } from '@/hooks/deck/useDeckPublish';
 import { useLiveGrandPrixById } from '@/hooks/deck/useLiveGrandPrix';
 import { useResponsiveDevice } from '@/hooks/ui/useResponsiveDevice';
-import { PublishedDeck } from '@/models/domain/PublishedDeck';
+import { PublishedDeck } from '@/models/published-deck/PublishedDeck';
 import { FRIEND_SLOT_ID } from '@/config/deckSlots';
 
 interface DeckPublishModalProps {

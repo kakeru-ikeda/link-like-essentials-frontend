@@ -7,7 +7,7 @@
 import { CHARACTERS } from '@/config/characters';
 import { canPlaceCardInSlot, getCharacterGeneration } from '@/services/deck/deckRulesService';
 import { getDeckSlotMapping } from '@/services/deck/deckConfigService';
-import { Card } from '@/models/domain/Card';
+import { Card } from '@/models/card/Card';
 import { DeckType } from '@/models/shared/enums';
 
 /**

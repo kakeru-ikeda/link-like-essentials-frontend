@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import { Card } from '@/models/domain/Card';
+import { Card } from '@/models/card/Card';
 import { CardFilter } from '@/models/shared/Filter';
 
 export interface CardFilters {

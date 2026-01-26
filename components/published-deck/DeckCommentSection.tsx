@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { Comment } from '@/models/domain/Comment';
-import { UserProfile } from '@/models/domain/User';
+import { Comment } from '@/models/comment/Comment';
+import { UserProfile } from '@/models/user/User';
 import { MAX_COMMENT_LENGTH } from '@/hooks/published-deck/useDeckComments';
 import { UserAvatar } from '@/components/user/UserAvatar';
 import { ConfirmDialog } from '@/components/common/ConfirmDialog';
 import { ReportModal } from '@/components/common/ReportModal';
-import { ReportReason } from '@/models/domain/Comment';
+import { ReportReason } from '@/models/comment/Comment';
 
 interface DeckCommentSectionProps {
   comments: Comment[];

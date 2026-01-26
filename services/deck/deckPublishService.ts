@@ -1,5 +1,5 @@
-import { Deck, DeckForCloud, DeckSlotForCloud } from '@/models/domain/Deck';
-import { DeckPublicationRequest, PublishedDeck } from '@/models/domain/PublishedDeck';
+import { Deck, DeckForCloud, DeckSlotForCloud } from '@/models/deck/Deck';
+import { DeckPublicationRequest, PublishedDeck } from '@/models/published-deck/PublishedDeck';
 import { deckRepository } from '@/repositories/api/deckRepository';
 import { nanoid } from 'nanoid';
 import { logDeckPublished } from '@/services/infrastructure/analyticsService';

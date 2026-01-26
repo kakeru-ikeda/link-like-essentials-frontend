@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Deck } from '@/models/domain/Deck';
+import { Deck } from '@/models/deck/Deck';
 import { FavoriteMode } from '@/models/shared/enums';
 
 interface SkillApGraphProps {
