@@ -3,7 +3,7 @@
 import { PublishedDeckList } from '@/components/deck/PublishedDeckList';
 import { TagFilterBar } from '@/components/deck/TagFilterBar';
 import { useDecksPageController } from '@/hooks/published-deck/useDecksPageController';
-import { usePopularHashtags } from '@/hooks/features/usePopularHashtags';
+import { usePopularHashtags } from '@/hooks/published-deck/usePopularHashtags';
 
 export default function DecksPage() {
   const {

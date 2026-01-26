@@ -7,7 +7,7 @@ import { DeckExportView } from '@/components/deck/export/DeckExportView';
 import { DeckPublishForm } from '@/components/deck/DeckPublishForm';
 import { useDeck } from '@/hooks/deck/useDeck';
 import { useDeckPublish } from '@/hooks/deck/useDeckPublish';
-import { useLiveGrandPrixById } from '@/hooks/features/useLiveGrandPrix';
+import { useLiveGrandPrixById } from '@/hooks/live-grand-prix/useLiveGrandPrix';
 import { useResponsiveDevice } from '@/hooks/ui/useResponsiveDevice';
 import { PublishedDeck } from '@/models/domain/PublishedDeck';
 import { FRIEND_SLOT_ID } from '@/config/deckSlots';

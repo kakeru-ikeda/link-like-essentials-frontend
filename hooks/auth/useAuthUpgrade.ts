@@ -2,7 +2,7 @@
 
 import { useCallback } from 'react';
 import { authService } from '@/services/auth/authService';
-import { useApiBase } from '@/hooks/features/useApiBase';
+import { useApiBase } from '@/hooks/infrastructure/useApiBase';
 import { useAuthStore } from '@/store/authStore';
 import { useUserProfileStore } from '@/store/userProfileStore';
 import type { UpgradeAnonymousRequest, UpgradeAnonymousResponse } from '@/repositories/api/authRepository';

@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Deck } from '@/models/domain/Deck';
 import { PublishedDeck } from '@/models/domain/PublishedDeck';
-import { useImageUpload } from '@/hooks/features/useImageUpload';
+import { useImageUpload } from '@/hooks/infrastructure/useImageUpload';
 import { deckPublishService } from '@/services/deck/deckPublishService';
 import { thumbnailService } from '@/services/infrastructure/thumbnailService';
 import { useUserProfile } from '@/hooks/user/useUserProfile';

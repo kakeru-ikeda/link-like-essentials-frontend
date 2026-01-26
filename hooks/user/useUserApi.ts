@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { useApiBase } from '@/hooks/features/useApiBase';
+import { useApiBase } from '@/hooks/infrastructure/useApiBase';
 import { userService } from '@/services/user/userService';
 import type { UserProfile, UserProfileInput } from '@/models/domain/User';
 
