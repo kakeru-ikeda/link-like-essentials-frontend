@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Tooltip } from './Tooltip';
+import { Tooltip } from '@/components/common/Tooltip';
 import { LiveGrandPrixSectionEffect } from '@/models/live-grand-prix/LiveGrandPrix';
 
 interface EffectBadgeProps {
