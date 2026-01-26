@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card } from '@/models/domain/Card';
-import { CardListItem } from '@/components/deck/CardListItem';
+import { CardListItem } from '@/components/deck-builder/CardListItem';
 import { Loading } from '@/components/common/Loading';
 
 interface CardListProps {

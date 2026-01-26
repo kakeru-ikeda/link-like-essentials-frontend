@@ -3,10 +3,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { DeckSlot as DeckSlotType } from '@/models/domain/Deck';
 import { getCharacterColor } from '@/utils/colorUtils';
-import { ApBadge } from '@/components/common/ApBadge';
-import { RarityBadge } from '@/components/common/RarityBadge';
-import { AceBadge } from '@/components/common/AceBadge';
-import { LimitBreakBadge } from '@/components/deck/LimitBreakBadge';
+import { ApBadge } from '@/components/shared/ApBadge';
+import { RarityBadge } from '@/components/shared/RarityBadge';
+import { AceBadge } from '@/components/shared/AceBadge';
+import { LimitBreakBadge } from '@/components/deck-builder/LimitBreakBadge';
 import { useResponsiveDevice } from '@/hooks/ui/useResponsiveDevice';
 
 interface DeckSlotProps {

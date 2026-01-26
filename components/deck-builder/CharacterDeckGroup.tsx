@@ -1,10 +1,10 @@
 'use client';
 
 import React from 'react';
-import { DeckSlot } from '@/components/deck/DeckSlot';
+import { DeckSlot } from '@/components/deck-builder/DeckSlot';
 import { DeckSlot as DeckSlotType } from '@/models/domain/Deck';
 import { getCharacterBackgroundColor } from '@/utils/colorUtils';
-import { VerticalBadge } from '@/components/common/VerticalBadge';
+import { VerticalBadge } from '@/components/shared/VerticalBadge';
 
 interface CharacterDeckGroupProps {
   character: string;

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Comment } from '@/models/domain/Comment';
 import { UserProfile } from '@/models/domain/User';
 import { MAX_COMMENT_LENGTH } from '@/hooks/published-deck/useDeckComments';
-import { UserAvatar } from '@/components/common/UserAvatar';
+import { UserAvatar } from '@/components/user/UserAvatar';
 import { ConfirmDialog } from '@/components/common/ConfirmDialog';
 import { ReportModal } from '@/components/common/ReportModal';
 import { ReportReason } from '@/models/domain/Comment';

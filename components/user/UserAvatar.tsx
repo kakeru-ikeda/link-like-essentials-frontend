@@ -1,5 +1,5 @@
 import { UserProfile } from '@/models/domain/User';
-import { VerifiedBadge } from '@/components/common/VerifiedBadge';
+import { VerifiedBadge } from '@/components/user/VerifiedBadge';
 
 interface UserAvatarProps {
   userProfile?: UserProfile;

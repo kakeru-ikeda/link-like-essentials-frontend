@@ -2,10 +2,10 @@
 
 import React, { useState } from 'react';
 import { Card } from '@/models/domain/Card';
-import { RarityBadge } from '@/components/common/RarityBadge';
-import { StyleTypeBadge } from '@/components/common/StyleTypeBadge';
-import { FavoriteModeBadge } from '@/components/common/FavoriteModeBadge';
-import { LimitedTypeBadge } from '@/components/common/LimitedTypeBadge';
+import { RarityBadge } from '@/components/shared/RarityBadge';
+import { StyleTypeBadge } from '@/components/shared/StyleTypeBadge';
+import { FavoriteModeBadge } from '@/components/shared/FavoriteModeBadge';
+import { LimitedTypeBadge } from '@/components/shared/LimitedTypeBadge';
 import { HighlightText } from '@/components/common/HighlightText';
 import { getCharacterColor } from '@/utils/colorUtils';
 

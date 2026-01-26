@@ -1,6 +1,6 @@
 import { FormEvent } from 'react';
 import { PopularHashtag } from '@/models/published-deck/Hashtag';
-import { HashtagChips } from '@/components/deck/HashtagChips';
+import { HashtagChips } from '@/components/deck-publish/HashtagChips';
 
 interface TagFilterBarProps {
   tagInput: string;

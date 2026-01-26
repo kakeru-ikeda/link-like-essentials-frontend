@@ -2,10 +2,10 @@
 
 import React from 'react';
 import { Card } from '@/models/domain/Card';
-import { RarityBadge } from '@/components/common/RarityBadge';
-import { ApBadge } from '@/components/common/ApBadge';
-import { StyleTypeBadge } from '@/components/common/StyleTypeBadge';
-import { FavoriteModeBadge } from '@/components/common/FavoriteModeBadge';
+import { RarityBadge } from '@/components/shared/RarityBadge';
+import { ApBadge } from '@/components/shared/ApBadge';
+import { StyleTypeBadge } from '@/components/shared/StyleTypeBadge';
+import { FavoriteModeBadge } from '@/components/shared/FavoriteModeBadge';
 
 interface CardItemProps {
   card: Card;

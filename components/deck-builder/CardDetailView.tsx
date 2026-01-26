@@ -3,12 +3,12 @@
 import React from 'react';
 import { Card } from '@/models/domain/Card';
 import { useCardDetail } from '@/hooks/card/useCards';
-import { RarityBadge } from '@/components/common/RarityBadge';
-import { StyleTypeBadge } from '@/components/common/StyleTypeBadge';
-import { FavoriteModeBadge } from '@/components/common/FavoriteModeBadge';
-import { LimitedTypeBadge } from '@/components/common/LimitedTypeBadge';
+import { RarityBadge } from '@/components/shared/RarityBadge';
+import { StyleTypeBadge } from '@/components/shared/StyleTypeBadge';
+import { FavoriteModeBadge } from '@/components/shared/FavoriteModeBadge';
+import { LimitedTypeBadge } from '@/components/shared/LimitedTypeBadge';
 import { Loading } from '@/components/common/Loading';
-import { CardDetailSections } from '@/components/deck/CardDetailSections';
+import { CardDetailSections } from '@/components/deck-builder/CardDetailSections';
 import { getCharacterColor } from '@/utils/colorUtils';
 
 interface CardDetailViewProps {

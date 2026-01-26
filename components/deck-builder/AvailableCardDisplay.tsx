@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Card } from '@/models/domain/Card';
-import { CardList } from '@/components/deck/CardList';
+import { CardList } from '@/components/deck-builder/CardList';
 
 interface AvailableCardDisplayProps {
   cards: Card[];

@@ -5,7 +5,7 @@ import { useCards } from '@/hooks/card/useCards';
 import { useCardFilterQuery } from '@/hooks/card/useCardFilterQuery';
 import { CardGridView } from '@/components/cards/CardGridView';
 import { CardListView } from '@/components/cards/CardListView';
-import { CardDetailView } from '@/components/deck/CardDetailView';
+import { CardDetailView } from '@/components/deck-builder/CardDetailView';
 import { CardGridFilter } from '@/components/cards/CardGridFilter';
 import { SideModal } from '@/components/common/SideModal';
 import { useSideModal } from '@/hooks/ui/useSideModal';

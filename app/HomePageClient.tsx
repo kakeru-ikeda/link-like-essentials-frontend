@@ -1,8 +1,8 @@
 'use client';
 import React from 'react';
-import { DeckBuilder } from '@/components/deck/DeckBuilder';
-import { DeckDashboard } from '@/components/deck/DeckDashboard';
-import { DeckTabs } from '@/components/deck/DeckTabs';
+import { DeckBuilder } from '@/components/deck-builder/DeckBuilder';
+import { DeckDashboard } from '@/components/deck-builder/DeckDashboard';
+import { DeckTabs } from '@/components/deck-builder/DeckTabs';
 import { useDeckTabs } from '@/hooks/deck/useDeckTabs';
 import { useDeck } from '@/hooks/deck/useDeck';
 import { useResponsiveDevice } from '@/hooks/ui/useResponsiveDevice';

@@ -3,8 +3,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { ConfirmDialog } from '@/components/common/ConfirmDialog';
 import { Modal } from '@/components/common/Modal';
-import { DeckExportView } from '@/components/deck/export/DeckExportView';
-import { DeckPublishForm } from '@/components/deck/DeckPublishForm';
+import { DeckExportView } from '@/components/published-deck/export/DeckExportView';
+import { DeckPublishForm } from '@/components/deck-publish/DeckPublishForm';
 import { useDeck } from '@/hooks/deck/useDeck';
 import { useDeckPublish } from '@/hooks/deck/useDeckPublish';
 import { useLiveGrandPrixById } from '@/hooks/live-grand-prix/useLiveGrandPrix';

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Card } from '@/models/domain/Card';
-import { LRCardBadge } from '@/components/deck/LRCardBadge';
+import { LRCardBadge } from '@/components/deck-builder/LRCardBadge';
 
 interface LRCardsListProps {
   lrCards: Card[];

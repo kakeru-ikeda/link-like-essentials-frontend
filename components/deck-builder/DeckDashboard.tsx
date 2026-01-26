@@ -1,15 +1,15 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { DeckTitle } from '@/components/deck/DeckTitle';
-import { DeckTypeSelect } from '@/components/deck/DeckTypeSelect';
-import { SongSelect } from '@/components/deck/SongSelect';
+import { DeckTitle } from '@/components/deck-builder/DeckTitle';
+import { DeckTypeSelect } from '@/components/deck-builder/DeckTypeSelect';
+import { SongSelect } from '@/components/deck-builder/SongSelect';
 import { Button } from '@/components/common/Button';
 import { Modal } from '@/components/common/Modal';
-import { CenterCardDisplay } from '@/components/deck/CenterCardDisplay';
-import { LRCardsList } from '@/components/deck/LRCardsList';
+import { CenterCardDisplay } from '@/components/deck-builder/CenterCardDisplay';
+import { LRCardsList } from '@/components/deck-builder/LRCardsList';
 import { ExpandableTextArea } from '@/components/common/ExpandableTextArea';
-import { ActiveEventBadge } from '@/components/common/ActiveEventBadge';
+import { ActiveEventBadge } from '@/components/shared/ActiveEventBadge';
 import { Song } from '@/models/song/Song';
 import { DeckType } from '@/models/shared/enums';
 import { useDeck } from '@/hooks/deck/useDeck';
@@ -24,9 +24,9 @@ import {
 } from '@/hooks/live-grand-prix/useLiveGrandPrix';
 import { LiveGrandPrix, LiveGrandPrixDetail } from '@/models/live-grand-prix/LiveGrandPrix';
 import { ExpansionPanel } from '@/components/common/ExpansionPanel';
-import { EffectBadge } from '@/components/common/EffectBadge';
-import { DeckPublishModal } from '@/components/deck/DeckPublishModal';
-import { DeckPublishSuccessDialog } from '@/components/deck/DeckPublishSuccessDialog';
+import { EffectBadge } from '@/components/shared/EffectBadge';
+import { DeckPublishModal } from '@/components/deck-publish/DeckPublishModal';
+import { DeckPublishSuccessDialog } from '@/components/deck-publish/DeckPublishSuccessDialog';
 import { useModal } from '@/hooks/ui/useModal';
 import { PublishedDeck } from '@/models/domain/PublishedDeck';
 import { useResponsiveDevice } from '@/hooks/ui/useResponsiveDevice';

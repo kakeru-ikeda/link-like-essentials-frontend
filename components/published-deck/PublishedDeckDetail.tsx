@@ -1,9 +1,9 @@
 import { PublishedDeck } from '@/models/domain/PublishedDeck';
 import { Deck } from '@/models/domain/Deck';
-import { ExportDashboard } from '@/components/deck/export/ExportDashboard';
-import { ImagePreviewGrid } from '@/components/deck/ImagePreviewGrid';
-import { HashtagChips } from '@/components/deck/HashtagChips';
-import { UserAvatar } from '@/components/common/UserAvatar';
+import { ExportDashboard } from '@/components/published-deck/export/ExportDashboard';
+import { ImagePreviewGrid } from '@/components/deck-publish/ImagePreviewGrid';
+import { HashtagChips } from '@/components/deck-publish/HashtagChips';
+import { UserAvatar } from '@/components/user/UserAvatar';
 
 interface PublishedDeckDetailProps {
   deck: PublishedDeck;

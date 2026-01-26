@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { PublishedDeck } from '@/models/domain/PublishedDeck';
-import { HashtagChips } from '@/components/deck/HashtagChips';
+import { HashtagChips } from '@/components/deck-publish/HashtagChips';
 import { useDeckLike } from '@/hooks/published-deck/useDeckLike';
 import { Tooltip } from '@/components/common/Tooltip';
-import { UserAvatar } from '@/components/common/UserAvatar';
+import { UserAvatar } from '@/components/user/UserAvatar';
 import { Loading } from '../common/Loading';
 
 interface PublishedDeckCardProps {

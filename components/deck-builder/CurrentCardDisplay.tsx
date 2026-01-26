@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Card } from '@/models/domain/Card';
-import { CardListItem } from '@/components/deck/CardListItem';
+import { CardListItem } from '@/components/deck-builder/CardListItem';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 
 interface CurrentCardDisplayProps {
