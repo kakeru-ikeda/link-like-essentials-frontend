@@ -7,8 +7,8 @@ import { DeckSlotMapping } from '@/config/deckSlots';
 import { PublishedDeck } from '@/models/published-deck/PublishedDeck';
 import { cardCatalogService } from '@/services/card/cardCatalogService';
 import { CharacterName } from '@/config/characters';
-import { songCatalogService } from '@/services/catalog/songCatalogService';
-import { liveGrandPrixCatalogService } from '@/services/catalog/liveGrandPrixCatalogService';
+import { songCatalogService } from '@/services/song/songCatalogService';
+import { liveGrandPrixCatalogService } from '@/services/live-grand-prix/liveGrandPrixCatalogService';
 
 /**
  * カード配置の結果

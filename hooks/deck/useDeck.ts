@@ -5,7 +5,7 @@ import { Card } from '@/models/card/Card';
 import { Song } from '@/models/song/Song';
 import { DeckType } from '@/models/shared/enums';
 import { DeckService } from '@/services/deck/deckService';
-import { LiveGrandPrixService } from '@/services/catalog/liveGrandPrixService';
+import { LiveGrandPrixService } from '@/services/live-grand-prix/liveGrandPrixService';
 import { LiveGrandPrixDetail } from '@/models/live-grand-prix/LiveGrandPrix';
 
 export const useDeck = () => {

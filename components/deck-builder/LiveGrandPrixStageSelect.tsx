@@ -3,7 +3,7 @@
 import React, { useEffect } from 'react';
 import { Dropdown, DropdownOption } from '@/components/common/Dropdown';
 import { LiveGrandPrixDetail } from '@/models/live-grand-prix/LiveGrandPrix';
-import { LiveGrandPrixService } from '@/services/catalog/liveGrandPrixService';
+import { LiveGrandPrixService } from '@/services/live-grand-prix/liveGrandPrixService';
 
 interface LiveGrandPrixStageSelectProps {
   details?: LiveGrandPrixDetail[];

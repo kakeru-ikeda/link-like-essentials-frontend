@@ -6,7 +6,7 @@ import { LiveGrandPrix } from '@/models/live-grand-prix/LiveGrandPrix';
 import { useLiveGrandPrix } from '@/hooks/deck/useLiveGrandPrix';
 import { Loading } from '@/components/common/Loading';
 import { DeckType } from '@/models/shared/enums';
-import { LiveGrandPrixService } from '@/services/catalog/liveGrandPrixService';
+import { LiveGrandPrixService } from '@/services/live-grand-prix/liveGrandPrixService';
 
 interface LiveGrandPrixSelectProps {
   deckType?: DeckType;
