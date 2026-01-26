@@ -12,6 +12,7 @@ export function formatNewsDate(value?: string): string {
     day: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
+    timeZone: 'Asia/Tokyo',
   }).format(date);
 }
 
@@ -27,5 +28,6 @@ export function formatDate(value?: string): string {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
+    timeZone: 'Asia/Tokyo',
   }).format(date);
 }
