@@ -4,7 +4,7 @@ import React, { useEffect } from 'react';
 import { Dropdown, DropdownOption } from '@/components/common/Dropdown';
 import { Song } from '@/models/song/Song';
 import { DeckType } from '@/models/shared/enums';
-import { useSongs } from '@/hooks/song/useSongs';
+import { useSongs } from '@/hooks/deck/useSongs';
 import { Loading } from '@/components/common/Loading';
 
 interface SongSelectProps {

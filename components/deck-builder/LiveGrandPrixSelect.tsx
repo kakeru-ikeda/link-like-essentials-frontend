@@ -3,7 +3,7 @@
 import React from 'react';
 import { Dropdown, DropdownOption } from '@/components/common/Dropdown';
 import { LiveGrandPrix } from '@/models/live-grand-prix/LiveGrandPrix';
-import { useLiveGrandPrix } from '@/hooks/live-grand-prix/useLiveGrandPrix';
+import { useLiveGrandPrix } from '@/hooks/deck/useLiveGrandPrix';
 import { Loading } from '@/components/common/Loading';
 import { DeckType } from '@/models/shared/enums';
 import { LiveGrandPrixService } from '@/services/catalog/liveGrandPrixService';

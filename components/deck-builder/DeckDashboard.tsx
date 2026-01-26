@@ -21,7 +21,7 @@ import { LiveGrandPrixStageSelect } from './LiveGrandPrixStageSelect';
 import {
   useLiveGrandPrixById,
   useActiveLiveGrandPrix,
-} from '@/hooks/live-grand-prix/useLiveGrandPrix';
+} from '@/hooks/deck/useLiveGrandPrix';
 import { LiveGrandPrix, LiveGrandPrixDetail } from '@/models/live-grand-prix/LiveGrandPrix';
 import { ExpansionPanel } from '@/components/common/ExpansionPanel';
 import { EffectBadge } from '@/components/shared/EffectBadge';
