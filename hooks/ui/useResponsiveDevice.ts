@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react';
 
 import { MEDIA_QUERY_PC } from '@/config/responsive';
-import { DeviceType } from '@/utils/responsive';
 
+type DeviceType = 'pc' | 'sp';
 interface UseResponsiveDeviceResult {
   deviceType: DeviceType;
   isPc: boolean;
