@@ -6,7 +6,7 @@ import {
   GET_LIVE_GRAND_PRIX_BY_EVENT_NAME,
   GET_LIVE_GRAND_PRIX_STATS,
 } from '@/repositories/graphql/queries/liveGrandPrix';
-import { LiveGrandPrix, LiveGrandPrixStats } from '@/models/features/LiveGrandPrix';
+import { LiveGrandPrix, LiveGrandPrixStats } from '@/models/live-grand-prix/LiveGrandPrix';
 
 /**
  * ライブグランプリフィルター

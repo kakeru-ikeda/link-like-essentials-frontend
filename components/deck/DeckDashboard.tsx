@@ -10,7 +10,7 @@ import { CenterCardDisplay } from '@/components/deck/CenterCardDisplay';
 import { LRCardsList } from '@/components/deck/LRCardsList';
 import { ExpandableTextArea } from '@/components/common/ExpandableTextArea';
 import { ActiveEventBadge } from '@/components/common/ActiveEventBadge';
-import { Song } from '@/models/features/Song';
+import { Song } from '@/models/song/Song';
 import { DeckType } from '@/models/shared/enums';
 import { useDeck } from '@/hooks/deck/useDeck';
 import { getCenterCard, getOtherLRCards } from '@/services/deck/deckAnalysisService';
@@ -22,7 +22,7 @@ import {
   useLiveGrandPrixById,
   useActiveLiveGrandPrix,
 } from '@/hooks/live-grand-prix/useLiveGrandPrix';
-import { LiveGrandPrix, LiveGrandPrixDetail } from '@/models/features/LiveGrandPrix';
+import { LiveGrandPrix, LiveGrandPrixDetail } from '@/models/live-grand-prix/LiveGrandPrix';
 import { ExpansionPanel } from '@/components/common/ExpansionPanel';
 import { EffectBadge } from '@/components/common/EffectBadge';
 import { DeckPublishModal } from '@/components/deck/DeckPublishModal';

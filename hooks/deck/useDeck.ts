@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react';
 import { useDeckStore } from '@/store/deckStore';
 import { useDeckTabsStore } from '@/store/deckTabsStore';
 import { Card } from '@/models/domain/Card';
-import { Song } from '@/models/features/Song';
+import { Song } from '@/models/song/Song';
 import { DeckType } from '@/models/shared/enums';
 import { DeckService } from '@/services/deck/deckService';
 import { LiveGrandPrixService } from '@/services/catalog/liveGrandPrixService';
-import { LiveGrandPrixDetail } from '@/models/features/LiveGrandPrix';
+import { LiveGrandPrixDetail } from '@/models/live-grand-prix/LiveGrandPrix';
 
 export const useDeck = () => {
   const {

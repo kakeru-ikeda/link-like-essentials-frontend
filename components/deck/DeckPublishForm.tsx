@@ -5,7 +5,7 @@ import { Button } from '@/components/common/Button';
 import { HashtagInput } from '@/components/deck/HashtagInput';
 import { ImagePreviewGrid } from '@/components/deck/ImagePreviewGrid';
 import { Deck } from '@/models/domain/Deck';
-import { LiveGrandPrix } from '@/models/features/LiveGrandPrix';
+import { LiveGrandPrix } from '@/models/live-grand-prix/LiveGrandPrix';
 import { HelpTooltip } from '@/components/common/HelpTooltip';
 
 interface DeckPublishFormProps {

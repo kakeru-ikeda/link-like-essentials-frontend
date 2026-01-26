@@ -2,7 +2,7 @@
 
 import React, { useEffect } from 'react';
 import { Dropdown, DropdownOption } from '@/components/common/Dropdown';
-import { Song } from '@/models/features/Song';
+import { Song } from '@/models/song/Song';
 import { DeckType } from '@/models/shared/enums';
 import { useSongs } from '@/hooks/song/useSongs';
 import { Loading } from '@/components/common/Loading';

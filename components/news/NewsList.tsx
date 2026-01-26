@@ -1,4 +1,4 @@
-import { News } from '@/models/features/News';
+import { News } from '@/models/news/News';
 import { NewsCard } from './NewsCard';
 
 interface NewsListProps {

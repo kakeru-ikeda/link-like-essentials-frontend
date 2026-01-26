@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Deck } from '@/models/domain/Deck';
-import { LiveGrandPrix } from '@/models/features/LiveGrandPrix';
+import { LiveGrandPrix } from '@/models/live-grand-prix/LiveGrandPrix';
 import {
   generateAutoHashtags,
   addCustomHashtag,

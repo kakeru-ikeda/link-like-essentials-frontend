@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Tooltip } from './Tooltip';
-import { LiveGrandPrixSectionEffect } from '@/models/features/LiveGrandPrix';
+import { LiveGrandPrixSectionEffect } from '@/models/live-grand-prix/LiveGrandPrix';
 
 interface EffectBadgeProps {
   type: 'stage' | 'section';

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { PopularHashtagSummary } from '@/models/features/Hashtag';
+import { PopularHashtagSummary } from '@/models/published-deck/Hashtag';
 import { publishedDeckService } from '@/services/published-deck/publishedDeckService';
 import { useAuth } from '@/hooks/auth/useAuth';
 

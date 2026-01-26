@@ -1,4 +1,4 @@
-import { Song } from '@/models/features/Song';
+import { Song } from '@/models/song/Song';
 
 /**
  * ライブグランプリのセクション効果

@@ -5,7 +5,7 @@ import {
   GET_SONG_BY_NAME,
   GET_SONG_STATS,
 } from '@/repositories/graphql/queries/songs';
-import { Song, SongStats } from '@/models/features/Song';
+import { Song, SongStats } from '@/models/song/Song';
 import { SongFilter } from '@/models/shared/Filter';
 
 interface SongsQueryData {

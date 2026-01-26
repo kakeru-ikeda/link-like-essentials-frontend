@@ -2,7 +2,7 @@ import { GetDecksParams, GetLikedDecksParams } from '@/models/domain/DeckQueryPa
 import { PublishedDeck } from '@/models/domain/PublishedDeck';
 import { Comment } from '@/models/domain/Comment';
 import { PaginatedResponse } from '@/models/shared/Pagination';
-import { PopularHashtagSummary } from '@/models/features/Hashtag';
+import { PopularHashtagSummary } from '@/models/published-deck/Hashtag';
 import { deckRepository } from '@/repositories/api/deckRepository';
 import { ReportReason } from '@/models/domain/Comment';
 

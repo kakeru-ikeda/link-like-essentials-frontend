@@ -1,6 +1,6 @@
 import { apolloClient } from '@/repositories/graphql/client';
 import { GET_SONG_BY_ID } from '@/repositories/graphql/queries/songs';
-import { Song } from '@/models/features/Song';
+import { Song } from '@/models/song/Song';
 
 interface GetSongResponse {
   song: Song;

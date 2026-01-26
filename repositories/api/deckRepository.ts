@@ -2,7 +2,7 @@ import { DeckPublicationRequest, PublishedDeck } from '@/models/domain/Published
 import { Comment, ReportReason } from '@/models/domain/Comment';
 import { GetDecksParams, GetLikedDecksParams } from '@/models/domain/DeckQueryParams';
 import { PaginatedResponse } from '@/models/shared/Pagination';
-import { PopularHashtagSummary } from '@/models/features/Hashtag';
+import { PopularHashtagSummary } from '@/models/published-deck/Hashtag';
 import { DECK_API_ENDPOINT } from '@/config/api';
 import { getAuthToken } from './authUtils';
 import { auth } from '@/repositories/firebase/config';

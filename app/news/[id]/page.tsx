@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { News } from '@/models/features/News';
+import { News } from '@/models/news/News';
 import { newsService } from '@/services/user/newsService';
 import { formatNewsDate } from '@/utils/dateUtils';
 import { buildPageMetadata } from '@/utils/metadataUtils';

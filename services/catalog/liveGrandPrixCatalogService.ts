@@ -1,6 +1,6 @@
 import { apolloClient } from '@/repositories/graphql/client';
 import { GET_LIVE_GRAND_PRIX_BY_ID } from '@/repositories/graphql/queries/liveGrandPrix';
-import { LiveGrandPrix } from '@/models/features/LiveGrandPrix';
+import { LiveGrandPrix } from '@/models/live-grand-prix/LiveGrandPrix';
 
 interface LiveGrandPrixByIdResponse {
   liveGrandPrixById: LiveGrandPrix;
