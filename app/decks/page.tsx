@@ -1,9 +1,9 @@
 "use client";
 
-import { PublishedDeckList } from '@/components/deck/PublishedDeckList';
-import { TagFilterBar } from '@/components/deck/TagFilterBar';
-import { useDecksPageController } from '@/hooks/useDecksPageController';
-import { usePopularHashtags } from '@/hooks/usePopularHashtags';
+import { PublishedDeckList } from '@/components/published-deck/PublishedDeckList';
+import { TagFilterBar } from '@/components/published-deck/TagFilterBar';
+import { useDecksPageController } from '@/hooks/published-deck/useDecksPageController';
+import { usePopularHashtags } from '@/hooks/published-deck/usePopularHashtags';
 
 export default function DecksPage() {
   const {

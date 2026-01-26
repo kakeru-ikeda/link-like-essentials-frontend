@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { NewsList } from '@/components/news/NewsList';
-import { newsService } from '@/services/newsService';
+import { newsService } from '@/services/user/newsService';
 import { buildPageMetadata } from '@/utils/metadataUtils';
 
 export const metadata: Metadata = buildPageMetadata({

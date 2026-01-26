@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/components/common/Button';
-import { useLogin } from '@/hooks/useLogin';
+import { useLogin } from '@/hooks/auth/useLogin';
 
 export default function LoginPage() {
   const {

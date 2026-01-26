@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { News } from '@/models/News';
-import { newsService } from '@/services/newsService';
+import { News } from '@/models/news/News';
+import { newsService } from '@/services/user/newsService';
 import { formatNewsDate } from '@/utils/dateUtils';
 import { buildPageMetadata } from '@/utils/metadataUtils';
 import { sanitizeMicroCMSContent } from '@/utils/sanitizeHtmlUtils';

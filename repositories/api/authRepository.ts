@@ -1,7 +1,6 @@
 import { USER_API_ENDPOINT } from '@/config/api';
 import { getAuthToken } from './authUtils';
-import type { UserProfile } from '@/models/User';
-import { UserRole } from '@/models/enums';
+import type { UserProfile } from '@/models/user/User';
 
 export interface UpgradeAnonymousRequest {
   email: string;

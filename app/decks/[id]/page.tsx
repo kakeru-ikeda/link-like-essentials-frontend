@@ -2,17 +2,17 @@
 
 import { useParams, useRouter } from 'next/navigation';
 import { useState, useCallback, useEffect } from 'react';
-import { PublishedDeckDetail } from '@/components/deck/PublishedDeckDetail';
-import { useCompiledPublishedDeckDetail } from '@/hooks/useCompiledPublishedDeckDetail';
-import { publishedDeckImportService } from '@/services/publishedDeckImportService';
-import { publishedDeckService } from '@/services/publishedDeckService';
-import { PublishedDeckActions } from '@/components/deck/PublishedDeckActions';
-import { DeckCommentSection } from '@/components/deck/DeckCommentSection';
+import { PublishedDeckDetail } from '@/components/published-deck/PublishedDeckDetail';
+import { useCompiledPublishedDeckDetail } from '@/hooks/published-deck/useCompiledPublishedDeckDetail';
+import { publishedDeckImportService } from '@/services/published-deck/publishedDeckImportService';
+import { publishedDeckService } from '@/services/published-deck/publishedDeckService';
+import { PublishedDeckActions } from '@/components/published-deck/PublishedDeckActions';
+import { DeckCommentSection } from '@/components/published-deck/DeckCommentSection';
 import { ReportModal } from '@/components/common/ReportModal';
 import { ConfirmDialog } from '@/components/common/ConfirmDialog';
-import { useDeckComments } from '@/hooks/useDeckComments';
-import { useAuth } from '@/hooks/useAuth';
-import { ReportReason } from '@/models/Comment';
+import { useDeckComments } from '@/hooks/published-deck/useDeckComments';
+import { useAuth } from '@/hooks/auth/useAuth';
+import { ReportReason } from '@/models/comment/Comment';
 import { syncClientMetadata } from '@/utils/metadataUtils';
 
 const getDeckId = (param: string | string[] | undefined): string | null => {

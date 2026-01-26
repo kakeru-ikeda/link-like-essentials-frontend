@@ -7,8 +7,8 @@ import {
   SkillEffectType,
   SkillSearchTarget,
   TraitEffectType,
-} from '@/models/enums';
-import { SortField } from '@/models/Filter';
+} from '@/models/shared/enums';
+import { SortField } from '@/models/shared/Filter';
 
 /**
  * レアリティのラベル定義

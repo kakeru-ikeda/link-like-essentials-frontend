@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { KeywordSearchInput } from '@/components/common/KeywordSearchInput';
-import { useResponsiveDevice } from '@/hooks/useResponsiveDevice';
+import { useResponsiveDevice } from '@/hooks/ui/useResponsiveDevice';
 
 interface SideModalProps {
   isOpen: boolean;

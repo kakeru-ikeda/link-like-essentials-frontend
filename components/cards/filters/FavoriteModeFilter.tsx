@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { FavoriteMode } from '@/models/enums';
+import { FavoriteMode } from '@/models/shared/enums';
 import { FAVORITE_MODE_LABELS } from '@/mappers/enumMappers';
 import { FAVORITE_MODE_COLORS } from '@/styles/colors';
 import { MultiSelectFilter } from '@/components/common/filters/MultiSelectFilter';

@@ -1,7 +1,7 @@
 import { MicroCMSQueries } from 'microcms-js-sdk';
 import { DEFAULT_MICROCMS_REVALIDATE_SECONDS } from '@/config/microcms';
-import { MicrocmsListResponse } from '@/models/Microcms';
-import { News } from '@/models/News';
+import { MicrocmsListResponse } from '@/models/shared/Microcms';
+import { News } from '@/models/news/News';
 import { getMicrocmsList, getMicrocmsObject } from './microcmsRepository';
 
 const NEWS_ENDPOINT = 'news';

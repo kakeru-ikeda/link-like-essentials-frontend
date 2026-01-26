@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { FilterMode } from '@/models/Filter';
+import { FilterMode } from '@/models/shared/Filter';
 
 interface SearchModeFilterProps {
   mode: FilterMode | undefined;

@@ -4,10 +4,10 @@ import React, { useEffect, useState } from 'react';
 import { ApolloProvider } from '@apollo/client';
 import { apolloClient } from '@/repositories/graphql/client';
 import { signInAnonymous, onAuthStateChange } from '@/repositories/firebase/auth';
-import { userService } from '@/services/userService';
+import { userService } from '@/services/user/userService';
 import { useAuthStore } from '@/store/authStore';
 import { Loading } from '@/components/common/Loading';
-import { UserRole } from '@/models/enums';
+import { UserRole } from '@/models/shared/enums';
 
 interface ProvidersProps {
   children: React.ReactNode;

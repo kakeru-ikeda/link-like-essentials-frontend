@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import type { CardFilter as CardFilterType } from '@/models/Filter';
-import { Rarity, StyleType, LimitedType, FavoriteMode, SkillEffectType, SkillSearchTarget, TraitEffectType } from '@/models/enums';
+import type { CardFilter as CardFilterType } from '@/models/shared/Filter';
+import { Rarity, StyleType, LimitedType, FavoriteMode, SkillEffectType, SkillSearchTarget, TraitEffectType } from '@/models/shared/enums';
 import { SearchModeFilter } from '@/components/common/filters/SearchModeFilter';
 import { KeywordSearchInput } from '@/components/common/KeywordSearchInput';
 import { CharacterFilter } from '@/components/cards/filters/CharacterFilter';
@@ -13,9 +13,9 @@ import { TraitEffectFilter } from '@/components/cards/filters/TraitEffectFilter'
 import { StyleTypeFilter } from '@/components/cards/filters/StyleTypeFilter';
 import { LimitedTypeFilter } from '@/components/cards/filters/LimitedTypeFilter';
 import { TokenCardFilter } from '@/components/cards/filters/TokenCardFilter';
-import { toggleFilterList } from '@/services/cardFilterService';
+import { toggleFilterList } from '@/services/card/cardFilterService';
 import { FilterWrapper } from '@/components/common/filters/FilterWrapper';
-import type { DeckType } from '@/models/enums';
+import type { DeckType } from '@/models/shared/enums';
 
 interface CardFilterProps {
   filter: CardFilterType;

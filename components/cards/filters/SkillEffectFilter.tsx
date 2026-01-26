@@ -3,7 +3,7 @@
 import React from 'react';
 import { MultiSelectFilter } from '@/components/common/filters/MultiSelectFilter';
 import { Tooltip } from '@/components/common/Tooltip';
-import { SkillEffectType, SkillSearchTarget } from '@/models/enums';
+import { SkillEffectType, SkillSearchTarget } from '@/models/shared/enums';
 import {
   SKILL_EFFECT_LABELS,
   SKILL_SEARCH_TARGET_LABELS,

@@ -1,11 +1,11 @@
 'use client';
 import React from 'react';
-import { DeckBuilder } from '@/components/deck/DeckBuilder';
-import { DeckDashboard } from '@/components/deck/DeckDashboard';
-import { DeckTabs } from '@/components/deck/DeckTabs';
-import { useDeckTabs } from '@/hooks/useDeckTabs';
-import { useDeck } from '@/hooks/useDeck';
-import { useResponsiveDevice } from '@/hooks/useResponsiveDevice';
+import { DeckBuilder } from '@/components/deck-builder/DeckBuilder';
+import { DeckDashboard } from '@/components/deck-builder/DeckDashboard';
+import { DeckTabs } from '@/components/deck-builder/DeckTabs';
+import { useDeckTabs } from '@/hooks/deck/useDeckTabs';
+import { useDeck } from '@/hooks/deck/useDeck';
+import { useResponsiveDevice } from '@/hooks/ui/useResponsiveDevice';
 
 export function HomePageClient() {
   const { tabs, activeTabId, addTab, deleteTab, switchTab } = useDeckTabs();

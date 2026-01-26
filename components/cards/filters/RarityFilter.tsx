@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Rarity } from '@/models/enums';
+import { Rarity } from '@/models/shared/enums';
 import { RARITY_LABELS } from '@/mappers/enumMappers';
 import { RARITY_COLORS } from '@/styles/colors';
 import { MultiSelectFilter } from '@/components/common/filters/MultiSelectFilter';

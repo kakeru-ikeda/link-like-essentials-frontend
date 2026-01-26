@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { HiArrowsPointingOut } from 'react-icons/hi2';
 import { Modal } from '@/components/common/Modal';
-import { useSimpleModal } from '@/hooks/useModal';
+import { useSimpleModal } from '@/hooks/ui/useModal';
 
 interface TextAreaWithModalProps {
   value: string;

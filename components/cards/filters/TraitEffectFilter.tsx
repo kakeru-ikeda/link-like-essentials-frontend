@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { MultiSelectFilter } from '@/components/common/filters/MultiSelectFilter';
-import { TraitEffectType } from '@/models/enums';
+import { TraitEffectType } from '@/models/shared/enums';
 import { TRAIT_EFFECT_LABELS } from '@/mappers/enumMappers';
 import { TRAIT_EFFECT_DESCRIPTIONS } from '@/config/traitEffects';
 import { FILTER_COLOR_TRAIT_EFFECT } from '@/styles/colors';

@@ -1,9 +1,9 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import { Deck } from '@/models/Deck';
-import { DeckService } from '@/services/deckService';
+import { Deck } from '@/models/deck/Deck';
+import { DeckService } from '@/services/deck/deckService';
 import { DeckTabsRepository } from '@/repositories/localStorage/deckTabsRepository';
-import { logDeckCreated } from '@/services/analyticsService';
+import { logDeckCreated } from '@/services/infrastructure/analyticsService';
 
 /**
  * デッキタブ管理専用ストア
