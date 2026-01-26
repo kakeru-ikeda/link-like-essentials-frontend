@@ -8,7 +8,7 @@ import {
   addCustomHashtag,
   removeCustomHashtag,
   combineHashtags,
-} from '@/services/infrastructure/hashtagService';
+} from '@/services/published-deck/hashtagService';
 
 export interface UseHashtagReturn {
   /** 自動生成されたハッシュタグ */

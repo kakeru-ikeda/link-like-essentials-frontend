@@ -1,6 +1,6 @@
 import { DECK_API_ENDPOINT } from '@/config/api';
 import { getAuthToken } from './authUtils';
-import type { GenerateThumbnailRequest, GenerateThumbnailResponse } from '@/models/shared/Thumbnail';
+import type { GenerateThumbnailRequest, GenerateThumbnailResponse } from '@/models/deck/Thumbnail';
 
 export const thumbnailRepository = {
   async generateThumbnail(request: GenerateThumbnailRequest): Promise<string> {

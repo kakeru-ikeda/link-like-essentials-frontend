@@ -1,5 +1,5 @@
 import type { Deck } from '@/models/deck/Deck';
-import type { GenerateThumbnailRequest, ThumbnailCardPayload, ThumbnailDeckPayload } from '@/models/shared/Thumbnail';
+import type { GenerateThumbnailRequest, ThumbnailCardPayload, ThumbnailDeckPayload } from '@/models/deck/Thumbnail';
 import { thumbnailRepository } from '@/repositories/api/thumbnailRepository';
 
 function buildThumbnailDeckPayload(deck: Deck): ThumbnailDeckPayload {

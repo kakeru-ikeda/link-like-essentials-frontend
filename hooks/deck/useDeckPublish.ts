@@ -5,7 +5,7 @@ import { Deck } from '@/models/deck/Deck';
 import { PublishedDeck } from '@/models/published-deck/PublishedDeck';
 import { useImageUpload } from '@/hooks/infrastructure/useImageUpload';
 import { deckPublishService } from '@/services/deck/deckPublishService';
-import { thumbnailService } from '@/services/infrastructure/thumbnailService';
+import { thumbnailService } from '@/services/deck/thumbnailService';
 import { useUserProfile } from '@/hooks/user/useUserProfile';
 import { FRIEND_SLOT_ID } from '@/config/deckSlots';
 
