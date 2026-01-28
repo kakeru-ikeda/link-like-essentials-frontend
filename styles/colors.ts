@@ -79,3 +79,9 @@ export const FILTER_COLOR_SKILL_EFFECT = '#10b981';
 export const FILTER_COLOR_SKILL_SEARCH_TARGET = '#f97316';
 export const FILTER_COLOR_TRAIT_EFFECT = '#9333ea';
 export const FILTER_COLOR_TOKEN = '#06b6d4';
+
+/**
+ * イベントボタン用カラー定義
+ */
+export const EVENT_COLOR_LIVE_GRAND_PRIX = '#388afc';
+export const EVENT_COLOR_GRADE_CHALLENGE = '#a952f4';

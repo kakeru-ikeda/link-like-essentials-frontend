@@ -6,11 +6,13 @@ import { HashtagInput } from '@/components/deck-publish/HashtagInput';
 import { ImagePreviewGrid } from '@/components/deck-publish/ImagePreviewGrid';
 import { Deck } from '@/models/deck/Deck';
 import { LiveGrandPrix } from '@/models/live-grand-prix/LiveGrandPrix';
+import { GradeChallenge } from '@/models/grade-challenge/GradeChallenge';
 import { HelpTooltip } from '@/components/common/HelpTooltip';
 
 interface DeckPublishFormProps {
   deck: Deck | null;
   liveGrandPrix: LiveGrandPrix | undefined;
+  gradeChallenge: GradeChallenge | undefined;
   displayName: string;
   isLoadingProfile: boolean;
   comment: string;
@@ -31,6 +33,7 @@ interface DeckPublishFormProps {
 export const DeckPublishForm: React.FC<DeckPublishFormProps> = ({
   deck,
   liveGrandPrix,
+  gradeChallenge,
   displayName,
   isLoadingProfile,
   comment,
@@ -69,6 +72,7 @@ export const DeckPublishForm: React.FC<DeckPublishFormProps> = ({
         <HashtagInput
           deck={deck}
           liveGrandPrix={liveGrandPrix}
+          gradeChallenge={gradeChallenge}
           onChange={setHashtags}
         />
 

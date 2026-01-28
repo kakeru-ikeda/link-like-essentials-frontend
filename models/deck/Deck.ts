@@ -28,6 +28,10 @@ export interface Deck {
   liveGrandPrixDetailId?: string;    // ライブグランプリ詳細ID（ステージ選択時のみ）
   liveGrandPrixEventName?: string;   // フロントエンド内部で使用（表示用、送信不要）
   liveGrandPrixStageName?: string;   // フロントエンド内部で使用（表示用、送信不要）
+  gradeChallengeId?: string;         // グレードチャレンジID（選択された場合のみ）
+  gradeChallengeDetailId?: string;   // グレードチャレンジ詳細ID（ステージ選択時のみ）
+  gradeChallengeTitle?: string;      // フロントエンド内部で使用（表示用、送信不要）
+  gradeChallengeStageName?: string;  // フロントエンド内部で使用（表示用、送信不要）
   score?: number;                    // 参考スコア（兆単位）
   memo?: string;
   isFriendSlotEnabled?: boolean;     // フレンドカード枠の有効化状態
@@ -44,6 +48,8 @@ export type DeckForCloud = Pick<Deck,
   | 'songId'
   | 'liveGrandPrixId'
   | 'liveGrandPrixDetailId'
+  | 'gradeChallengeId'
+  | 'gradeChallengeDetailId'
   | 'score'
   | 'memo'
 > & {
@@ -58,6 +64,8 @@ export type DeckForCloudUpdate = Partial<Pick<Deck,
   | 'songId'
   | 'liveGrandPrixId'
   | 'liveGrandPrixDetailId'
+  | 'gradeChallengeId'
+  | 'gradeChallengeDetailId'
   | 'score'
   | 'memo'
 >> & {

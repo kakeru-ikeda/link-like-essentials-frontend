@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Deck } from '@/models/deck/Deck';
 import { LiveGrandPrix } from '@/models/live-grand-prix/LiveGrandPrix';
+import { GradeChallenge } from '@/models/grade-challenge/GradeChallenge';
 import {
   generateAutoHashtags,
   addCustomHashtag,
@@ -33,6 +34,7 @@ export interface UseHashtagReturn {
 export const useHashtag = (
   deck: Deck | null,
   liveGrandPrix: LiveGrandPrix | null | undefined,
+  gradeChallenge: GradeChallenge | null | undefined,
   onChange: (hashtags: string[]) => void
 ): UseHashtagReturn => {
   const [autoHashtags, setAutoHashtags] = useState<string[]>([]);
@@ -47,9 +49,9 @@ export const useHashtag = (
 
   // 自動ハッシュタグの生成
   useEffect(() => {
-    const tags = generateAutoHashtags(deck, liveGrandPrix);
+    const tags = generateAutoHashtags(deck, liveGrandPrix, gradeChallenge);
     setAutoHashtags(tags);
-  }, [deck, liveGrandPrix]);
+  }, [deck, liveGrandPrix, gradeChallenge]);
 
   // ハッシュタグの変更を親に通知
   useEffect(() => {

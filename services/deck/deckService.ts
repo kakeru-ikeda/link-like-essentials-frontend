@@ -9,6 +9,7 @@ import { cardCatalogService } from '@/services/card/cardCatalogService';
 import { CharacterName } from '@/config/characters';
 import { songCatalogService } from '@/services/song/songCatalogService';
 import { liveGrandPrixCatalogService } from '@/services/live-grand-prix/liveGrandPrixCatalogService';
+import { gradeChallengeCatalogService } from '@/services/grade-challenge/gradeChallengeCatalogService';
 
 /**
  * カード配置の結果
@@ -62,6 +63,10 @@ export class DeckService {
     const song = await songCatalogService.getSongById(baseDeck.songId);
     const liveGp = await liveGrandPrixCatalogService.getById(baseDeck.liveGrandPrixId);
     const stageDetail = liveGp?.details?.find((d) => d.id === baseDeck.liveGrandPrixDetailId);
+    const gradeChallenge = await gradeChallengeCatalogService.getById(baseDeck.gradeChallengeId);
+    const gradeChallengeDetail = gradeChallenge?.details?.find(
+      (detail) => detail.id === baseDeck.gradeChallengeDetailId
+    );
     const deckType = baseDeck.deckType ?? song?.deckType ?? DeckType.TERM_105;
     const slotMapping = getDeckSlotMapping(deckType);
     const mappingById = new Map<number, CharacterName | 'フレンド' | 'フリー'>();
@@ -103,6 +108,10 @@ export class DeckService {
       liveGrandPrixDetailId: baseDeck.liveGrandPrixDetailId,
       liveGrandPrixEventName: liveGp?.eventName,
       liveGrandPrixStageName: stageDetail?.stageName,
+      gradeChallengeId: baseDeck.gradeChallengeId,
+      gradeChallengeDetailId: baseDeck.gradeChallengeDetailId,
+      gradeChallengeTitle: gradeChallenge?.title,
+      gradeChallengeStageName: gradeChallengeDetail?.stageName,
       score: baseDeck.score,
       memo: baseDeck.memo,
       createdAt: now,

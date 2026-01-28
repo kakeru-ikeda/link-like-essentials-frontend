@@ -18,11 +18,18 @@ import { DeckService } from '@/services/deck/deckService';
 import { DeckSlotMapping } from '@/config/deckSlots';
 import { LiveGrandPrixSelect } from './LiveGrandPrixSelect';
 import { LiveGrandPrixStageSelect } from './LiveGrandPrixStageSelect';
+import { GradeChallengeSelect } from './GradeChallengeSelect';
+import { GradeChallengeStageSelect } from './GradeChallengeStageSelect';
 import {
   useLiveGrandPrixById,
   useActiveLiveGrandPrix,
 } from '@/hooks/deck/useLiveGrandPrix';
 import { LiveGrandPrix, LiveGrandPrixDetail } from '@/models/live-grand-prix/LiveGrandPrix';
+import {
+  useGradeChallengeById,
+  useOngoingGradeChallenges,
+} from '@/hooks/deck/useGradeChallenge';
+import { GradeChallenge, GradeChallengeDetail } from '@/models/grade-challenge/GradeChallenge';
 import { ExpansionPanel } from '@/components/common/ExpansionPanel';
 import { EffectBadge } from '@/components/shared/EffectBadge';
 import { DeckPublishModal } from '@/components/deck-publish/DeckPublishModal';
@@ -31,6 +38,8 @@ import { useModal } from '@/hooks/ui/useModal';
 import { PublishedDeck } from '@/models/published-deck/PublishedDeck';
 import { useResponsiveDevice } from '@/hooks/ui/useResponsiveDevice';
 import { HelpTooltip } from '@/components/common/HelpTooltip';
+import { EVENT_COLOR_GRADE_CHALLENGE, EVENT_COLOR_LIVE_GRAND_PRIX } from '@/styles/colors';
+import { hexToRgba } from '@/utils/colorUtils';
 
 export const DeckDashboard: React.FC = () => {
   const {
@@ -42,6 +51,8 @@ export const DeckDashboard: React.FC = () => {
     updateSong,
     updateLiveGrandPrix,
     updateLiveGrandPrixStage,
+    updateGradeChallenge,
+    updateGradeChallengeStage,
     clearAllCards,
   } = useDeck();
 
@@ -61,10 +72,21 @@ export const DeckDashboard: React.FC = () => {
   const [isSuccessDialogOpen, setSuccessDialogOpen] = useState<boolean>(false);
   const [isMainSlotWarningOpen, setMainSlotWarningOpen] =
     useState<boolean>(false);
+  const [eventType, setEventType] = useState<'liveGrandPrix' | 'gradeChallenge'>(
+    deck?.gradeChallengeId ? 'gradeChallenge' : 'liveGrandPrix'
+  );
   const [unfilledMainSlots, setUnfilledMainSlots] = useState<DeckSlotMapping[]>(
     []
   );
   const { isSp } = useResponsiveDevice();
+  const isEventStageMissing = Boolean(
+    (deck?.liveGrandPrixId && !deck?.liveGrandPrixDetailId) ||
+      (deck?.gradeChallengeId && !deck?.gradeChallengeDetailId)
+  );
+  const eventTypeColors = {
+    liveGrandPrix: EVENT_COLOR_LIVE_GRAND_PRIX,
+    gradeChallenge: EVENT_COLOR_GRADE_CHALLENGE,
+  } as const;
 
   // ライブグランプリの詳細を取得（選択されている場合のみ）
   const { liveGrandPrix, loading: lgpLoading } = useLiveGrandPrixById(
@@ -72,11 +94,22 @@ export const DeckDashboard: React.FC = () => {
     !deck?.liveGrandPrixId
   );
 
+  // グレードチャレンジの詳細を取得（選択されている場合のみ）
+  const { gradeChallenge, loading: gcLoading } = useGradeChallengeById(
+    deck?.gradeChallengeId || '',
+    !deck?.gradeChallengeId
+  );
+
   // 開催中のライブグランプリを取得
   const { activeLiveGrandPrix } = useActiveLiveGrandPrix();
 
+  // 開催中のグレードチャレンジを取得
+  const { gradeChallenges: ongoingGradeChallenges } = useOngoingGradeChallenges();
+
+  const hasActiveEvent = Boolean(activeLiveGrandPrix) || ongoingGradeChallenges.length > 0;
+
   // 選択中のステージ詳細を取得
-  const selectedStageDetail = React.useMemo(() => {
+  const selectedLiveGrandPrixDetail = React.useMemo(() => {
     if (!liveGrandPrix || !deck?.liveGrandPrixDetailId) return null;
     return (
       liveGrandPrix.details.find(
@@ -84,6 +117,23 @@ export const DeckDashboard: React.FC = () => {
       ) || null
     );
   }, [liveGrandPrix, deck?.liveGrandPrixDetailId]);
+
+  const selectedGradeChallengeDetail = React.useMemo(() => {
+    if (!gradeChallenge || !deck?.gradeChallengeDetailId) return null;
+    return (
+      gradeChallenge.details.find(
+        (detail) => detail.id === deck.gradeChallengeDetailId
+      ) || null
+    );
+  }, [gradeChallenge, deck?.gradeChallengeDetailId]);
+
+  const selectedEventDetail = React.useMemo<
+    LiveGrandPrixDetail | GradeChallengeDetail | null
+  >(() => {
+    return eventType === 'gradeChallenge'
+      ? selectedGradeChallengeDetail
+      : selectedLiveGrandPrixDetail;
+  }, [eventType, selectedGradeChallengeDetail, selectedLiveGrandPrixDetail]);
 
   // センターカードを取得（ビジネスロジックはserviceに委譲）
   const centerCard = React.useMemo(() => getCenterCard(deck), [deck]);
@@ -98,6 +148,28 @@ export const DeckDashboard: React.FC = () => {
   useEffect(() => {
     setSelectedDeckType(deck?.deckType);
   }, [deck?.deckType]);
+
+  // 既存のイベント選択に合わせてタブを同期
+  useEffect(() => {
+    if (deck?.gradeChallengeId) {
+      setEventType('gradeChallenge');
+      return;
+    }
+    if (deck?.liveGrandPrixId) {
+      setEventType('liveGrandPrix');
+    }
+  }, [deck?.gradeChallengeId, deck?.liveGrandPrixId]);
+
+  const handleEventTypeChange = (nextType: 'liveGrandPrix' | 'gradeChallenge'): void => {
+    setEventType(nextType);
+    if (nextType === 'gradeChallenge') {
+      updateLiveGrandPrix('', '');
+      updateLiveGrandPrixStage(null);
+      return;
+    }
+    updateGradeChallenge('', '');
+    updateGradeChallengeStage(null);
+  };
 
   const handleDeckTypeChange = (newDeckType: DeckType): void => {
     updateDeckType(newDeckType);
@@ -121,6 +193,21 @@ export const DeckDashboard: React.FC = () => {
     detail: LiveGrandPrixDetail | null
   ): void => {
     updateLiveGrandPrixStage(detail);
+  };
+
+  const handleGradeChallengeChange = (event: Partial<GradeChallenge>): void => {
+    if (event.id && event.title) {
+      updateGradeChallenge(event.id, event.title);
+    } else {
+      // クリア時
+      updateGradeChallenge('', '');
+    }
+  };
+
+  const handleGradeChallengeStageChange = (
+    detail: GradeChallengeDetail | null
+  ): void => {
+    updateGradeChallengeStage(detail);
   };
 
   const handleScoreChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
@@ -161,7 +248,12 @@ export const DeckDashboard: React.FC = () => {
     const isDefaultDeckName = deck?.name?.startsWith('デッキ');
     const isSongNotSelected = !deck?.songId;
 
-    if (emptyMainSlots.length > 0 || isDefaultDeckName || isSongNotSelected) {
+    if (
+      emptyMainSlots.length > 0 ||
+      isDefaultDeckName ||
+      isSongNotSelected ||
+      isEventStageMissing
+    ) {
       setUnfilledMainSlots(emptyMainSlots);
       setMainSlotWarningOpen(true);
       return;
@@ -206,42 +298,100 @@ export const DeckDashboard: React.FC = () => {
           value={deck?.songId}
           onChange={handleSongChange}
           className="flex-1 min-w-0"
-          disabled={!!deck?.liveGrandPrixDetailId}
+          disabled={!!deck?.liveGrandPrixDetailId || !!deck?.gradeChallengeDetailId}
         />
       </div>
 
-      {/* ライブグランプリ選択 */}
+      {/* イベント選択 */}
       <ExpansionPanel
         title={
           <div className="flex items-center gap-2">
-            <span>ライブグランプリ設定</span>
+            <span>イベント設定</span>
             <HelpTooltip
-              content="ライブグランプリを選択すると、対応する楽曲が自動的に指定されます。また、楽曲を選択すると、ステージ効果およびセクション効果が自動的に設定されます。"
+              content="イベントを選択すると、対応する楽曲が自動的に指定されます。また、楽曲を選択すると、ステージ効果およびセクション効果が自動的に設定されます。"
               position="top"
               className="mb-0.5"
               size={4}
             />
-            {activeLiveGrandPrix && <ActiveEventBadge />}
+            {hasActiveEvent && <ActiveEventBadge />}
           </div>
         }
       >
-        <div
-          className={`flex min-w-0 ${isSp ? 'flex-col gap-3' : 'flex-row gap-4'}`}
-        >
-          <LiveGrandPrixSelect
-            deckType={deck?.deckType}
-            value={deck?.liveGrandPrixId}
-            onChange={handleLiveGrandPrixChange}
-            className={isSp ? 'w-full' : 'flex-1 min-w-0'}
-          />
+        <div className="flex flex-col gap-3">
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => handleEventTypeChange('liveGrandPrix')}
+              className="px-3 py-1.5 rounded-full text-sm border transition"
+              style={(() => {
+                const color = eventTypeColors.liveGrandPrix;
+                const isActive = eventType === 'liveGrandPrix';
+                return {
+                  backgroundColor: isActive ? color : hexToRgba(color, 0.12),
+                  borderColor: color,
+                  color: isActive ? '#ffffff' : color,
+                };
+              })()}
+            >
+              ライブグランプリ
+            </button>
+            <button
+              type="button"
+              onClick={() => handleEventTypeChange('gradeChallenge')}
+              className="px-3 py-1.5 rounded-full text-sm border transition"
+              style={(() => {
+                const color = eventTypeColors.gradeChallenge;
+                const isActive = eventType === 'gradeChallenge';
+                return {
+                  backgroundColor: isActive ? color : hexToRgba(color, 0.12),
+                  borderColor: color,
+                  color: isActive ? '#ffffff' : color,
+                };
+              })()}
+            >
+              グレードチャレンジ
+            </button>
+          </div>
 
-          <LiveGrandPrixStageSelect
-            details={liveGrandPrix?.details}
-            value={deck?.liveGrandPrixDetailId}
-            onChange={handleLiveGrandPrixStageChange}
-            disabled={lgpLoading || !deck?.liveGrandPrixId}
-            className={isSp ? 'w-full' : 'w-48 flex-shrink-0'}
-          />
+          {eventType === 'liveGrandPrix' ? (
+            <div
+              className={`flex min-w-0 ${isSp ? 'flex-col gap-3' : 'flex-row gap-4'}`}
+            >
+              <LiveGrandPrixSelect
+                deckType={deck?.deckType}
+                value={deck?.liveGrandPrixId}
+                onChange={handleLiveGrandPrixChange}
+                className={isSp ? 'w-full' : 'flex-1 min-w-0'}
+              />
+
+              <LiveGrandPrixStageSelect
+                details={liveGrandPrix?.details}
+                value={deck?.liveGrandPrixDetailId}
+                onChange={handleLiveGrandPrixStageChange}
+                disabled={lgpLoading || !deck?.liveGrandPrixId}
+                className={isSp ? 'w-full' : 'w-48 flex-shrink-0'}
+              />
+            </div>
+          ) : (
+            <div
+              className={`flex min-w-0 ${isSp ? 'flex-col gap-3' : 'flex-row gap-4'}`}
+            >
+              <GradeChallengeSelect
+                deckType={deck?.deckType}
+                value={deck?.gradeChallengeId}
+                onChange={handleGradeChallengeChange}
+                className={isSp ? 'w-full' : 'flex-1 min-w-0'}
+              />
+
+              <GradeChallengeStageSelect
+                details={gradeChallenge?.details}
+                value={deck?.gradeChallengeDetailId}
+                onChange={handleGradeChallengeStageChange}
+                disabled={gcLoading || !deck?.gradeChallengeId}
+                className={isSp ? 'w-full' : 'w-48 flex-shrink-0'}
+              />
+            </div>
+          )}
         </div>
       </ExpansionPanel>
 
@@ -251,15 +401,15 @@ export const DeckDashboard: React.FC = () => {
           <label className="block text-sm font-medium text-gray-700">
             ライブアナライザ
           </label>
-          {selectedStageDetail && (
+          {selectedEventDetail && (
             <div className="flex items-center gap-1">
               <EffectBadge
                 type="stage"
-                specialEffect={selectedStageDetail.specialEffect}
+                specialEffect={selectedEventDetail.specialEffect}
               />
               <EffectBadge
                 type="section"
-                sectionEffects={selectedStageDetail.sectionEffects}
+                sectionEffects={selectedEventDetail.sectionEffects}
               />
             </div>
           )}
@@ -385,6 +535,11 @@ export const DeckDashboard: React.FC = () => {
           {!deck?.songId && (
             <p className="text-sm text-gray-700">
               公開する前に、楽曲を選択してください。
+            </p>
+          )}
+          {isEventStageMissing && (
+            <p className="text-sm text-gray-700">
+              イベントが選択されていますが、ステージが未選択です。ステージを選択してください。
             </p>
           )}
           <div className="flex justify-end">
