@@ -3,17 +3,6 @@ import { Song } from '@/models/song/Song';
 import { DeckType } from '@/models/shared/enums';
 
 /**
- * グレードチャレンジフィルター
- */
-export interface GradeChallengeFilter {
-  termName?: string;
-  title?: string;
-  startDateFrom?: string;
-  startDateTo?: string;
-  hasSongWithDeckType?: string;
-}
-
-/**
  * グレードチャレンジ関連のビジネスロジックを提供するサービス
  */
 export class GradeChallengeService {

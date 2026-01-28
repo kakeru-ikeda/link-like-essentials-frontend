@@ -79,6 +79,10 @@ export const DeckDashboard: React.FC = () => {
     []
   );
   const { isSp } = useResponsiveDevice();
+  const isEventStageMissing = Boolean(
+    (deck?.liveGrandPrixId && !deck?.liveGrandPrixDetailId) ||
+      (deck?.gradeChallengeId && !deck?.gradeChallengeDetailId)
+  );
   const eventTypeColors = {
     liveGrandPrix: EVENT_COLOR_LIVE_GRAND_PRIX,
     gradeChallenge: EVENT_COLOR_GRADE_CHALLENGE,
@@ -244,7 +248,12 @@ export const DeckDashboard: React.FC = () => {
     const isDefaultDeckName = deck?.name?.startsWith('デッキ');
     const isSongNotSelected = !deck?.songId;
 
-    if (emptyMainSlots.length > 0 || isDefaultDeckName || isSongNotSelected) {
+    if (
+      emptyMainSlots.length > 0 ||
+      isDefaultDeckName ||
+      isSongNotSelected ||
+      isEventStageMissing
+    ) {
       setUnfilledMainSlots(emptyMainSlots);
       setMainSlotWarningOpen(true);
       return;
@@ -526,6 +535,11 @@ export const DeckDashboard: React.FC = () => {
           {!deck?.songId && (
             <p className="text-sm text-gray-700">
               公開する前に、楽曲を選択してください。
+            </p>
+          )}
+          {isEventStageMissing && (
+            <p className="text-sm text-gray-700">
+              イベントが選択されていますが、ステージが未選択です。ステージを選択してください。
             </p>
           )}
           <div className="flex justify-end">
