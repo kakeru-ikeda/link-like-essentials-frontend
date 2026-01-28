@@ -8,6 +8,7 @@ import { DeckPublishForm } from '@/components/deck-publish/DeckPublishForm';
 import { useDeck } from '@/hooks/deck/useDeck';
 import { useDeckPublish } from '@/hooks/deck/useDeckPublish';
 import { useLiveGrandPrixById } from '@/hooks/deck/useLiveGrandPrix';
+import { useGradeChallengeById } from '@/hooks/deck/useGradeChallenge';
 import { useResponsiveDevice } from '@/hooks/ui/useResponsiveDevice';
 import { PublishedDeck } from '@/models/published-deck/PublishedDeck';
 import { FRIEND_SLOT_ID } from '@/config/deckSlots';
@@ -62,6 +63,12 @@ export const DeckPublishModal: React.FC<DeckPublishModalProps> = ({
   const { liveGrandPrix } = useLiveGrandPrixById(
     deck?.liveGrandPrixId || '',
     !deck?.liveGrandPrixId
+  );
+
+  // グレードチャレンジ情報を取得（デッキに設定されている場合）
+  const { gradeChallenge } = useGradeChallengeById(
+    deck?.gradeChallengeId || '',
+    !deck?.gradeChallengeId
   );
 
   const isAceUnset = React.useMemo(() => {
@@ -128,6 +135,7 @@ export const DeckPublishModal: React.FC<DeckPublishModalProps> = ({
         <DeckPublishForm
           deck={deck}
           liveGrandPrix={liveGrandPrix ?? undefined}
+          gradeChallenge={gradeChallenge ?? undefined}
           displayName={displayName}
           isLoadingProfile={isLoadingProfile}
           comment={comment}

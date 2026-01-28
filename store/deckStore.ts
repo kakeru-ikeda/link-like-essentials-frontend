@@ -24,6 +24,8 @@ interface DeckState {
   setSong: (song: Partial<Song>) => void;
   setLiveGrandPrix: (liveGrandPrixId: string | undefined, eventName: string | undefined) => void;
   setLiveGrandPrixStage: (detailId: string | undefined, stageName: string | undefined, song?: Partial<Song>) => void;
+  setGradeChallenge: (gradeChallengeId: string | undefined, title: string | undefined) => void;
+  setGradeChallengeStage: (detailId: string | undefined, stageName: string | undefined, song?: Partial<Song>) => void;
   setScore: (score: number | undefined) => void;
   setDeckMemo: (memo: string) => void;
   setFriendSlotEnabled: (enabled: boolean) => void;
@@ -133,6 +135,10 @@ export const useDeckStore = create<DeckState>()(
           state.deck.liveGrandPrixDetailId = undefined;
           state.deck.liveGrandPrixEventName = undefined;
           state.deck.liveGrandPrixStageName = undefined;
+          state.deck.gradeChallengeId = undefined;
+          state.deck.gradeChallengeDetailId = undefined;
+          state.deck.gradeChallengeTitle = undefined;
+          state.deck.gradeChallengeStageName = undefined;
           state.deck.score = undefined;
           state.deck.memo = '';
           state.deck.isFriendSlotEnabled = true;
@@ -181,6 +187,11 @@ export const useDeckStore = create<DeckState>()(
         if (state.deck) {
           state.deck.liveGrandPrixId = liveGrandPrixId;
           state.deck.liveGrandPrixEventName = eventName;
+          // ライブグランプリ選択時はグレードチャレンジ情報をクリア
+          state.deck.gradeChallengeId = undefined;
+          state.deck.gradeChallengeDetailId = undefined;
+          state.deck.gradeChallengeTitle = undefined;
+          state.deck.gradeChallengeStageName = undefined;
           // ライブグランプリ変更時はステージ情報と楽曲情報をクリア
           state.deck.liveGrandPrixDetailId = undefined;
           state.deck.liveGrandPrixStageName = undefined;
@@ -213,6 +224,64 @@ export const useDeckStore = create<DeckState>()(
           
           state.deck.liveGrandPrixDetailId = detailId;
           state.deck.liveGrandPrixStageName = stageName;
+          // 楽曲情報が提供されていれば自動設定
+          if (song) {
+            state.deck.songId = song.id;
+            state.deck.songName = song.songName;
+            state.deck.centerCharacter = song.centerCharacter;
+            state.deck.participations = song.participations;
+            state.deck.liveAnalyzerImageUrl = song.liveAnalyzerImageUrl;
+            // 楽曲のdeckTypeがあれば自動設定
+            if (song.deckType) {
+              state.deck.deckType = song.deckType;
+            }
+          }
+          state.deck.updatedAt = new Date().toISOString();
+        }
+      }),
+
+    setGradeChallenge: (gradeChallengeId, title) =>
+      set((state) => {
+        if (state.deck) {
+          state.deck.gradeChallengeId = gradeChallengeId;
+          state.deck.gradeChallengeTitle = title;
+          // グレードチャレンジ選択時はライブグランプリ情報をクリア
+          state.deck.liveGrandPrixId = undefined;
+          state.deck.liveGrandPrixDetailId = undefined;
+          state.deck.liveGrandPrixEventName = undefined;
+          state.deck.liveGrandPrixStageName = undefined;
+          // グレードチャレンジ変更時はステージ情報と楽曲情報をクリア
+          state.deck.gradeChallengeDetailId = undefined;
+          state.deck.gradeChallengeStageName = undefined;
+          state.deck.songId = undefined;
+          state.deck.songName = undefined;
+          state.deck.centerCharacter = undefined;
+          state.deck.participations = undefined;
+          state.deck.liveAnalyzerImageUrl = undefined;
+          state.deck.updatedAt = new Date().toISOString();
+        }
+      }),
+
+    setGradeChallengeStage: (detailId, stageName, song) =>
+      set((state) => {
+        if (state.deck) {
+          // デッキタイプが変更される場合、カードをクリア
+          const isDeckTypeChanging = song?.deckType &&
+                                     state.deck.deckType &&
+                                     song.deckType !== state.deck.deckType;
+
+          if (isDeckTypeChanging) {
+            // カードをすべてクリア
+            state.deck.slots.forEach((slot) => {
+              slot.card = null;
+              slot.cardId = null;
+              slot.limitBreak = undefined;
+            });
+            state.deck.aceSlotId = null;
+          }
+
+          state.deck.gradeChallengeDetailId = detailId;
+          state.deck.gradeChallengeStageName = stageName;
           // 楽曲情報が提供されていれば自動設定
           if (song) {
             state.deck.songId = song.id;

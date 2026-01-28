@@ -2,12 +2,17 @@
 
 import React from 'react';
 import { Tooltip } from '@/components/common/Tooltip';
-import { LiveGrandPrixSectionEffect } from '@/models/live-grand-prix/LiveGrandPrix';
+interface EffectBadgeSectionEffect {
+  id: string;
+  sectionName: string;
+  effect: string;
+  sectionOrder: number;
+}
 
 interface EffectBadgeProps {
   type: 'stage' | 'section';
   specialEffect?: string;
-  sectionEffects?: LiveGrandPrixSectionEffect[];
+  sectionEffects?: EffectBadgeSectionEffect[];
   className?: string;
 }
 

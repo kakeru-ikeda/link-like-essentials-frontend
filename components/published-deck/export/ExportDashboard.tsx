@@ -3,6 +3,7 @@
 import React from 'react';
 import { useDeck } from '@/hooks/deck/useDeck';
 import { useLiveGrandPrixById } from '@/hooks/deck/useLiveGrandPrix';
+import { useGradeChallengeById } from '@/hooks/deck/useGradeChallenge';
 import { Deck } from '@/models/deck/Deck';
 
 interface ExportDashboardProps {
@@ -40,6 +41,12 @@ export const ExportDashboard: React.FC<ExportDashboardProps> = ({
     !deck?.liveGrandPrixId
   );
 
+  // グレードチャレンジの詳細を取得（選択されている場合のみ）
+  const { gradeChallenge } = useGradeChallengeById(
+    deck?.gradeChallengeId || '',
+    !deck?.gradeChallengeId
+  );
+
   // 選択中のステージ詳細を取得
   const selectedStageDetail = React.useMemo(() => {
     if (!liveGrandPrix || !deck?.liveGrandPrixDetailId) return null;
@@ -49,6 +56,15 @@ export const ExportDashboard: React.FC<ExportDashboardProps> = ({
       ) || null
     );
   }, [liveGrandPrix, deck?.liveGrandPrixDetailId]);
+
+  const selectedGradeChallengeDetail = React.useMemo(() => {
+    if (!gradeChallenge || !deck?.gradeChallengeDetailId) return null;
+    return (
+      gradeChallenge.details.find(
+        (detail) => detail.id === deck.gradeChallengeDetailId
+      ) || null
+    );
+  }, [gradeChallenge, deck?.gradeChallengeDetailId]);
 
   if (!deck) return null;
 
@@ -101,6 +117,62 @@ export const ExportDashboard: React.FC<ExportDashboardProps> = ({
                     </div>
                     <div className="flex flex-wrap gap-2">
                       {selectedStageDetail.sectionEffects.map((section) => (
+                        <div
+                          key={section.id}
+                          className={`bg-white border border-blue-300 rounded px-2 py-1 ${badgeTextSize}`}
+                        >
+                          <span className="font-medium text-blue-900">
+                            {section.sectionName}:{' '}
+                          </span>
+                          <span className="text-blue-700">
+                            {section.effect}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+        {deck.gradeChallengeTitle && (
+          <div className="col-span-2">
+            <span className={`${headingSize} font-semibold text-slate-700`}>
+              グレードチャレンジ:
+            </span>
+            <span className={`${headingSize} text-slate-600`}>
+              {deck.gradeChallengeTitle}
+              {deck.gradeChallengeStageName
+                ? ` ステージ${deck.gradeChallengeStageName}`
+                : ''}
+            </span>
+            {selectedGradeChallengeDetail && (
+              <div className="mt-3 space-y-2">
+                {selectedGradeChallengeDetail.specialEffect && (
+                  <div className="bg-purple-50 border border-purple-200 rounded-lg px-3 py-2">
+                    <span
+                      className={`${subHeadingSize} font-semibold text-purple-800`}
+                    >
+                      ステージ効果:
+                    </span>
+                    <br />
+                    <span
+                      className={`${isCompact ? 'text-[11px]' : 'text-lg'} text-purple-700`}
+                    >
+                      {selectedGradeChallengeDetail.specialEffect}
+                    </span>
+                  </div>
+                )}
+                {selectedGradeChallengeDetail.sectionEffects.length > 0 && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg px-3 py-2">
+                    <div
+                      className={`${subHeadingSize} font-semibold text-blue-800 mb-1.5`}
+                    >
+                      セクション効果:
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedGradeChallengeDetail.sectionEffects.map((section) => (
                         <div
                           key={section.id}
                           className={`bg-white border border-blue-300 rounded px-2 py-1 ${badgeTextSize}`}

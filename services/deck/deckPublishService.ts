@@ -21,6 +21,8 @@ function convertToDeckForCloud(deck: Deck): DeckForCloud {
     songId: deck.songId,
     liveGrandPrixId: deck.liveGrandPrixId,
     liveGrandPrixDetailId: deck.liveGrandPrixDetailId,
+    gradeChallengeId: deck.gradeChallengeId,
+    gradeChallengeDetailId: deck.gradeChallengeDetailId,
     score: deck.score,
     memo: deck.memo
   };

@@ -1,6 +1,7 @@
 import { CHARACTERS } from '@/config/characters';
 import { Deck } from '@/models/deck/Deck';
 import { LiveGrandPrix } from '@/models/live-grand-prix/LiveGrandPrix';
+import { GradeChallenge } from '@/models/grade-challenge/GradeChallenge';
 import { getDeckSlotMapping } from '@/services/deck/deckConfigService';
 import type { DeckSlotMapping } from '@/config/deckSlots';
 
@@ -27,7 +28,8 @@ export const isDuplicateHashtag = (
  */
 export const generateAutoHashtags = (
   deck: Deck | null,
-  liveGrandPrix?: LiveGrandPrix | null
+  liveGrandPrix?: LiveGrandPrix | null,
+  gradeChallenge?: GradeChallenge | null
 ): string[] => {
   if (!deck) return [];
 
@@ -59,6 +61,16 @@ export const generateAutoHashtags = (
     // ライブグランプリステージ
     if (deck.liveGrandPrixStageName) {
       tags.push(`#ステージ${deck.liveGrandPrixStageName}`);
+    }
+  }
+
+  // グレードチャレンジが有効の場合
+  if (deck.gradeChallengeId) {
+    tags.push('#グレードチャレンジ');
+
+    // グレードチャレンジタイトル
+    if (gradeChallenge?.title) {
+      tags.push(`#${gradeChallenge.title} ステージ${deck.gradeChallengeStageName}`);
     }
   }
 
