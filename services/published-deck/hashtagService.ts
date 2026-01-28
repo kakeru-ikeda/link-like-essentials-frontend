@@ -31,6 +31,14 @@ export const generateAutoHashtags = (
 ): string[] => {
   if (!deck) return [];
 
+  const isWithinLgpReviewWindow = (eventEndDate?: string): boolean => {
+    if (!eventEndDate) return false;
+    const end = new Date(eventEndDate);
+    if (Number.isNaN(end.getTime())) return false;
+    const reviewStart = new Date(end.getTime() - 24 * 60 * 60 * 1000);
+    return new Date() >= reviewStart;
+  };
+
   const tags: string[] = [];
 
   // 期
@@ -40,7 +48,8 @@ export const generateAutoHashtags = (
 
   // ライブグランプリが有効の場合
   if (deck.liveGrandPrixId) {
-    tags.push('#ライグラ');
+    const isReviewWindow = isWithinLgpReviewWindow(liveGrandPrix?.endDate);
+    tags.push(isReviewWindow ? '#ライグラ振り返り' : '#ライグラ');
 
     // ライブグランプリ開催名
     if (liveGrandPrix?.eventName) {
