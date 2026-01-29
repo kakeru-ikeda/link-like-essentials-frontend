@@ -29,6 +29,8 @@ import {
 import { filterAvailableCards } from '@/services/card/characterFilterService';
 import { useResponsiveDevice } from '@/hooks/ui/useResponsiveDevice';
 import { HelpTooltip } from '../common/HelpTooltip';
+import { DeckAnalyzerPanel } from '@/components/deck-builder/DeckAnalyzerPanel';
+import { analyzeDeck } from '@/services/deck/deckAnalyzerService';
 
 export const DeckBuilder: React.FC = () => {
   const { deck, removeCard, toggleAceCard, swapCards, addCard, updateLimitBreakCount, isFriendSlotEnabled, setFriendSlotEnabled } = useDeck();
@@ -40,6 +42,7 @@ export const DeckBuilder: React.FC = () => {
   const { setActiveFilter } = useCardStore((state) => ({
     setActiveFilter: state.setActiveFilter,
   }));
+  const [isAnalyzerOpen, setIsAnalyzerOpen] = useState<boolean>(false);
 
   const {
     filter,
@@ -52,6 +55,8 @@ export const DeckBuilder: React.FC = () => {
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const deckSlots = deck?.slots ?? [];
+
+  const analysis = React.useMemo(() => analyzeDeck(deck), [deck]);
 
   React.useEffect(() => {
     setActiveFilter(filter);
@@ -439,6 +444,16 @@ export const DeckBuilder: React.FC = () => {
             size={4}
           />
         </div>
+
+        {analysis && (
+          <div className="mt-3">
+            <DeckAnalyzerPanel
+              analysis={analysis}
+              isOpen={isAnalyzerOpen}
+              onToggle={() => setIsAnalyzerOpen((prev) => !prev)}
+            />
+          </div>
+        )}
       </div>
 
       {/* Card search modal */}

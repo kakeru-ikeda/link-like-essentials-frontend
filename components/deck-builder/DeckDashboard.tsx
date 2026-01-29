@@ -31,6 +31,8 @@ import { useModal } from '@/hooks/ui/useModal';
 import { PublishedDeck } from '@/models/published-deck/PublishedDeck';
 import { useResponsiveDevice } from '@/hooks/ui/useResponsiveDevice';
 import { HelpTooltip } from '@/components/common/HelpTooltip';
+import { DeckAnalyzerPanel } from '@/components/deck-builder/DeckAnalyzerPanel';
+import { analyzeDeck } from '@/services/deck/deckAnalyzerService';
 
 export const DeckDashboard: React.FC = () => {
   const {
@@ -64,7 +66,10 @@ export const DeckDashboard: React.FC = () => {
   const [unfilledMainSlots, setUnfilledMainSlots] = useState<DeckSlotMapping[]>(
     []
   );
+  const [isAnalyzerOpen, setIsAnalyzerOpen] = useState<boolean>(false);
   const { isSp } = useResponsiveDevice();
+
+  const analysis = React.useMemo(() => analyzeDeck(deck), [deck]);
 
   // ライブグランプリの詳細を取得（選択されている場合のみ）
   const { liveGrandPrix, loading: lgpLoading } = useLiveGrandPrixById(
@@ -192,6 +197,14 @@ export const DeckDashboard: React.FC = () => {
           公開
         </Button>
       </div>
+
+      {analysis && (
+        <DeckAnalyzerPanel
+          analysis={analysis}
+          isOpen={isAnalyzerOpen}
+          onToggle={() => setIsAnalyzerOpen((prev) => !prev)}
+        />
+      )}
 
       {/* デッキタイプ＆楽曲選択 */}
       <div className="flex gap-4 min-w-0">
