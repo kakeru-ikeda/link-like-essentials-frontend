@@ -144,6 +144,7 @@ function analyzeRequiredEffect(
   return {
     effectType,
     label,
+    keywords,
     skillMatches,
     traitMatches,
     totalUniqueCards: uniqueCardIds.size,

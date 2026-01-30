@@ -22,6 +22,7 @@ export interface DetectedTraitEffect extends DetectedSkillEffect {
 export interface RequiredEffectAnalysis {
   effectType: SkillEffectType;
   label: string;
+  keywords: string[];
   skillMatches: DetectedSkillEffect[];
   traitMatches: {
     condition: TraitConditionType;

@@ -63,6 +63,7 @@ export const DeckAnalyzerPanel: React.FC<DeckAnalyzerPanelProps> = ({
                       <DeckAnalyzerCardItem
                         key={`skill-${match.card.id}-${idx}`}
                         match={match as DetectedSkillEffect}
+                        keywords={effect.keywords}
                         showCondition
                       />
                     ))}
@@ -86,6 +87,7 @@ export const DeckAnalyzerPanel: React.FC<DeckAnalyzerPanelProps> = ({
                         <DeckAnalyzerCardItem
                           key={`trait-${match.card.id}-${idx}`}
                           match={match as DetectedTraitEffect}
+                          keywords={effect.keywords}
                           showCondition
                         />
                       ))}

@@ -5,14 +5,17 @@ import type {
   DetectedSkillEffect,
   DetectedTraitEffect,
 } from '@/models/deck/DeckAnalysis';
+import { HighlightText } from '@/components/common/HighlightText';
 
 interface DeckAnalyzerCardItemProps {
   match: DetectedSkillEffect | DetectedTraitEffect;
+  keywords: string[];
   showCondition?: boolean;
 }
 
 export const DeckAnalyzerCardItem: React.FC<DeckAnalyzerCardItemProps> = ({
   match,
+  keywords,
   showCondition = false,
 }) => {
   const isTraitMatch = match.source === 'trait';
@@ -38,12 +41,12 @@ export const DeckAnalyzerCardItem: React.FC<DeckAnalyzerCardItemProps> = ({
 
         {showCondition && traitMatch && (
           <p className="text-xs text-gray-600 mt-1 line-clamp-2">
-            {traitMatch.effectText}
+            <HighlightText text={traitMatch.effectText} keywords={keywords} />
           </p>
         )}
         {showCondition && skillMatch?.effectText && (
           <p className="text-xs text-gray-600 mt-1 line-clamp-2">
-            {skillMatch.effectText}
+            <HighlightText text={skillMatch.effectText} keywords={keywords} />
           </p>
         )}
       </div>
