@@ -53,7 +53,7 @@ export const SKILL_EFFECT_DESCRIPTIONS: Record<SkillEffectType, string> = {
  * 各効果に対応する検索文言を配列で定義
  */
 export const SKILL_EFFECT_KEYWORDS: Record<SkillEffectType, string[]> = {
-  [SkillEffectType.HEART_CAPTURE]: ['スキルハートを獲得'],
+  [SkillEffectType.HEART_CAPTURE]: ['スキルハートを獲得', 'ビートハート\\d+回分のスキルハートを獲得'],
   [SkillEffectType.WIDE_HEART]: ['ハート上限を'],
   [SkillEffectType.LOVE_ATTRACT]: ['獲得するLOVEを'],
   [SkillEffectType.VOLTAGE_GAIN]: ['ボルテージPt.を'],

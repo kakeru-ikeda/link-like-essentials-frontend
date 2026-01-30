@@ -17,6 +17,10 @@ export const DeckAnalyzerCardItem: React.FC<DeckAnalyzerCardItemProps> = ({
 }) => {
   const isTraitMatch = match.source === 'trait';
   const traitMatch = isTraitMatch ? (match as DetectedTraitEffect) : null;
+  const skillMatch = !isTraitMatch ? (match as DetectedSkillEffect) : null;
+  const tokenName = match.isAccessory
+    ? match.card.accessories?.[match.accessoryIndex ?? -1]?.name
+    : undefined;
 
   return (
     <div className="flex items-start gap-3 p-2 bg-gray-50 rounded-lg">
@@ -24,7 +28,9 @@ export const DeckAnalyzerCardItem: React.FC<DeckAnalyzerCardItemProps> = ({
         <p className="font-medium text-sm text-gray-800 truncate">
           {match.card.cardName}
           {match.isAccessory && (
-            <span className="ml-1 text-xs text-orange-600">(トークン)</span>
+            <span className="ml-1 text-xs text-orange-600">
+              ({tokenName ? `${tokenName}` : 'トークン'})
+            </span>
           )}
         </p>
 
@@ -33,6 +39,11 @@ export const DeckAnalyzerCardItem: React.FC<DeckAnalyzerCardItemProps> = ({
         {showCondition && traitMatch && (
           <p className="text-xs text-gray-600 mt-1 line-clamp-2">
             {traitMatch.effectText}
+          </p>
+        )}
+        {showCondition && skillMatch?.effectText && (
+          <p className="text-xs text-gray-600 mt-1 line-clamp-2">
+            {skillMatch.effectText}
           </p>
         )}
       </div>

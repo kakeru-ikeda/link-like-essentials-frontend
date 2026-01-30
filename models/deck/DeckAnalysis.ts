@@ -8,6 +8,7 @@ export interface DetectedSkillEffect {
   source: DetectedEffectSource;
   isAccessory: boolean;
   accessoryIndex?: number;
+  effectText?: string;
 }
 
 export interface DetectedTraitEffect extends DetectedSkillEffect {

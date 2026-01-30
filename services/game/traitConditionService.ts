@@ -73,6 +73,13 @@ export function getTraitConditionLabel(condition: TraitConditionType): string {
   return TRAIT_CONDITION_LABELS[condition];
 }
 
+export function extractHeartCollectValue(sentence: string): number | null {
+  const match = sentence.match(/ハートを(\d+)個(回収|獲得)/);
+  if (!match?.[1]) return null;
+  const value = Number(match[1]);
+  return Number.isNaN(value) ? null : value;
+}
+
 function extractConditionText(
   sentence: string,
   condition: TraitConditionType

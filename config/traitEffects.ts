@@ -29,11 +29,11 @@ export const TRAIT_EFFECT_DESCRIPTIONS: Record<TraitEffectType, string> = {
 export const TRAIT_EFFECT_KEYWORDS: Record<TraitEffectType, string[]> = {
   [TraitEffectType.HEART_COLLECT]: [
     'ハートコレクト',
-    '手札にある状態でハートを\\d+個回収したとき',
-    '手札にある状態でハートを\\d+個回収した時',
-    '手札にある状態でハートを\\d+個回収する',
-    '手札にある状態でハートを\\d+個回収し',
-    '手札にある状態でハートを\\d+個獲得したとき',
+    'ハートを\\d+個回収したとき',
+    'ハートを\\d+個回収した時',
+    'ハートを\\d+個回収する',
+    'ハートを\\d+個回収し',
+    'ハートを\\d+個獲得したとき',
   ],
   [TraitEffectType.ENCORE]: ['アンコール', 'スキル使用時、山札に戻る'],
   [TraitEffectType.SHOT]: [

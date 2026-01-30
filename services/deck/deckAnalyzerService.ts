@@ -48,12 +48,17 @@ function analyzeRequiredEffect(
   cards.forEach((card) => {
     if (card.detail?.skill?.effect) {
       if (matchesKeywords(card.detail.skill.effect, keywords)) {
+        const effectText = findMatchedSentence(
+          card.detail.skill.effect,
+          keywords
+        );
         const key = `${card.id}-skill-main`;
         if (!matchedSkillKeys.has(key)) {
           skillMatches.push({
             card,
             source: 'skill',
             isAccessory: false,
+            effectText,
           });
           matchedSkillKeys.add(key);
         }
@@ -63,6 +68,7 @@ function analyzeRequiredEffect(
 
     card.accessories?.forEach((acc, index) => {
       if (acc.effect && matchesKeywords(acc.effect, keywords)) {
+        const effectText = findMatchedSentence(acc.effect, keywords);
         const key = `${card.id}-skill-acc-${index}`;
         if (!matchedSkillKeys.has(key)) {
           skillMatches.push({
@@ -70,6 +76,7 @@ function analyzeRequiredEffect(
             source: 'skill',
             isAccessory: true,
             accessoryIndex: index,
+            effectText,
           });
           matchedSkillKeys.add(key);
         }
@@ -155,5 +162,20 @@ function matchesKeywords(text: string, keywords: string[]): boolean {
     }
     return text.includes(keyword);
   });
+}
+
+function findMatchedSentence(
+  text: string,
+  keywords: string[]
+): string | undefined {
+  const sentences = text
+    .split('。')
+    .map((sentence) => sentence.trim())
+    .filter((sentence) => sentence.length > 0);
+
+  return (
+    sentences.find((sentence) => matchesKeywords(sentence, keywords)) ??
+    sentences[0]
+  );
 }
 
