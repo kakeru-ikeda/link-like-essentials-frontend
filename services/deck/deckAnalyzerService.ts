@@ -141,6 +141,15 @@ function analyzeRequiredEffect(
     })
   );
 
+  const traitTriggerOrder = ['ドロー時', 'ハートコレクト時', '常時'];
+  traitMatches.sort((a, b) => {
+    const aIndex = traitTriggerOrder.indexOf(a.conditionLabel);
+    const bIndex = traitTriggerOrder.indexOf(b.conditionLabel);
+    const normalizedA = aIndex === -1 ? Number.MAX_SAFE_INTEGER : aIndex;
+    const normalizedB = bIndex === -1 ? Number.MAX_SAFE_INTEGER : bIndex;
+    return normalizedA - normalizedB;
+  });
+
   return {
     effectType,
     label,

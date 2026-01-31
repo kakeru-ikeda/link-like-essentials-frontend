@@ -422,38 +422,38 @@ export const DeckBuilder: React.FC = () => {
 
       {/* ツールバー */}
       <div className="w-full border-t border-gray-300 py-2 px-4 bg-gray-50 flex-shrink-0">
-        <div className="flex items-center gap-1">
-          <Checkbox
-            checked={isFriendSlotEnabled}
-            onChange={setFriendSlotEnabled}
-            label="フレンドカード枠有効"
-          />
-          <HelpTooltip
-            content="フレンドカード枠を編成に含めるかどうかを切り替えます。"
-            className="mb-1 mr-2"
-            size={4}
-          />
-          <Checkbox
-            checked={showLimitBreak}
-            onChange={setShowLimitBreak}
-            label="上限解放数を表示"
-          />
-          <HelpTooltip
-            content="編成内の各カードの上限解放数(スキルレベル)を設定します。デッキ共有時にも反映されます。"
-            className="mb-1"
-            size={4}
-          />
-        </div>
+        <div className="flex items-center justify-between gap-2 flex-wrap">
+          <div className="flex items-center gap-1 flex-wrap">
+            <Checkbox
+              checked={isFriendSlotEnabled}
+              onChange={setFriendSlotEnabled}
+              label="フレンドカード枠有効"
+            />
+            <HelpTooltip
+              content="フレンドカード枠を編成に含めるかどうかを切り替えます。"
+              className="mb-1 mr-2"
+              size={4}
+            />
+            <Checkbox
+              checked={showLimitBreak}
+              onChange={setShowLimitBreak}
+              label="上限解放数を表示"
+            />
+            <HelpTooltip
+              content="編成内の各カードの上限解放数(スキルレベル)を設定します。デッキ共有時にも反映されます。"
+              className="mb-1"
+              size={4}
+            />
+          </div>
 
-        {analysis && (
-          <div className="mt-3">
+          {analysis && (
             <DeckAnalyzerPanel
               analysis={analysis}
               isOpen={isAnalyzerOpen}
               onToggle={() => setIsAnalyzerOpen((prev) => !prev)}
             />
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       {/* Card search modal */}

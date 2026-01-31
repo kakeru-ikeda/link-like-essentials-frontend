@@ -32,7 +32,7 @@ export const TRAIT_CONDITION_PATTERNS: Record<TraitConditionType, RegExp[]> = {
 };
 
 export const TRAIT_CONDITION_LABELS: Record<TraitConditionType, string> = {
-  [TraitConditionType.NONE]: '常時',
+  [TraitConditionType.NONE]: 'その他',
   [TraitConditionType.DRAW]: 'ドロー時',
   [TraitConditionType.HEART_COLLECT]: 'ハートコレクト時',
   [TraitConditionType.SHOT]: 'ショット',
