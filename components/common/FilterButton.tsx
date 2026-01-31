@@ -15,11 +15,11 @@ export const FilterButton: React.FC<FilterButtonProps> = ({
   return (
     <button
       onClick={onClick}
-      className="relative px-4 py-2 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors flex items-center gap-2 text-sm font-medium text-gray-700"
+      className="relative px-2 sm:px-4 h-8 sm:h-10 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-medium text-gray-700 whitespace-nowrap"
       aria-label="絞り込み"
     >
       <svg
-        className="w-5 h-5"
+        className="w-4 h-4 sm:w-5 sm:h-5"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
