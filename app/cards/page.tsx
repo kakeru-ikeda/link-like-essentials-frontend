@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useCards } from '@/hooks/card/useCards';
 import { useCardFilterQuery } from '@/hooks/card/useCardFilterQuery';
 import { CardGridView } from '@/components/cards/CardGridView';
@@ -33,8 +33,11 @@ export default function CardsPage(): JSX.Element {
   });
   const { cards, loading, error } = useCards(filter);
 
-  // フィルター後のカードをソート
-  const sortedCards = sortCards(cards, sortBy, order);
+  // フィルター後のカードをソート（メモ化してパフォーマンス向上）
+  const sortedCards = useMemo(
+    () => sortCards(cards, sortBy, order),
+    [cards, sortBy, order]
+  );
 
   const { openCardDetail, closeCardDetail, selectedCardId, isCardDetailOpen } =
     useSideModal();

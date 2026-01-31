@@ -24,14 +24,14 @@ export function useCardSort(): UseCardSortReturn {
   const handleSortChange = (newSortBy: CardSortBy) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set('sortBy', newSortBy);
-    router.push(`?${params.toString()}`);
+    router.replace(`?${params.toString()}`, { scroll: false });
   };
 
   // ソート順変更
   const handleOrderChange = (newOrder: SortOrder) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set('order', newOrder);
-    router.push(`?${params.toString()}`);
+    router.replace(`?${params.toString()}`, { scroll: false });
   };
 
   return {

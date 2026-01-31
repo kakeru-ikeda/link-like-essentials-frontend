@@ -52,7 +52,17 @@ export function sortCards(
         if (comparison === 0) {
           const timeA = new Date(a.releaseDate).getTime();
           const timeB = new Date(b.releaseDate).getTime();
-          comparison = timeA - timeB;
+
+          // NaNチェック
+          if (Number.isNaN(timeA) && Number.isNaN(timeB)) {
+            comparison = 0;
+          } else if (Number.isNaN(timeA)) {
+            comparison = 1; // 不正な日時は後ろへ
+          } else if (Number.isNaN(timeB)) {
+            comparison = -1; // 不正な日時は後ろへ
+          } else {
+            comparison = timeA - timeB;
+          }
         }
         break;
       }
