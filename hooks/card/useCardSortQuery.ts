@@ -1,4 +1,3 @@
-// hooks/card/useCardSortQuery.ts
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 import { CardSortBy, SortOrder } from '@/config/sortOptions';
@@ -28,20 +27,23 @@ export function useCardSortQuery(): UseCardSortReturn {
   const queryOrder = (searchParams.get('order') as SortOrder) || 'desc';
 
   // useCardSortで基本的な状態管理
-  const { sortBy, order, handleSortChange, handleOrderChange } = useCardSort(
-    querySortBy,
-    queryOrder
-  );
+  const {
+    sortBy,
+    order,
+    setSortBy,
+    setOrder,
+    handleSortChange,
+    handleOrderChange,
+  } = useCardSort(querySortBy, queryOrder);
 
   // URLクエリからソート設定を復元（初回マウント時のみ）
   useEffect(() => {
     if (!isMountedRef.current) {
-      handleSortChange(querySortBy);
-      handleOrderChange(queryOrder);
+      setSortBy(querySortBy);
+      setOrder(queryOrder);
       isMountedRef.current = true;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [querySortBy, queryOrder, setSortBy, setOrder]);
 
   // ソート設定からURLクエリを更新（初回マウント後のみ）
   useEffect(() => {

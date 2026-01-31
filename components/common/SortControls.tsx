@@ -27,7 +27,7 @@ export function SortControls<
   onOrderChange,
   sortByOptions,
   orderOptions,
-  sortByClassName = 'w-30 sm:w-40',
+  sortByClassName = 'w-32 sm:w-40',
   orderClassName = 'w-24 sm:w-24',
 }: SortControlsProps<TSortBy, TOrder>) {
   return (

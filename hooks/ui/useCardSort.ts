@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { CardSortBy, SortOrder } from '@/config/sortOptions';
 
 interface UseCardSortReturn {
   sortBy: CardSortBy;
   order: SortOrder;
+  setSortBy: (newSortBy: CardSortBy) => void;
+  setOrder: (newOrder: SortOrder) => void;
   handleSortChange: (newSortBy: CardSortBy) => void;
   handleOrderChange: (newOrder: SortOrder) => void;
 }
@@ -19,17 +21,19 @@ export function useCardSort(
   const [sortBy, setSortBy] = useState<CardSortBy>(defaultSortBy);
   const [order, setOrder] = useState<SortOrder>(defaultOrder);
 
-  const handleSortChange = (newSortBy: CardSortBy) => {
+  const handleSortChange = useCallback((newSortBy: CardSortBy) => {
     setSortBy(newSortBy);
-  };
+  }, []);
 
-  const handleOrderChange = (newOrder: SortOrder) => {
+  const handleOrderChange = useCallback((newOrder: SortOrder) => {
     setOrder(newOrder);
-  };
+  }, []);
 
   return {
     sortBy,
     order,
+    setSortBy,
+    setOrder,
     handleSortChange,
     handleOrderChange,
   };

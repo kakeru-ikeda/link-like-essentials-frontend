@@ -140,7 +140,13 @@ export const Dropdown = <T extends string = string>({
             />
           )}
           <span
-            className={`text-sm truncate ${selectedOption ? 'text-gray-900' : 'text-gray-400'}`}
+            className={`truncate ${
+              size === 'sm'
+                ? 'text-xs sm:text-sm'
+                : size === 'lg'
+                  ? 'text-base'
+                  : 'text-sm'
+            } ${selectedOption ? 'text-gray-900' : 'text-gray-400'}`}
           >
             {selectedOption ? selectedOption.label : placeholder}
           </span>

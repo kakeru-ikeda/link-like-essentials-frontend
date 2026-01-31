@@ -53,16 +53,19 @@ export function sortCards(
           const timeA = new Date(a.releaseDate).getTime();
           const timeB = new Date(b.releaseDate).getTime();
 
+          let timeComparison = 0;
           // NaNチェック
           if (Number.isNaN(timeA) && Number.isNaN(timeB)) {
-            comparison = 0;
+            timeComparison = 0;
           } else if (Number.isNaN(timeA)) {
-            comparison = 1; // 不正な日時は後ろへ
+            timeComparison = 1; // 不正な日時は後ろへ
           } else if (Number.isNaN(timeB)) {
-            comparison = -1; // 不正な日時は後ろへ
+            timeComparison = -1; // 不正な日時は後ろへ
           } else {
-            comparison = timeA - timeB;
+            timeComparison = timeA - timeB;
           }
+          // 主ソートと同じ順序を適用
+          comparison = order === 'desc' ? -timeComparison : timeComparison;
         }
         break;
       }
