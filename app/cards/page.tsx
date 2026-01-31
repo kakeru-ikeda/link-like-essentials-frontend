@@ -11,9 +11,15 @@ import { SideModal } from '@/components/common/SideModal';
 import { useSideModal } from '@/hooks/ui/useSideModal';
 import { LayoutGrid, List } from 'lucide-react';
 import { useCardHighlight } from '@/hooks/card/useCardHighlight';
+import { sortCards } from '@/services/card/cardSortService';
+import { CARD_SORT_OPTIONS, ORDER_OPTIONS } from '@/config/sortOptions';
+import { SortControls } from '@/components/common/SortControls';
+import { useCardSort } from '@/hooks/card/useCardSort';
 
 export default function CardsPage(): JSX.Element {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const { sortBy, order, handleSortChange, handleOrderChange } = useCardSort();
+
   const {
     filter,
     updateFilter,
@@ -26,6 +32,10 @@ export default function CardsPage(): JSX.Element {
     syncFilter: hasActiveFilter ? filter : null,
   });
   const { cards, loading, error } = useCards(filter);
+
+  // フィルター後のカードをソート
+  const sortedCards = sortCards(cards, sortBy, order);
+
   const { openCardDetail, closeCardDetail, selectedCardId, isCardDetailOpen } =
     useSideModal();
 
@@ -39,31 +49,47 @@ export default function CardsPage(): JSX.Element {
 
   return (
     <div className="container mx-auto px-4 py-6">
-      <div className="mb-6 flex flex-col gap-2">
-        <div className="flex items-center justify-between gap-2">
-          <h1 className="text-3xl font-bold text-gray-900">カード一覧</h1>
-          <div className="flex items-center gap-2">
+      <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        {/* タイトルと説明 */}
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+            カード一覧
+          </h1>
+          <p className="text-sm text-gray-600">カードを検索・閲覧できます。</p>
+        </div>
+        {/* ソートと表示切替 */}
+        <div className="flex items-center gap-2">
+          {/* ソート選択 */}
+          <SortControls
+            sortBy={sortBy}
+            order={order}
+            onSortByChange={handleSortChange}
+            onOrderChange={handleOrderChange}
+            sortByOptions={CARD_SORT_OPTIONS}
+            orderOptions={ORDER_OPTIONS}
+          />
+          {/* 表示切替ボタン */}
+          <div className="flex items-center gap-1.5">
             <button
               type="button"
               onClick={() => setViewMode('grid')}
-              className={`p-2 rounded-lg border transition-colors shadow-sm ${viewMode === 'grid' ? 'bg-blue-50 text-blue-700 border-blue-200' : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'}`}
+              className={`p-1.5 sm:p-2 rounded-lg border transition-colors shadow-sm ${viewMode === 'grid' ? 'bg-blue-50 text-blue-700 border-blue-200' : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'}`}
               aria-label="グリッド表示"
               aria-pressed={viewMode === 'grid'}
             >
-              <LayoutGrid className="w-5 h-5" />
+              <LayoutGrid className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
             <button
               type="button"
               onClick={() => setViewMode('list')}
-              className={`p-2 rounded-lg border transition-colors shadow-sm ${viewMode === 'list' ? 'bg-blue-50 text-blue-700 border-blue-200' : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'}`}
+              className={`p-1.5 sm:p-2 rounded-lg border transition-colors shadow-sm ${viewMode === 'list' ? 'bg-blue-50 text-blue-700 border-blue-200' : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'}`}
               aria-label="リスト表示"
               aria-pressed={viewMode === 'list'}
             >
-              <List className="w-5 h-5" />
+              <List className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
           </div>
         </div>
-        <p className="text-sm text-gray-600">カードを検索・閲覧できます。</p>
       </div>
 
       {/* フィルター */}
@@ -78,14 +104,14 @@ export default function CardsPage(): JSX.Element {
       {/* カード表示エリア */}
       {viewMode === 'grid' ? (
         <CardGridView
-          cards={cards}
+          cards={sortedCards}
           loading={loading}
           highlightKeywords={highlightKeywords.general}
           onClickCard={(card) => openCardDetail(card.id)}
         />
       ) : (
         <CardListView
-          cards={cards}
+          cards={sortedCards}
           loading={loading}
           highlightKeywords={highlightKeywords.general}
           onClickCard={(card) => openCardDetail(card.id)}
