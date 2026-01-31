@@ -1,0 +1,74 @@
+import { Card } from '@/models/card/Card';
+import { CardSortBy, RARITY_ORDER, SortOrder } from '@/config/sortOptions';
+
+/**
+ * カード配列をソートする
+ * @param cards ソート対象のカード配列
+ * @param sortBy ソート項目（createdAt | rarity | cardName）
+ * @param order ソート順（asc | desc）
+ * @returns ソート済みのカード配列
+ */
+export function sortCards(
+  cards: Card[],
+  sortBy: CardSortBy,
+  order: SortOrder
+): Card[] {
+  const sorted = [...cards];
+
+  sorted.sort((a, b) => {
+    let comparison = 0;
+
+    switch (sortBy) {
+      case 'releaseDate': {
+        // 日時の比較
+        const timeA = new Date(a.releaseDate).getTime();
+        const timeB = new Date(b.releaseDate).getTime();
+
+        // NaNチェック
+        if (Number.isNaN(timeA) && Number.isNaN(timeB)) {
+          comparison = 0;
+        } else if (Number.isNaN(timeA)) {
+          comparison = 1; // 不正な日時は後ろへ
+        } else if (Number.isNaN(timeB)) {
+          comparison = -1; // 不正な日時は後ろへ
+        } else {
+          comparison = timeA - timeB;
+        }
+
+        // 同じ日時の場合はIDで安定ソート
+        if (comparison === 0) {
+          comparison = a.id.localeCompare(b.id);
+        }
+        break;
+      }
+
+      case 'rarity':
+        // レアリティの比較（RARITY_ORDERの順序を使用）
+        comparison = RARITY_ORDER[a.rarity] - RARITY_ORDER[b.rarity];
+        // 同じレアリティの場合は日時でソート
+        if (comparison === 0) {
+          const timeA = new Date(a.releaseDate).getTime();
+          const timeB = new Date(b.releaseDate).getTime();
+          comparison = timeB - timeA; // 新しい順
+        }
+        break;
+
+      case 'cardName':
+        // カード名の比較（日本語も正しくソート）
+        comparison = a.cardName.localeCompare(b.cardName, 'ja');
+        // 同じ名前の場合はIDで安定ソート
+        if (comparison === 0) {
+          comparison = a.id.localeCompare(b.id);
+        }
+        break;
+
+      default:
+        comparison = 0;
+    }
+
+    // 降順の場合は比較結果を反転
+    return order === 'desc' ? -comparison : comparison;
+  });
+
+  return sorted;
+}
