@@ -1,9 +1,11 @@
-"use client";
+'use client';
 
 import { PublishedDeckList } from '@/components/published-deck/PublishedDeckList';
 import { TagFilterBar } from '@/components/published-deck/TagFilterBar';
 import { useDecksPageController } from '@/hooks/published-deck/useDecksPageController';
 import { usePopularHashtags } from '@/hooks/published-deck/usePopularHashtags';
+import { SortControls } from '@/components/common/SortControls';
+import { DECK_SORT_OPTIONS, ORDER_OPTIONS } from '@/config/sortOptions';
 
 export default function DecksPage() {
   const {
@@ -47,30 +49,18 @@ export default function DecksPage() {
       <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">投稿デッキ</h1>
-          <p className="text-sm text-gray-600">公開されたデッキを閲覧・インポートできます。</p>
+          <p className="text-sm text-gray-600">
+            公開されたデッキを閲覧・インポートできます。
+          </p>
         </div>
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
-          <div className="flex items-center gap-2 text-sm text-slate-700">
-            <span className="text-xs text-slate-500">並び替え</span>
-            <select
-              value={params.orderBy}
-              onChange={(e) => handleSortChange(e.target.value as 'publishedAt' | 'viewCount' | 'likeCount')}
-              className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm"
-            >
-              <option value="publishedAt">新着順</option>
-              <option value="viewCount">閲覧数</option>
-              <option value="likeCount">いいね数</option>
-            </select>
-            <select
-              value={params.order}
-              onChange={(e) => handleOrderChange(e.target.value as 'asc' | 'desc')}
-              className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm"
-            >
-              <option value="desc">降順</option>
-              <option value="asc">昇順</option>
-            </select>
-          </div>
-        </div>
+        <SortControls
+          sortBy={params.orderBy || 'publishedAt'}
+          order={params.order || 'desc'}
+          onSortByChange={handleSortChange}
+          onOrderChange={handleOrderChange}
+          sortByOptions={DECK_SORT_OPTIONS}
+          orderOptions={ORDER_OPTIONS}
+        />
       </div>
 
       <TagFilterBar
@@ -97,13 +87,17 @@ export default function DecksPage() {
           取得中...
         </div>
       ) : (
-        <PublishedDeckList decks={decks} onHashtagSelect={handleHashtagSelect} />
+        <PublishedDeckList
+          decks={decks}
+          onHashtagSelect={handleHashtagSelect}
+        />
       )}
 
       {pageInfo && (
         <div className="mt-8 flex items-center justify-between rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700">
           <div>
-            ページ {pageInfo.currentPage} / {pageInfo.totalPages}（全 {pageInfo.totalCount} 件）
+            ページ {pageInfo.currentPage} / {pageInfo.totalPages}（全{' '}
+            {pageInfo.totalCount} 件）
           </div>
           <div className="flex items-center gap-2">
             <button
