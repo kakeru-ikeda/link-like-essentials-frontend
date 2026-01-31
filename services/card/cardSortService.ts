@@ -62,11 +62,12 @@ export function sortCards(
           } else if (Number.isNaN(timeB)) {
             timeComparison = -1; // 不正な日時は後ろへ
           } else {
-            timeComparison = timeA - timeB;
+            timeComparison = timeB - timeA;
           }
           // 主ソートと同じ順序を適用
           comparison = order === 'desc' ? -timeComparison : timeComparison;
         }
+
         break;
       }
 
