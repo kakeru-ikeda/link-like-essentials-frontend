@@ -14,11 +14,12 @@ import { useCardHighlight } from '@/hooks/card/useCardHighlight';
 import { sortCards } from '@/services/card/cardSortService';
 import { CARD_SORT_OPTIONS, ORDER_OPTIONS } from '@/config/sortOptions';
 import { SortControls } from '@/components/common/SortControls';
-import { useCardSort } from '@/hooks/card/useCardSort';
+import { useCardSortQuery } from '@/hooks/card/useCardSortQuery';
 
 export default function CardsPage(): JSX.Element {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const { sortBy, order, handleSortChange, handleOrderChange } = useCardSort();
+  const { sortBy, order, handleSortChange, handleOrderChange } =
+    useCardSortQuery();
 
   const {
     filter,
@@ -33,11 +34,9 @@ export default function CardsPage(): JSX.Element {
   });
   const { cards, loading, error } = useCards(filter);
 
-  // フィルター後のカードをソート（メモ化してパフォーマンス向上）
-  const sortedCards = useMemo(
-    () => sortCards(cards, sortBy, order),
-    [cards, sortBy, order]
-  );
+  const sortedCards = useMemo(() => {
+    return sortCards(cards, sortBy, order);
+  }, [cards, sortBy, order]);
 
   const { openCardDetail, closeCardDetail, selectedCardId, isCardDetailOpen } =
     useSideModal();

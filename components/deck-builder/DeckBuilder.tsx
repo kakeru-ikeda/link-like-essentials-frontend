@@ -35,7 +35,7 @@ import { filterAvailableCards } from '@/services/card/characterFilterService';
 import { useResponsiveDevice } from '@/hooks/ui/useResponsiveDevice';
 import { HelpTooltip } from '../common/HelpTooltip';
 import { sortCards } from '@/services/card/cardSortService';
-import { useCardSort } from '@/hooks/card/useCardSort';
+import { useCardSort } from '@/hooks/ui/useCardSort';
 
 export const DeckBuilder: React.FC = () => {
   const {

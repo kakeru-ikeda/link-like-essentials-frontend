@@ -54,8 +54,8 @@ export default function DecksPage() {
           </p>
         </div>
         <SortControls
-          sortBy={params.orderBy || 'publishedAt'}
-          order={params.order || 'desc'}
+          sortBy={params.orderBy ?? 'publishedAt'}
+          order={params.order ?? 'desc'}
           onSortByChange={handleSortChange}
           onOrderChange={handleOrderChange}
           sortByOptions={DECK_SORT_OPTIONS}
