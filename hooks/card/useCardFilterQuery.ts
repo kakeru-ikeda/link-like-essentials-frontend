@@ -145,7 +145,8 @@ const normalizeFilter = (filter: CardFilter): CardFilter => {
   const normalized: CardFilter = {};
 
   if (filter.keyword?.trim()) normalized.keyword = filter.keyword.trim();
-  if (filter.rarities?.length) normalized.rarities = [...new Set(filter.rarities)].sort();
+  if (filter.rarities?.length)
+    normalized.rarities = [...new Set(filter.rarities)].sort();
   if (filter.styleTypes?.length)
     normalized.styleTypes = [...new Set(filter.styleTypes)].sort();
   if (filter.limitedTypes?.length)
@@ -159,7 +160,9 @@ const normalizeFilter = (filter: CardFilter): CardFilter => {
   if (filter.traitEffects?.length)
     normalized.traitEffects = [...new Set(filter.traitEffects)].sort();
   if (filter.skillSearchTargets?.length)
-    normalized.skillSearchTargets = [...new Set(filter.skillSearchTargets)].sort();
+    normalized.skillSearchTargets = [
+      ...new Set(filter.skillSearchTargets),
+    ].sort();
   if (filter.filterMode) normalized.filterMode = filter.filterMode;
   if (filter.hasTokens !== undefined) normalized.hasTokens = filter.hasTokens;
 
@@ -219,12 +222,21 @@ export const useCardFilterQuery = (): UseFilterReturn => {
       toQueryParams(normalized),
       cardFilterQuerySchema
     );
+
+    // ソートパラメータを保持
+    const sortBy = searchParams.get('sortBy');
+    const order = searchParams.get('order');
+    const params = new URLSearchParams(nextQuery);
+    if (sortBy) params.set('sortBy', sortBy);
+    if (order) params.set('order', order);
+
+    const finalQuery = params.toString();
     const currentQuery = searchParams.toString();
 
     // 同じならスキップ
-    if (nextQuery === currentQuery) return;
+    if (finalQuery === currentQuery) return;
 
-    router.replace(nextQuery ? `?${nextQuery}` : '?', { scroll: false });
+    router.replace(finalQuery ? `?${finalQuery}` : '?', { scroll: false });
   }, [filter, router, searchParams]);
 
   return {
