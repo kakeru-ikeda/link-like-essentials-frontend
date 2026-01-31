@@ -9,6 +9,8 @@ export interface DropdownOption<T = string> {
   description?: string;
 }
 
+export type DropdownSize = 'sm' | 'md' | 'lg';
+
 interface DropdownProps<T = string> {
   value?: T;
   onChange: (value: T) => void;
@@ -20,6 +22,7 @@ interface DropdownProps<T = string> {
   showImages?: boolean;
   searchable?: boolean;
   searchPlaceholder?: string;
+  size?: DropdownSize;
 }
 
 /**
@@ -36,6 +39,7 @@ export const Dropdown = <T extends string = string>({
   showImages = false,
   searchable = false,
   searchPlaceholder = '検索...',
+  size = 'md',
 }: DropdownProps<T>): React.ReactElement => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -45,17 +49,24 @@ export const Dropdown = <T extends string = string>({
   const selectedOption = options.find((opt) => opt.value === value);
 
   // 検索クエリでフィルタリング
-  const filteredOptions = searchable && searchQuery
-    ? options.filter((option) =>
-        option.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        option.description?.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    : options;
+  const filteredOptions =
+    searchable && searchQuery
+      ? options.filter(
+          (option) =>
+            option.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            option.description
+              ?.toLowerCase()
+              .includes(searchQuery.toLowerCase())
+        )
+      : options;
 
   // 外側クリックで閉じる
   useEffect((): (() => void) | void => {
     const handleClickOutside = (event: MouseEvent): void => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
         setSearchQuery('');
       }
@@ -106,10 +117,16 @@ export const Dropdown = <T extends string = string>({
         onClick={handleToggle}
         disabled={disabled}
         className={`
-          w-full px-2 py-1.5 bg-white border border-gray-300 rounded-lg
+          w-full px-2 bg-white border border-gray-300 rounded-lg
           flex items-center justify-between gap-2
           transition-all duration-200
-          h-11
+          ${
+            size === 'sm'
+              ? 'h-8 py-1 text-xs sm:h-10 sm:py-2 sm:text-sm'
+              : size === 'lg'
+                ? 'h-12 py-3 text-base'
+                : 'h-10 py-2 text-sm'
+          }
           ${disabled ? 'opacity-50 cursor-not-allowed bg-gray-50' : 'hover:border-gray-400 cursor-pointer'}
           ${isOpen ? 'ring-2 ring-blue-500 border-blue-500' : ''}
         `}
@@ -122,11 +139,13 @@ export const Dropdown = <T extends string = string>({
               className="w-8 h-8 rounded object-cover flex-shrink-0"
             />
           )}
-          <span className={`text-sm truncate ${selectedOption ? 'text-gray-900' : 'text-gray-400'}`}>
+          <span
+            className={`text-sm truncate ${selectedOption ? 'text-gray-900' : 'text-gray-400'}`}
+          >
             {selectedOption ? selectedOption.label : placeholder}
           </span>
         </div>
-        
+
         {/* 矢印アイコン */}
         <svg
           className={`w-5 h-5 text-gray-400 transition-transform duration-200 flex-shrink-0 ${
@@ -136,7 +155,12 @@ export const Dropdown = <T extends string = string>({
           stroke="currentColor"
           viewBox="0 0 24 24"
         >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M19 9l-7 7-7-7"
+          />
         </svg>
       </button>
 
@@ -174,7 +198,11 @@ export const Dropdown = <T extends string = string>({
                     onClick={() => setSearchQuery('')}
                     className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
                   >
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <svg
+                      className="w-4 h-4"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
                       <path
                         fillRule="evenodd"
                         d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
@@ -209,7 +237,9 @@ export const Dropdown = <T extends string = string>({
                     />
                   )}
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium truncate">{option.label}</div>
+                    <div className="text-sm font-medium truncate">
+                      {option.label}
+                    </div>
                     {option.description && (
                       <div className="text-xs text-gray-500 truncate mt-0.5">
                         {option.description}

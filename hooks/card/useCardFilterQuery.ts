@@ -223,20 +223,12 @@ export const useCardFilterQuery = (): UseFilterReturn => {
       cardFilterQuerySchema
     );
 
-    // ソートパラメータを保持
-    const sortBy = searchParams.get('sortBy');
-    const order = searchParams.get('order');
-    const params = new URLSearchParams(nextQuery);
-    if (sortBy) params.set('sortBy', sortBy);
-    if (order) params.set('order', order);
-
-    const finalQuery = params.toString();
     const currentQuery = searchParams.toString();
 
     // 同じならスキップ
-    if (finalQuery === currentQuery) return;
+    if (nextQuery === currentQuery) return;
 
-    router.replace(finalQuery ? `?${finalQuery}` : '?', { scroll: false });
+    router.replace(nextQuery ? `?${nextQuery}` : '?', { scroll: false });
   }, [filter, router, searchParams]);
 
   return {

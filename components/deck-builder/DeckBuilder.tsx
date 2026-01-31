@@ -20,12 +20,7 @@ import { CardFilter } from '@/components/common/CardFilter';
 import { FilterButton } from '@/components/common/FilterButton';
 import { ActiveFilters } from '@/components/common/ActiveFilters';
 import { SortControls } from '@/components/common/SortControls';
-import {
-  CARD_SORT_OPTIONS,
-  ORDER_OPTIONS,
-  CardSortBy,
-  SortOrder,
-} from '@/config/sortOptions';
+import { CARD_SORT_OPTIONS, ORDER_OPTIONS } from '@/config/sortOptions';
 import { useCards } from '@/hooks/card/useCards';
 import { useCardStore } from '@/store/cardStore';
 import { useSideModal } from '@/hooks/ui/useSideModal';
@@ -40,6 +35,7 @@ import { filterAvailableCards } from '@/services/card/characterFilterService';
 import { useResponsiveDevice } from '@/hooks/ui/useResponsiveDevice';
 import { HelpTooltip } from '../common/HelpTooltip';
 import { sortCards } from '@/services/card/cardSortService';
+import { useCardSort } from '@/hooks/card/useCardSort';
 
 export const DeckBuilder: React.FC = () => {
   const {
@@ -55,8 +51,7 @@ export const DeckBuilder: React.FC = () => {
   const { isSp } = useResponsiveDevice();
   const [draggingSlotId, setDraggingSlotId] = useState<number | null>(null);
   const [showLimitBreak, setShowLimitBreak] = useState<boolean>(false);
-  const [sortBy, setSortBy] = useState<CardSortBy>('releaseDate');
-  const [order, setOrder] = useState<SortOrder>('desc');
+  const { sortBy, order, handleSortChange, handleOrderChange } = useCardSort();
 
   const sideModal = useSideModal();
   const { setActiveFilter } = useCardStore((state) => ({
@@ -524,8 +519,8 @@ export const DeckBuilder: React.FC = () => {
             <SortControls
               sortBy={sortBy}
               order={order}
-              onSortByChange={setSortBy}
-              onOrderChange={setOrder}
+              onSortByChange={handleSortChange}
+              onOrderChange={handleOrderChange}
               sortByOptions={CARD_SORT_OPTIONS}
               orderOptions={ORDER_OPTIONS}
             />

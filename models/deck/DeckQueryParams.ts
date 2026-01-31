@@ -34,14 +34,3 @@ export interface GetLikedDecksParams {
   /** 1ページあたりのアイテム数（デフォルト: 20、最大: 100） */
   perPage?: number;
 }
-
-/**
- * カード一覧のクエリパラメータ
- */
-export interface CardQueryParams {
-  /** ソート項目（デフォルト: createdAt） */
-  sortBy?: 'createdAt' | 'rarity' | 'cardName';
-
-  /** ソート順（デフォルト: desc） */
-  order?: 'asc' | 'desc';
-}

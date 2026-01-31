@@ -36,13 +36,15 @@ export function SortControls<
         value={sortBy}
         onChange={(value) => onSortByChange(value as TSortBy)}
         options={sortByOptions}
-        className={`${sortByClassName} [&>button]:!h-8 sm:[&>button]:!h-10 [&>button]:!py-1 [&>button]:!text-xs sm:[&>button]:!text-sm`}
+        className={sortByClassName}
+        size="sm"
       />
       <Dropdown
         value={order}
         onChange={(value) => onOrderChange(value as TOrder)}
         options={orderOptions}
-        className={`${orderClassName} [&>button]:!h-8 sm:[&>button]:!h-10 [&>button]:!py-1 [&>button]:!text-xs sm:[&>button]:!text-sm`}
+        className={orderClassName}
+        size="sm"
       />
     </div>
   );

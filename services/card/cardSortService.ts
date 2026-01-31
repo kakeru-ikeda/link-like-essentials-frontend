@@ -4,7 +4,7 @@ import { CardSortBy, RARITY_ORDER, SortOrder } from '@/config/sortOptions';
 /**
  * カード配列をソートする
  * @param cards ソート対象のカード配列
- * @param sortBy ソート項目（createdAt | rarity | cardName）
+ * @param sortBy ソート項目（releaseDate | rarity | cardName）
  * @param order ソート順（asc | desc）
  * @returns ソート済みのカード配列
  */
@@ -42,16 +42,20 @@ export function sortCards(
         break;
       }
 
-      case 'rarity':
+      case 'rarity': {
         // レアリティの比較（RARITY_ORDERの順序を使用）
-        comparison = RARITY_ORDER[a.rarity] - RARITY_ORDER[b.rarity];
-        // 同じレアリティの場合は日時でソート
+        // 未定義のレアリティの場合は0として扱う（実行時安全性のため）
+        const rarityA = RARITY_ORDER[a.rarity] ?? 0;
+        const rarityB = RARITY_ORDER[b.rarity] ?? 0;
+        comparison = rarityA - rarityB;
+        // 同じレアリティの場合は日時でソート（orderパラメータを考慮）
         if (comparison === 0) {
           const timeA = new Date(a.releaseDate).getTime();
           const timeB = new Date(b.releaseDate).getTime();
-          comparison = timeB - timeA; // 新しい順
+          comparison = timeA - timeB;
         }
         break;
+      }
 
       case 'cardName':
         // カード名の比較（日本語も正しくソート）
