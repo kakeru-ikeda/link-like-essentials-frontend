@@ -4,7 +4,10 @@ import React, { useState, useCallback } from 'react';
 import { useDeck } from '@/hooks/deck/useDeck';
 import { Checkbox } from '@/components/common/Checkbox';
 import { CharacterDeckGroup } from '@/components/deck-builder/CharacterDeckGroup';
-import { getDeckSlotMapping, getDeckFrame } from '@/services/deck/deckConfigService';
+import {
+  getDeckSlotMapping,
+  getDeckFrame,
+} from '@/services/deck/deckConfigService';
 import type { CharacterName } from '@/config/characters';
 import type { DeckSlotMapping } from '@/config/deckSlots';
 import { canPlaceCardInSlot } from '@/services/deck/deckRulesService';
@@ -16,6 +19,8 @@ import { CardDetailView } from '@/components/deck-builder/CardDetailView';
 import { CardFilter } from '@/components/common/CardFilter';
 import { FilterButton } from '@/components/common/FilterButton';
 import { ActiveFilters } from '@/components/common/ActiveFilters';
+import { SortControls } from '@/components/common/SortControls';
+import { CARD_SORT_OPTIONS, ORDER_OPTIONS } from '@/config/sortOptions';
 import { useCards } from '@/hooks/card/useCards';
 import { useCardStore } from '@/store/cardStore';
 import { useSideModal } from '@/hooks/ui/useSideModal';
@@ -29,12 +34,24 @@ import {
 import { filterAvailableCards } from '@/services/card/characterFilterService';
 import { useResponsiveDevice } from '@/hooks/ui/useResponsiveDevice';
 import { HelpTooltip } from '../common/HelpTooltip';
+import { sortCards } from '@/services/card/cardSortService';
+import { useCardSort } from '@/hooks/ui/useCardSort';
 
 export const DeckBuilder: React.FC = () => {
-  const { deck, removeCard, toggleAceCard, swapCards, addCard, updateLimitBreakCount, isFriendSlotEnabled, setFriendSlotEnabled } = useDeck();
+  const {
+    deck,
+    removeCard,
+    toggleAceCard,
+    swapCards,
+    addCard,
+    updateLimitBreakCount,
+    isFriendSlotEnabled,
+    setFriendSlotEnabled,
+  } = useDeck();
   const { isSp } = useResponsiveDevice();
   const [draggingSlotId, setDraggingSlotId] = useState<number | null>(null);
   const [showLimitBreak, setShowLimitBreak] = useState<boolean>(false);
+  const { sortBy, order, handleSortChange, handleOrderChange } = useCardSort();
 
   const sideModal = useSideModal();
   const { setActiveFilter } = useCardStore((state) => ({
@@ -153,17 +170,20 @@ export const DeckBuilder: React.FC = () => {
       currentSlotCard?.id,
       assignedCardIds
     );
-    return filterCardsBySlot(
+    const filtered = filterCardsBySlot(
       availableCards,
       sideModal.currentSlotId,
       deck?.deckType
     );
+    return sortCards(filtered, sortBy, order);
   }, [
     cards,
     currentSlotCard,
     assignedCardIds,
     sideModal.currentSlotId,
     deck?.deckType,
+    sortBy,
+    order,
   ]);
 
   const handleSlotClick = useCallback(
@@ -240,7 +260,9 @@ export const DeckBuilder: React.FC = () => {
   const displayDeckFrame = React.useMemo<CharacterName[]>(() => {
     if (!isSp) return filteredDeckFrame;
 
-    const withoutFriend = filteredDeckFrame.filter((character) => character !== 'フレンド');
+    const withoutFriend = filteredDeckFrame.filter(
+      (character) => character !== 'フレンド'
+    );
     return filteredDeckFrame.includes('フレンド')
       ? ([...withoutFriend, 'フレンド'] as CharacterName[])
       : (withoutFriend as CharacterName[]);
@@ -271,7 +293,10 @@ export const DeckBuilder: React.FC = () => {
         const mappings = mappingCopies.get(character);
         if (!mappings || mappings.length === 0) return null;
 
-        const groupSize = character === 'フリー' ? Math.min(2, mappings.length) : Math.min(3, mappings.length);
+        const groupSize =
+          character === 'フリー'
+            ? Math.min(2, mappings.length)
+            : Math.min(3, mappings.length);
         const groupMappings = mappings.splice(0, groupSize);
         if (groupMappings.length === 0) return null;
 
@@ -283,7 +308,16 @@ export const DeckBuilder: React.FC = () => {
 
         return { character, slots, row: groupMappings[0]?.row ?? 0, key };
       })
-      .filter((group): group is { character: CharacterName; slots: DeckSlot[]; row: number; key: string } => group !== null);
+      .filter(
+        (
+          group
+        ): group is {
+          character: CharacterName;
+          slots: DeckSlot[];
+          row: number;
+          key: string;
+        } => group !== null
+      );
   }, [deckSlots, displayDeckFrame, slotMappingByCharacter]);
 
   const topRowGroups = characterGroups.filter((g) => g.row === 0);
@@ -301,7 +335,13 @@ export const DeckBuilder: React.FC = () => {
   return (
     <div className="h-full flex flex-col">
       {/* デッキグリッド */}
-      <div className={isSp ? 'w-full py-2 px-3' : `flex-1 w-full self-center py-2 px-2 overflow-x-auto pl-14 ${!isFriendSlotEnabled ? 'flex justify-center' : ''}`}>
+      <div
+        className={
+          isSp
+            ? 'w-full py-2 px-3'
+            : `flex-1 w-full self-center py-2 px-2 overflow-x-auto pl-14 ${!isFriendSlotEnabled ? 'flex justify-center' : ''}`
+        }
+      >
         {isSp ? (
           <div className="grid grid-cols-3 gap-2 sm:gap-3">
             {characterGroups.map(({ character, slots, key }) => (
@@ -329,14 +369,22 @@ export const DeckBuilder: React.FC = () => {
             ))}
           </div>
         ) : (
-          <div className="h-full flex flex-col gap-2 sm:gap-3 md:gap-4 justify-center" style={{ width: 'min(100%, 896px)' }}>
+          <div
+            className="h-full flex flex-col gap-2 sm:gap-3 md:gap-4 justify-center"
+            style={{ width: 'min(100%, 896px)' }}
+          >
             {/* 上段 - 固定幅で並べ、フレンド有効時は4つ目がはみ出す */}
             <div className="flex gap-2 sm:gap-3 md:gap-4 lg:gap-5">
               {topRowGroups.map(({ character, slots, key }) => (
-                <div 
-                  key={key} 
-                  className="flex-shrink-0" 
-                  style={{ width: character === 'フレンド' ? 'calc((90% - (2 * 0.5rem)) / 3 * 0.75)' : 'calc((90% - (2 * 0.5rem)) / 3)' }}
+                <div
+                  key={key}
+                  className="flex-shrink-0"
+                  style={{
+                    width:
+                      character === 'フレンド'
+                        ? 'calc((90% - (2 * 0.5rem)) / 3 * 0.75)'
+                        : 'calc((90% - (2 * 0.5rem)) / 3)',
+                  }}
                 >
                   <CharacterDeckGroup
                     character={character}
@@ -344,7 +392,9 @@ export const DeckBuilder: React.FC = () => {
                     aceSlotId={deck.aceSlotId}
                     draggingSlotId={draggingSlotId}
                     isCenter={deck?.centerCharacter === character}
-                    isSinger={deck?.participations?.includes(character) || false}
+                    isSinger={
+                      deck?.participations?.includes(character) || false
+                    }
                     showLimitBreak={showLimitBreak}
                     onSlotClick={handleSlotClick}
                     onRemoveCard={removeCard}
@@ -363,14 +413,20 @@ export const DeckBuilder: React.FC = () => {
             {/* 中段 */}
             <div className="flex gap-2 sm:gap-3 md:gap-4 lg:gap-5">
               {middleRowGroups.map(({ character, slots, key }) => (
-                <div key={key} className="flex-shrink-0" style={{ width: 'calc((90% - (2 * 0.5rem)) / 3)' }}>
+                <div
+                  key={key}
+                  className="flex-shrink-0"
+                  style={{ width: 'calc((90% - (2 * 0.5rem)) / 3)' }}
+                >
                   <CharacterDeckGroup
                     character={character}
                     slots={slots}
                     aceSlotId={deck.aceSlotId}
                     draggingSlotId={draggingSlotId}
                     isCenter={deck?.centerCharacter === character}
-                    isSinger={deck?.participations?.includes(character) || false}
+                    isSinger={
+                      deck?.participations?.includes(character) || false
+                    }
                     showLimitBreak={showLimitBreak}
                     onSlotClick={handleSlotClick}
                     onRemoveCard={removeCard}
@@ -389,14 +445,20 @@ export const DeckBuilder: React.FC = () => {
             {/* 下段 */}
             <div className="flex gap-2 sm:gap-3 md:gap-4 lg:gap-5">
               {bottomRowGroups.map(({ character, slots, key }) => (
-                <div key={key} className="flex-shrink-0" style={{ width: 'calc((90% - (2 * 0.5rem)) / 3)' }}>
+                <div
+                  key={key}
+                  className="flex-shrink-0"
+                  style={{ width: 'calc((90% - (2 * 0.5rem)) / 3)' }}
+                >
                   <CharacterDeckGroup
                     character={character}
                     slots={slots}
                     aceSlotId={deck.aceSlotId}
                     draggingSlotId={draggingSlotId}
                     isCenter={deck?.centerCharacter === character}
-                    isSinger={deck?.participations?.includes(character) || false}
+                    isSinger={
+                      deck?.participations?.includes(character) || false
+                    }
                     showLimitBreak={showLimitBreak}
                     onSlotClick={handleSlotClick}
                     onRemoveCard={removeCard}
@@ -445,7 +507,7 @@ export const DeckBuilder: React.FC = () => {
       <SideModal
         isOpen={sideModal.isCardSearchOpen}
         onClose={handleCloseModal}
-        title={`${currentSlotType === 'main' ? 'メイン' : currentSlotType === 'side' ? 'サイド' : 'カードを選択'} - ${currentCharacterName || ''}`}
+        title={currentCharacterName}
         width="md"
         keywordSearch={{
           value: filter.keyword || '',
@@ -453,15 +515,15 @@ export const DeckBuilder: React.FC = () => {
           placeholder: 'カード名やキャラクター名で検索...',
         }}
         headerActions={
-          <div className="flex items-center gap-2">
-            {countActiveFilters() > 0 && (
-              <button
-                onClick={resetFilter}
-                className="px-3 py-1.5 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition font-medium"
-              >
-                リセット
-              </button>
-            )}
+          <div className="flex flex-row items-center gap-1.5 w-full sm:w-auto">
+            <SortControls
+              sortBy={sortBy}
+              order={order}
+              onSortByChange={handleSortChange}
+              onOrderChange={handleOrderChange}
+              sortByOptions={CARD_SORT_OPTIONS}
+              orderOptions={ORDER_OPTIONS}
+            />
             <FilterButton
               activeCount={countActiveFilters()}
               onClick={() => sideModal.openFilter()}
