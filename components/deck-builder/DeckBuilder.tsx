@@ -80,7 +80,7 @@ export const DeckBuilder: React.FC = () => {
   const closeCardSearch = useCallback((): void => {
     resetTransientFilters();
     sideModal.closeCardSearch();
-  }, [resetTransientFilters, sideModal]);
+  }, [resetTransientFilters, sideModal.closeCardSearch]);
 
   const handleDragStart = useCallback(
     (slotId: number): void => {
@@ -199,7 +199,7 @@ export const DeckBuilder: React.FC = () => {
       resetTransientFilters();
       sideModal.openCardSearch(slotId);
     },
-    [sideModal, resetTransientFilters]
+    [sideModal.openCardSearch, resetTransientFilters]
   );
 
   const handleShowDetail = useCallback(
@@ -230,7 +230,7 @@ export const DeckBuilder: React.FC = () => {
         }
       }
     },
-    [sideModal, deck?.slots, swapCards, addCard, closeCardSearch]
+    [sideModal.currentSlotId, deck?.slots, swapCards, addCard, closeCardSearch]
   );
 
   const handleRemoveCurrentCard = useCallback((): void => {
@@ -238,7 +238,7 @@ export const DeckBuilder: React.FC = () => {
       removeCard(sideModal.currentSlotId);
       closeCardSearch();
     }
-  }, [sideModal, removeCard, closeCardSearch]);
+  }, [sideModal.currentSlotId, removeCard, closeCardSearch]);
 
   const handleCloseModal = useCallback((): void => {
     closeCardSearch();
