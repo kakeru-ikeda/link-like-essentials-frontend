@@ -13,7 +13,10 @@ import { ActiveEventBadge } from '@/components/shared/ActiveEventBadge';
 import { Song } from '@/models/song/Song';
 import { DeckType } from '@/models/shared/enums';
 import { useDeck } from '@/hooks/deck/useDeck';
-import { getCenterCard, getOtherLRCards } from '@/services/deck/deckAnalysisService';
+import {
+  getCenterCard,
+  getOtherLRCards,
+} from '@/services/deck/deckAnalysisService';
 import { DeckService } from '@/services/deck/deckService';
 import { DeckSlotMapping } from '@/config/deckSlots';
 import { LiveGrandPrixSelect } from './LiveGrandPrixSelect';
@@ -24,12 +27,15 @@ import {
   useLiveGrandPrixById,
   useActiveLiveGrandPrix,
 } from '@/hooks/deck/useLiveGrandPrix';
-import { LiveGrandPrix, LiveGrandPrixDetail } from '@/models/live-grand-prix/LiveGrandPrix';
 import {
-  useGradeChallengeById,
-  useOngoingGradeChallenges,
-} from '@/hooks/deck/useGradeChallenge';
-import { GradeChallenge, GradeChallengeDetail } from '@/models/grade-challenge/GradeChallenge';
+  LiveGrandPrix,
+  LiveGrandPrixDetail,
+} from '@/models/live-grand-prix/LiveGrandPrix';
+import { useGradeChallengeById } from '@/hooks/deck/useGradeChallenge';
+import {
+  GradeChallenge,
+  GradeChallengeDetail,
+} from '@/models/grade-challenge/GradeChallenge';
 import { ExpansionPanel } from '@/components/common/ExpansionPanel';
 import { EffectBadge } from '@/components/shared/EffectBadge';
 import { DeckPublishModal } from '@/components/deck-publish/DeckPublishModal';
@@ -38,7 +44,10 @@ import { useModal } from '@/hooks/ui/useModal';
 import { PublishedDeck } from '@/models/published-deck/PublishedDeck';
 import { useResponsiveDevice } from '@/hooks/ui/useResponsiveDevice';
 import { HelpTooltip } from '@/components/common/HelpTooltip';
-import { EVENT_COLOR_GRADE_CHALLENGE, EVENT_COLOR_LIVE_GRAND_PRIX } from '@/styles/colors';
+import {
+  EVENT_COLOR_GRADE_CHALLENGE,
+  EVENT_COLOR_LIVE_GRAND_PRIX,
+} from '@/styles/colors';
 import { hexToRgba } from '@/utils/colorUtils';
 
 export const DeckDashboard: React.FC = () => {
@@ -72,9 +81,9 @@ export const DeckDashboard: React.FC = () => {
   const [isSuccessDialogOpen, setSuccessDialogOpen] = useState<boolean>(false);
   const [isMainSlotWarningOpen, setMainSlotWarningOpen] =
     useState<boolean>(false);
-  const [eventType, setEventType] = useState<'liveGrandPrix' | 'gradeChallenge'>(
-    deck?.gradeChallengeId ? 'gradeChallenge' : 'liveGrandPrix'
-  );
+  const [eventType, setEventType] = useState<
+    'liveGrandPrix' | 'gradeChallenge'
+  >(deck?.gradeChallengeId ? 'gradeChallenge' : 'liveGrandPrix');
   const [unfilledMainSlots, setUnfilledMainSlots] = useState<DeckSlotMapping[]>(
     []
   );
@@ -103,10 +112,8 @@ export const DeckDashboard: React.FC = () => {
   // 開催中のライブグランプリを取得
   const { activeLiveGrandPrix } = useActiveLiveGrandPrix();
 
-  // 開催中のグレードチャレンジを取得
-  const { gradeChallenges: ongoingGradeChallenges } = useOngoingGradeChallenges();
-
-  const hasActiveEvent = Boolean(activeLiveGrandPrix) || ongoingGradeChallenges.length > 0;
+  // 開催中イベントバッジ表示判定
+  const hasActiveEvent = Boolean(activeLiveGrandPrix);
 
   // 選択中のステージ詳細を取得
   const selectedLiveGrandPrixDetail = React.useMemo(() => {
@@ -160,7 +167,9 @@ export const DeckDashboard: React.FC = () => {
     }
   }, [deck?.gradeChallengeId, deck?.liveGrandPrixId]);
 
-  const handleEventTypeChange = (nextType: 'liveGrandPrix' | 'gradeChallenge'): void => {
+  const handleEventTypeChange = (
+    nextType: 'liveGrandPrix' | 'gradeChallenge'
+  ): void => {
     setEventType(nextType);
     if (nextType === 'gradeChallenge') {
       updateLiveGrandPrix('', '');
@@ -298,7 +307,9 @@ export const DeckDashboard: React.FC = () => {
           value={deck?.songId}
           onChange={handleSongChange}
           className="flex-1 min-w-0"
-          disabled={!!deck?.liveGrandPrixDetailId || !!deck?.gradeChallengeDetailId}
+          disabled={
+            !!deck?.liveGrandPrixDetailId || !!deck?.gradeChallengeDetailId
+          }
         />
       </div>
 
