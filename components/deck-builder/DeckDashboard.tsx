@@ -31,10 +31,7 @@ import {
   LiveGrandPrix,
   LiveGrandPrixDetail,
 } from '@/models/live-grand-prix/LiveGrandPrix';
-import {
-  useGradeChallengeById,
-  useOngoingGradeChallenges,
-} from '@/hooks/deck/useGradeChallenge';
+import { useGradeChallengeById } from '@/hooks/deck/useGradeChallenge';
 import {
   GradeChallenge,
   GradeChallengeDetail,
@@ -115,7 +112,7 @@ export const DeckDashboard: React.FC = () => {
   // 開催中のライブグランプリを取得
   const { activeLiveGrandPrix } = useActiveLiveGrandPrix();
 
-  // 開催中のグレードチャレンジを取得
+  // 開催中イベントバッジ表示判定
   const hasActiveEvent = Boolean(activeLiveGrandPrix);
 
   // 選択中のステージ詳細を取得
