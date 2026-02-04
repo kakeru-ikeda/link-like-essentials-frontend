@@ -61,7 +61,6 @@ export const DeckBuilder: React.FC = () => {
   const {
     filter,
     updateFilter,
-    setFilter,
     resetFilter,
     clearFilterKey,
     countActiveFilters,
@@ -73,6 +72,15 @@ export const DeckBuilder: React.FC = () => {
   React.useEffect(() => {
     setActiveFilter(filter);
   }, [filter, setActiveFilter]);
+
+  const resetTransientFilters = useCallback((): void => {
+    updateFilter({ keyword: undefined, characterNames: undefined });
+  }, [updateFilter]);
+
+  const closeCardSearch = useCallback((): void => {
+    resetTransientFilters();
+    sideModal.closeCardSearch();
+  }, [resetTransientFilters, sideModal.closeCardSearch]);
 
   const handleDragStart = useCallback(
     (slotId: number): void => {
@@ -188,12 +196,10 @@ export const DeckBuilder: React.FC = () => {
 
   const handleSlotClick = useCallback(
     (slotId: number): void => {
+      resetTransientFilters();
       sideModal.openCardSearch(slotId);
-      // キャラクター名を除外して初期化
-      const { characterNames, ...filterWithoutCharacter } = filter;
-      setFilter(filterWithoutCharacter);
     },
-    [sideModal, filter, setFilter]
+    [sideModal.openCardSearch, resetTransientFilters]
   );
 
   const handleShowDetail = useCallback(
@@ -212,11 +218,11 @@ export const DeckBuilder: React.FC = () => {
         );
         if (assignedSlot) {
           swapCards(sideModal.currentSlotId, assignedSlot.slotId);
-          sideModal.closeCardSearch();
+          closeCardSearch();
         } else {
           const success = addCard(sideModal.currentSlotId, card);
           if (success) {
-            sideModal.closeCardSearch();
+            closeCardSearch();
           } else {
             const errorMessage = '編成できませんでした';
             alert(errorMessage);
@@ -224,19 +230,19 @@ export const DeckBuilder: React.FC = () => {
         }
       }
     },
-    [sideModal, deck?.slots, swapCards, addCard]
+    [sideModal.currentSlotId, deck?.slots, swapCards, addCard, closeCardSearch]
   );
 
   const handleRemoveCurrentCard = useCallback((): void => {
     if (sideModal.currentSlotId !== null) {
       removeCard(sideModal.currentSlotId);
-      sideModal.closeCardSearch();
+      closeCardSearch();
     }
-  }, [sideModal, removeCard]);
+  }, [sideModal.currentSlotId, removeCard, closeCardSearch]);
 
   const handleCloseModal = useCallback((): void => {
-    sideModal.closeCardSearch();
-  }, [sideModal]);
+    closeCardSearch();
+  }, [closeCardSearch]);
 
   const handleApplyAndCloseFilter = useCallback((): void => {
     sideModal.closeFilter();
