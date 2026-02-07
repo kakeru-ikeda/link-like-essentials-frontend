@@ -9,6 +9,8 @@ import type {
 import { SkillEffectType, TraitConditionType } from '@/models/shared/enums';
 import { DeckAnalyzerCardItem } from '@/components/deck-builder/DeckAnalyzerCardItem';
 import { ChevronDown, ChevronUp, Sparkles, Zap } from 'lucide-react';
+import { useResponsiveDevice } from '@/hooks/ui/useResponsiveDevice';
+import { SKILL_EFFECT_COLORS } from '@/styles/colors';
 
 interface DeckAnalyzerPanelProps {
   analysis: DeckAnalysis;
@@ -21,6 +23,7 @@ export const DeckAnalyzerPanel: React.FC<DeckAnalyzerPanelProps> = ({
   isOpen,
   onToggle,
 }) => {
+  const { isSp } = useResponsiveDevice();
   const [selectedEffect, setSelectedEffect] = useState<SkillEffectType>(
     SkillEffectType.HEART_CAPTURE
   );
@@ -29,30 +32,36 @@ export const DeckAnalyzerPanel: React.FC<DeckAnalyzerPanelProps> = ({
     (effect) => effect.effectType === selectedEffect
   );
 
-  return (
-    <div className="relative inline-flex items-center">
-      <button
-        onClick={onToggle}
-        className={`inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm font-medium transition-colors ${
-          isOpen
-            ? 'border-blue-200 bg-blue-50 text-blue-700'
-            : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
-        }`}
-      >
-        <span>デッキ分析</span>
-        <span className="text-xs text-gray-500">
-          {analysis.assignedSlots}/{analysis.totalSlots}
-        </span>
-        {isOpen ? (
-          <ChevronUp className="w-4 h-4" />
-        ) : (
-          <ChevronDown className="w-4 h-4" />
-        )}
-      </button>
+  const shouldShowPanel = isSp || isOpen;
 
-      {isOpen && (
-        <div className="absolute right-0 bottom-full z-30 mb-2 w-[min(90vw,420px)]">
-          <div className="absolute -bottom-2 right-4 h-3 w-3 rotate-45 border-r border-b border-gray-200 bg-white" />
+  return (
+    <div className={`relative ${isSp ? 'w-full max-w-full' : 'inline-flex items-center'}`}>
+      {!isSp && (
+        <button
+          onClick={onToggle}
+          className={`inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm font-medium transition-colors ${
+            isOpen
+              ? 'border-blue-200 bg-blue-50 text-blue-700'
+              : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
+          }`}
+        >
+          <span>デッキ分析</span>
+          <span className="text-xs text-gray-500">
+            {analysis.assignedSlots}/{analysis.totalSlots}
+          </span>
+          {isOpen ? (
+            <ChevronUp className="w-4 h-4" />
+          ) : (
+            <ChevronDown className="w-4 h-4" />
+          )}
+        </button>
+      )}
+
+      {shouldShowPanel && (
+        <div className={`${isSp ? 'w-full max-w-full' : 'absolute right-0 bottom-full z-30 mb-2 w-[min(90vw,420px)]'}`}>
+          {!isSp && (
+            <div className="absolute -bottom-2 right-4 h-3 w-3 rotate-45 border-r border-b border-gray-200 bg-white" />
+          )}
           <div className="rounded-lg border border-gray-200 bg-white shadow-lg">
             <div className="flex items-center justify-between border-b border-gray-100 px-3 py-2">
               <div className="text-sm font-semibold text-gray-800">デッキ分析</div>
@@ -62,25 +71,35 @@ export const DeckAnalyzerPanel: React.FC<DeckAnalyzerPanelProps> = ({
             </div>
 
             <div className="border-b border-gray-100 px-3 py-2">
-              <div className="grid grid-cols-3 gap-1.5">
-                {analysis.requiredEffects.map((effect) => (
-                  <button
-                    key={effect.effectType}
-                    onClick={() => setSelectedEffect(effect.effectType)}
-                    className={`flex flex-col items-center justify-center rounded px-2 py-2 transition-colors ${
-                      selectedEffect === effect.effectType
-                        ? 'bg-blue-500 text-white shadow-sm'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                  >
-                    <span className="text-[10px] leading-tight text-center mb-0.5">
-                      {effect.label}
-                    </span>
-                    <span className="text-lg font-bold leading-none">
-                      {effect.totalUniqueCards}
-                    </span>
-                  </button>
-                ))}
+              <div className="grid grid-cols-4 gap-1.5">
+                {analysis.requiredEffects.map((effect) => {
+                  const colors = SKILL_EFFECT_COLORS[effect.effectType];
+                  const isSelected = selectedEffect === effect.effectType;
+                  return (
+                    <button
+                      key={effect.effectType}
+                      onClick={() => setSelectedEffect(effect.effectType)}
+                      className="flex flex-col items-center justify-center rounded px-1.5 py-2 transition-colors border-2"
+                      style={{
+                        borderColor: colors.border,
+                        backgroundColor: isSelected ? colors.bg : '#ffffff',
+                      }}
+                    >
+                      <span 
+                        className="text-[8px] leading-tight text-center mb-0.5 w-full truncate px-0.5"
+                        style={{ color: isSelected ? colors.text : colors.border }}
+                      >
+                        {effect.label}
+                      </span>
+                      <span 
+                        className="text-lg font-bold leading-none"
+                        style={{ color: isSelected ? '#ffffff' : '#3e3e3e' }}
+                      >
+                        {effect.totalUniqueCards}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 

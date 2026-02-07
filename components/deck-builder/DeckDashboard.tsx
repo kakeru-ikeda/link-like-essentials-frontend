@@ -198,14 +198,6 @@ export const DeckDashboard: React.FC = () => {
         </Button>
       </div>
 
-      {analysis && (
-        <DeckAnalyzerPanel
-          analysis={analysis}
-          isOpen={isAnalyzerOpen}
-          onToggle={() => setIsAnalyzerOpen((prev) => !prev)}
-        />
-      )}
-
       {/* デッキタイプ＆楽曲選択 */}
       <div className="flex gap-4 min-w-0">
         <DeckTypeSelect

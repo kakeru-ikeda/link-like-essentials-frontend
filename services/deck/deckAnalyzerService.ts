@@ -19,7 +19,7 @@ const REQUIRED_EFFECTS: { effectType: SkillEffectType; label: string }[] = [
   { effectType: SkillEffectType.LOVE_ATTRACT, label: 'ラブアトラクト' },
   { effectType: SkillEffectType.VOLTAGE_GAIN, label: 'ボルテージゲイン' },
   { effectType: SkillEffectType.HEART_BOOST, label: 'ハートブースト' },
-  { effectType: SkillEffectType.WIDE_HEART_BOOST, label: 'ワイドハートブースト' },
+  { effectType: SkillEffectType.WIDE_HEART_BOOST, label: 'ワイドブースト' },
   { effectType: SkillEffectType.ATTRACT_BOOST, label: 'アトラクトブースト' },
   { effectType: SkillEffectType.VOLTAGE_BOOST, label: 'ボルテージブースト' },
   { effectType: SkillEffectType.MENTAL_RECOVER, label: 'メンタルリカバー' },
