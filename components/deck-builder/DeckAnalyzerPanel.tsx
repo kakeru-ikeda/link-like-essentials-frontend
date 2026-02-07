@@ -62,7 +62,7 @@ export const DeckAnalyzerPanel: React.FC<DeckAnalyzerPanelProps> = ({
           {!isSp && (
             <div className="absolute -bottom-2 right-4 h-3 w-3 rotate-45 border-r border-b border-gray-200 bg-white" />
           )}
-          <div className="rounded-lg border border-gray-200 bg-white shadow-lg">
+          <div className={`rounded-lg border border-gray-200 bg-white shadow-lg ${isSp ? '' : 'h-[750px] flex flex-col'}`}>
             <div className="flex items-center justify-between border-b border-gray-100 px-3 py-2">
               <div className="text-sm font-semibold text-gray-800">デッキ分析</div>
               <div className="text-xs text-gray-500">
@@ -103,7 +103,7 @@ export const DeckAnalyzerPanel: React.FC<DeckAnalyzerPanelProps> = ({
               </div>
             </div>
 
-            <div className="max-h-[55vh] space-y-4 overflow-y-auto px-3 py-3">
+            <div className={`space-y-4 overflow-y-auto px-3 py-3 ${isSp ? 'max-h-[55vh]' : 'flex-1'}`}>
               {currentEffect && (
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
