@@ -1,12 +1,12 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import type {
   DeckAnalysis,
   DetectedSkillEffect,
   DetectedTraitEffect,
 } from '@/models/deck/DeckAnalysis';
-import { TraitConditionType } from '@/models/shared/enums';
+import { SkillEffectType, TraitConditionType } from '@/models/shared/enums';
 import { DeckAnalyzerCardItem } from '@/components/deck-builder/DeckAnalyzerCardItem';
 import { ChevronDown, ChevronUp, Sparkles, Zap } from 'lucide-react';
 
@@ -21,6 +21,14 @@ export const DeckAnalyzerPanel: React.FC<DeckAnalyzerPanelProps> = ({
   isOpen,
   onToggle,
 }) => {
+  const [selectedEffect, setSelectedEffect] = useState<SkillEffectType>(
+    SkillEffectType.HEART_CAPTURE
+  );
+
+  const currentEffect = analysis.requiredEffects.find(
+    (effect) => effect.effectType === selectedEffect
+  );
+
   return (
     <div className="relative inline-flex items-center">
       <button
@@ -53,30 +61,53 @@ export const DeckAnalyzerPanel: React.FC<DeckAnalyzerPanelProps> = ({
               </div>
             </div>
 
+            <div className="border-b border-gray-100 px-3 py-2">
+              <div className="grid grid-cols-3 gap-1.5">
+                {analysis.requiredEffects.map((effect) => (
+                  <button
+                    key={effect.effectType}
+                    onClick={() => setSelectedEffect(effect.effectType)}
+                    className={`flex flex-col items-center justify-center rounded px-2 py-2 transition-colors ${
+                      selectedEffect === effect.effectType
+                        ? 'bg-blue-500 text-white shadow-sm'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    <span className="text-[10px] leading-tight text-center mb-0.5">
+                      {effect.label}
+                    </span>
+                    <span className="text-lg font-bold leading-none">
+                      {effect.totalUniqueCards}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
             <div className="max-h-[55vh] space-y-4 overflow-y-auto px-3 py-3">
-              {analysis.requiredEffects.map((effect) => (
-                <div key={effect.effectType} className="space-y-2">
+              {currentEffect && (
+                <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <h3 className="text-sm font-semibold text-gray-800">
-                      {effect.label}
+                      {currentEffect.label}
                     </h3>
                     <span className="text-xs font-medium text-blue-600">
-                      {effect.totalUniqueCards}枚
+                      {currentEffect.totalUniqueCards}枚
                     </span>
                   </div>
 
-                  {effect.skillMatches.length > 0 && (
+                  {currentEffect.skillMatches.length > 0 && (
                     <div className="space-y-1">
                       <div className="flex items-center gap-2 text-xs font-medium text-gray-700">
                         <Zap className="w-3.5 h-3.5 text-yellow-500" />
-                        <span>スキル ({effect.skillMatches.length})</span>
+                        <span>スキル ({currentEffect.skillMatches.length})</span>
                       </div>
                       <div className="space-y-1 pl-4">
-                        {effect.skillMatches.map((match, idx) => (
+                        {currentEffect.skillMatches.map((match, idx) => (
                           <DeckAnalyzerCardItem
                             key={`skill-${match.card.id}-${idx}`}
                             match={match as DetectedSkillEffect}
-                            keywords={effect.keywords}
+                            keywords={currentEffect.keywords}
                             showCondition
                             dense
                           />
@@ -85,14 +116,14 @@ export const DeckAnalyzerPanel: React.FC<DeckAnalyzerPanelProps> = ({
                     </div>
                   )}
 
-                  {effect.traitMatches.length > 0 && (
+                  {currentEffect.traitMatches.length > 0 && (
                     <div className="space-y-2">
                       <div className="flex items-center gap-2 text-xs font-medium text-gray-700">
                         <Sparkles className="w-3.5 h-3.5 text-purple-500" />
                         <span>特性</span>
                       </div>
 
-                      {effect.traitMatches.map((group) => (
+                      {currentEffect.traitMatches.map((group) => (
                         <div key={group.condition} className="space-y-1 pl-4">
                           <div
                             className={`inline-flex items-center rounded px-2 py-0.5 text-[11px] font-medium ${getConditionBadgeClassName(
@@ -106,7 +137,7 @@ export const DeckAnalyzerPanel: React.FC<DeckAnalyzerPanelProps> = ({
                               <DeckAnalyzerCardItem
                                 key={`trait-${match.card.id}-${idx}`}
                                 match={match as DetectedTraitEffect}
-                                keywords={effect.keywords}
+                                keywords={currentEffect.keywords}
                                 showCondition
                                 dense
                               />
@@ -117,13 +148,13 @@ export const DeckAnalyzerPanel: React.FC<DeckAnalyzerPanelProps> = ({
                     </div>
                   )}
 
-                  {effect.totalUniqueCards === 0 && (
+                  {currentEffect.totalUniqueCards === 0 && (
                     <p className="text-xs text-gray-500 italic">
                       該当するカードがありません
                     </p>
                   )}
                 </div>
-              ))}
+              )}
             </div>
           </div>
         </div>
