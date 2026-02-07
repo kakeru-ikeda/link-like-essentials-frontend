@@ -54,9 +54,9 @@ export const SKILL_EFFECT_DESCRIPTIONS: Record<SkillEffectType, string> = {
  */
 export const SKILL_EFFECT_KEYWORDS: Record<SkillEffectType, string[]> = {
   [SkillEffectType.HEART_CAPTURE]: ['スキルハートを獲得', 'ビートハート\\d+回分のスキルハートを獲得'],
-  [SkillEffectType.WIDE_HEART]: ['ハート上限を\\+\\d+'],
-  [SkillEffectType.LOVE_ATTRACT]: ['獲得するLOVEを\\+\\d+%'],
-  [SkillEffectType.VOLTAGE_GAIN]: ['ボルテージPt.を\\+\\d+'],
+  [SkillEffectType.WIDE_HEART]: ['ハート上限を\\+\\d+', 'ハート上限[^\\n]*?を増加'],
+  [SkillEffectType.LOVE_ATTRACT]: ['獲得するLOVEを\\+\\d+%', 'ラブアトラクト効果を発動', '獲得するLOVE[^\\n]*?を増加'],
+  [SkillEffectType.VOLTAGE_GAIN]: ['ボルテージPt.を\\+\\d+', 'ボルテージPt\\.[^\\n]*?を増加'],
   [SkillEffectType.HEART_BOOST]: ['スキルハート獲得効果による獲得数を\\+\\d+%'],
   [SkillEffectType.WIDE_HEART_BOOST]: ['ハート上限個数増加効果を\\+\\d+%', 'ハート上限増加効果を\\+\\d+%'],
   [SkillEffectType.ATTRACT_BOOST]: ['ラブアトラクト効果を\\+\\d+%'],

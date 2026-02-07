@@ -5,9 +5,11 @@ import type {
   DetectedSkillEffect,
   DetectedTraitEffect,
 } from '@/models/deck/DeckAnalysis';
-import { TraitConditionType } from '@/models/shared/enums';
+import { TraitConditionType, TraitEffectType, SkillEffectType } from '@/models/shared/enums';
 import { HighlightText } from '@/components/common/HighlightText';
 import { CHARACTER_COLORS } from '@/styles/colors';
+import { hasTraitEffect } from '@/services/game/traitEffectService';
+import { hasSkillEffect } from '@/services/game/skillEffectService';
 
 interface DeckAnalyzerCardItemProps {
   match: DetectedSkillEffect | DetectedTraitEffect;
@@ -36,6 +38,11 @@ export const DeckAnalyzerCardItem: React.FC<DeckAnalyzerCardItemProps> = ({
     ? getConditionHighlightClassName(traitMatch.condition)
     : undefined;
 
+  // アンドロー特性の判定
+  const hasUnDrawTrait = hasTraitEffect(match.card, TraitEffectType.UN_DRAW);
+  // イミテーションスキルの判定
+  const hasImitationSkill = hasSkillEffect(match.card, SkillEffectType.IMITATION);
+
   return (
     <div
       className={`flex items-start gap-3 rounded-lg bg-gray-50 border-l-4 ${
@@ -57,6 +64,24 @@ export const DeckAnalyzerCardItem: React.FC<DeckAnalyzerCardItemProps> = ({
               }`}
             >
               ({tokenName ? `${tokenName}` : 'トークン'})
+            </span>
+          )}
+          {hasUnDrawTrait && (
+            <span
+              className={`ml-1 bg-gray-200 text-gray-800 px-1 rounded ${
+                dense ? 'text-[10px]' : 'text-xs'
+              }`}
+            >
+              ⚠アンドロー
+            </span>
+          )}
+          {hasImitationSkill && (
+            <span
+              className={`ml-1 bg-gray-200 text-gray-800 px-1 rounded ${
+                dense ? 'text-[10px]' : 'text-xs'
+              }`}
+            >
+              ⚠イミテーション
             </span>
           )}
         </p>
