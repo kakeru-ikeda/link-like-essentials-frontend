@@ -15,12 +15,12 @@ import {
 
 const REQUIRED_EFFECTS: { effectType: SkillEffectType; label: string }[] = [
   { effectType: SkillEffectType.HEART_CAPTURE, label: 'ハートキャプチャ' },
-  { effectType: SkillEffectType.WIDE_HEART, label: 'ワイドハート' },
-  { effectType: SkillEffectType.LOVE_ATTRACT, label: 'ラブアトラクト' },
-  { effectType: SkillEffectType.VOLTAGE_GAIN, label: 'ボルテージゲイン' },
   { effectType: SkillEffectType.HEART_BOOST, label: 'ハートブースト' },
+  { effectType: SkillEffectType.WIDE_HEART, label: 'ワイドハート' },
   { effectType: SkillEffectType.WIDE_HEART_BOOST, label: 'ワイドブースト' },
+  { effectType: SkillEffectType.LOVE_ATTRACT, label: 'ラブアトラクト' },
   { effectType: SkillEffectType.ATTRACT_BOOST, label: 'アトラクトブースト' },
+  { effectType: SkillEffectType.VOLTAGE_GAIN, label: 'ボルテージゲイン' },
   { effectType: SkillEffectType.VOLTAGE_BOOST, label: 'ボルテージブースト' },
   { effectType: SkillEffectType.MENTAL_RECOVER, label: 'メンタルリカバー' },
   { effectType: SkillEffectType.MENTAL_PROTECT, label: 'メンタルプロテクト' },
