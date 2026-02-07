@@ -92,10 +92,11 @@ export const DeckAnalyzerPanel: React.FC<DeckAnalyzerPanelProps> = ({
                         {effect.label}
                       </span>
                       <span 
-                        className="text-lg font-bold leading-none"
+                        className="flex items-baseline gap-0.5 text-lg font-bold leading-none"
                         style={{ color: isSelected ? '#ffffff' : '#3e3e3e' }}
                       >
-                        {effect.totalUniqueCards}
+                        <span className="leading-none">{effect.totalUniqueCards}</span>
+                        <span className="text-[9px] font-medium leading-none">枚</span>
                       </span>
                     </button>
                   );
