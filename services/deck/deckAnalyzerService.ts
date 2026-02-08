@@ -4,14 +4,22 @@ import type {
   DeckAnalysis,
   DetectedSkillEffect,
   DetectedTraitEffect,
+  ExcludedCardInfo,
+  ExcludedReason,
   RequiredEffectAnalysis,
+  UnDrawCardInfo,
 } from '@/models/deck/DeckAnalysis';
-import { SkillEffectType, TraitConditionType } from '@/models/shared/enums';
-import { getSkillEffectKeyword } from '@/services/game/skillEffectService';
+import type { CardTraitAnalysisData } from '@/models/card/TraitAnalysis';
+import { SkillEffectType, TraitConditionType, TraitEffectType } from '@/models/shared/enums';
+import {
+  getSkillEffectKeyword,
+  hasSkillEffect,
+} from '@/services/game/skillEffectService';
 import {
   analyzeTraitForEffect,
   getTraitConditionLabel,
 } from '@/services/game/traitConditionService';
+import { hasTraitEffect } from '@/services/game/traitEffectService';
 
 const REQUIRED_EFFECTS: { effectType: SkillEffectType; label: string }[] = [
   { effectType: SkillEffectType.HEART_CAPTURE, label: 'ハートキャプチャ' },
@@ -28,20 +36,131 @@ const REQUIRED_EFFECTS: { effectType: SkillEffectType; label: string }[] = [
   { effectType: SkillEffectType.RESHUFFLE, label: 'リシャッフル' },
 ];
 
-export function analyzeDeck(deck: Deck | null): DeckAnalysis | null {
+export function analyzeDeck(
+  deck: Deck | null,
+  traitAnalysisMap?: Map<string, CardTraitAnalysisData>
+): DeckAnalysis | null {
   if (!deck) return null;
 
   const cards = deck.slots
     .filter((slot) => slot.card)
     .map((slot) => slot.card as Card);
 
+  const unDrawCards = extractUnDrawCards(cards, traitAnalysisMap);
+  const imitationCount = countImitationCards(cards);
+  const instanceCount = countInstanceCards(cards);
+  const unDrawCount = unDrawCards.length;
+  const excludedCards = buildExcludedCards(cards, unDrawCards);
+  const excludedCount = excludedCards.length;
+  const globalExcludedIds = new Set(
+    excludedCards
+      .filter((item) => item.reasons.some((reason) => reason !== 'UN_DRAW'))
+      .map((item) => item.card.id)
+  );
+  const drawCount = cards.length - excludedCount;
+  const unDrawCountBySection = countUnDrawBySection(
+    unDrawCards,
+    globalExcludedIds
+  );
+  const globalExcludedCount = globalExcludedIds.size;
+  const drawCountBySection = {
+    section1: cards.length - globalExcludedCount - unDrawCountBySection.section1,
+    section2: cards.length - globalExcludedCount - unDrawCountBySection.section2,
+    section3: cards.length - globalExcludedCount - unDrawCountBySection.section3,
+    section4: cards.length - globalExcludedCount - unDrawCountBySection.section4,
+    section5: cards.length - globalExcludedCount - unDrawCountBySection.section5,
+    sectionFever:
+      cards.length - globalExcludedCount - unDrawCountBySection.sectionFever,
+  };
+
   return {
     totalSlots: deck.slots.length,
     assignedSlots: cards.length,
+    unDrawCount,
+    imitationCount,
+    instanceCount,
+    drawCount,
+    drawCountBySection,
     requiredEffects: REQUIRED_EFFECTS.map((req) =>
       analyzeRequiredEffect(cards, req.effectType, req.label)
     ),
+    unDrawCards,
+    excludedCards,
   };
+}
+
+function countImitationCards(cards: Card[]): number {
+  return cards.filter((card) => hasSkillEffect(card, SkillEffectType.IMITATION)).length;
+}
+
+function countInstanceCards(cards: Card[]): number {
+  return cards.filter((card) => hasTraitEffect(card, TraitEffectType.INSTANCE)).length;
+}
+
+function buildExcludedCards(
+  cards: Card[],
+  unDrawCards: UnDrawCardInfo[]
+): ExcludedCardInfo[] {
+  const reasonMap = new Map<string, { card: Card; reasons: Set<ExcludedReason> }>();
+
+  const ensureEntry = (card: Card) => {
+    if (!reasonMap.has(card.id)) {
+      reasonMap.set(card.id, { card, reasons: new Set<ExcludedReason>() });
+    }
+    return reasonMap.get(card.id)!;
+  };
+
+  cards.forEach((card) => {
+    ensureEntry(card);
+    if (hasSkillEffect(card, SkillEffectType.IMITATION)) {
+      ensureEntry(card).reasons.add('IMITATION');
+    }
+    if (hasTraitEffect(card, TraitEffectType.INSTANCE)) {
+      ensureEntry(card).reasons.add('INSTANCE');
+    }
+  });
+
+  unDrawCards.forEach((info) => {
+    ensureEntry(info.card).reasons.add('UN_DRAW');
+  });
+
+  return Array.from(reasonMap.values())
+    .filter((entry) => entry.reasons.size > 0)
+    .map((entry) => ({
+      card: entry.card,
+      reasons: Array.from(entry.reasons),
+    }));
+}
+
+function countUnDrawBySection(
+  unDrawCards: UnDrawCardInfo[],
+  globalExcludedIds: Set<string>
+) {
+  const counts = {
+    section1: 0,
+    section2: 0,
+    section3: 0,
+    section4: 0,
+    section5: 0,
+    sectionFever: 0,
+  };
+
+  unDrawCards.forEach((info) => {
+    if (globalExcludedIds.has(info.card.id)) return;
+    const { sections } = info;
+
+    if (sections) {
+      if (sections.section1) counts.section1++;
+      if (sections.section2) counts.section2++;
+      if (sections.section3) counts.section3++;
+      if (sections.section4) counts.section4++;
+      if (sections.section5) counts.section5++;
+      if (sections.sectionFever) counts.sectionFever++;
+      return;
+    }
+  });
+
+  return counts;
 }
 
 function analyzeRequiredEffect(
@@ -200,3 +319,33 @@ function findMatchedSentence(
   );
 }
 
+/**
+ * アンドロー特性を持つカードを抽出
+ */
+function extractUnDrawCards(
+  cards: Card[],
+  traitAnalysisMap?: Map<string, CardTraitAnalysisData>
+): UnDrawCardInfo[] {
+  if (!traitAnalysisMap) {
+    return [];
+  }
+
+  const unDrawCards: UnDrawCardInfo[] = [];
+
+  cards.forEach((card) => {
+    const analysis = traitAnalysisMap.get(card.id);
+    if (!analysis) return;
+
+    // カード本体のアンドロー特性
+    if (analysis.unDraw) {
+      unDrawCards.push({
+        card,
+        isAccessory: false,
+        sections: analysis.unDraw.sections,
+        conditionDetail: null,
+      });
+    }
+  });
+
+  return unDrawCards;
+}

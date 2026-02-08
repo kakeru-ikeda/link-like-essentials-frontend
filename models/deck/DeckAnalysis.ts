@@ -32,8 +32,53 @@ export interface RequiredEffectAnalysis {
   totalUniqueCards: number;
 }
 
+export interface UnDrawCardInfo {
+  card: Card;
+  isAccessory: boolean;
+  accessoryIndex?: number;
+  sections: {
+    section1: boolean;
+    section2: boolean;
+    section3: boolean;
+    section4: boolean;
+    section5: boolean;
+    sectionFever: boolean;
+  } | null;
+  conditionDetail: {
+    reasoning?: string;
+    originalText?: string;
+    sectionConditions?: Array<{
+      section: string;
+      available: boolean;
+      reason?: string;
+    }>;
+    additionalConditions?: string[];
+  } | null;
+}
+
+export type ExcludedReason = 'UN_DRAW' | 'IMITATION' | 'INSTANCE';
+
+export interface ExcludedCardInfo {
+  card: Card;
+  reasons: ExcludedReason[];
+}
+
 export interface DeckAnalysis {
   totalSlots: number;
   assignedSlots: number;
+  unDrawCount: number;
+  imitationCount: number;
+  instanceCount: number;
+  drawCount: number;
+  drawCountBySection: {
+    section1: number;
+    section2: number;
+    section3: number;
+    section4: number;
+    section5: number;
+    sectionFever: number;
+  };
   requiredEffects: RequiredEffectAnalysis[];
+  unDrawCards: UnDrawCardInfo[];
+  excludedCards: ExcludedCardInfo[];
 }

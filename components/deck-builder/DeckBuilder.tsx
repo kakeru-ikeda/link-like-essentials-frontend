@@ -30,7 +30,7 @@ import { filterAvailableCards } from '@/services/card/characterFilterService';
 import { useResponsiveDevice } from '@/hooks/ui/useResponsiveDevice';
 import { HelpTooltip } from '../common/HelpTooltip';
 import { DeckAnalyzerPanel } from '@/components/deck-builder/DeckAnalyzerPanel';
-import { analyzeDeck } from '@/services/deck/deckAnalyzerService';
+import { useDeckAnalysis } from '@/hooks/deck/useDeckAnalysis';
 
 export const DeckBuilder: React.FC = () => {
   const { deck, removeCard, toggleAceCard, swapCards, addCard, updateLimitBreakCount, isFriendSlotEnabled, setFriendSlotEnabled } = useDeck();
@@ -56,7 +56,7 @@ export const DeckBuilder: React.FC = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const deckSlots = deck?.slots ?? [];
 
-  const analysis = React.useMemo(() => analyzeDeck(deck), [deck]);
+  const { analysis } = useDeckAnalysis(deck);
 
   React.useEffect(() => {
     setActiveFilter(filter);
