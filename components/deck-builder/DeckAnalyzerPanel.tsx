@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type {
   DeckAnalysis,
   DetectedSkillEffect,
@@ -33,6 +33,30 @@ export const DeckAnalyzerPanel: React.FC<DeckAnalyzerPanelProps> = ({
   const [selectedEffect, setSelectedEffect] = useState<SkillEffectType>(
     SkillEffectType.HEART_CAPTURE
   );
+
+  const [selectedAccessories, setSelectedAccessories] = useState<Map<string, number>>(
+    new Map()
+  );
+
+  useEffect(() => {
+    const newMap = new Map<string, number>();
+    analysis.accessoryCards.forEach((info) => {
+      const key = `${info.card.id}-${info.accessoryIndex}`;
+      newMap.set(key, selectedAccessories.get(key) ?? 1);
+    });
+    setSelectedAccessories(newMap);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [analysis.accessoryCards]);
+
+  const accessoryCount = Array.from(selectedAccessories.values()).reduce((sum, count) => sum + count, 0);
+
+  const setAccessoryCount = (key: string, count: number) => {
+    setSelectedAccessories((prev) => {
+      const newMap = new Map(prev);
+      newMap.set(key, Math.max(0, count));
+      return newMap;
+    });
+  };
 
   const currentEffect = analysis.requiredEffects.find(
     (effect) => effect.effectType === selectedEffect
@@ -112,7 +136,12 @@ export const DeckAnalyzerPanel: React.FC<DeckAnalyzerPanelProps> = ({
 
             <div className={`space-y-4 overflow-y-auto px-3 py-3 ${isSp ? 'max-h-[55vh]' : 'flex-1'}`}>
               {analysis.assignedSlots > 0 && (
-                <DrawCountSummary analysis={analysis} />
+                <DrawCountSummary
+                  analysis={analysis}
+                  accessoryCount={accessoryCount}
+                  selectedAccessories={selectedAccessories}
+                  onSetAccessoryCount={setAccessoryCount}
+                />
               )}
 
               {currentEffect && (
@@ -209,7 +238,12 @@ const getConditionBadgeClassName = (condition: TraitConditionType): string => {
 /**
  * ドロー枚数サマリー
  */
-const DrawCountSummary: React.FC<{ analysis: DeckAnalysis }> = ({ analysis }) => {
+const DrawCountSummary: React.FC<{
+  analysis: DeckAnalysis;
+  accessoryCount: number;
+  selectedAccessories: Map<string, number>;
+  onSetAccessoryCount: (key: string, count: number) => void;
+}> = ({ analysis, accessoryCount, selectedAccessories, onSetAccessoryCount }) => {
   const sections = [
     {
       label: 'セクション1',
@@ -248,7 +282,8 @@ const DrawCountSummary: React.FC<{ analysis: DeckAnalysis }> = ({ analysis }) =>
   const mainFormula = getDrawFormula(
     analysis.drawCount,
     handSize,
-    useCardCount
+    useCardCount,
+    accessoryCount
   );
 
   return (
@@ -276,6 +311,19 @@ const DrawCountSummary: React.FC<{ analysis: DeckAnalysis }> = ({ analysis }) =>
               {analysis.drawCount}枚
             </div>
           </div>
+          {accessoryCount > 0 && (
+            <>
+              <div className="pb-1 text-gray-400 text-xl font-bold">+</div>
+              <div>
+                <div className="text-[11px] text-green-700 mb-1">
+                  アクセサリー
+                </div>
+                <div className="text-2xl font-bold leading-none text-green-700">
+                  {accessoryCount}枚
+                </div>
+              </div>
+            </>
+          )}
           <div className="pb-1 text-gray-400 text-xl font-bold">-</div>
           <div>
             <div className="text-[11px] text-orange-700 mb-1">
@@ -297,6 +345,55 @@ const DrawCountSummary: React.FC<{ analysis: DeckAnalysis }> = ({ analysis }) =>
           </div>
         </div>
       </div>
+      {analysis.accessoryCards.length > 0 && (
+        <div className="text-[11px] leading-tight text-gray-600 py-2 space-y-1">
+          <div className="flex items-center gap-1">
+            <span className="text-green-700 font-medium">アクセサリーカード</span>
+            <span className="text-gray-500">
+              ({accessoryCount}/{analysis.accessoryCards.length}枚)
+            </span>
+          </div>
+          <div className="space-y-1">
+            {analysis.accessoryCards.map((info) => {
+              const key = `${info.card.id}-${info.accessoryIndex}`;
+              const count = selectedAccessories.get(key) ?? 1;
+              return (
+                <div
+                  key={key}
+                  className="flex items-center justify-between px-2 py-1.5 rounded border border-gray-200 hover:bg-gray-50"
+                >
+                  <div className="flex flex-col min-w-0 flex-1">
+                    <div className="text-[11px] font-medium text-gray-800 truncate">
+                      {info.accessory.name}
+                    </div>
+                    <div className="text-[10px] text-gray-500 truncate">
+                      [{info.card.cardName}] {info.card.characterName}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1.5 ml-2">
+                    <button
+                      onClick={() => onSetAccessoryCount(key, count - 1)}
+                      disabled={count <= 0}
+                      className="w-5 h-5 flex items-center justify-center rounded border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed text-xs font-bold"
+                    >
+                      −
+                    </button>
+                    <span className="text-xs font-bold text-green-700 w-6 text-center">
+                      {count}
+                    </span>
+                    <button
+                      onClick={() => onSetAccessoryCount(key, count + 1)}
+                      className="w-5 h-5 flex items-center justify-center rounded border border-gray-300 text-gray-600 hover:bg-gray-100 text-xs font-bold"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
       <div className="text-[11px] leading-tight text-gray-600 py-2 space-y-1">
         <div className="flex flex-wrap gap-1.5">
           {analysis.excludedCards.length === 0 ? (
@@ -322,7 +419,8 @@ const DrawCountSummary: React.FC<{ analysis: DeckAnalysis }> = ({ analysis }) =>
           const sectionFormula = getDrawFormula(
             section.drawCount,
             handSize,
-            useCardCount
+            useCardCount,
+            accessoryCount
           );
           const sectionSpecificDrawCards = getSectionSpecificDrawCards(
             analysis,
@@ -348,6 +446,12 @@ const DrawCountSummary: React.FC<{ analysis: DeckAnalysis }> = ({ analysis }) =>
                   >
                     {section.drawCount}枚
                   </span>
+                  {accessoryCount > 0 && (
+                    <>
+                      <span className="text-gray-400"> + </span>
+                      <span className="text-green-700">{accessoryCount}枚</span>
+                    </>
+                  )}
                   <span className="text-gray-400"> - </span>
                   <span className="text-orange-800">{useCardCount}枚</span>
                   <span className="text-gray-400">) + </span>

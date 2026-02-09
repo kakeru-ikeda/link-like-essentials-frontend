@@ -5,9 +5,10 @@ export type SectionKey = keyof DeckAnalysis['drawCountBySection'];
 export const getDrawFormula = (
   drawCount: number,
   handSize: number,
-  useCardCount: number
+  useCardCount: number,
+  accessoryCount: number = 0
 ) => {
-  const uncertainSlots = Math.max(0, handSize - drawCount + useCardCount);
+  const uncertainSlots = Math.max(0, handSize - drawCount - accessoryCount + useCardCount);
   return { uncertainSlots };
 };
 

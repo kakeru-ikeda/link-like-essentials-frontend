@@ -1,6 +1,7 @@
 import type { Card } from '@/models/card/Card';
 import type { Deck } from '@/models/deck/Deck';
 import type {
+  AccessoryCardInfo,
   DeckAnalysis,
   DetectedSkillEffect,
   DetectedTraitEffect,
@@ -46,6 +47,13 @@ export function analyzeDeck(
     .filter((slot) => slot.card)
     .map((slot) => slot.card as Card);
 
+  const accessoryCards: AccessoryCardInfo[] = [];
+  cards.forEach((card) => {
+    card.accessories?.forEach((acc, index) => {
+      accessoryCards.push({ card, accessory: acc, accessoryIndex: index });
+    });
+  });
+
   const unDrawCards = extractUnDrawCards(cards, traitAnalysisMap);
   const imitationCount = countImitationCards(cards);
   const instanceCount = countInstanceCards(cards);
@@ -86,6 +94,7 @@ export function analyzeDeck(
     ),
     unDrawCards,
     excludedCards,
+    accessoryCards,
   };
 }
 
