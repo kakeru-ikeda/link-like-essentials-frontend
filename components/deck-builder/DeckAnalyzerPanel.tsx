@@ -38,6 +38,8 @@ export const DeckAnalyzerPanel: React.FC<DeckAnalyzerPanelProps> = ({
     new Map()
   );
 
+  const [handSize, setHandSize] = useState<number>(8);
+
   useEffect(() => {
     const newMap = new Map<string, number>();
     analysis.accessoryCards.forEach((info) => {
@@ -141,6 +143,8 @@ export const DeckAnalyzerPanel: React.FC<DeckAnalyzerPanelProps> = ({
                   accessoryCount={accessoryCount}
                   selectedAccessories={selectedAccessories}
                   onSetAccessoryCount={setAccessoryCount}
+                  handSize={handSize}
+                  onHandSizeChange={setHandSize}
                 />
               )}
 
@@ -243,7 +247,9 @@ const DrawCountSummary: React.FC<{
   accessoryCount: number;
   selectedAccessories: Map<string, number>;
   onSetAccessoryCount: (key: string, count: number) => void;
-}> = ({ analysis, accessoryCount, selectedAccessories, onSetAccessoryCount }) => {
+  handSize: number;
+  onHandSizeChange: (size: number) => void;
+}> = ({ analysis, accessoryCount, selectedAccessories, onSetAccessoryCount, handSize, onHandSizeChange }) => {
   const sections = [
     {
       label: 'セクション1',
@@ -277,7 +283,6 @@ const DrawCountSummary: React.FC<{
     },
   ] satisfies Array<{ label: string; key: SectionKey; drawCount: number }>;
 
-  const handSize = 8;
   const useCardCount = 1;
   const mainFormula = getDrawFormula(
     analysis.drawCount,
@@ -288,7 +293,7 @@ const DrawCountSummary: React.FC<{
 
   return (
     <div className="pb-3 border-b border-gray-200">
-      <div className="space-y-3 flex-1">
+      <div className="space-y-3 flex-1 pb-2">
         <h3 className="text-sm font-semibold text-gray-800 mb-2">
           ドロー枚数
         </h3>
@@ -342,6 +347,32 @@ const DrawCountSummary: React.FC<{
             <div className="text-xl font-bold leading-none text-blue-700">
               {mainFormula.uncertainSlots}<span className="text-sm">枚</span>
             </div>
+          </div>
+        </div>
+      </div>
+      <div className="text-[11px] leading-tight text-gray-600 py-2 space-y-1">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1">
+            <span className="text-gray-700 font-medium">手札上限枚数</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => onHandSizeChange(Math.max(1, handSize - 1))}
+              disabled={handSize <= 1}
+              className="w-5 h-5 flex items-center justify-center rounded border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed text-xs font-bold"
+            >
+              −
+            </button>
+            <span className="text-xs font-bold text-gray-700 w-5 text-center">
+              {handSize}
+            </span>
+            <button
+              onClick={() => onHandSizeChange(Math.min(8, handSize + 1))}
+              disabled={handSize >= 8}
+              className="w-5 h-5 flex items-center justify-center rounded border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed text-xs font-bold"
+            >
+              +
+            </button>
           </div>
         </div>
       </div>
