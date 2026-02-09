@@ -42,7 +42,7 @@ export const DeckAnalyzerPanel: React.FC<DeckAnalyzerPanelProps> = ({
     const newMap = new Map<string, number>();
     analysis.accessoryCards.forEach((info) => {
       const key = `${info.card.id}-${info.accessoryIndex}`;
-      newMap.set(key, selectedAccessories.get(key) ?? 1);
+      newMap.set(key, selectedAccessories.get(key) ?? 0);
     });
     setSelectedAccessories(newMap);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -292,55 +292,55 @@ const DrawCountSummary: React.FC<{
         <h3 className="text-sm font-semibold text-gray-800 mb-2">
           ドロー枚数
         </h3>
-        <div className="px-1 flex items-end gap-2">
+        <div className="px-1 flex items-end gap-1.5 flex-wrap">
           <div>
-            <div className="text-[11px] text-gray-700 mb-1">
-              手札枚数
+            <div className="text-[10px] text-gray-700 mb-1">
+              手札上限
             </div>
-            <div className="text-2xl font-bold leading-none text-gray-800">
-              {handSize}枚
+            <div className="text-xl font-bold leading-none text-gray-800">
+              {handSize}<span className="text-sm">枚</span>
             </div>
           </div>
-          <div className="pb-1 text-gray-400 text-xl font-bold">=</div>
-          <div className="pb-1 text-gray-400 text-lg font-medium">(</div>
+          <div className="pb-0.5 text-gray-400 text-lg font-bold">=</div>
+          <div className="pb-0.5 text-gray-400 text-base font-medium">(</div>
           <div>
-            <div className="text-[11px] text-purple-700 mb-1">
-              確定ドロー枠
+            <div className="text-[9px] text-purple-700 mb-1">
+              ドロー枠
             </div>
-            <div className="text-2xl font-bold leading-none text-purple-800">
-              {analysis.drawCount}枚
+            <div className="text-xl font-bold leading-none text-purple-800">
+              {analysis.drawCount}<span className="text-sm">枚</span>
             </div>
           </div>
           {accessoryCount > 0 && (
             <>
-              <div className="pb-1 text-gray-400 text-xl font-bold">+</div>
+              <div className="pb-0.5 text-gray-400 text-lg font-bold">+</div>
               <div>
-                <div className="text-[11px] text-green-700 mb-1">
-                  アクセサリー
+                <div className="text-[9px] text-green-700 mb-1">
+                  トークン
                 </div>
-                <div className="text-2xl font-bold leading-none text-green-700">
-                  {accessoryCount}枚
+                <div className="text-xl font-bold leading-none text-green-700">
+                  {accessoryCount}<span className="text-sm">枚</span>
                 </div>
               </div>
             </>
           )}
-          <div className="pb-1 text-gray-400 text-xl font-bold">-</div>
+          <div className="pb-0.5 text-gray-400 text-lg font-bold">-</div>
           <div>
-            <div className="text-[11px] text-orange-700 mb-1">
+            <div className="text-[9px] text-orange-700 mb-1">
               スキル利用
             </div>
-            <div className="text-2xl font-bold leading-none text-orange-800">
-              {useCardCount}枚
+            <div className="text-xl font-bold leading-none text-orange-800">
+              {useCardCount}<span className="text-sm">枚</span>
             </div>
           </div>
-          <div className="pb-1 text-gray-400 text-lg font-medium">)</div>
-          <div className="pb-1 text-gray-400 text-xl font-bold">+</div>
+          <div className="pb-0.5 text-gray-400 text-base font-medium">)</div>
+          <div className="pb-0.5 text-gray-400 text-lg font-bold">+</div>
           <div>
-            <div className="text-[11px] text-blue-700 mb-1">
-              不確定ドロー枠
+            <div className="text-[9px] text-blue-700 mb-1">
+              アンドロー枠
             </div>
-            <div className="text-2xl font-bold leading-none text-blue-700">
-              {mainFormula.uncertainSlots}枚
+            <div className="text-xl font-bold leading-none text-blue-700">
+              {mainFormula.uncertainSlots}<span className="text-sm">枚</span>
             </div>
           </div>
         </div>
@@ -348,9 +348,9 @@ const DrawCountSummary: React.FC<{
       {analysis.accessoryCards.length > 0 && (
         <div className="text-[11px] leading-tight text-gray-600 py-2 space-y-1">
           <div className="flex items-center gap-1">
-            <span className="text-green-700 font-medium">アクセサリーカード</span>
+            <span className="text-green-700 font-medium">トークンカード</span>
             <span className="text-gray-500">
-              ({accessoryCount}/{analysis.accessoryCards.length}枚)
+              ({accessoryCount}枚)
             </span>
           </div>
           <div className="space-y-1">
