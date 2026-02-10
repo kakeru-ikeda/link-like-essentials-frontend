@@ -10,6 +10,8 @@ import { SkillEffectType, TraitConditionType } from '@/models/shared/enums';
 import { DeckAnalyzerCardItem } from '@/components/deck-builder/DeckAnalyzerCardItem';
 import { ChevronDown, ChevronUp, Sparkles, Zap } from 'lucide-react';
 import { useResponsiveDevice } from '@/hooks/ui/useResponsiveDevice';
+import { ExpansionPanel } from '@/components/common/ExpansionPanel';
+import { HelpTooltip } from '@/components/common/HelpTooltip';
 import { SKILL_EFFECT_COLORS } from '@/styles/colors';
 import {
   formatExcludedReasons,
@@ -94,13 +96,26 @@ export const DeckAnalyzerPanel: React.FC<DeckAnalyzerPanelProps> = ({
           {!isSp && (
             <div className="absolute -bottom-2 right-4 h-3 w-3 rotate-45 border-r border-b border-gray-200 bg-white" />
           )}
-          <div className={`rounded-lg border border-gray-200 bg-white shadow-lg ${isSp ? '' : 'h-[750px] flex flex-col'}`}>
-            <div className="flex items-center justify-between border-b border-gray-100 px-3 py-2">
+          <div className={`rounded-lg border border-gray-200 bg-white shadow-lg overflow-y-auto ${isSp ? 'max-h-[80vh]' : 'h-[750px]'}`}>
+            <div className="sticky top-0 z-10 bg-white flex items-center justify-between border-b border-gray-100 px-3 py-2">
               <div className="text-sm font-semibold text-gray-800">デッキ分析</div>
               <div className="text-xs text-gray-500">
                 {analysis.assignedSlots}/{analysis.totalSlots}枚編成中
               </div>
             </div>
+
+            {analysis.assignedSlots > 0 && (
+              <div className="border-b border-gray-100 px-3 py-2">
+                <DrawCountSummary
+                  analysis={analysis}
+                  accessoryCount={accessoryCount}
+                  selectedAccessories={selectedAccessories}
+                  onSetAccessoryCount={setAccessoryCount}
+                  handSize={handSize}
+                  onHandSizeChange={setHandSize}
+                />
+              </div>
+            )}
 
             <div className="border-b border-gray-100 px-3 py-2">
               <div className="grid grid-cols-4 gap-1.5">
@@ -136,18 +151,7 @@ export const DeckAnalyzerPanel: React.FC<DeckAnalyzerPanelProps> = ({
               </div>
             </div>
 
-            <div className={`space-y-4 overflow-y-auto px-3 py-3 ${isSp ? 'max-h-[55vh]' : 'flex-1'}`}>
-              {analysis.assignedSlots > 0 && (
-                <DrawCountSummary
-                  analysis={analysis}
-                  accessoryCount={accessoryCount}
-                  selectedAccessories={selectedAccessories}
-                  onSetAccessoryCount={setAccessoryCount}
-                  handSize={handSize}
-                  onHandSizeChange={setHandSize}
-                />
-              )}
-
+            <div className="space-y-4 px-3 py-3">
               {currentEffect && (
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
@@ -291,6 +295,10 @@ const DrawCountSummary: React.FC<{
     accessoryCount
   );
 
+  const undrawCards = analysis.excludedCards
+    .filter((item) => item.reasons.includes('UN_DRAW'))
+    .map((item) => item.card);
+
   return (
     <div className="pb-3 border-b border-gray-200">
       <div className="space-y-3 flex-1 pb-2">
@@ -344,8 +352,32 @@ const DrawCountSummary: React.FC<{
             <div className="text-[9px] text-blue-700 mb-1">
               アンドロー枠
             </div>
-            <div className="text-xl font-bold leading-none text-blue-700">
-              {mainFormula.uncertainSlots}<span className="text-sm">枚</span>
+            <div className="text-xl font-bold leading-none text-blue-700 inline-flex items-baseline gap-1">
+              <span>{mainFormula.uncertainSlots}</span>
+              <span className="text-sm">枚</span>
+              <span className="inline-flex items-center">
+                <HelpTooltip
+                  content={
+                    undrawCards.length > 0 ? (
+                      <div className="space-y-2">
+                        <div>ドロー枠が手札上限に満たない場合はアンドロー特性を持つカードでもドローされます。</div>
+                        <div>
+                          <div className="font-semibold mb-1">【アンドロー枠対象カード】</div>
+                          <div className="space-y-0.5">
+                            {undrawCards.map((c, idx) => (
+                              <div key={idx}>・[{c.cardName}] {c.characterName}</div>
+                            ))}
+                          </div>
+                        </div>
+                        <div>上記から{mainFormula.uncertainSlots}枚がドロー対象となります。</div>
+                      </div>
+                    ) : (
+                      'ドロー枠が手札上限に満たない場合はアンドロー特性を持つカードでもドローされます。'
+                    )
+                  }
+                  size={4}
+                />
+              </span>
             </div>
           </div>
         </div>
@@ -445,68 +477,74 @@ const DrawCountSummary: React.FC<{
         </div>
       </div>
 
-      <div className="space-y-1">
-        {sections.map((section) => {
-          const sectionFormula = getDrawFormula(
-            section.drawCount,
-            handSize,
-            useCardCount,
-            accessoryCount
-          );
-          const sectionSpecificDrawCards = getSectionSpecificDrawCards(
-            analysis,
-            section.key
-          );
-          return (
-            <div
-              key={section.label}
-              className="rounded-md border border-purple-100 bg-white px-2.5 py-1"
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-[11px] text-gray-600">
-                  {section.label}
-                </span>
-                <span className="text-[11px] font-medium text-purple-700">
-                  (
-                  <span
-                    className={
-                      section.drawCount > analysis.drawCount
-                        ? 'text-red-600'
-                        : 'text-purple-700'
-                    }
-                  >
-                    {section.drawCount}枚
+      <ExpansionPanel
+        title="セクション別詳細"
+        defaultExpanded={false}
+        className="mt-2"
+      >
+        <div className="space-y-1 pt-2">
+          {sections.map((section) => {
+            const sectionFormula = getDrawFormula(
+              section.drawCount,
+              handSize,
+              useCardCount,
+              accessoryCount
+            );
+            const sectionSpecificDrawCards = getSectionSpecificDrawCards(
+              analysis,
+              section.key
+            );
+            return (
+              <div
+                key={section.label}
+                className="rounded-md border border-purple-100 bg-white px-2.5 py-1"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] text-gray-600">
+                    {section.label}
                   </span>
-                  {accessoryCount > 0 && (
-                    <>
-                      <span className="text-gray-400"> + </span>
-                      <span className="text-green-700">{accessoryCount}枚</span>
-                    </>
-                  )}
-                  <span className="text-gray-400"> - </span>
-                  <span className="text-orange-800">{useCardCount}枚</span>
-                  <span className="text-gray-400">) + </span>
-                  <span className="text-blue-700">
-                    {sectionFormula.uncertainSlots}枚
-                  </span>
-                </span>
-              </div>
-              {sectionSpecificDrawCards.length > 0 && (
-                <div className="mt-1 flex flex-wrap gap-1">
-                  {sectionSpecificDrawCards.map((card) => (
+                  <span className="text-[11px] font-medium text-purple-700">
+                    (
                     <span
-                      key={card.id}
-                      className="inline-flex items-center rounded-full border border-orange-200 bg-orange-50 px-2 py-0.5 text-[10px] text-orange-700"
+                      className={
+                        section.drawCount > analysis.drawCount
+                          ? 'text-red-600'
+                          : 'text-purple-700'
+                      }
                     >
-                      [{card.cardName}] {card.characterName}
+                      {section.drawCount}枚
                     </span>
-                  ))}
+                    {accessoryCount > 0 && (
+                      <>
+                        <span className="text-gray-400"> + </span>
+                        <span className="text-green-700">{accessoryCount}枚</span>
+                      </>
+                    )}
+                    <span className="text-gray-400"> - </span>
+                    <span className="text-orange-800">{useCardCount}枚</span>
+                    <span className="text-gray-400">) + </span>
+                    <span className="text-blue-700">
+                      {sectionFormula.uncertainSlots}枚
+                    </span>
+                  </span>
                 </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
+                {sectionSpecificDrawCards.length > 0 && (
+                  <div className="mt-1 flex flex-wrap gap-1">
+                    {sectionSpecificDrawCards.map((card) => (
+                      <span
+                        key={card.id}
+                        className="inline-flex items-center rounded-full border border-orange-200 bg-orange-50 px-2 py-0.5 text-[10px] text-orange-700"
+                      >
+                        [{card.cardName}] {card.characterName}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </ExpansionPanel>
     </div>
   );
 };
