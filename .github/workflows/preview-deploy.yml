@@ -1,0 +1,62 @@
+name: Deploy to Vercel on Preview Push
+
+on:
+  push:
+    branches:
+      - preview
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel@latest
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Pull Vercel env (preview)
+        run: |
+          npx vercel pull --yes --environment=preview --token "$VERCEL_TOKEN"
+          npx vercel env pull .env.preview.local --environment=preview --token "$VERCEL_TOKEN"
+
+      - name: Build (Vercel)
+        run: npx vercel build --token "$VERCEL_TOKEN"
+
+      - name: Deploy to Vercel (preview)
+        id: deploy
+        run: |
+          DEPLOY_URL=$(npx vercel deploy --prebuilt --token "$VERCEL_TOKEN")
+          echo "url=${DEPLOY_URL}" >> "$GITHUB_OUTPUT"
+
+      - name: Notify Discord
+        if: always()
+        env:
+          DISCORD_DEPLOY_NOTIFICATION_URL: ${{ secrets.DISCORD_DEPLOY_NOTIFICATION_URL }}
+          DEPLOY_URL: ${{ steps.deploy.outputs.url }}
+        run: |
+          STATUS="${{ job.status }}"
+          BRANCH="${GITHUB_REF#refs/heads/}"
+          COMMIT_SHA="${GITHUB_SHA:0:7}"
+          COMMIT_MSG=$(git log -1 --pretty=%B)
+          URL_MESSAGE="$DEPLOY_URL"
+          if [ -z "$URL_MESSAGE" ]; then URL_MESSAGE="(not available)"; fi
+          curl -X POST -H "Content-Type: application/json" \
+            -d "{\"content\": \"**Preview Deploy**\\nBranch: ${BRANCH}\\nCommit: ${COMMIT_SHA}\\nMessage: ${COMMIT_MSG}\\nStatus: ${STATUS}\\nURL: ${URL_MESSAGE}\"}" \
+            "$DISCORD_DEPLOY_NOTIFICATION_URL"
