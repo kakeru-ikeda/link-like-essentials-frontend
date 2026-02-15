@@ -36,6 +36,7 @@ import { useResponsiveDevice } from '@/hooks/ui/useResponsiveDevice';
 import { HelpTooltip } from '../common/HelpTooltip';
 import { sortCards } from '@/services/card/cardSortService';
 import { useCardSort } from '@/hooks/ui/useCardSort';
+import { isPreview } from '@/utils/env';
 
 export const DeckBuilder: React.FC = () => {
   const {
@@ -340,7 +341,17 @@ export const DeckBuilder: React.FC = () => {
   }
 
   return (
-    <div className="h-full flex flex-col">
+    <div
+      className="h-full flex flex-col"
+      style={
+        isPreview
+          ? {
+              backgroundImage: 'url(/images/nyo.jpg)',
+              backgroundSize: 'cover',
+            }
+          : undefined
+      }
+    >
       {/* デッキグリッド */}
       <div
         className={
