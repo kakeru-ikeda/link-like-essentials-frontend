@@ -116,6 +116,7 @@ export const DeckBuilder: React.FC = () => {
         {
           characterName: draggingSlot.card.characterName,
           rarity: draggingSlot.card.rarity,
+          cardName: draggingSlot.card.cardName,
         },
         targetSlotId,
         deck?.deckType

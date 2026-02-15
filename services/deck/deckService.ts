@@ -162,7 +162,7 @@ export class DeckService {
     deckType?: DeckType
   ): CardPlacementResult {
     const validationResult = canPlaceCardInSlot(
-      { characterName: card.characterName, rarity: card.rarity },
+      { characterName: card.characterName, rarity: card.rarity, cardName: card.cardName },
       slotId,
       deckType
     );
@@ -198,7 +198,7 @@ export class DeckService {
     // slot1に配置されるカード（元のslot2のカード）の検証
     if (slot2.card) {
       const canPlaceInSlot1 = canPlaceCardInSlot(
-        { characterName: slot2.card.characterName, rarity: slot2.card.rarity },
+        { characterName: slot2.card.characterName, rarity: slot2.card.rarity, cardName: slot2.card.cardName },
         slotId1,
         deck.deckType
       );
@@ -210,7 +210,7 @@ export class DeckService {
     // slot2に配置されるカード（元のslot1のカード）の検証
     if (slot1.card) {
       const canPlaceInSlot2 = canPlaceCardInSlot(
-        { characterName: slot1.card.characterName, rarity: slot1.card.rarity },
+        { characterName: slot1.card.characterName, rarity: slot1.card.rarity, cardName: slot1.card.cardName },
         slotId2,
         deck.deckType
       );

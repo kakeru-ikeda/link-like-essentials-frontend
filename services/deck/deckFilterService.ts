@@ -20,7 +20,7 @@ import { DeckType } from '@/models/shared/enums';
 export function filterCardsBySlot(cards: Card[], slotId: number, deckType?: DeckType): Card[] {
   return cards.filter((card) => {
     const result = canPlaceCardInSlot(
-      { characterName: card.characterName, rarity: card.rarity },
+      { characterName: card.characterName, rarity: card.rarity, cardName: card.cardName },
       slotId,
       deckType
     );
@@ -50,7 +50,7 @@ export function getAssignedCardsForSlot(
       
       // 現在のスロットに配置可能かチェック
       const validationResult = canPlaceCardInSlot(
-        { characterName: card.characterName, rarity: card.rarity },
+        { characterName: card.characterName, rarity: card.rarity, cardName: card.cardName },
         currentSlotId,
         deckType
       );
