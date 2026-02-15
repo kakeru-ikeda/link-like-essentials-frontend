@@ -52,6 +52,7 @@ export const LIMITED_TYPE_COLORS: Record<LimitedType, string> = {
   [LimitedType.AUTUMN_LIMITED]: '#f97316',
   [LimitedType.WINTER_LIMITED]: '#22d3ee',
   [LimitedType.LEG_LIMITED]: '#a855f7',
+  [LimitedType.SHUFFLE_LIMITED]: '#ff00ff',
   [LimitedType.BATTLE_LIMITED]: '#dc2626',
   [LimitedType.PARTY_LIMITED]: '#f87171',
   [LimitedType.ACTIVITY_LIMITED]: '#14b8a6',
