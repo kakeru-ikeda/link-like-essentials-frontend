@@ -4,7 +4,7 @@
  * スロットに配置可能なキャラクターのみを表示するためのロジックを提供します。
  */
 
-import { CHARACTERS } from '@/config/characters';
+import { CHARACTERS, UNIT_MEMBERS } from '@/config/characters';
 import { canPlaceCardInSlot, getCharacterGeneration } from '@/services/deck/deckRulesService';
 import { getDeckSlotMapping } from '@/services/deck/deckConfigService';
 import { Card } from '@/models/card/Card';
@@ -38,10 +38,16 @@ export function getSelectableCharactersForSlot(slotId: number | null, deckType?:
   const slotType = slotMapping.slotType;
   const slotGeneration = getCharacterGeneration(slotCharacter);
 
+  // スロットキャラクターがRuri&Toメンバーかどうかをチェック
+  const isRuriAndToSlot = (UNIT_MEMBERS['Ruri&To'] as readonly string[]).includes(slotCharacter);
+
+  // スロットキャラクターがPRINCEε>ε>メンバーかどうかをチェック
+  const isPrinceSlot = (UNIT_MEMBERS['PRINCEε>ε>'] as readonly string[]).includes(slotCharacter);
+
   // 各キャラクターのカードがスロットに配置可能かチェック
   const selectableCharacters = CHARACTERS.filter((characterName) => {
     // 基本チェック: レアリティなしで配置可能か
-    const basicResult = canPlaceCardInSlot({ characterName }, slotId, deckType);
+    const basicResult = canPlaceCardInSlot({ characterName, cardName: undefined }, slotId, deckType);
     if (basicResult.allowed) {
       return true;
     }
@@ -53,6 +59,16 @@ export function getSelectableCharactersForSlot(slotId: number | null, deckType?:
       if (slotGeneration && [103, 104].includes(slotGeneration) && slotType === 'side') {
         return true;
       }
+    }
+
+    // 大沢瑠璃乃の追加チェック: Ruri&Toメンバーのサイドに「平成ギャルズ!!!!」が配置可能
+    if (characterName === '大沢瑠璃乃' && isRuriAndToSlot && slotType === 'side') {
+      return true;
+    }
+
+    // 安養寺姫芽の追加チェック: PRINCEε>ε>メンバーのサイドに「IcHiGo milK love」が配置可能
+    if (characterName === '安養寺姫芽' && isPrinceSlot && slotType === 'side') {
+      return true;
     }
 
     return false;

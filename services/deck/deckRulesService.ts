@@ -76,7 +76,7 @@ export function getCharacterUnit(
  * @returns 配置可否と理由
  */
 export function canPlaceCardInSlot(
-  cardInfo: { characterName: string; rarity?: string },
+  cardInfo: { characterName: string; rarity?: string; cardName?: string },
   slotId: number,
   deckType?: DeckType
 ): { allowed: boolean; reason?: string } {
@@ -164,6 +164,40 @@ export function canPlaceCardInSlot(
     return {
       allowed: false,
       reason: 'EdeliedはEdel Noteのサイドカードにのみ配置できます',
+    };
+  }
+
+  // Ruri&To 平成ギャルズ!!!!
+  if (cardInfo.characterName === '大沢瑠璃乃' && cardInfo.cardName === '平成ギャルズ!!!!') {
+    // スロットキャラクターがRuri&Toメンバー（大沢瑠璃乃、村野さやか、徒町小鈴、セラス）かチェック
+    const ruriAndToMembers = UNIT_MEMBERS['Ruri&To'];
+    const isRuriAndToSlot = (ruriAndToMembers as readonly string[]).includes(slotCharacter);
+    
+    // Ruri&Toのサイドのみ配置可能
+    if (isRuriAndToSlot && slotType === 'side') {
+      return { allowed: true };
+    }
+    
+    return {
+      allowed: false,
+      reason: '平成ギャルズ!!!!はRuri&Toのサイドカードにのみ配置できます',
+    };
+  }
+
+  // PRINCEε>ε> IcHiGo milK love
+  if (cardInfo.characterName === '安養寺姫芽' && cardInfo.cardName === 'IcHiGo milK love') {
+    // スロットキャラクターがPRINCEε>ε>メンバー（安養寺姫芽、日野下花帆、百生吟子、桂城泉）かチェック
+    const princeMembers = UNIT_MEMBERS['PRINCEε>ε>'];
+    const isPrinceSlot = (princeMembers as readonly string[]).includes(slotCharacter);
+    
+    // PRINCEε>ε>のサイドのみ配置可能
+    if (isPrinceSlot && slotType === 'side') {
+      return { allowed: true };
+    }
+    
+    return {
+      allowed: false,
+      reason: 'IcHiGo milK loveはPRINCEε>ε>のサイドカードにのみ配置できます',
     };
   }
 

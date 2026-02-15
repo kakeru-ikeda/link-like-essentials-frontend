@@ -24,6 +24,8 @@ export const UNIT_MEMBERS = {
   DOLLCHESTRA: ['夕霧綴理', '村野さやか', '徒町小鈴'],
   'みらくらぱーく！': ['藤島慈', '大沢瑠璃乃', '安養寺姫芽'],
   'Edel Note': ['桂城泉', 'セラス'],
+  'Ruri&To': ['大沢瑠璃乃', '村野さやか', '徒町小鈴', 'セラス'],
+  'PRINCEε>ε>': ['安養寺姫芽', '日野下花帆', '百生吟子', '桂城泉'],
 } as const;
 
 export type CharacterName = (typeof CHARACTERS)[number] | 'フリー' | 'フレンド';
