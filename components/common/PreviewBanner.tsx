@@ -15,16 +15,16 @@ export default function PreviewBanner() {
   }
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-[9999] bg-yellow-400 text-gray-900 px-4 py-2 text-center text-sm font-semibold shadow-md">
-      <div className="flex items-center justify-center gap-2">
-        <span className="text-lg" role="img" aria-label="construction">
+    <div className="fixed top-0 left-0 right-0 z-[9999] bg-yellow-400 text-gray-900 px-3 py-1 text-center text-xs font-semibold shadow-sm">
+      <div className="flex items-center justify-center gap-1.5">
+        <span className="text-sm" role="img" aria-label="construction">
           🚧
         </span>
         <span>プレビュー環境</span>
         {branchName && (
           <>
             <span className="hidden sm:inline">|</span>
-            <span className="hidden sm:inline">ブランチ: {branchName}</span>
+            <span className="hidden sm:inline">{branchName}</span>
           </>
         )}
       </div>
