@@ -20,6 +20,36 @@ export const CardDetailView: React.FC<CardDetailViewProps> = ({ cardId }) => {
   const [isAwakeAfter, setIsAwakeAfter] = React.useState(true);
   const [imageLoading, setImageLoading] = React.useState(false);
 
+  /**
+   * 覚醒状態を切り替える共通関数
+   * @param targetIsAfter true: 覚醒後, false: 覚醒前
+   */
+  const switchAwake = React.useCallback(
+    (targetIsAfter: boolean) => {
+      // 既に同じ状態なら何もしない
+      if (isAwakeAfter === targetIsAfter) return;
+
+      const beforeUrl = card?.detail?.awakeBeforeStorageUrl;
+      const afterUrl = card?.detail?.awakeAfterStorageUrl;
+
+      // URLが同じ場合はローディングを表示しない
+      if (beforeUrl === afterUrl) {
+        setIsAwakeAfter(targetIsAfter);
+        setImageError(false);
+        return;
+      }
+
+      setImageLoading(true);
+      setIsAwakeAfter(targetIsAfter);
+      setImageError(false);
+    },
+    [
+      isAwakeAfter,
+      card?.detail?.awakeBeforeStorageUrl,
+      card?.detail?.awakeAfterStorageUrl,
+    ]
+  );
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -66,24 +96,7 @@ export const CardDetailView: React.FC<CardDetailViewProps> = ({ cardId }) => {
           card.detail?.awakeAfterStorageUrl && (
             <div className="absolute top-2 right-2 z-10 flex gap-1 bg-black/50 rounded-lg p-1">
               <button
-                onClick={() => {
-                  // 既に「覚醒前」表示なら何もしない
-                  if (!isAwakeAfter) return;
-
-                  const beforeUrl = card.detail?.awakeBeforeStorageUrl;
-                  const afterUrl = card.detail?.awakeAfterStorageUrl;
-
-                  // URLが同じ場合はローディングを表示しない
-                  if (beforeUrl === afterUrl) {
-                    setIsAwakeAfter(false);
-                    setImageError(false);
-                    return;
-                  }
-
-                  setImageLoading(true);
-                  setIsAwakeAfter(false);
-                  setImageError(false);
-                }}
+                onClick={() => switchAwake(false)}
                 disabled={!isAwakeAfter}
                 className={`px-3 py-1 text-xs font-medium rounded transition-colors ${
                   !isAwakeAfter
@@ -94,24 +107,7 @@ export const CardDetailView: React.FC<CardDetailViewProps> = ({ cardId }) => {
                 覚醒前
               </button>
               <button
-                onClick={() => {
-                  // 既に「覚醒後」表示なら何もしない
-                  if (isAwakeAfter) return;
-
-                  const beforeUrl = card.detail?.awakeBeforeStorageUrl;
-                  const afterUrl = card.detail?.awakeAfterStorageUrl;
-
-                  // URLが同じ場合はローディングを表示しない
-                  if (beforeUrl === afterUrl) {
-                    setIsAwakeAfter(true);
-                    setImageError(false);
-                    return;
-                  }
-
-                  setImageLoading(true);
-                  setIsAwakeAfter(true);
-                  setImageError(false);
-                }}
+                onClick={() => switchAwake(true)}
                 disabled={isAwakeAfter}
                 className={`px-3 py-1 text-xs font-medium rounded transition-colors ${
                   isAwakeAfter
