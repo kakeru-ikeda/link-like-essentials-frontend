@@ -54,6 +54,7 @@ export const LIMITED_TYPE_LABELS: Record<LimitedType, string> = {
   [LimitedType.AUTUMN_LIMITED]: '秋限定',
   [LimitedType.WINTER_LIMITED]: '冬限定',
   [LimitedType.LEG_LIMITED]: 'LEG限定',
+  [LimitedType.SHUFFLE_LIMITED]: '混限定',
   [LimitedType.BATTLE_LIMITED]: '撃限定',
   [LimitedType.BANGDREAM_LIMITED]: 'バンドリ限定',
   [LimitedType.PARTY_LIMITED]: '宴限定',

@@ -5,6 +5,7 @@ import { Providers } from './providers';
 import { MaintenanceGate } from './MaintenanceGate';
 import { Sidebar } from '@/components/common/Sidebar';
 import { AnalyticsTracker } from '@/components/common/AnalyticsTracker';
+import PreviewBanner from '@/components/common/PreviewBanner';
 import { buildPageMetadata } from '@/utils/metadataUtils';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -24,6 +25,7 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body className={inter.className}>
+        <PreviewBanner />
         <Providers>
           <MaintenanceGate>
             <AnalyticsTracker />

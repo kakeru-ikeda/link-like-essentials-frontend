@@ -347,6 +347,8 @@ Content-Type: application/json
     "songId": string,                  // 楽曲ID（任意）
     "liveGrandPrixId": string,         // ライブグランプリID（任意）
     "liveGrandPrixDetailId": string,   // ライブグランプリ詳細ID（任意）
+    "gradeChallengeId": string,        // グレードチャレンジID（任意）
+    "gradeChallengeDetailId": string,  // グレードチャレンジ詳細ID（任意）
     "score": number,                   // 参考スコア（兆単位、任意）
     "memo": string,                    // メモ（任意）
     "createdAt": string,               // デッキ作成日時（ISO 8601形式）
@@ -359,6 +361,8 @@ Content-Type: application/json
   "imageUrls": string[]      // 画像URL配列（任意、最大3枚）
 }
 ```
+
+**注記**: `liveGrandPrixId`/`liveGrandPrixDetailId` と `gradeChallengeId`/`gradeChallengeDetailId` は排他的です。どちらか一方のみを送信してください。
 
 ### リクエスト例
 
@@ -393,6 +397,48 @@ Content-Type: application/json
   },
   "comment": "ライブグランプリで1500兆達成できました！エース枠の選択が重要です。",
   "hashtags": ["#UR編成", "#高火力", "#ライブグランプリ", "#セラス", "#1500兆"],
+  "isUnlisted": false,
+  "imageUrls": [
+    "https://storage.example.com/deck-images/abc123.png",
+    "https://storage.example.com/deck-images/def456.png"
+  ]
+}
+```
+
+#### グレードチャレンジ使用例
+
+```json
+{
+  "id": "V1StGXR8_Z5jdHi6B-myT",
+  "deck": {
+    "id": "deck-local-12345",
+    "name": "グレードチャレンジ用デッキ",
+    "slots": [
+      {
+        "slotId": 0,
+        "cardId": "card-001",
+        "limitBreak": 5
+      }
+      // ... 計18スロット
+    ],
+    "aceSlotId": 0,
+    "deckType": "PERFORMANCE",
+    "songId": "song-123",
+    "gradeChallengeId": "gc-2026-01",
+    "gradeChallengeDetailId": "gc-detail-stage-2",
+    "score": 1500,
+    "memo": "エース枠はセラスUR推奨",
+    "createdAt": "2025-12-28T10:00:00.000Z",
+    "updatedAt": "2025-12-28T12:30:00.000Z"
+  },
+  "comment": "グレードチャレンジで1500兆達成できました！",
+  "hashtags": [
+    "#UR編成",
+    "#高火力",
+    "#グレードチャレンジ",
+    "#セラス",
+    "#1500兆"
+  ],
   "isUnlisted": false,
   "imageUrls": [
     "https://storage.example.com/deck-images/abc123.png",
@@ -574,7 +620,7 @@ Content-Type: application/json
 
 **注記**:
 
-- `deck_data`にはDeckForCloud型のJSONが格納されます（id, name, slots, aceSlotId, deckType, songId, liveGrandPrixId, liveGrandPrixDetailId, score, memo, createdAt, updatedAt）
+- `deck_data`にはDeckForCloud型のJSONが格納されます（id, name, slots, aceSlotId, deckType, songId, liveGrandPrixId, liveGrandPrixDetailId, gradeChallengeId, gradeChallengeDetailId, score, memo, createdAt, updatedAt）
 - 個別カラム（deck_id, deck_name等）は検索・インデックス用に冗長化してもよい
 
 ---
@@ -643,6 +689,8 @@ interface DeckForCloud {
   songId?: string;
   liveGrandPrixId?: string;
   liveGrandPrixDetailId?: string;
+  gradeChallengeId?: string;
+  gradeChallengeDetailId?: string;
   score?: number;
   memo?: string;
   createdAt: string;

@@ -9,6 +9,7 @@ import { cardCatalogService } from '@/services/card/cardCatalogService';
 import { CharacterName } from '@/config/characters';
 import { songCatalogService } from '@/services/song/songCatalogService';
 import { liveGrandPrixCatalogService } from '@/services/live-grand-prix/liveGrandPrixCatalogService';
+import { gradeChallengeCatalogService } from '@/services/grade-challenge/gradeChallengeCatalogService';
 
 /**
  * カード配置の結果
@@ -62,6 +63,10 @@ export class DeckService {
     const song = await songCatalogService.getSongById(baseDeck.songId);
     const liveGp = await liveGrandPrixCatalogService.getById(baseDeck.liveGrandPrixId);
     const stageDetail = liveGp?.details?.find((d) => d.id === baseDeck.liveGrandPrixDetailId);
+    const gradeChallenge = await gradeChallengeCatalogService.getById(baseDeck.gradeChallengeId);
+    const gradeChallengeDetail = gradeChallenge?.details?.find(
+      (detail) => detail.id === baseDeck.gradeChallengeDetailId
+    );
     const deckType = baseDeck.deckType ?? song?.deckType ?? DeckType.TERM_105;
     const slotMapping = getDeckSlotMapping(deckType);
     const mappingById = new Map<number, CharacterName | 'フレンド' | 'フリー'>();
@@ -103,6 +108,10 @@ export class DeckService {
       liveGrandPrixDetailId: baseDeck.liveGrandPrixDetailId,
       liveGrandPrixEventName: liveGp?.eventName,
       liveGrandPrixStageName: stageDetail?.stageName,
+      gradeChallengeId: baseDeck.gradeChallengeId,
+      gradeChallengeDetailId: baseDeck.gradeChallengeDetailId,
+      gradeChallengeTitle: gradeChallenge?.title,
+      gradeChallengeStageName: gradeChallengeDetail?.stageName,
       score: baseDeck.score,
       memo: baseDeck.memo,
       createdAt: now,
@@ -153,7 +162,7 @@ export class DeckService {
     deckType?: DeckType
   ): CardPlacementResult {
     const validationResult = canPlaceCardInSlot(
-      { characterName: card.characterName, rarity: card.rarity },
+      { characterName: card.characterName, rarity: card.rarity, cardName: card.cardName },
       slotId,
       deckType
     );
@@ -189,7 +198,7 @@ export class DeckService {
     // slot1に配置されるカード（元のslot2のカード）の検証
     if (slot2.card) {
       const canPlaceInSlot1 = canPlaceCardInSlot(
-        { characterName: slot2.card.characterName, rarity: slot2.card.rarity },
+        { characterName: slot2.card.characterName, rarity: slot2.card.rarity, cardName: slot2.card.cardName },
         slotId1,
         deck.deckType
       );
@@ -201,7 +210,7 @@ export class DeckService {
     // slot2に配置されるカード（元のslot1のカード）の検証
     if (slot1.card) {
       const canPlaceInSlot2 = canPlaceCardInSlot(
-        { characterName: slot1.card.characterName, rarity: slot1.card.rarity },
+        { characterName: slot1.card.characterName, rarity: slot1.card.rarity, cardName: slot1.card.cardName },
         slotId2,
         deck.deckType
       );

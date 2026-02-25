@@ -53,6 +53,7 @@ export const LIMITED_TYPE_COLORS: Record<LimitedType, string> = {
   [LimitedType.AUTUMN_LIMITED]: '#f97316',
   [LimitedType.WINTER_LIMITED]: '#22d3ee',
   [LimitedType.LEG_LIMITED]: '#a855f7',
+  [LimitedType.SHUFFLE_LIMITED]: '#ff00ff',
   [LimitedType.BATTLE_LIMITED]: '#dc2626',
   [LimitedType.PARTY_LIMITED]: '#f87171',
   [LimitedType.ACTIVITY_LIMITED]: '#14b8a6',
@@ -107,3 +108,9 @@ export const SKILL_EFFECT_COLORS: Record<SkillEffectType, { border: string; bg: 
   [SkillEffectType.BELIEF]: { border: '#6b7280', bg: '#6b7280', text: '#ffffff' },
   [SkillEffectType.IGNITION]: { border: '#6b7280', bg: '#6b7280', text: '#ffffff' },
 };
+
+/**
+ * イベントボタン用カラー定義
+ */
+export const EVENT_COLOR_LIVE_GRAND_PRIX = '#388afc';
+export const EVENT_COLOR_GRADE_CHALLENGE = '#a952f4';

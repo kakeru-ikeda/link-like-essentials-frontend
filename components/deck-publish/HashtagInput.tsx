@@ -3,18 +3,21 @@
 import React from 'react';
 import { Deck } from '@/models/deck/Deck';
 import { LiveGrandPrix } from '@/models/live-grand-prix/LiveGrandPrix';
+import { GradeChallenge } from '@/models/grade-challenge/GradeChallenge';
 import { useHashtag } from '@/hooks/published-deck/useHashtag';
 import { HelpTooltip } from '@/components/common/HelpTooltip';
 
 interface HashtagInputProps {
   deck: Deck | null;
   liveGrandPrix?: LiveGrandPrix | null;
+  gradeChallenge?: GradeChallenge | null;
   onChange: (hashtags: string[]) => void;
 }
 
 export const HashtagInput: React.FC<HashtagInputProps> = ({
   deck,
   liveGrandPrix,
+  gradeChallenge,
   onChange,
 }) => {
   const {
@@ -25,7 +28,7 @@ export const HashtagInput: React.FC<HashtagInputProps> = ({
     handleAddCustomHashtag,
     handleRemoveCustomHashtag,
     handleKeyDown,
-  } = useHashtag(deck, liveGrandPrix, onChange);
+  } = useHashtag(deck, liveGrandPrix, gradeChallenge, onChange);
 
   return (
     <div className="space-y-3">

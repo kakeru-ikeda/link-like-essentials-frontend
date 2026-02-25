@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { Card } from '@/models/card/Card';
 import { useCardDetail } from '@/hooks/card/useCards';
 import { RarityBadge } from '@/components/shared/RarityBadge';
 import { StyleTypeBadge } from '@/components/shared/StyleTypeBadge';
@@ -20,6 +19,36 @@ export const CardDetailView: React.FC<CardDetailViewProps> = ({ cardId }) => {
   const [imageError, setImageError] = React.useState(false);
   const [isAwakeAfter, setIsAwakeAfter] = React.useState(true);
   const [imageLoading, setImageLoading] = React.useState(false);
+
+  /**
+   * 覚醒状態を切り替える共通関数
+   * @param targetIsAfter true: 覚醒後, false: 覚醒前
+   */
+  const switchAwake = React.useCallback(
+    (targetIsAfter: boolean) => {
+      // 既に同じ状態なら何もしない
+      if (isAwakeAfter === targetIsAfter) return;
+
+      const beforeUrl = card?.detail?.awakeBeforeStorageUrl;
+      const afterUrl = card?.detail?.awakeAfterStorageUrl;
+
+      // URLが同じ場合はローディングを表示しない
+      if (beforeUrl === afterUrl) {
+        setIsAwakeAfter(targetIsAfter);
+        setImageError(false);
+        return;
+      }
+
+      setImageLoading(true);
+      setIsAwakeAfter(targetIsAfter);
+      setImageError(false);
+    },
+    [
+      isAwakeAfter,
+      card?.detail?.awakeBeforeStorageUrl,
+      card?.detail?.awakeAfterStorageUrl,
+    ]
+  );
 
   if (loading) {
     return (
@@ -51,53 +80,45 @@ export const CardDetailView: React.FC<CardDetailViewProps> = ({ cardId }) => {
   }
 
   const characterColor = getCharacterColor(card.characterName);
-  const currentImageUrl = isAwakeAfter 
-    ? card.detail?.awakeAfterStorageUrl 
+  const currentImageUrl = isAwakeAfter
+    ? card.detail?.awakeAfterStorageUrl
     : card.detail?.awakeBeforeStorageUrl;
 
   return (
     <div className="p-6 space-y-6">
       {/* カード画像 */}
-      <div className="relative w-full aspect-[16/9] rounded-lg overflow-hidden border-2" style={{ borderColor: characterColor }}>
+      <div
+        className="relative w-full aspect-[16/9] rounded-lg overflow-hidden border-2"
+        style={{ borderColor: characterColor }}
+      >
         {/* 覚醒切り替えボタン */}
-        {card.detail?.awakeBeforeStorageUrl && card.detail?.awakeAfterStorageUrl && (
-          <div className="absolute top-2 right-2 z-10 flex gap-1 bg-black/50 rounded-lg p-1">
-            <button
-              onClick={() => {
-                // 既に「覚醒前」表示なら何もしない
-                if (!isAwakeAfter) return;
-                setImageLoading(true);
-                setIsAwakeAfter(false);
-                setImageError(false);
-              }}
-              disabled={!isAwakeAfter}
-              className={`px-3 py-1 text-xs font-medium rounded transition-colors ${
-                !isAwakeAfter
-                  ? 'bg-white text-gray-900'
-                  : 'text-white hover:bg-white/20'
-              }`}
-            >
-              覚醒前
-            </button>
-            <button
-              onClick={() => {
-                // 既に「覚醒後」表示なら何もしない
-                if (isAwakeAfter) return;
-                setImageLoading(true);
-                setIsAwakeAfter(true);
-                setImageError(false);
-              }}
-              disabled={isAwakeAfter}
-              className={`px-3 py-1 text-xs font-medium rounded transition-colors ${
-                isAwakeAfter
-                  ? 'bg-white text-gray-900'
-                  : 'text-white hover:bg-white/20'
-              }`}
-            >
-              覚醒後
-            </button>
-          </div>
-        )}
+        {card.detail?.awakeBeforeStorageUrl &&
+          card.detail?.awakeAfterStorageUrl && (
+            <div className="absolute top-2 right-2 z-10 flex gap-1 bg-black/50 rounded-lg p-1">
+              <button
+                onClick={() => switchAwake(false)}
+                disabled={!isAwakeAfter}
+                className={`px-3 py-1 text-xs font-medium rounded transition-colors ${
+                  !isAwakeAfter
+                    ? 'bg-white text-gray-900'
+                    : 'text-white hover:bg-white/20'
+                }`}
+              >
+                覚醒前
+              </button>
+              <button
+                onClick={() => switchAwake(true)}
+                disabled={isAwakeAfter}
+                className={`px-3 py-1 text-xs font-medium rounded transition-colors ${
+                  isAwakeAfter
+                    ? 'bg-white text-gray-900'
+                    : 'text-white hover:bg-white/20'
+                }`}
+              >
+                覚醒後
+              </button>
+            </div>
+          )}
         {!imageError && currentImageUrl ? (
           <img
             src={currentImageUrl}
@@ -112,8 +133,18 @@ export const CardDetailView: React.FC<CardDetailViewProps> = ({ cardId }) => {
         ) : (
           <div className="flex items-center justify-center h-full bg-gray-200">
             <div className="text-center text-gray-500">
-              <svg className="w-16 h-16 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              <svg
+                className="w-16 h-16 mx-auto mb-2"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                />
               </svg>
               <p className="text-sm">画像なし</p>
             </div>
@@ -138,13 +169,13 @@ export const CardDetailView: React.FC<CardDetailViewProps> = ({ cardId }) => {
         <RarityBadge rarity={card.rarity} size="large" position="inline" />
         <StyleTypeBadge styleType={card.styleType} size="large" />
         {card.detail?.favoriteMode && (
-          <FavoriteModeBadge favoriteMode={card.detail.favoriteMode} size="large" />
-        )}
-        {card.limited && (
-          <LimitedTypeBadge 
-            limitedType={card.limited}
+          <FavoriteModeBadge
+            favoriteMode={card.detail.favoriteMode}
             size="large"
           />
+        )}
+        {card.limited && (
+          <LimitedTypeBadge limitedType={card.limited} size="large" />
         )}
       </div>
 
@@ -154,9 +185,9 @@ export const CardDetailView: React.FC<CardDetailViewProps> = ({ cardId }) => {
       </div>
 
       {/* カード詳細セクション */}
-      <CardDetailSections 
-        card={card} 
-        variant="full" 
+      <CardDetailSections
+        card={card}
+        variant="full"
         showStats={true}
         showAcquisition={true}
       />

@@ -140,10 +140,34 @@ export function SideModal({
         {/* ヘッダー */}
         {title && (
           <div className="border-b border-gray-200 flex-shrink-0">
-            <div className="flex items-center justify-between px-6 py-4">
-              <h2 id="side-modal-title" className="text-xl font-bold text-gray-900">
-                {title}
-              </h2>
+            {/* SP表示: タイトル+Xボタン / headerActionsを別行に */}
+            <div className="sm:hidden px-6 py-4">
+              <div className="flex flex-row items-center justify-between gap-3 mb-3">
+                <h2
+                  id="side-modal-title"
+                  className="text-xl font-bold text-gray-900 flex-shrink min-w-0 truncate"
+                >
+                  {title}
+                </h2>
+                {!hideCloseButton && (
+                  <button
+                    onClick={handleClose}
+                    className="p-2 rounded-full hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
+                    aria-label="閉じる"
+                    disabled={isAnimating}
+                  >
+                    <X className="w-5 h-5 text-gray-600" />
+                  </button>
+                )}
+              </div>
+              {headerActions && (
+                <div className="flex items-center">{headerActions}</div>
+              )}
+            </div>
+
+            {/* PC表示: タイトル、headerActions、Xボタンを1行に */}
+            <div className="hidden sm:flex items-center justify-between px-6 py-4 gap-3">
+              <h2 className="text-xl font-bold text-gray-900">{title}</h2>
               <div className="flex items-center gap-2">
                 {headerActions}
                 {!hideCloseButton && (
@@ -158,6 +182,7 @@ export function SideModal({
                 )}
               </div>
             </div>
+
             {/* キーワード検索 */}
             {keywordSearch && (
               <div className="px-6 pb-4">
@@ -172,9 +197,7 @@ export function SideModal({
         )}
 
         {/* コンテンツエリア（スクロール可能） */}
-        <div className="flex-1 overflow-y-auto">
-          {children}
-        </div>
+        <div className="flex-1 overflow-y-auto">{children}</div>
       </div>
     </>
   );

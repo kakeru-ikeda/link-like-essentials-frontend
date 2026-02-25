@@ -7,6 +7,8 @@ import { DeckType } from '@/models/shared/enums';
 import { DeckService } from '@/services/deck/deckService';
 import { LiveGrandPrixService } from '@/services/live-grand-prix/liveGrandPrixService';
 import { LiveGrandPrixDetail } from '@/models/live-grand-prix/LiveGrandPrix';
+import { GradeChallengeService } from '@/services/grade-challenge/gradeChallengeService';
+import { GradeChallengeDetail } from '@/models/grade-challenge/GradeChallenge';
 
 export const useDeck = () => {
   const {
@@ -22,6 +24,8 @@ export const useDeck = () => {
     setSong,
     setLiveGrandPrix,
     setLiveGrandPrixStage,
+    setGradeChallenge,
+    setGradeChallengeStage,
     setScore,
     setDeckMemo,
     saveDeckToLocal,
@@ -197,6 +201,44 @@ export const useDeck = () => {
     syncCurrentTab();
   };
 
+  const updateGradeChallenge = (gradeChallengeId: string, title: string): void => {
+    setGradeChallenge(
+      gradeChallengeId || undefined,
+      title || undefined
+    );
+    saveDeckToLocal();
+    syncCurrentTab();
+  };
+
+  const updateGradeChallengeStage = (detail: GradeChallengeDetail | null): void => {
+    if (detail?.id && detail.stageName) {
+      // ステージに関連する楽曲情報を自動設定（ビジネスロジック）
+      const song = GradeChallengeService.transformStageDetailToSong(detail);
+
+      // バリデーション（ビジネスロジック）
+      const validation = DeckService.validateStageChange(deck, song?.deckType);
+
+      // 確認が必要な場合はダイアログ表示
+      if (validation.requiresConfirmation && validation.message) {
+        const confirmed = window.confirm(validation.message);
+        if (!confirmed) {
+          return;
+        }
+      }
+
+      setGradeChallengeStage(
+        detail.id,
+        detail.stageName,
+        song
+      );
+    } else {
+      // クリア時
+      setGradeChallengeStage(undefined, undefined, undefined);
+    }
+    saveDeckToLocal();
+    syncCurrentTab();
+  };
+
 
   const updateDeckName = (name: string): void => {
     setDeckName(name);
@@ -236,6 +278,8 @@ export const useDeck = () => {
     updateSong,
     updateLiveGrandPrix,
     updateLiveGrandPrixStage,
+    updateGradeChallenge,
+    updateGradeChallengeStage,
     updateLimitBreakCount,
     clearAllCards,
     saveDeck,
