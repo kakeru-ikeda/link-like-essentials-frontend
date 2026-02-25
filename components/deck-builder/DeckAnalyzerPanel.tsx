@@ -8,9 +8,9 @@ import type {
 } from '@/models/deck/DeckAnalysis';
 import { SkillEffectType, TraitConditionType } from '@/models/shared/enums';
 import { DeckAnalyzerCardItem } from '@/components/deck-builder/DeckAnalyzerCardItem';
+import { SectionHeading } from '@/components/common/SectionHeading';
 import { ChevronDown, ChevronUp, Sparkles, Zap } from 'lucide-react';
 import { useResponsiveDevice } from '@/hooks/ui/useResponsiveDevice';
-import { ExpansionPanel } from '@/components/common/ExpansionPanel';
 import { HelpTooltip } from '@/components/common/HelpTooltip';
 import { SKILL_EFFECT_COLORS } from '@/styles/colors';
 import {
@@ -175,9 +175,9 @@ export const DeckAnalyzerPanel: React.FC<DeckAnalyzerPanelProps> = ({
               {currentEffect && (
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-sm font-semibold text-gray-800">
+                    <SectionHeading accent="rose">
                       {currentEffect.label}
-                    </h3>
+                    </SectionHeading>
                     <span className="text-xs font-medium text-blue-600">
                       {currentEffect.totalUniqueCards}枚
                     </span>
@@ -324,9 +324,9 @@ const DrawCountSummary: React.FC<{
   return (
     <div className="pb-3 border-b border-gray-200">
       <div className="space-y-3 flex-1 pb-2">
-        <h3 className="text-sm font-semibold text-gray-800 mb-2">
+        <SectionHeading accent="blue">
           ドロー枚数
-        </h3>
+        </SectionHeading>
         <div className="px-1 flex items-end gap-1.5 flex-wrap">
           <div>
             <div className="text-[10px] text-gray-700 mb-1">
@@ -499,12 +499,11 @@ const DrawCountSummary: React.FC<{
         </div>
       </div>
 
-      <ExpansionPanel
-        title="セクション別詳細"
-        defaultExpanded={false}
-        className="mt-2"
-      >
-        <div className="space-y-1 pt-2">
+      <div className="mt-2">
+        <SectionHeading accent="purple" size="xs">
+          セクション別詳細
+        </SectionHeading>
+        <div className="space-y-1">
           {sections.map((section) => {
             const sectionFormula = getDrawFormula(
               section.drawCount,
@@ -566,7 +565,7 @@ const DrawCountSummary: React.FC<{
             );
           })}
         </div>
-      </ExpansionPanel>
+      </div>
     </div>
   );
 };

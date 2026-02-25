@@ -32,6 +32,7 @@ import { HelpTooltip } from '@/components/common/HelpTooltip';
 import { useDeckAnalysis } from '@/hooks/deck/useDeckAnalysis';
 import { DeckAnalyzerPanel } from '@/components/deck-builder/DeckAnalyzerPanel';
 import { DeckDashboardTabs } from '@/components/deck-builder/DeckDashboardTabs';
+import { SectionHeading } from '@/components/common/SectionHeading';
 import { Settings, FileText, Layers, Sparkles } from 'lucide-react';
 
 export const DeckDashboard: React.FC = () => {
@@ -248,16 +249,22 @@ export const DeckDashboard: React.FC = () => {
           <div className="flex flex-col gap-4">
             {/* ライブグランプリ選択 */}
             <div>
-              <div className="flex items-center gap-1.5 mb-2">
-                <span className="text-sm font-medium text-gray-700">ライブグランプリ設定</span>
-                <HelpTooltip
-                  content="ライブグランプリを選択すると、対応する楽曲が自動的に指定されます。また、楽曲を選択すると、ステージ効果およびセクション効果が自動的に設定されます。"
-                  position="top"
-                  className="mb-0.5"
-                  size={4}
-                />
-                {activeLiveGrandPrix && <ActiveEventBadge />}
-              </div>
+              <SectionHeading
+                accent="purple"
+                trailing={
+                  <>
+                    <HelpTooltip
+                      content="ライブグランプリを選択すると、対応する楽曲が自動的に指定されます。また、楽曲を選択すると、ステージ効果およびセクション効果が自動的に設定されます。"
+                      position="top"
+                      className="mb-0.5"
+                      size={4}
+                    />
+                    {activeLiveGrandPrix && <ActiveEventBadge />}
+                  </>
+                }
+              >
+                ライブグランプリ設定
+              </SectionHeading>
               <div className="flex flex-col gap-2">
                 <LiveGrandPrixSelect
                   deckType={deck?.deckType}
@@ -277,23 +284,25 @@ export const DeckDashboard: React.FC = () => {
 
             {/* ライブアナライザ */}
             <div>
-              <div className="flex items-center gap-2 mb-1">
-                <label className="block text-sm font-medium text-gray-700">
-                  ライブアナライザ
-                </label>
-                {selectedStageDetail && (
-                  <div className="flex items-center gap-1">
-                    <EffectBadge
-                      type="stage"
-                      specialEffect={selectedStageDetail.specialEffect}
-                    />
-                    <EffectBadge
-                      type="section"
-                      sectionEffects={selectedStageDetail.sectionEffects}
-                    />
-                  </div>
-                )}
-              </div>
+              <SectionHeading
+                accent="emerald"
+                trailing={
+                  selectedStageDetail && (
+                    <>
+                      <EffectBadge
+                        type="stage"
+                        specialEffect={selectedStageDetail.specialEffect}
+                      />
+                      <EffectBadge
+                        type="section"
+                        sectionEffects={selectedStageDetail.sectionEffects}
+                      />
+                    </>
+                  )
+                }
+              >
+                ライブアナライザ
+              </SectionHeading>
               <div className="border border-gray-200 rounded-lg p-2">
                 {deck?.liveAnalyzerImageUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -323,15 +332,19 @@ export const DeckDashboard: React.FC = () => {
 
             {/* 参考スコア */}
             <div>
-              <label className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-700 mb-1">
+              <SectionHeading
+                accent="amber"
+                trailing={
+                  <HelpTooltip
+                    content="このデッキでプレイしたときのスコアを、参考スコアとして入力してください。デッキ公開時に表示されます。"
+                    position="top"
+                    className="mb-0.5"
+                    size={4}
+                  />
+                }
+              >
                 参考スコア
-                <HelpTooltip
-                  content="このデッキでプレイしたときのスコアを、参考スコアとして入力してください。デッキ公開時に表示されます。"
-                  position="top"
-                  className="mb-0.5"
-                  size={4}
-                />
-              </label>
+              </SectionHeading>
               <div className="relative">
                 <input
                   type="number"
@@ -354,10 +367,10 @@ export const DeckDashboard: React.FC = () => {
         {/* タブコンテンツ: チャート */}
         {activeTabId === 'chart' && (
           <div className="flex flex-col h-full">
+            <SectionHeading accent="blue">チャート</SectionHeading>
             <ExpandableTextArea
               value={deck?.memo || ''}
               onChange={updateDeckMemo}
-              label="チャート"
               placeholder="チャートを入力..."
               rows={12}
               modalTitle="チャート"
