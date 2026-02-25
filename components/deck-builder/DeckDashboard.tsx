@@ -23,18 +23,16 @@ import {
   useActiveLiveGrandPrix,
 } from '@/hooks/deck/useLiveGrandPrix';
 import { LiveGrandPrix, LiveGrandPrixDetail } from '@/models/live-grand-prix/LiveGrandPrix';
-import { ExpansionPanel } from '@/components/common/ExpansionPanel';
 import { EffectBadge } from '@/components/shared/EffectBadge';
 import { DeckPublishModal } from '@/components/deck-publish/DeckPublishModal';
 import { DeckPublishSuccessDialog } from '@/components/deck-publish/DeckPublishSuccessDialog';
 import { useModal } from '@/hooks/ui/useModal';
 import { PublishedDeck } from '@/models/published-deck/PublishedDeck';
-import { useResponsiveDevice } from '@/hooks/ui/useResponsiveDevice';
 import { HelpTooltip } from '@/components/common/HelpTooltip';
 import { useDeckAnalysis } from '@/hooks/deck/useDeckAnalysis';
 import { DeckAnalyzerPanel } from '@/components/deck-builder/DeckAnalyzerPanel';
 import { DeckDashboardTabs } from '@/components/deck-builder/DeckDashboardTabs';
-import { Settings, BarChart2 } from 'lucide-react';
+import { Settings, FileText, Layers, Sparkles } from 'lucide-react';
 
 export const DeckDashboard: React.FC = () => {
   const {
@@ -68,7 +66,6 @@ export const DeckDashboard: React.FC = () => {
   const [unfilledMainSlots, setUnfilledMainSlots] = useState<DeckSlotMapping[]>(
     []
   );
-  const { isSp } = useResponsiveDevice();
   const [activeTabId, setActiveTabId] = useState<string>('settings');
 
   const { analysis } = useDeckAnalysis(deck ?? null);
@@ -185,13 +182,23 @@ export const DeckDashboard: React.FC = () => {
   const DASHBOARD_TABS = [
     {
       id: 'settings',
-      label: '設\u5b9a',
+      label: '設定',
       icon: <Settings className="w-3.5 h-3.5" />,
     },
     {
-      id: 'analysis',
-      label: '分\u6790',
-      icon: <BarChart2 className="w-3.5 h-3.5" />,
+      id: 'chart',
+      label: 'チャート',
+      icon: <FileText className="w-3.5 h-3.5" />,
+    },
+    {
+      id: 'draw',
+      label: 'ドロー',
+      icon: <Layers className="w-3.5 h-3.5" />,
+    },
+    {
+      id: 'effects',
+      label: '効果',
+      icon: <Sparkles className="w-3.5 h-3.5" />,
     },
   ];
 
@@ -240,38 +247,33 @@ export const DeckDashboard: React.FC = () => {
         {activeTabId === 'settings' && (
           <div className="flex flex-col gap-4">
             {/* ライブグランプリ選択 */}
-            <ExpansionPanel
-              title={
-                <div className="flex items-center gap-2">
-                  <span>ライブグランプリ設定</span>
-                  <HelpTooltip
-                    content="ライブグランプリを選択すると、対応する楽曲が自動的に指定されます。また、楽曲を選択すると、ステージ効果およびセクション効果が自動的に設定されます。"
-                    position="top"
-                    className="mb-0.5"
-                    size={4}
-                  />
-                  {activeLiveGrandPrix && <ActiveEventBadge />}
-                </div>
-              }
-            >
-              <div
-                className={`flex min-w-0 ${isSp ? 'flex-col gap-3' : 'flex-row gap-4'}`}
-              >
+            <div>
+              <div className="flex items-center gap-1.5 mb-2">
+                <span className="text-sm font-medium text-gray-700">ライブグランプリ設定</span>
+                <HelpTooltip
+                  content="ライブグランプリを選択すると、対応する楽曲が自動的に指定されます。また、楽曲を選択すると、ステージ効果およびセクション効果が自動的に設定されます。"
+                  position="top"
+                  className="mb-0.5"
+                  size={4}
+                />
+                {activeLiveGrandPrix && <ActiveEventBadge />}
+              </div>
+              <div className="flex flex-col gap-2">
                 <LiveGrandPrixSelect
                   deckType={deck?.deckType}
                   value={deck?.liveGrandPrixId}
                   onChange={handleLiveGrandPrixChange}
-                  className={isSp ? 'w-full' : 'flex-1 min-w-0'}
+                  className="w-full"
                 />
                 <LiveGrandPrixStageSelect
                   details={liveGrandPrix?.details}
                   value={deck?.liveGrandPrixDetailId}
                   onChange={handleLiveGrandPrixStageChange}
                   disabled={lgpLoading || !deck?.liveGrandPrixId}
-                  className={isSp ? 'w-full' : 'w-48 flex-shrink-0'}
+                  className="w-full"
                 />
               </div>
-            </ExpansionPanel>
+            </div>
 
             {/* ライブアナライザ */}
             <div>
@@ -346,30 +348,45 @@ export const DeckDashboard: React.FC = () => {
               </div>
             </div>
 
-            {/* チャート */}
-            <div className="flex-1 flex flex-col min-h-0 border-gray-200">
-              <ExpandableTextArea
-                value={deck?.memo || ''}
-                onChange={updateDeckMemo}
-                label="チャート"
-                placeholder="チャートを入力..."
-                rows={3}
-                modalTitle="チャート"
-                modalRows={15}
-                className="flex-1"
-                template={`[1セク]\n\n[2セク]\n\n[3セク]\n\n[4セク]\n\n[5セク]\n`}
-              />
-            </div>
           </div>
         )}
 
-        {/* タブコンテンツ: 分析 */}
-        {activeTabId === 'analysis' && analysis && (
+        {/* タブコンテンツ: チャート */}
+        {activeTabId === 'chart' && (
+          <div className="flex flex-col h-full">
+            <ExpandableTextArea
+              value={deck?.memo || ''}
+              onChange={updateDeckMemo}
+              label="チャート"
+              placeholder="チャートを入力..."
+              rows={12}
+              modalTitle="チャート"
+              modalRows={15}
+              className="flex-1"
+              template={`[1セク]\n\n[2セク]\n\n[3セク]\n\n[4セク]\n\n[5セク]\n`}
+            />
+          </div>
+        )}
+
+        {/* タブコンテンツ: ドロー */}
+        {activeTabId === 'draw' && analysis && (
           <DeckAnalyzerPanel
             analysis={analysis}
             isOpen={true}
             onToggle={() => {}}
             embedded
+            mode="draw"
+          />
+        )}
+
+        {/* タブコンテンツ: 効果 */}
+        {activeTabId === 'effects' && analysis && (
+          <DeckAnalyzerPanel
+            analysis={analysis}
+            isOpen={true}
+            onToggle={() => {}}
+            embedded
+            mode="effects"
           />
         )}
       </DeckDashboardTabs>

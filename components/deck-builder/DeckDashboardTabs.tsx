@@ -29,7 +29,7 @@ export const DeckDashboardTabs: React.FC<DeckDashboardTabsProps> = ({
   return (
     <div className="flex flex-1 min-h-0 overflow-hidden gap-0">
       {/* 左側: タブナビゲーション */}
-      <div className="flex flex-col gap-1 pt-1 pr-2 border-r border-gray-200 flex-shrink-0 w-11">
+      <div className="flex flex-col gap-1 pt-1 pr-2 border-r border-gray-200 flex-shrink-0 w-14">
         {tabs.map((tab) => {
           const isActive = tab.id === activeTabId;
           return (

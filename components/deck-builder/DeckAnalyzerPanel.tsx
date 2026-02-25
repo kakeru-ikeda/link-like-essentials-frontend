@@ -26,6 +26,8 @@ interface DeckAnalyzerPanelProps {
   onToggle: () => void;
   /** タブ内に埋め込む場合 true。トグルボタン・ポップアップを使わずインライン表示にする */
   embedded?: boolean;
+  /** 表示モード。draw: ドロー枚数のみ / effects: 効果内訳のみ / all: 両方(デフォルト) */
+  mode?: 'draw' | 'effects' | 'all';
 }
 
 export const DeckAnalyzerPanel: React.FC<DeckAnalyzerPanelProps> = ({
@@ -33,6 +35,7 @@ export const DeckAnalyzerPanel: React.FC<DeckAnalyzerPanelProps> = ({
   isOpen,
   onToggle,
   embedded = false,
+  mode = 'all',
 }) => {
   const { isSp } = useResponsiveDevice();
   const [selectedEffect, setSelectedEffect] = useState<SkillEffectType>(
@@ -119,8 +122,8 @@ export const DeckAnalyzerPanel: React.FC<DeckAnalyzerPanelProps> = ({
               </div>
             )}
 
-            {analysis.assignedSlots > 0 && (
-              <div className="border-b border-gray-100 px-3 py-2">
+            {(mode === 'all' || mode === 'draw') && analysis.assignedSlots > 0 && (
+              <div className={mode === 'all' ? 'border-b border-gray-100 px-3 py-2' : 'px-0 py-0'}>
                 <DrawCountSummary
                   analysis={analysis}
                   accessoryCount={accessoryCount}
@@ -132,6 +135,8 @@ export const DeckAnalyzerPanel: React.FC<DeckAnalyzerPanelProps> = ({
               </div>
             )}
 
+            {(mode === 'all' || mode === 'effects') && (
+              <>
             <div className="border-b border-gray-100 px-3 py-2">
               <div className="grid grid-cols-4 gap-1.5">
                 {analysis.requiredEffects.map((effect) => {
@@ -238,6 +243,8 @@ export const DeckAnalyzerPanel: React.FC<DeckAnalyzerPanelProps> = ({
                 </div>
               )}
             </div>
+              </>
+            )}
           </div>
         </div>
       )}
