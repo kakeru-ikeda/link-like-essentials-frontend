@@ -43,7 +43,8 @@ import { useModal } from '@/hooks/ui/useModal';
 import { PublishedDeck } from '@/models/published-deck/PublishedDeck';
 import { HelpTooltip } from '@/components/common/HelpTooltip';
 import { useDeckAnalysis } from '@/hooks/deck/useDeckAnalysis';
-import { DeckAnalyzerPanel } from '@/components/deck-builder/DeckAnalyzerPanel';
+import { DrawAnalyzerPanel } from '@/components/deck-builder/DrawAnalyzerPanel';
+import { SkillsAnalyzerPanel } from '@/components/deck-builder/SkillsAnalyzerPanel';
 import { DeckDashboardTabs } from '@/components/deck-builder/DeckDashboardTabs';
 import { SectionHeading } from '@/components/common/SectionHeading';
 import { Settings, FileText, Layers, Sparkles } from 'lucide-react';
@@ -551,13 +552,7 @@ export const DeckDashboard: React.FC = () => {
         {/* タブコンテンツ: ドロー */}
         {activeTabId === 'draw' && (
           analysis && analysis.assignedSlots > 0 ? (
-            <DeckAnalyzerPanel
-              analysis={analysis}
-              isOpen={true}
-              onToggle={() => {}}
-              embedded
-              mode="draw"
-            />
+            <DrawAnalyzerPanel analysis={analysis} />
           ) : (
             <div className="flex items-center justify-center py-12 text-gray-400">
               <div className="text-center">
@@ -571,13 +566,7 @@ export const DeckDashboard: React.FC = () => {
         {/* タブコンテンツ: スキル */}
         {activeTabId === 'skills' && (
           analysis && analysis.assignedSlots > 0 ? (
-            <DeckAnalyzerPanel
-              analysis={analysis}
-              isOpen={true}
-              onToggle={() => {}}
-              embedded
-              mode="skills"
-            />
+            <SkillsAnalyzerPanel analysis={analysis} />
           ) : (
             <div className="flex items-center justify-center py-12 text-gray-400">
               <div className="text-center">
