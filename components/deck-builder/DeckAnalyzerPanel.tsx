@@ -26,8 +26,8 @@ interface DeckAnalyzerPanelProps {
   onToggle: () => void;
   /** タブ内に埋め込む場合 true。トグルボタン・ポップアップを使わずインライン表示にする */
   embedded?: boolean;
-  /** 表示モード。draw: ドロー枚数のみ / effects: 効果内訳のみ / all: 両方(デフォルト) */
-  mode?: 'draw' | 'effects' | 'all';
+  /** 表示モード。draw: ドロー枚数のみ / skills: スキル内訳のみ / all: 両方(デフォルト) */
+  mode?: 'draw' | 'skills' | 'all';
 }
 
 export const DeckAnalyzerPanel: React.FC<DeckAnalyzerPanelProps> = ({
@@ -135,7 +135,7 @@ export const DeckAnalyzerPanel: React.FC<DeckAnalyzerPanelProps> = ({
               </div>
             )}
 
-            {(mode === 'all' || mode === 'effects') && (
+            {(mode === 'all' || mode === 'skills') && (
               <>
             <div className="border-b border-gray-100 px-3 py-2">
               <div className="grid grid-cols-4 gap-1.5">

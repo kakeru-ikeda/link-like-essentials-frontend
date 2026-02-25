@@ -300,8 +300,8 @@ export const DeckDashboard: React.FC = () => {
       icon: <Layers className="w-3.5 h-3.5" />,
     },
     {
-      id: 'effects',
-      label: '効果',
+      id: 'skills',
+      label: 'スキル',
       icon: <Sparkles className="w-3.5 h-3.5" />,
     },
   ];
@@ -555,14 +555,14 @@ export const DeckDashboard: React.FC = () => {
           />
         )}
 
-        {/* タブコンテンツ: 効果 */}
-        {activeTabId === 'effects' && analysis && (
+        {/* タブコンテンツ: スキル */}
+        {activeTabId === 'skills' && analysis && (
           <DeckAnalyzerPanel
             analysis={analysis}
             isOpen={true}
             onToggle={() => {}}
             embedded
-            mode="effects"
+            mode="skills"
           />
         )}
       </DeckDashboardTabs>
