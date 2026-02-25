@@ -24,12 +24,15 @@ interface DeckAnalyzerPanelProps {
   analysis: DeckAnalysis;
   isOpen: boolean;
   onToggle: () => void;
+  /** タブ内に埋め込む場合 true。トグルボタン・ポップアップを使わずインライン表示にする */
+  embedded?: boolean;
 }
 
 export const DeckAnalyzerPanel: React.FC<DeckAnalyzerPanelProps> = ({
   analysis,
   isOpen,
   onToggle,
+  embedded = false,
 }) => {
   const { isSp } = useResponsiveDevice();
   const [selectedEffect, setSelectedEffect] = useState<SkillEffectType>(
@@ -66,11 +69,11 @@ export const DeckAnalyzerPanel: React.FC<DeckAnalyzerPanelProps> = ({
     (effect) => effect.effectType === selectedEffect
   );
 
-  const shouldShowPanel = isSp || isOpen;
+  const shouldShowPanel = embedded || isSp || isOpen;
 
   return (
-    <div className={`relative ${isSp ? 'w-full max-w-full' : 'inline-flex items-center'}`}>
-      {!isSp && (
+    <div className={`relative ${isSp || embedded ? 'w-full max-w-full' : 'inline-flex items-center'}`}>
+      {!isSp && !embedded && (
         <button
           onClick={onToggle}
           className={`inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm font-medium transition-colors ${
@@ -92,17 +95,29 @@ export const DeckAnalyzerPanel: React.FC<DeckAnalyzerPanelProps> = ({
       )}
 
       {shouldShowPanel && (
-        <div className={`${isSp ? 'w-full max-w-full' : 'absolute right-0 bottom-full z-30 mb-2 w-[min(90vw,420px)]'}`}>
-          {!isSp && (
+        <div className={`${
+          embedded
+            ? 'w-full'
+            : isSp
+            ? 'w-full max-w-full'
+            : 'absolute right-0 bottom-full z-30 mb-2 w-[min(90vw,420px)]'
+        }`}>
+          {!isSp && !embedded && (
             <div className="absolute -bottom-2 right-4 h-3 w-3 rotate-45 border-r border-b border-gray-200 bg-white" />
           )}
-          <div className={`rounded-lg border border-gray-200 bg-white shadow-lg overflow-y-auto ${isSp ? 'max-h-[80vh]' : 'h-[750px]'}`}>
-            <div className="sticky top-0 z-10 bg-white flex items-center justify-between border-b border-gray-100 px-3 py-2">
-              <div className="text-sm font-semibold text-gray-800">デッキ分析</div>
-              <div className="text-xs text-gray-500">
-                {analysis.assignedSlots}/{analysis.totalSlots}枚編成中
+          <div className={`overflow-y-auto ${
+            embedded
+              ? 'w-full'
+              : `rounded-lg border border-gray-200 bg-white shadow-lg ${isSp ? 'max-h-[80vh]' : 'h-[750px]'}`
+          }`}>
+            {!embedded && (
+              <div className="sticky top-0 z-10 bg-white flex items-center justify-between border-b border-gray-100 px-3 py-2">
+                <div className="text-sm font-semibold text-gray-800">デッキ分析</div>
+                <div className="text-xs text-gray-500">
+                  {analysis.assignedSlots}/{analysis.totalSlots}枚編成中
+                </div>
               </div>
-            </div>
+            )}
 
             {analysis.assignedSlots > 0 && (
               <div className="border-b border-gray-100 px-3 py-2">
