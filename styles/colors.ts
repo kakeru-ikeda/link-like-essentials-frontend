@@ -114,3 +114,15 @@ export const SKILL_EFFECT_COLORS: Record<SkillEffectType, { border: string; bg: 
  */
 export const EVENT_COLOR_LIVE_GRAND_PRIX = '#388afc';
 export const EVENT_COLOR_GRADE_CHALLENGE = '#a952f4';
+
+/**
+ * デッキダッシュボードタブ用カラー定義
+ */
+export const DASHBOARD_TAB_COLORS = {
+  blue:    '#3b82f6',
+  amber:   '#f59e0b',
+  emerald: '#10b981',
+  purple:  '#a855f7',
+} as const;
+
+export type DashboardTabColor = keyof typeof DASHBOARD_TAB_COLORS;
