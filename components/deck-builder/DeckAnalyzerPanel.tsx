@@ -324,7 +324,7 @@ const DrawCountSummary: React.FC<{
   return (
     <div className="pb-3 border-b border-gray-200">
       <div className="space-y-3 flex-1 pb-2">
-        <SectionHeading accent="blue">
+        <SectionHeading accent="emerald">
           ドロー枚数
         </SectionHeading>
         <div className="px-1 flex items-end gap-1.5 flex-wrap">

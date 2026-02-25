@@ -286,23 +286,27 @@ export const DeckDashboard: React.FC = () => {
   const DASHBOARD_TABS = [
     {
       id: 'settings',
-      label: '設定',
+      label: 'デッキ',
       icon: <Settings className="w-3.5 h-3.5" />,
+      color: 'blue' as const,
     },
     {
       id: 'chart',
       label: 'チャート',
       icon: <FileText className="w-3.5 h-3.5" />,
+      color: 'amber' as const,
     },
     {
       id: 'draw',
       label: 'ドロー',
       icon: <Layers className="w-3.5 h-3.5" />,
+      color: 'emerald' as const,
     },
     {
       id: 'skills',
       label: 'スキル',
       icon: <Sparkles className="w-3.5 h-3.5" />,
+      color: 'purple' as const,
     },
   ];
 
@@ -355,7 +359,7 @@ export const DeckDashboard: React.FC = () => {
             {/* イベント設定（LGP/GC切り替え） */}
             <div>
               <SectionHeading
-                accent="purple"
+                accent="blue"
                 trailing={
                   <>
                     <HelpTooltip
@@ -448,7 +452,7 @@ export const DeckDashboard: React.FC = () => {
             {/* ライブアナライザ */}
             <div>
               <SectionHeading
-                accent="emerald"
+                accent="blue"
                 trailing={
                   selectedEventDetail && (
                     <>
@@ -496,7 +500,7 @@ export const DeckDashboard: React.FC = () => {
             {/* 参考スコア */}
             <div>
               <SectionHeading
-                accent="amber"
+                accent="blue"
                 trailing={
                   <HelpTooltip
                     content="このデッキでプレイしたときのスコアを、参考スコアとして入力してください。デッキ公開時に表示されます。"
@@ -530,7 +534,7 @@ export const DeckDashboard: React.FC = () => {
         {/* タブコンテンツ: チャート */}
         {activeTabId === 'chart' && (
           <div className="flex flex-col h-full">
-            <SectionHeading accent="blue">チャート</SectionHeading>
+            <SectionHeading accent="amber">チャート</SectionHeading>
             <ExpandableTextArea
               value={deck?.memo || ''}
               onChange={updateDeckMemo}
@@ -545,25 +549,43 @@ export const DeckDashboard: React.FC = () => {
         )}
 
         {/* タブコンテンツ: ドロー */}
-        {activeTabId === 'draw' && analysis && (
-          <DeckAnalyzerPanel
-            analysis={analysis}
-            isOpen={true}
-            onToggle={() => {}}
-            embedded
-            mode="draw"
-          />
+        {activeTabId === 'draw' && (
+          analysis && analysis.assignedSlots > 0 ? (
+            <DeckAnalyzerPanel
+              analysis={analysis}
+              isOpen={true}
+              onToggle={() => {}}
+              embedded
+              mode="draw"
+            />
+          ) : (
+            <div className="flex items-center justify-center py-12 text-gray-400">
+              <div className="text-center">
+                <div className="text-sm">カードが編成されていません</div>
+                <div className="text-xs mt-1">デッキにカードを追加してください</div>
+              </div>
+            </div>
+          )
         )}
 
         {/* タブコンテンツ: スキル */}
-        {activeTabId === 'skills' && analysis && (
-          <DeckAnalyzerPanel
-            analysis={analysis}
-            isOpen={true}
-            onToggle={() => {}}
-            embedded
-            mode="skills"
-          />
+        {activeTabId === 'skills' && (
+          analysis && analysis.assignedSlots > 0 ? (
+            <DeckAnalyzerPanel
+              analysis={analysis}
+              isOpen={true}
+              onToggle={() => {}}
+              embedded
+              mode="skills"
+            />
+          ) : (
+            <div className="flex items-center justify-center py-12 text-gray-400">
+              <div className="text-center">
+                <div className="text-sm">カードが編成されていません</div>
+                <div className="text-xs mt-1">デッキにカードを追加してください</div>
+              </div>
+            </div>
+          )
         )}
       </DeckDashboardTabs>
 
