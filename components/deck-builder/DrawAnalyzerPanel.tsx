@@ -22,6 +22,9 @@ export const DrawAnalyzerPanel: React.FC<DrawAnalyzerPanelProps> = ({
     Map<string, number>
   >(new Map());
   const [handSize, setHandSize] = useState<number>(8);
+  const [imitationOnStage, setImitationOnStage] = useState<
+    Map<string, boolean>
+  >(new Map());
 
   useEffect(() => {
     const newMap = new Map<string, number>();
@@ -33,10 +36,46 @@ export const DrawAnalyzerPanel: React.FC<DrawAnalyzerPanelProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [analysis.accessoryCards]);
 
+  useEffect(() => {
+    const newMap = new Map<string, boolean>();
+    analysis.excludedCards
+      .filter((item) => item.reasons.includes('IMITATION'))
+      .forEach((item) => {
+        newMap.set(item.card.id, imitationOnStage.get(item.card.id) ?? true);
+      });
+    setImitationOnStage(newMap);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [analysis.excludedCards]);
+
   const accessoryCount = Array.from(selectedAccessories.values()).reduce(
     (sum, count) => sum + count,
     0
   );
+
+  const imitationCards = analysis.excludedCards.filter((item) =>
+    item.reasons.includes('IMITATION')
+  );
+  // UN_DRAW・INSTANCE も持つカードはすでに別の理由で除外済みのため、
+  // ステージセット解除してもドロー枠は増えない
+  const imitationOffStageCount = imitationCards.filter((item) => {
+    const onStage = imitationOnStage.get(item.card.id) ?? true;
+    if (onStage) return false;
+    const hasStrongerExclusion = item.reasons.some(
+      (r) => r === 'UN_DRAW' || r === 'INSTANCE'
+    );
+    return !hasStrongerExclusion;
+  }).length;
+  const effectiveDrawCount = analysis.drawCount + imitationOffStageCount;
+
+  // イミテーション以外の理由で除外されているカード + ステージにセット中のイミテーションカードを表示
+  const displayedExcludedCards = analysis.excludedCards
+    .map((item) => ({
+      ...item,
+      reasons: item.reasons.filter(
+        (r) => r !== 'IMITATION' || (imitationOnStage.get(item.card.id) ?? true)
+      ),
+    }))
+    .filter((item) => item.reasons.length > 0);
 
   const setAccessoryCount = (key: string, count: number): void => {
     setSelectedAccessories((prev) => {
@@ -67,11 +106,13 @@ export const DrawAnalyzerPanel: React.FC<DrawAnalyzerPanelProps> = ({
       key: 'section4',
       drawCount: analysis.drawCountBySection.section4,
     },
-    {
-      label: 'セクション5',
-      key: 'section5',
-      drawCount: analysis.drawCountBySection.section5,
-    },
+    // セクション5は内部的にフィーバーと統合されているため表示しない
+    // TODO: DBスキーマレベルでセクション5を廃止
+    // {
+    //   label: 'セクション5',
+    //   key: 'section5',
+    //   drawCount: analysis.drawCountBySection.section5,
+    // },
     {
       label: 'フィーバー',
       key: 'sectionFever',
@@ -81,7 +122,7 @@ export const DrawAnalyzerPanel: React.FC<DrawAnalyzerPanelProps> = ({
 
   const useCardCount = 1;
   const mainFormula = getDrawFormula(
-    analysis.drawCount,
+    effectiveDrawCount,
     handSize,
     useCardCount,
     accessoryCount
@@ -108,7 +149,7 @@ export const DrawAnalyzerPanel: React.FC<DrawAnalyzerPanelProps> = ({
           <div>
             <div className="text-[9px] text-purple-700 mb-1">ドロー枠</div>
             <div className="text-xl font-bold leading-none text-purple-800">
-              {analysis.drawCount}
+              {effectiveDrawCount}
               <span className="text-sm">枚</span>
             </div>
           </div>
@@ -201,6 +242,56 @@ export const DrawAnalyzerPanel: React.FC<DrawAnalyzerPanelProps> = ({
         </div>
       </div>
 
+      {imitationCards.length > 0 && (
+        <div className="text-[11px] leading-tight text-gray-600 py-2 space-y-1">
+          <div className="flex items-center gap-1">
+            <span className="text-gray-700 font-medium">イミテーションカード</span>
+            <span className="text-gray-500">
+              ({imitationCards.length}枚中
+              {imitationCards.length - imitationOffStageCount}枚がステージにセット)
+            </span>
+          </div>
+          <div className="space-y-1">
+            {imitationCards.map((item) => {
+              const onStage = imitationOnStage.get(item.card.id) ?? true;
+              return (
+                <div
+                  key={item.card.id}
+                  className="flex items-center justify-between px-2 py-1.5 rounded border border-gray-200 hover:bg-gray-50"
+                >
+                  <div className="flex flex-col min-w-0 flex-1">
+                    <div className="text-[11px] font-medium text-gray-800 truncate">
+                      [{item.card.cardName}] {item.card.characterName}
+                    </div>
+                  </div>
+                  <button
+                    onClick={() =>
+                      setImitationOnStage((prev) => {
+                        const newMap = new Map(prev);
+                        newMap.set(item.card.id, !onStage);
+                        return newMap;
+                      })
+                    }
+                    className={`ml-2 flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium border transition-colors ${
+                      onStage
+                        ? 'bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200'
+                        : 'bg-white text-gray-400 border-gray-200 hover:bg-gray-50'
+                    }`}
+                  >
+                    <span
+                      className={`w-2 h-2 rounded-full inline-block ${
+                        onStage ? 'bg-gray-500' : 'bg-gray-300'
+                      }`}
+                    />
+                    {onStage ? 'ステージにセット' : 'セットしない'}
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {analysis.accessoryCards.length > 0 && (
         <div className="text-[11px] leading-tight text-gray-600 py-2 space-y-1">
           <div className="flex items-center gap-1">
@@ -251,12 +342,12 @@ export const DrawAnalyzerPanel: React.FC<DrawAnalyzerPanelProps> = ({
 
       <div className="text-[11px] leading-tight text-gray-600 py-2 space-y-1">
         <div className="flex flex-wrap gap-1.5">
-          {analysis.excludedCards.length === 0 ? (
+          {displayedExcludedCards.length === 0 ? (
             <span className="text-gray-500">除外対象なし</span>
           ) : (
             <div>
               <div>除外枠</div>
-              {analysis.excludedCards.map((item) => (
+              {displayedExcludedCards.map((item) => (
                 <span
                   key={item.card.id}
                   className="inline-flex items-center rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 text-[10px] text-gray-700"
@@ -276,8 +367,10 @@ export const DrawAnalyzerPanel: React.FC<DrawAnalyzerPanelProps> = ({
         </SectionHeading>
         <div className="space-y-1">
           {sections.map((section) => {
+            const effectiveSectionDrawCount =
+              section.drawCount + imitationOffStageCount;
             const sectionFormula = getDrawFormula(
-              section.drawCount,
+              effectiveSectionDrawCount,
               handSize,
               useCardCount,
               accessoryCount
@@ -299,12 +392,12 @@ export const DrawAnalyzerPanel: React.FC<DrawAnalyzerPanelProps> = ({
                     (
                     <span
                       className={
-                        section.drawCount > analysis.drawCount
+                        effectiveSectionDrawCount > effectiveDrawCount
                           ? 'text-red-600'
                           : 'text-purple-700'
                       }
                     >
-                      {section.drawCount}枚
+                      {effectiveSectionDrawCount}枚
                     </span>
                     {accessoryCount > 0 && (
                       <>
