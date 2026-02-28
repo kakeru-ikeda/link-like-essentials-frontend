@@ -32,7 +32,7 @@ export interface Deck {
   gradeChallengeDetailId?: string;   // グレードチャレンジ詳細ID（ステージ選択時のみ）
   gradeChallengeTitle?: string;      // フロントエンド内部で使用（表示用、送信不要）
   gradeChallengeStageName?: string;  // フロントエンド内部で使用（表示用、送信不要）
-  score?: number;                    // 参考スコア（兆単位）
+  score?: number;                    // 参考スコア（兆単位。京単位のスコアは 10000兆 単位で保存。例: 2京6000兆 → 26000）
   memo?: string;
   isFriendSlotEnabled?: boolean;     // フレンドカード枠の有効化状態
   createdAt: string;

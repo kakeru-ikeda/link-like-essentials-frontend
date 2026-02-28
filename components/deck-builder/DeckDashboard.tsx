@@ -48,11 +48,13 @@ import { SkillsAnalyzerPanel } from '@/components/deck-builder/SkillsAnalyzerPan
 import { DeckDashboardTabs } from '@/components/deck-builder/DeckDashboardTabs';
 import { SectionHeading } from '@/components/common/SectionHeading';
 import { Settings, FileText, Layers, Sparkles } from 'lucide-react';
+import { SkillApGraph } from '@/components/deck-builder/SkillApGraph';
 import {
   EVENT_COLOR_GRADE_CHALLENGE,
   EVENT_COLOR_LIVE_GRAND_PRIX,
 } from '@/styles/colors';
 import { hexToRgba } from '@/utils/colorUtils';
+import { scoreFromParts, scoreToParts } from '@/utils/scoreUtils';
 import { useResponsiveDevice } from '@/hooks/ui/useResponsiveDevice';
 
 export const DeckDashboard: React.FC = () => {
@@ -93,6 +95,8 @@ export const DeckDashboard: React.FC = () => {
     []
   );
   const [activeTabId, setActiveTabId] = useState<string>('settings');
+  const [scoreKei, setScoreKei] = useState<number>(0);
+  const [scoreCho, setScoreCho] = useState<number>(0);
 
   const { analysis } = useDeckAnalysis(deck ?? null);
   const { isSp } = useResponsiveDevice();
@@ -164,6 +168,13 @@ export const DeckDashboard: React.FC = () => {
     setSelectedDeckType(deck?.deckType);
   }, [deck?.deckType]);
 
+  // スコアを京・兆に分解して同期
+  useEffect(() => {
+    const { kei, cho } = scoreToParts(deck?.score ?? 0);
+    setScoreKei(kei);
+    setScoreCho(cho);
+  }, [deck?.score]);
+
   // 既存のイベント選択に合わせてタブを同期
   useEffect(() => {
     if (deck?.gradeChallengeId) {
@@ -227,16 +238,22 @@ export const DeckDashboard: React.FC = () => {
     updateGradeChallengeStage(detail);
   };
 
-  const handleScoreChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+  const handleKeiChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const value = e.target.value;
-    if (value === '') {
-      updateScore(undefined);
-    } else {
-      const numValue = parseFloat(value);
-      if (!isNaN(numValue) && numValue >= 0) {
-        updateScore(numValue);
-      }
-    }
+    const newKei = value === '' ? 0 : Number(value);
+    if (!Number.isFinite(newKei) || !Number.isInteger(newKei) || newKei < 0) return;
+    setScoreKei(newKei);
+    const total = scoreFromParts(newKei, scoreCho);
+    updateScore(total === 0 ? undefined : total);
+  };
+
+  const handleChoChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    const value = e.target.value;
+    const newCho = value === '' ? 0 : Number(value);
+    if (!Number.isFinite(newCho) || !Number.isInteger(newCho) || newCho < 0 || newCho > 9999) return;
+    setScoreCho(newCho);
+    const total = scoreFromParts(scoreKei, newCho);
+    updateScore(total === 0 ? undefined : total);
   };
 
   const clearDeck = (): void => {
@@ -498,6 +515,12 @@ export const DeckDashboard: React.FC = () => {
               <LRCardsList lrCards={otherLRCards} />
             </div>
 
+            {/* スキルAP分布グラフ */}
+            <div>
+              <SectionHeading accent="blue">スキルAP分布</SectionHeading>
+              <SkillApGraph deck={deck ?? null} />
+            </div>
+
             {/* 参考スコア */}
             <div>
               <SectionHeading
@@ -513,22 +536,36 @@ export const DeckDashboard: React.FC = () => {
               >
                 参考スコア
               </SectionHeading>
-              <div className="relative">
-                <input
-                  type="number"
-                  min="0"
-                  step="1"
-                  value={deck?.score ?? ''}
-                  onChange={handleScoreChange}
-                  placeholder="0"
-                  className="w-full px-3 py-2 pr-16 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-                />
-                <div className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-700 pointer-events-none font-medium">
-                  兆 <span className="text-[0.85em]">LOVE</span>
+              <div className="flex gap-2 items-center">
+                <div className="flex items-center gap-1">
+                  <input
+                    type="number"
+                    min="0"
+                    step="1"
+                    value={scoreKei === 0 ? '' : scoreKei}
+                    onChange={handleKeiChange}
+                    placeholder="0"
+                    className="w-20 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                  />
+                  <span className="text-sm text-gray-700 font-medium">京</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <input
+                    type="number"
+                    min="0"
+                    max="9999"
+                    step="1"
+                    value={scoreKei === 0 && scoreCho === 0 ? '' : scoreCho}
+                    onChange={handleChoChange}
+                    placeholder="0"
+                    className="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                  />
+                  <span className="text-sm text-gray-700 font-medium whitespace-nowrap">
+                    兆 <span className="text-[0.85em]">LOVE</span>
+                  </span>
                 </div>
               </div>
             </div>
-
           </div>
         )}
 

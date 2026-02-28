@@ -5,6 +5,7 @@ import { useDeck } from '@/hooks/deck/useDeck';
 import { useLiveGrandPrixById } from '@/hooks/deck/useLiveGrandPrix';
 import { useGradeChallengeById } from '@/hooks/deck/useGradeChallenge';
 import { Deck } from '@/models/deck/Deck';
+import { formatScore } from '@/utils/scoreUtils';
 
 interface ExportDashboardProps {
   deck?: Deck | null;
@@ -208,7 +209,7 @@ export const ExportDashboard: React.FC<ExportDashboardProps> = ({
               参考スコア:
             </span>
             <span className={`${headingSize} text-slate-600`}>
-              {deck.score} 兆 <span className="text-[0.85em]">LOVE</span>
+              {formatScore(deck.score)} <span className="text-[0.85em]">LOVE</span>
             </span>
           </div>
         )}
