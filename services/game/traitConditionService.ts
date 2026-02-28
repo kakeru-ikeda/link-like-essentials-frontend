@@ -4,6 +4,7 @@ import {
   TRAIT_CONDITION_PATTERNS,
 } from '@/config/traitConditions';
 import { getSkillEffectKeyword } from '@/services/game/skillEffectService';
+import { matchesKeyword } from '@/utils/keywordMatcher';
 
 export interface DetectedTraitConditionEffect {
   condition: TraitConditionType;
@@ -112,17 +113,7 @@ function extractConditionText(
   return '';
 }
 
-function matchesKeyword(text: string, keyword: string): boolean {
-  if (keyword.includes('\\')) {
-    try {
-      const regex = new RegExp(keyword);
-      return regex.test(text);
-    } catch {
-      return text.includes(keyword);
-    }
-  }
-  return text.includes(keyword);
-}
+
 
 type MatchRange = { index: number; end: number };
 

@@ -16,6 +16,7 @@ import {
   getSkillEffectKeyword,
   hasSkillEffect,
 } from '@/services/game/skillEffectService';
+import { matchesKeywords } from '@/utils/keywordMatcher';
 import {
   analyzeTraitForEffect,
   getTraitConditionLabel,
@@ -299,19 +300,7 @@ function analyzeRequiredEffect(
   };
 }
 
-function matchesKeywords(text: string, keywords: string[]): boolean {
-  return keywords.some((keyword) => {
-    if (keyword.includes('\\')) {
-      try {
-        const regex = new RegExp(keyword);
-        return regex.test(text);
-      } catch {
-        return text.includes(keyword);
-      }
-    }
-    return text.includes(keyword);
-  });
-}
+
 
 function findMatchedSentence(
   text: string,

@@ -29,6 +29,8 @@ export const DeckDashboardTabs: React.FC<DeckDashboardTabsProps> = ({
   onChangeTab,
   children,
 }) => {
+  const [hoveredTabId, setHoveredTabId] = React.useState<string | null>(null);
+
   const activeTab = tabs.find((t) => t.id === activeTabId);
   const activeColor: DashboardTabColor = activeTab?.color ?? 'blue';
   const activeHex = DASHBOARD_TAB_COLORS[activeColor];
@@ -39,26 +41,21 @@ export const DeckDashboardTabs: React.FC<DeckDashboardTabsProps> = ({
       <div className="flex flex-col gap-1 pt-1 pr-2 border-r border-gray-200 flex-shrink-0 w-14">
         {tabs.map((tab) => {
           const isActive = tab.id === activeTabId;
+          const isHovered = hoveredTabId === tab.id;
           const hex = DASHBOARD_TAB_COLORS[tab.color ?? 'blue'];
           return (
             <button
               key={tab.id}
               onClick={() => onChangeTab(tab.id)}
+              onMouseEnter={() => !isActive && setHoveredTabId(tab.id)}
+              onMouseLeave={() => setHoveredTabId(null)}
               style={
                 isActive
                   ? { backgroundColor: hex, color: '#ffffff' }
+                  : isHovered
+                  ? { color: hex, backgroundColor: hexToRgba(hex, 0.12) }
                   : { color: hex }
               }
-              onMouseEnter={(e) => {
-                if (!isActive) {
-                  (e.currentTarget as HTMLButtonElement).style.backgroundColor = hexToRgba(hex, 0.12);
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!isActive) {
-                  (e.currentTarget as HTMLButtonElement).style.backgroundColor = '';
-                }
-              }}
               className="flex flex-col items-center justify-center gap-0.5 rounded-md px-1 py-2 text-[9px] font-medium transition-colors leading-tight"
             >
               {tab.icon && <span className="flex-shrink-0">{tab.icon}</span>}

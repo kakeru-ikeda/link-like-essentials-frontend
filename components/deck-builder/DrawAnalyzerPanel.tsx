@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import type { DeckAnalysis } from '@/models/deck/DeckAnalysis';
 import { SectionHeading } from '@/components/common/SectionHeading';
 import { HelpTooltip } from '@/components/common/HelpTooltip';
@@ -25,6 +25,11 @@ export const DrawAnalyzerPanel: React.FC<DrawAnalyzerPanelProps> = ({
   const [imitationOnStage, setImitationOnStage] = useState<
     Map<string, boolean>
   >(new Map());
+  
+  const imitationOnStageRef = useRef<Map<string, boolean>>(imitationOnStage);
+  useEffect(() => {
+    imitationOnStageRef.current = imitationOnStage;
+  }, [imitationOnStage]);
 
   useEffect(() => {
     const newMap = new Map<string, number>();
@@ -41,10 +46,9 @@ export const DrawAnalyzerPanel: React.FC<DrawAnalyzerPanelProps> = ({
     analysis.excludedCards
       .filter((item) => item.reasons.includes('IMITATION'))
       .forEach((item) => {
-        newMap.set(item.card.id, imitationOnStage.get(item.card.id) ?? true);
+        newMap.set(item.card.id, imitationOnStageRef.current.get(item.card.id) ?? true);
       });
     setImitationOnStage(newMap);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [analysis.excludedCards]);
 
   const accessoryCount = Array.from(selectedAccessories.values()).reduce(

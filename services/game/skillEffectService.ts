@@ -1,6 +1,7 @@
 import { SkillEffectType } from '@/models/shared/enums';
 import { SKILL_EFFECT_KEYWORDS } from '@/config/skillEffects';
 import type { Card } from '@/models/card/Card';
+import { matchesKeywords } from '@/utils/keywordMatcher';
 
 /**
  * スキル効果の検索キーワードを取得
@@ -31,16 +32,6 @@ export function hasSkillEffect(card: Card, effectType: SkillEffectType): boolean
   const skillEffect = card.detail?.skill?.effect;
   
   if (!skillEffect) return false;
-  
-  return keywords.some((keyword) => {
-    if (keyword.includes('\\')) {
-      try {
-        const regex = new RegExp(keyword);
-        return regex.test(skillEffect);
-      } catch {
-        return skillEffect.includes(keyword);
-      }
-    }
-    return skillEffect.includes(keyword);
-  });
+
+  return matchesKeywords(skillEffect, keywords);
 }

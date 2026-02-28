@@ -1,6 +1,7 @@
 import { TraitEffectType } from '@/models/shared/enums';
 import { TRAIT_EFFECT_KEYWORDS } from '@/config/traitEffects';
 import type { Card } from '@/models/card/Card';
+import { matchesKeywords } from '@/utils/keywordMatcher';
 
 /**
  * 特性効果の検索キーワードを取得
@@ -31,16 +32,6 @@ export function hasTraitEffect(card: Card, effectType: TraitEffectType): boolean
   const traitEffect = card.detail?.trait?.effect;
   
   if (!traitEffect) return false;
-  
-  return keywords.some((keyword) => {
-    if (keyword.includes('\\')) {
-      try {
-        const regex = new RegExp(keyword);
-        return regex.test(traitEffect);
-      } catch {
-        return traitEffect.includes(keyword);
-      }
-    }
-    return traitEffect.includes(keyword);
-  });
+
+  return matchesKeywords(traitEffect, keywords);
 }
