@@ -240,8 +240,8 @@ export const DeckDashboard: React.FC = () => {
 
   const handleKeiChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const value = e.target.value;
-    const newKei = value === '' ? 0 : parseInt(value, 10);
-    if (isNaN(newKei) || newKei < 0) return;
+    const newKei = value === '' ? 0 : Number(value);
+    if (!Number.isFinite(newKei) || !Number.isInteger(newKei) || newKei < 0) return;
     setScoreKei(newKei);
     const total = scoreFromParts(newKei, scoreCho);
     updateScore(total === 0 ? undefined : total);
@@ -249,8 +249,8 @@ export const DeckDashboard: React.FC = () => {
 
   const handleChoChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const value = e.target.value;
-    const newCho = value === '' ? 0 : parseInt(value, 10);
-    if (isNaN(newCho) || newCho < 0 || newCho > 9999) return;
+    const newCho = value === '' ? 0 : Number(value);
+    if (!Number.isFinite(newCho) || !Number.isInteger(newCho) || newCho < 0 || newCho > 9999) return;
     setScoreCho(newCho);
     const total = scoreFromParts(scoreKei, newCho);
     updateScore(total === 0 ? undefined : total);

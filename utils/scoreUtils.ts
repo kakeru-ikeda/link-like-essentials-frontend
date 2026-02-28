@@ -10,12 +10,17 @@ export const scoreFromParts = (kei: number, cho: number): number =>
 
 /**
  * スコア（兆単位）を京・兆のパーツに分解する
+ * 小数・負数を含む旧データに対しても安全に動作するよう、
+ * 事前に非負整数へ正規化（Math.max(0, Math.trunc)）してから分解する。
  * 例: scoreToParts(26000) → { kei: 2, cho: 6000 }
  */
-export const scoreToParts = (score: number): { kei: number; cho: number } => ({
-  kei: Math.floor(score / SCORE_KEI_UNIT),
-  cho: score % SCORE_KEI_UNIT,
-});
+export const scoreToParts = (score: number): { kei: number; cho: number } => {
+  const normalized = Math.max(0, Math.trunc(score));
+  return {
+    kei: Math.floor(normalized / SCORE_KEI_UNIT),
+    cho: normalized % SCORE_KEI_UNIT,
+  };
+};
 
 /**
  * スコア（兆単位）を表示用文字列にフォーマットする
