@@ -132,7 +132,7 @@ export const PublishedDeckActions: React.FC<PublishedDeckActionsProps> = ({
               ? 'インポート中...'
               : compiling
                 ? 'コンパイル中...'
-                : 'インポートして編集'}
+                : 'マイデッキに保存'}
           </span>
         </button>
 
@@ -141,7 +141,7 @@ export const PublishedDeckActions: React.FC<PublishedDeckActionsProps> = ({
               <button
                 type="button"
                 onClick={onDelete}
-                className={`${actionPillBase} bg-red-600 text-white hover:bg-red-700`}
+                className={`${actionPillBase} w-full justify-center sm:w-auto bg-red-600 text-white hover:bg-red-700`}
               >
                 <span className="text-base">🗑️</span>
                 <span className="text-xs font-normal opacity-80">削除</span>
@@ -151,7 +151,7 @@ export const PublishedDeckActions: React.FC<PublishedDeckActionsProps> = ({
               <button
                 type="button"
                 onClick={onReport}
-                className={`${actionPillBase} bg-amber-600 text-white hover:bg-amber-700`}
+                className={`${actionPillBase} w-full justify-center sm:w-auto bg-amber-600 text-white hover:bg-amber-700`}
               >
                 <span className="text-base">⚠️</span>
                 <span className="text-xs font-normal opacity-80">通報</span>
