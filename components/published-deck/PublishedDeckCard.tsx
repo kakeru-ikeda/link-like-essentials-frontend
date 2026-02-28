@@ -6,6 +6,7 @@ import { useDeckLike } from '@/hooks/published-deck/useDeckLike';
 import { Tooltip } from '@/components/common/Tooltip';
 import { UserAvatar } from '@/components/user/UserAvatar';
 import { Loading } from '../common/Loading';
+import { formatScore } from '@/utils/scoreUtils';
 
 interface PublishedDeckCardProps {
   deck: PublishedDeck;
@@ -240,7 +241,7 @@ export const PublishedDeckCard: React.FC<PublishedDeckCardProps> = ({
                     className="flex items-center gap-1"
                     aria-label="参考スコア"
                   >
-                    {baseDeck.score}兆<span className="text-[0.8em]">LOVE</span>
+                    {formatScore(baseDeck.score)}<span className="text-[0.8em]">LOVE</span>
                   </span>
                 </div>
               </Tooltip>
