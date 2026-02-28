@@ -36,19 +36,24 @@ import {
   GradeChallenge,
   GradeChallengeDetail,
 } from '@/models/grade-challenge/GradeChallenge';
-import { ExpansionPanel } from '@/components/common/ExpansionPanel';
 import { EffectBadge } from '@/components/shared/EffectBadge';
 import { DeckPublishModal } from '@/components/deck-publish/DeckPublishModal';
 import { DeckPublishSuccessDialog } from '@/components/deck-publish/DeckPublishSuccessDialog';
 import { useModal } from '@/hooks/ui/useModal';
 import { PublishedDeck } from '@/models/published-deck/PublishedDeck';
-import { useResponsiveDevice } from '@/hooks/ui/useResponsiveDevice';
 import { HelpTooltip } from '@/components/common/HelpTooltip';
+import { useDeckAnalysis } from '@/hooks/deck/useDeckAnalysis';
+import { DrawAnalyzerPanel } from '@/components/deck-builder/DrawAnalyzerPanel';
+import { SkillsAnalyzerPanel } from '@/components/deck-builder/SkillsAnalyzerPanel';
+import { DeckDashboardTabs } from '@/components/deck-builder/DeckDashboardTabs';
+import { SectionHeading } from '@/components/common/SectionHeading';
+import { Settings, FileText, Layers, Sparkles } from 'lucide-react';
 import {
   EVENT_COLOR_GRADE_CHALLENGE,
   EVENT_COLOR_LIVE_GRAND_PRIX,
 } from '@/styles/colors';
 import { hexToRgba } from '@/utils/colorUtils';
+import { useResponsiveDevice } from '@/hooks/ui/useResponsiveDevice';
 
 export const DeckDashboard: React.FC = () => {
   const {
@@ -87,6 +92,9 @@ export const DeckDashboard: React.FC = () => {
   const [unfilledMainSlots, setUnfilledMainSlots] = useState<DeckSlotMapping[]>(
     []
   );
+  const [activeTabId, setActiveTabId] = useState<string>('settings');
+
+  const { analysis } = useDeckAnalysis(deck ?? null);
   const { isSp } = useResponsiveDevice();
   const isEventStageMissing = Boolean(
     (deck?.liveGrandPrixId && !deck?.liveGrandPrixDetailId) ||
@@ -276,9 +284,36 @@ export const DeckDashboard: React.FC = () => {
     setUnfilledMainSlots([]);
   };
 
+  const DASHBOARD_TABS = [
+    {
+      id: 'settings',
+      label: 'デッキ',
+      icon: <Settings className="w-3.5 h-3.5" />,
+      color: 'blue' as const,
+    },
+    {
+      id: 'chart',
+      label: 'チャート',
+      icon: <FileText className="w-3.5 h-3.5" />,
+      color: 'amber' as const,
+    },
+    {
+      id: 'draw',
+      label: 'ドロー',
+      icon: <Layers className="w-3.5 h-3.5" />,
+      color: 'emerald' as const,
+    },
+    {
+      id: 'skills',
+      label: 'スキル',
+      icon: <Sparkles className="w-3.5 h-3.5" />,
+      color: 'purple' as const,
+    },
+  ];
+
   return (
     <div className="flex-1 flex flex-col gap-4 p-4 border-2 border-gray-300 rounded-lg overflow-hidden min-w-0">
-      {/* タイトル＆ボタン */}
+      {/* 固定: タイトル＆ボタン */}
       <div className="flex items-center gap-4 min-w-0">
         <div className="flex-1 min-w-0">
           <DeckTitle
@@ -294,7 +329,7 @@ export const DeckDashboard: React.FC = () => {
         </Button>
       </div>
 
-      {/* デッキタイプ＆楽曲選択 */}
+      {/* 固定: デッキタイプ＆楽曲選択 */}
       <div className="flex gap-4 min-w-0">
         <DeckTypeSelect
           value={selectedDeckType}
@@ -313,185 +348,235 @@ export const DeckDashboard: React.FC = () => {
         />
       </div>
 
-      {/* イベント選択 */}
-      <ExpansionPanel
-        title={
-          <div className="flex items-center gap-2">
-            <span>イベント設定</span>
-            <HelpTooltip
-              content="イベントを選択すると、対応する楽曲が自動的に指定されます。また、楽曲を選択すると、ステージ効果およびセクション効果が自動的に設定されます。"
-              position="top"
-              className="mb-0.5"
-              size={4}
-            />
-            {hasActiveEvent && <ActiveEventBadge />}
-          </div>
-        }
+      {/* タブ: 設定 / 分析 */}
+      <DeckDashboardTabs
+        tabs={DASHBOARD_TABS}
+        activeTabId={activeTabId}
+        onChangeTab={setActiveTabId}
       >
-        <div className="flex flex-col gap-3">
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={() => handleEventTypeChange('liveGrandPrix')}
-              className="px-3 py-1.5 rounded-full text-sm border transition"
-              style={(() => {
-                const color = eventTypeColors.liveGrandPrix;
-                const isActive = eventType === 'liveGrandPrix';
-                return {
-                  backgroundColor: isActive ? color : hexToRgba(color, 0.12),
-                  borderColor: color,
-                  color: isActive ? '#ffffff' : color,
-                };
-              })()}
-            >
-              ライブグランプリ
-            </button>
-            <button
-              type="button"
-              onClick={() => handleEventTypeChange('gradeChallenge')}
-              className="px-3 py-1.5 rounded-full text-sm border transition"
-              style={(() => {
-                const color = eventTypeColors.gradeChallenge;
-                const isActive = eventType === 'gradeChallenge';
-                return {
-                  backgroundColor: isActive ? color : hexToRgba(color, 0.12),
-                  borderColor: color,
-                  color: isActive ? '#ffffff' : color,
-                };
-              })()}
-            >
-              グレードチャレンジ
-            </button>
-          </div>
-
-          {eventType === 'liveGrandPrix' ? (
-            <div
-              className={`flex min-w-0 ${isSp ? 'flex-col gap-3' : 'flex-row gap-4'}`}
-            >
-              <LiveGrandPrixSelect
-                deckType={deck?.deckType}
-                value={deck?.liveGrandPrixId}
-                onChange={handleLiveGrandPrixChange}
-                className={isSp ? 'w-full' : 'flex-1 min-w-0'}
-              />
-
-              <LiveGrandPrixStageSelect
-                details={liveGrandPrix?.details}
-                value={deck?.liveGrandPrixDetailId}
-                onChange={handleLiveGrandPrixStageChange}
-                disabled={lgpLoading || !deck?.liveGrandPrixId}
-                className={isSp ? 'w-full' : 'w-48 flex-shrink-0'}
-              />
+        {/* タブコンテンツ: 設定 */}
+        {activeTabId === 'settings' && (
+          <div className="flex flex-col gap-4">
+            {/* イベント設定（LGP/GC切り替え） */}
+            <div>
+              <SectionHeading
+                accent="blue"
+                trailing={
+                  <>
+                    <HelpTooltip
+                      content="イベントを選択すると、対応する楽曲が自動的に指定されます。また、楽曲を選択すると、ステージ効果およびセクション効果が自動的に設定されます。"
+                      position="top"
+                      className="mb-0.5"
+                      size={4}
+                    />
+                    {hasActiveEvent && <ActiveEventBadge />}
+                  </>
+                }
+              >
+                イベント設定
+              </SectionHeading>
+              <div className="flex flex-col gap-3">
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleEventTypeChange('liveGrandPrix')}
+                    className="px-3 py-1.5 rounded-full text-sm border transition"
+                    style={(() => {
+                      const color = eventTypeColors.liveGrandPrix;
+                      const isActive = eventType === 'liveGrandPrix';
+                      return {
+                        backgroundColor: isActive ? color : hexToRgba(color, 0.12),
+                        borderColor: color,
+                        color: isActive ? '#ffffff' : color,
+                      };
+                    })()}
+                  >
+                    ライブグランプリ
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleEventTypeChange('gradeChallenge')}
+                    className="px-3 py-1.5 rounded-full text-sm border transition"
+                    style={(() => {
+                      const color = eventTypeColors.gradeChallenge;
+                      const isActive = eventType === 'gradeChallenge';
+                      return {
+                        backgroundColor: isActive ? color : hexToRgba(color, 0.12),
+                        borderColor: color,
+                        color: isActive ? '#ffffff' : color,
+                      };
+                    })()}
+                  >
+                    グレードチャレンジ
+                  </button>
+                </div>
+                {eventType === 'liveGrandPrix' ? (
+                  <div
+                    className={`flex min-w-0 ${isSp ? 'flex-col gap-3' : 'flex-row gap-4'}`}
+                  >
+                    <LiveGrandPrixSelect
+                      deckType={deck?.deckType}
+                      value={deck?.liveGrandPrixId}
+                      onChange={handleLiveGrandPrixChange}
+                      className={isSp ? 'w-full' : 'flex-1 min-w-0'}
+                    />
+                    <LiveGrandPrixStageSelect
+                      details={liveGrandPrix?.details}
+                      value={deck?.liveGrandPrixDetailId}
+                      onChange={handleLiveGrandPrixStageChange}
+                      disabled={lgpLoading || !deck?.liveGrandPrixId}
+                      className={isSp ? 'w-full' : 'w-48 flex-shrink-0'}
+                    />
+                  </div>
+                ) : (
+                  <div
+                    className={`flex min-w-0 ${isSp ? 'flex-col gap-3' : 'flex-row gap-4'}`}
+                  >
+                    <GradeChallengeSelect
+                      deckType={deck?.deckType}
+                      value={deck?.gradeChallengeId}
+                      onChange={handleGradeChallengeChange}
+                      className={isSp ? 'w-full' : 'flex-1 min-w-0'}
+                    />
+                    <GradeChallengeStageSelect
+                      details={gradeChallenge?.details}
+                      value={deck?.gradeChallengeDetailId}
+                      onChange={handleGradeChallengeStageChange}
+                      disabled={gcLoading || !deck?.gradeChallengeId}
+                      className={isSp ? 'w-full' : 'w-48 flex-shrink-0'}
+                    />
+                  </div>
+                )}
+              </div>
             </div>
-          ) : (
-            <div
-              className={`flex min-w-0 ${isSp ? 'flex-col gap-3' : 'flex-row gap-4'}`}
-            >
-              <GradeChallengeSelect
-                deckType={deck?.deckType}
-                value={deck?.gradeChallengeId}
-                onChange={handleGradeChallengeChange}
-                className={isSp ? 'w-full' : 'flex-1 min-w-0'}
-              />
 
-              <GradeChallengeStageSelect
-                details={gradeChallenge?.details}
-                value={deck?.gradeChallengeDetailId}
-                onChange={handleGradeChallengeStageChange}
-                disabled={gcLoading || !deck?.gradeChallengeId}
-                className={isSp ? 'w-full' : 'w-48 flex-shrink-0'}
-              />
+            {/* ライブアナライザ */}
+            <div>
+              <SectionHeading
+                accent="blue"
+                trailing={
+                  selectedEventDetail && (
+                    <>
+                      <EffectBadge
+                        type="stage"
+                        specialEffect={selectedEventDetail.specialEffect}
+                      />
+                      <EffectBadge
+                        type="section"
+                        sectionEffects={selectedEventDetail.sectionEffects}
+                      />
+                    </>
+                  )
+                }
+              >
+                ライブアナライザ
+              </SectionHeading>
+              <div className="border border-gray-200 rounded-lg p-2">
+                {deck?.liveAnalyzerImageUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={deck.liveAnalyzerImageUrl}
+                    alt="ライブアナライザ"
+                    className="w-full h-auto rounded-lg border border-gray-300"
+                  />
+                ) : (
+                  <div className="flex items-center justify-center py-8 bg-gray-50 rounded-lg text-gray-400">
+                    <div className="text-center">
+                      <div className="text-sm">楽曲未設定</div>
+                      <div className="text-xs mt-1">
+                        ライブアナライザが表示されます
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
-          )}
-        </div>
-      </ExpansionPanel>
 
-      {/* ライブアナライザ */}
-      <div>
-        <div className="flex items-center gap-2 mb-1">
-          <label className="block text-sm font-medium text-gray-700">
-            ライブアナライザ
-          </label>
-          {selectedEventDetail && (
-            <div className="flex items-center gap-1">
-              <EffectBadge
-                type="stage"
-                specialEffect={selectedEventDetail.specialEffect}
-              />
-              <EffectBadge
-                type="section"
-                sectionEffects={selectedEventDetail.sectionEffects}
-              />
+            {/* センターカードのスペシャルアピール */}
+            <div className="border border-gray-200 rounded-lg p-2">
+              <CenterCardDisplay centerCard={centerCard} />
+              <LRCardsList lrCards={otherLRCards} />
             </div>
-          )}
-        </div>
-        <div className="border border-gray-200 rounded-lg p-2">
-          {deck?.liveAnalyzerImageUrl ? (
-            <img
-              src={deck.liveAnalyzerImageUrl}
-              alt="ライブアナライザ"
-              className="w-full h-auto rounded-lg border border-gray-300"
-            />
-          ) : (
-            <div className="flex items-center justify-center py-8 bg-gray-50 rounded-lg text-gray-400">
-              <div className="text-center">
-                <div className="text-sm">楽曲未設定</div>
-                <div className="text-xs mt-1">
-                  ライブアナライザが表示されます
+
+            {/* 参考スコア */}
+            <div>
+              <SectionHeading
+                accent="blue"
+                trailing={
+                  <HelpTooltip
+                    content="このデッキでプレイしたときのスコアを、参考スコアとして入力してください。デッキ公開時に表示されます。"
+                    position="top"
+                    className="mb-0.5"
+                    size={4}
+                  />
+                }
+              >
+                参考スコア
+              </SectionHeading>
+              <div className="relative">
+                <input
+                  type="number"
+                  min="0"
+                  step="1"
+                  value={deck?.score ?? ''}
+                  onChange={handleScoreChange}
+                  placeholder="0"
+                  className="w-full px-3 py-2 pr-16 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                />
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-700 pointer-events-none font-medium">
+                  兆 <span className="text-[0.85em]">LOVE</span>
                 </div>
               </div>
             </div>
-          )}
-        </div>
-      </div>
 
-      {/* センターカードのスペシャルアピール */}
-      <div className="border border-gray-200 rounded-lg p-2">
-        <CenterCardDisplay centerCard={centerCard} />
-        <LRCardsList lrCards={otherLRCards} />
-      </div>
-
-      {/* 参考スコア */}
-      <div>
-        <label className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-700 mb-1">
-          参考スコア
-          <HelpTooltip
-            content="このデッキでプレイしたときのスコアを、参考スコアとして入力してください。デッキ公開時に表示されます。"
-            position="top"
-            className="mb-0.5"
-            size={4}
-          />
-        </label>
-        <div className="relative">
-          <input
-            type="number"
-            min="0"
-            step="1"
-            value={deck?.score ?? ''}
-            onChange={handleScoreChange}
-            placeholder="0"
-            className="w-full px-3 py-2 pr-16 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-          />
-          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-700 pointer-events-none font-medium">
-            兆 <span className="text-[0.85em]">LOVE</span>
           </div>
-        </div>
-      </div>
+        )}
 
-      {/* チャート */}
-      <div className="flex-1 flex flex-col min-h-0 border-gray-200">
-        <ExpandableTextArea
-          value={deck?.memo || ''}
-          onChange={updateDeckMemo}
-          label="チャート"
-          placeholder="チャートを入力..."
-          rows={3}
-          modalTitle="チャート"
-          modalRows={15}
-          className="flex-1"
-          template={`[1セク]\n\n[2セク]\n\n[3セク]\n\n[4セク]\n\n[5セク]\n`}
-        />
-      </div>
+        {/* タブコンテンツ: チャート */}
+        {activeTabId === 'chart' && (
+          <div className="flex flex-col h-full">
+            <SectionHeading accent="amber">チャート</SectionHeading>
+            <ExpandableTextArea
+              value={deck?.memo || ''}
+              onChange={updateDeckMemo}
+              placeholder="チャートを入力..."
+              rows={12}
+              modalTitle="チャート"
+              modalRows={15}
+              className="flex-1"
+              template={`[1セク]\n\n[2セク]\n\n[3セク]\n\n[4セク]\n\n[5セク]\n`}
+            />
+          </div>
+        )}
+
+        {/* タブコンテンツ: ドロー */}
+        {activeTabId === 'draw' && (
+          analysis && analysis.assignedSlots > 0 ? (
+            <DrawAnalyzerPanel analysis={analysis} />
+          ) : (
+            <div className="flex items-center justify-center py-12 text-gray-400">
+              <div className="text-center">
+                <div className="text-sm">カードが編成されていません</div>
+                <div className="text-xs mt-1">デッキにカードを追加してください</div>
+              </div>
+            </div>
+          )
+        )}
+
+        {/* タブコンテンツ: スキル */}
+        {activeTabId === 'skills' && (
+          analysis && analysis.assignedSlots > 0 ? (
+            <SkillsAnalyzerPanel analysis={analysis} />
+          ) : (
+            <div className="flex items-center justify-center py-12 text-gray-400">
+              <div className="text-center">
+                <div className="text-sm">カードが編成されていません</div>
+                <div className="text-xs mt-1">デッキにカードを追加してください</div>
+              </div>
+            </div>
+          )
+        )}
+      </DeckDashboardTabs>
 
       {/* 公開確認モーダル */}
       <DeckPublishModal

@@ -1,4 +1,5 @@
 import { Rarity, StyleType, LimitedType, FavoriteMode } from '@/models/shared/enums';
+import { SkillEffectType } from '@/models/shared/enums';
 
 /**
  * キャラクターごとのテーマカラー定義
@@ -82,7 +83,46 @@ export const FILTER_COLOR_TRAIT_EFFECT = '#9333ea';
 export const FILTER_COLOR_TOKEN = '#06b6d4';
 
 /**
+ * スキル効果の色定義（デッキアナライザー用）
+ */
+export const SKILL_EFFECT_COLORS: Record<SkillEffectType, { border: string; bg: string; text: string }> = {
+  [SkillEffectType.HEART_CAPTURE]: { border: '#ef4444', bg: '#ef4444', text: '#ffffff' },
+  [SkillEffectType.HEART_BOOST]: { border: '#ef4444', bg: '#ef4444', text: '#ffffff' },
+  [SkillEffectType.WIDE_HEART]: { border: '#dc2626', bg: '#dc2626', text: '#ffffff' },
+  [SkillEffectType.WIDE_HEART_BOOST]: { border: '#dc2626', bg: '#dc2626', text: '#ffffff' },
+  [SkillEffectType.LOVE_ATTRACT]: { border: '#f97316', bg: '#f97316', text: '#ffffff' },
+  [SkillEffectType.ATTRACT_BOOST]: { border: '#f97316', bg: '#f97316', text: '#ffffff' },
+  [SkillEffectType.VOLTAGE_GAIN]: { border: '#f59e0b', bg: '#f59e0b', text: '#ffffff' },
+  [SkillEffectType.VOLTAGE_BOOST]: { border: '#f59e0b', bg: '#f59e0b', text: '#ffffff' },
+  [SkillEffectType.MENTAL_RECOVER]: { border: '#22c55e', bg: '#22c55e', text: '#ffffff' },
+  [SkillEffectType.MENTAL_PROTECT]: { border: '#22c55e', bg: '#22c55e', text: '#ffffff' },
+  [SkillEffectType.EXTEND_HAND]: { border: '#a855f7', bg: '#a855f7', text: '#ffffff' },
+  [SkillEffectType.RESHUFFLE]: { border: '#a855f7', bg: '#a855f7', text: '#ffffff' },
+  [SkillEffectType.VIBES]: { border: '#6b7280', bg: '#6b7280', text: '#ffffff' },
+  [SkillEffectType.AMBIENCE]: { border: '#6b7280', bg: '#6b7280', text: '#ffffff' },
+  [SkillEffectType.MENTAL_GUARD]: { border: '#6b7280', bg: '#6b7280', text: '#ffffff' },
+  [SkillEffectType.IMITATION]: { border: '#6b7280', bg: '#6b7280', text: '#ffffff' },
+  [SkillEffectType.BLESSING]: { border: '#6b7280', bg: '#6b7280', text: '#ffffff' },
+  [SkillEffectType.AP_GAIN]: { border: '#6b7280', bg: '#6b7280', text: '#ffffff' },
+  [SkillEffectType.HEAT_UP]: { border: '#6b7280', bg: '#6b7280', text: '#ffffff' },
+  [SkillEffectType.BELIEF]: { border: '#6b7280', bg: '#6b7280', text: '#ffffff' },
+  [SkillEffectType.IGNITION]: { border: '#6b7280', bg: '#6b7280', text: '#ffffff' },
+};
+
+/**
  * イベントボタン用カラー定義
  */
 export const EVENT_COLOR_LIVE_GRAND_PRIX = '#388afc';
 export const EVENT_COLOR_GRADE_CHALLENGE = '#a952f4';
+
+/**
+ * デッキダッシュボードタブ用カラー定義
+ */
+export const DASHBOARD_TAB_COLORS = {
+  blue:    '#3b82f6',
+  amber:   '#f59e0b',
+  emerald: '#10b981',
+  purple:  '#a855f7',
+} as const;
+
+export type DashboardTabColor = keyof typeof DASHBOARD_TAB_COLORS;

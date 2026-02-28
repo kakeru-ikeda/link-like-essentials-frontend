@@ -117,6 +117,15 @@ export enum TraitEffectType {
   UN_DRAW = 'UN_DRAW',
 }
 
+export enum TraitConditionType {
+  NONE = 'NONE',
+  DRAW = 'DRAW',
+  HEART_COLLECT = 'HEART_COLLECT',
+  SHOT = 'SHOT',
+  OVER_SECTION = 'OVER_SECTION',
+  ACCUMULATE = 'ACCUMULATE',
+}
+
 /**
  * スキル検索対象の種類
  */

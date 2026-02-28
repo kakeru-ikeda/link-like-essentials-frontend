@@ -6,6 +6,7 @@ interface HighlightTextProps {
   text: string;
   keywords: string[];
   className?: string;
+  highlightClassName?: string;
 }
 
 /**
@@ -15,6 +16,8 @@ export const HighlightText: React.FC<HighlightTextProps> = ({
   text,
   keywords,
   className = '',
+  highlightClassName =
+    'bg-yellow-200 text-gray-900 font-semibold px-0.5 rounded',
 }) => {
   if (!keywords || keywords.length === 0) {
     return <span className={className}>{text}</span>;
@@ -96,7 +99,7 @@ export const HighlightText: React.FC<HighlightTextProps> = ({
     parts.push(
       <mark
         key={`highlight-${index}`}
-        className="bg-yellow-200 text-gray-900 font-semibold px-0.5 rounded"
+        className={highlightClassName}
       >
         {match.text}
       </mark>
