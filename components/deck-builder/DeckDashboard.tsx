@@ -48,6 +48,7 @@ import { SkillsAnalyzerPanel } from '@/components/deck-builder/SkillsAnalyzerPan
 import { DeckDashboardTabs } from '@/components/deck-builder/DeckDashboardTabs';
 import { SectionHeading } from '@/components/common/SectionHeading';
 import { Settings, FileText, Layers, Sparkles } from 'lucide-react';
+import { SkillApGraph } from '@/components/deck-builder/SkillApGraph';
 import {
   EVENT_COLOR_GRADE_CHALLENGE,
   EVENT_COLOR_LIVE_GRAND_PRIX,
@@ -514,6 +515,12 @@ export const DeckDashboard: React.FC = () => {
               <LRCardsList lrCards={otherLRCards} />
             </div>
 
+            {/* スキルAP分布グラフ */}
+            <div>
+              <SectionHeading accent="blue">スキルAP分布</SectionHeading>
+              <SkillApGraph deck={deck ?? null} />
+            </div>
+
             {/* 参考スコア */}
             <div>
               <SectionHeading
@@ -559,7 +566,6 @@ export const DeckDashboard: React.FC = () => {
                 </div>
               </div>
             </div>
-
           </div>
         )}
 
