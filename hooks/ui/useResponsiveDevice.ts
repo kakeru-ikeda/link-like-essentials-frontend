@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from 'react';
 
-import { MEDIA_QUERY_PC } from '@/config/responsive';
+import { MEDIA_QUERY_PC, MEDIA_QUERY_TABLET } from '@/config/responsive';
 
-type DeviceType = 'pc' | 'sp';
+type DeviceType = 'pc' | 'tablet' | 'sp';
 interface UseResponsiveDeviceResult {
   deviceType: DeviceType;
   isPc: boolean;
+  isTablet: boolean;
   isSp: boolean;
 }
 
@@ -18,9 +19,17 @@ export function useResponsiveDevice(): UseResponsiveDeviceResult {
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    const mediaQueryList = window.matchMedia(MEDIA_QUERY_PC);
+    const pcMql = window.matchMedia(MEDIA_QUERY_PC);
+    const tabletMql = window.matchMedia(MEDIA_QUERY_TABLET);
+
     const update = (): void => {
-      setDeviceType(mediaQueryList.matches ? 'pc' : 'sp');
+      if (pcMql.matches) {
+        setDeviceType('pc');
+      } else if (tabletMql.matches) {
+        setDeviceType('tablet');
+      } else {
+        setDeviceType('sp');
+      }
     };
 
     update();
@@ -29,18 +38,22 @@ export function useResponsiveDevice(): UseResponsiveDeviceResult {
       update();
     };
 
-    if (typeof mediaQueryList.addEventListener === 'function') {
-      mediaQueryList.addEventListener('change', handleChange);
+    if (typeof pcMql.addEventListener === 'function') {
+      pcMql.addEventListener('change', handleChange);
+      tabletMql.addEventListener('change', handleChange);
     } else {
       // Safari 13 系などの後方互換
-      mediaQueryList.addListener(handleChange);
+      pcMql.addListener(handleChange);
+      tabletMql.addListener(handleChange);
     }
 
     return () => {
-      if (typeof mediaQueryList.removeEventListener === 'function') {
-        mediaQueryList.removeEventListener('change', handleChange);
+      if (typeof pcMql.removeEventListener === 'function') {
+        pcMql.removeEventListener('change', handleChange);
+        tabletMql.removeEventListener('change', handleChange);
       } else {
-        mediaQueryList.removeListener(handleChange);
+        pcMql.removeListener(handleChange);
+        tabletMql.removeListener(handleChange);
       }
     };
   }, []);
@@ -48,6 +61,7 @@ export function useResponsiveDevice(): UseResponsiveDeviceResult {
   return {
     deviceType,
     isPc: deviceType === 'pc',
+    isTablet: deviceType === 'tablet',
     isSp: deviceType === 'sp',
   };
 }
