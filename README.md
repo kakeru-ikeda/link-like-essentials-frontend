@@ -1,280 +1,176 @@
 # Link Like Essentials Frontend
 
-「Link! Like! ラブライブ!」のカードデッキビルダー Web アプリケーション
+「Link! Like! ラブライブ!」のカードデッキを作成・管理・共有するための Next.js フロントエンドです。
 
-## 📋 概要
+スクールアイドルステージ（スクステ）のカード編成に加えて、公開デッキの閲覧・インポート、ユーザープロフィール管理、お知らせ配信までをひとつのアプリで扱います。
 
-スマートフォン向けアプリ「Link! Like! ラブライブ!」で扱うカードを、最大 18 枚まで編成できるデッキビルダーです。
+## 概要
 
-### 主要機能
+このリポジトリは App Router ベースの Next.js 14 アプリケーションです。Apollo Client を使った GraphQL 通信、Firebase 認証、Zustand による状態管理、microCMS 連携によるお知らせ配信を組み合わせて構成されています。
 
-- ✨ キャラクター別のカード編成（9 キャラクター × 2 枚 = 18 枚）
-- 🔍 カードのフィルタリング・検索
-- 📊 デッキの統計情報表示
-- 💾 デッキの保存・読み込み（LocalStorage）
-- 🔐 Firebase 匿名認証によるセキュアな API 通信
+## 主な機能
 
-## 🛠 技術スタック
+- 最大 18 枚構成のデッキビルダー
+- カード一覧の検索、フィルタリング、ソート、詳細表示
+- スキル分析、ドロー分析、ライブグランプリ/グレードチャレンジ向けの編成補助
+- デッキのローカル保存、公開、インポート
+- 公開デッキの一覧表示、詳細表示、コメント、通報
+- Firebase 匿名認証からメールログインへのアップグレード
+- マイページでのプロフィール編集、投稿デッキ/いいね済みデッキの管理
+- microCMS 連携によるお知らせ一覧・詳細表示
 
-- **フレームワーク**: Next.js 14.x (App Router)
-- **言語**: TypeScript 5.x
-- **GraphQL クライアント**: Apollo Client 3.x
-- **状態管理**: Zustand 4.x
-- **スタイリング**: Tailwind CSS 3.x
-- **認証**: Firebase Authentication 10.x
-- **ホスティング**: Vercel
+## 主要ルート
 
-## 🚀 クイックスタート
+| ルート | 役割 |
+| --- | --- |
+| `/` | デッキビルダーのメイン画面 |
+| `/cards` | カード一覧、フィルタ、ソート、詳細表示 |
+| `/decks` | 公開デッキ一覧、タグ絞り込み、並び替え |
+| `/decks/[id]` | 公開デッキ詳細、インポート、コメント、通報 |
+| `/mypage` | プロフィール、投稿デッキ、いいね済みデッキの管理 |
+| `/mypage/profile/edit` | プロフィール編集 |
+| `/login` | メールログイン、匿名ユーザーのメール登録 |
+| `/news` | お知らせ一覧 |
+| `/news/[id]` | お知らせ詳細 |
+| `/maintenance` | メンテナンス画面 |
 
-### 必要要件
+`/deck` は互換用のルートで、現在は `/` にリダイレクトされます。
 
-- Node.js 20.x 以上
-- npm 10.x 以上
+## 技術スタック
 
-### インストール
+- Next.js 14（App Router）
+- React 18
+- TypeScript
+- Apollo Client / GraphQL
+- Firebase Authentication / Storage / Analytics
+- Zustand + Immer
+- Tailwind CSS
+- microCMS
+- Sentry
+
+## セットアップ
 
 ```bash
-# リポジトリクローン
 git clone https://github.com/kakeru-ikeda/link-like-essentials-frontend.git
 cd link-like-essentials-frontend
-
-# 依存関係インストール
-npm install
-
-# 環境変数設定
+npm ci
 cp .env.example .env.local
-# .env.localファイルを編集して必要な値を設定
 ```
 
-### 環境変数の設定
-
-`.env.local` に以下の環境変数を設定してください:
-
-```bash
-# アプリケーションの基本URL
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-
-# GraphQL APIエンドポイント
-NEXT_PUBLIC_GRAPHQL_ENDPOINT=http://localhost:4000/graphql
-
-# Firebase設定
-NEXT_PUBLIC_FIREBASE_API_KEY=your-api-key
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your-auth-domain
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=your-project-id
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your-storage-bucket
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your-sender-id
-NEXT_PUBLIC_FIREBASE_APP_ID=your-app-id
-
-# microCMS設定（サーバーサイド専用）
-MICROCMS_SERVICE_DOMAIN=your-service-domain
-MICROCMS_API_KEY=your-api-key
-
-# Sentry
-NEXT_PUBLIC_SENTRY_DSN=https://your-sentry-dsn
-SENTRY_AUTH_TOKEN=your-auth-token
-SENTRY_ORG=link-like-essentials
-SENTRY_PROJECT=lles-frontend
-```
-
-### Sentry 動作確認
-
-- `NEXT_PUBLIC_SENTRY_DSN` と `SENTRY_AUTH_TOKEN` を `.env` に設定し、`npm run dev` を起動
-- 任意のページで意図的に例外を発生させ、Sentry ダッシュボードでイベントを確認
-- ビルド時にソースマップをアップロードする場合は `SENTRY_ORG`、`SENTRY_PROJECT`、`SENTRY_AUTH_TOKEN` を CI/Vercel 環境変数に登録
-
-### 開発サーバー起動
+その後、`.env.local` に必要な環境変数を設定して開発サーバーを起動してください。
 
 ```bash
 npm run dev
 ```
 
-ブラウザで [http://localhost:3000](http://localhost:3000) を開いてください。
+## 環境変数
 
-## 📁 プロジェクト構成
+`.env.example` をベースに `.env.local` を作成してください。
 
+| 変数名 | 用途 | 備考 |
+| --- | --- | --- |
+| `NEXT_PUBLIC_APP_URL` | アプリの公開 URL | OGP などの生成に利用 |
+| `NEXT_PUBLIC_GRAPHQL_ENDPOINT` | GraphQL API エンドポイント | 未設定時は `http://localhost:4000/graphql` を利用 |
+| `NEXT_PUBLIC_FIREBASE_API_KEY` | Firebase 設定 | クライアントで利用 |
+| `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` | Firebase 設定 | クライアントで利用 |
+| `NEXT_PUBLIC_FIREBASE_PROJECT_ID` | Firebase 設定 | クライアントで利用 |
+| `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET` | Firebase 設定 | クライアントで利用 |
+| `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID` | Firebase 設定 | クライアントで利用 |
+| `NEXT_PUBLIC_FIREBASE_APP_ID` | Firebase 設定 | クライアントで利用 |
+| `NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID` | Firebase Analytics 設定 | Analytics 利用時に必要 |
+| `NEXT_PUBLIC_FUNCTIONS_BASE_URL` | Cloud Functions のベース URL | 未設定時はローカル Emulator URL を利用 |
+| `MICROCMS_SERVICE_DOMAIN` | microCMS のサービスドメイン | `news` 関連ページとビルド時に必要 |
+| `MICROCMS_API_KEY` | microCMS API キー | `news` 関連ページとビルド時に必要 |
+| `NEXT_PUBLIC_SENTRY_DSN` | Sentry DSN | ローカルでは任意、本番では推奨 |
+| `SENTRY_AUTH_TOKEN` | Sentry Source Map アップロード | 本番ビルドで利用する場合に設定 |
+| `SENTRY_ORG` | Sentry 組織名 | Source Map アップロード時に設定 |
+| `SENTRY_PROJECT` | Sentry プロジェクト名 | Source Map アップロード時に設定 |
+
+### 環境変数まわりの注意
+
+- `NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID` は Firebase Analytics 初期化で参照されます。
+- `NEXT_PUBLIC_FUNCTIONS_BASE_URL` はデッキ API / ユーザー API のベース URL に使われます。
+- `MICROCMS_SERVICE_DOMAIN` と `MICROCMS_API_KEY` が未設定だと、`news` ページ関連の取得処理が失敗します。
+- `npm run build` では `app/news` 配下のページが評価されるため、microCMS の環境変数はローカルビルド時も基本的に必要です。
+
+## 利用できる npm scripts
+
+| コマンド | 内容 |
+| --- | --- |
+| `npm run dev` | 開発サーバー起動 |
+| `npm run build` | 本番ビルド |
+| `npm run start` | ビルド済みアプリの起動 |
+| `npm run lint` | Next.js ESLint 実行 |
+| `npm run type-check` | TypeScript 型チェック（`tsc --noEmit`） |
+| `npm run format` | Prettier による整形 |
+| `npm run vercel` | Vercel CLI 実行 |
+| `npm run vercel:prod` | Vercel 本番デプロイ |
+
+現時点の `package.json` には `npm test` などのテスト用スクリプトは定義されていません。
+
+## プロジェクト構成
+
+```text
+.
+├── app/             # Next.js App Router のルートとページ
+├── components/      # UI コンポーネント
+├── hooks/           # カスタムフック
+├── services/        # ビジネスロジック
+├── repositories/    # GraphQL / Firebase / API / LocalStorage へのアクセス
+├── store/           # Zustand ストア
+├── models/          # ドメインモデルと型定義
+├── types/           # 補助的な型定義
+├── utils/           # 共通ユーティリティ
+├── config/          # 各種設定
+├── public/          # 静的アセット
+├── styles/          # スタイル定義
+├── docs/            # 補助ドキュメント
+├── instrumentation.ts
+├── next.config.js
+└── tsconfig.json
 ```
-src/
-├── app/                    # Next.js App Router
-├── components/             # UIコンポーネント（フラット構造）
-│   ├── common/            # 共通コンポーネント
-│   │   ├── AceBadge.tsx
-│   │   ├── ApBadge.tsx
-│   │   ├── Button.tsx
-│   │   ├── FavoriteModeBadge.tsx
-│   │   ├── Loading.tsx
-│   │   ├── Modal.tsx
-│   │   ├── RarityBadge.tsx
-│   │   ├── Sidebar.tsx
-│   │   ├── SideModal.tsx
-│   │   └── StyleTypeBadge.tsx
-│   └── deck/              # デッキビルダー関連
-│       ├── CardItem.tsx
-│       ├── CardList.tsx
-│       ├── CardListItem.tsx
-│       ├── CurrentCardDisplay.tsx
-│       ├── DeckBuilder.tsx
-│       └── DeckSlot.tsx
-├── hooks/                  # カスタムフック
-├── services/               # ビジネスロジック
-├── repositories/           # データアクセス層
-├── store/                  # 状態管理（Zustand）
-├── models/                 # 型定義
-├── constants/              # 定数
-└── utils/                  # ユーティリティ関数
+
+`src/` ディレクトリは使用しておらず、各ディレクトリはリポジトリ直下に配置されています。
+
+## アーキテクチャ
+
+このアプリは、以下のレイヤード構成を前提にしています。
+
+```text
+components/ → services/ → repositories/
+       ↓
+ hooks/ + store/
 ```
 
-**設計のポイント:**
+- `components/`: UI 表示のみを担当
+- `services/`: ビジネスロジックを担当
+- `repositories/`: 外部 API、Firebase、LocalStorage との通信を担当
+- `hooks/` と `store/`: 画面状態やユースケース単位の接着を担当
 
-- フラット構造により `index.ts` の乱立を防止
-- 単一ファイルで完結するシンプルな構成
-- Tailwind CSS によるインラインスタイル
+コンポーネントから `repositories/` を直接呼ばず、責務ごとに層を分ける前提です。
 
-詳細は [設計書](./docs/DESIGN.md) を参照してください。
+## 開発時の補足
 
-## 🧪 テスト
+- TypeScript は `strict: true` で動作します。
+- import には `@/` エイリアスを利用します。
+- ESLint は `next/core-web-vitals` を拡張しています。
+- Prettier は 2 スペース、シングルクォート、`printWidth: 80` の設定です。
+
+## 検証コマンド
+
+変更時は少なくとも以下の確認を推奨します。
 
 ```bash
-# 全テスト実行
-npm test
-
-# ウォッチモード
-npm run test:watch
-
-# カバレッジ付き
-npm run test:coverage
-```
-
-## 🔍 コード品質チェック
-
-```bash
-# Lint
 npm run lint
-
-# Lint自動修正
-npm run lint:fix
-
-# 型チェック
 npm run type-check
-
-# フォーマット
-npm run format
 ```
 
-## 📦 ビルド
+本番相当の確認まで行う場合は、必要な環境変数を設定したうえで以下も実行してください。
 
 ```bash
-# プロダクションビルド
 npm run build
-
-# ビルドしたアプリを起動
-npm start
 ```
 
-## 🏗 アーキテクチャ
+## 関連リポジトリ
 
-レイヤードアーキテクチャに基づく設計:
-
-```
-┌─────────────────────────────────────────┐
-│   Presentation Layer (components)       │  ← UI Components
-├─────────────────────────────────────────┤
-│   Application Layer (services)          │  ← Business Logic
-├─────────────────────────────────────────┤
-│   Infrastructure Layer (repositories)   │  ← GraphQL API, Firebase
-└─────────────────────────────────────────┘
-```
-
-### 設計原則
-
-1. **徹底したコンポーネント化**: Atomic Design パターンの適用
-2. **フラット構造**: `index.ts` の乱立を避け、シンプルな構成を維持
-3. **ビジネスロジックの分離**: カスタムフックでロジックを抽出
-4. **依存関係の方向**: components → services → repositories
-
-詳細は [Copilot インストラクション](./.github/copilot-instructions.md) を参照してください。
-
-## 🔌 バックエンド連携
-
-このフロントエンドは以下のバックエンド API と連携します:
-
-- **Repository**: [link-like-essentials-backend](https://github.com/kakeru-ikeda/link-like-essentials-backend)
-- **API**: GraphQL (Apollo Server)
-- **認証**: Firebase Authentication
-
-### GraphQL クエリ例
-
-```graphql
-query GetCards($filter: CardFilterInput) {
-  cards(first: 20, filter: $filter) {
-    edges {
-      node {
-        id
-        cardName
-        characterName
-        rarity
-        styleType
-      }
-    }
-  }
-}
-```
-
-## 📚 ドキュメント
-
-- [設計書](./docs/DESIGN.md) - アーキテクチャ、データモデル、画面設計
-- [Copilot インストラクション](./.github/copilot-instructions.md) - 開発ガイドライン
-- [バックエンドドキュメント](https://github.com/kakeru-ikeda/link-like-essentials-backend/blob/main/docs/GRAPHQL_QUERY_EXAMPLES.md) - GraphQL API 仕様
-
-## 🤝 コントリビューション
-
-1. Feature ブランチを作成 (`git checkout -b feature/amazing-feature`)
-2. 変更をコミット (`git commit -m 'feat: add amazing feature'`)
-3. ブランチにプッシュ (`git push origin feature/amazing-feature`)
-4. Pull Request を作成
-
-### コミットメッセージ規約
-
-Conventional Commits に準拠してください:
-
-```
-feat: 新機能
-fix: バグ修正
-docs: ドキュメント更新
-style: コードフォーマット
-refactor: リファクタリング
-test: テスト追加・修正
-chore: ビルド・設定変更
-```
-
-## 🚢 デプロイ
-
-### Vercel へのデプロイ
-
-1. Vercel アカウントにログイン
-2. GitHub リポジトリを接続
-3. 環境変数を設定
-4. デプロイ
-
-詳細は [Vercel 公式ドキュメント](https://vercel.com/docs) を参照してください。
-
-## 📈 今後の拡張予定
-
-- [ ] デッキの複数保存機能
-- [ ] デッキのシェア機能（URL での共有）
-- [ ] デッキの統計分析機能
-- [ ] カードのお気に入り機能
-- [ ] デッキのエクスポート/インポート（JSON）
-- [ ] PWA 対応（オフライン利用）
-- [ ] ダークモード対応
-
-## 📝 ライセンス
-
-MIT License
-
-## 🔗 関連リンク
-
-- [Next.js 公式ドキュメント](https://nextjs.org/docs)
-- [Apollo Client 公式ドキュメント](https://www.apollographql.com/docs/react/)
-- [Firebase 公式ドキュメント](https://firebase.google.com/docs)
-- [Tailwind CSS 公式ドキュメント](https://tailwindcss.com/docs)
-- [参考アーキテクチャ記事](https://zenn.dev/mongolyy/articles/01f0a4375edb2e)
+- バックエンド: [link-like-essentials-backend](https://github.com/kakeru-ikeda/link-like-essentials-backend)
