@@ -92,6 +92,7 @@ export enum SkillEffectType {
   HEAT_UP = 'HEAT_UP',
   BELIEF = 'BELIEF',
   IGNITION = 'IGNITION',
+  CHAIN = 'CHAIN',
 }
 
 /**

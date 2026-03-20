@@ -104,6 +104,7 @@ export const SKILL_EFFECT_LABELS: Record<SkillEffectType, string> = {
   [SkillEffectType.HEAT_UP]: 'ヒートアップ',
   [SkillEffectType.BELIEF]: 'ビリーフ',
   [SkillEffectType.IGNITION]: 'イグニッション',
+  [SkillEffectType.CHAIN]: 'チェイン',
 };
 
 /**
