@@ -1,9 +1,14 @@
-import { SkillEffectType, TraitConditionType } from '@/models/shared/enums';
+import {
+  SkillEffectType,
+  TraitConditionType,
+  TraitEffectType,
+} from '@/models/shared/enums';
 import {
   TRAIT_CONDITION_LABELS,
   TRAIT_CONDITION_PATTERNS,
 } from '@/config/traitConditions';
 import { getSkillEffectKeyword } from '@/services/game/skillEffectService';
+import { getTraitEffectKeyword } from '@/services/game/traitEffectService';
 import { matchesKeyword } from '@/utils/keywordMatcher';
 
 export interface DetectedTraitConditionEffect {
@@ -39,9 +44,7 @@ export function detectConditionsInSentence(
     }
   }
 
-  return detected.size > 0
-    ? Array.from(detected)
-    : [TraitConditionType.NONE];
+  return detected.size > 0 ? Array.from(detected) : [TraitConditionType.NONE];
 }
 
 export function hasEffectInSentence(
@@ -88,6 +91,19 @@ export function analyzeTraitForEffect(
   return results;
 }
 
+export function hasChainTriggerEffectInTrait(
+  traitEffect: string,
+  targetEffectType: SkillEffectType
+): boolean {
+  const chainKeywords = getTraitEffectKeyword(TraitEffectType.CHAIN);
+
+  return splitTraitSentences(traitEffect).some(
+    (sentence) =>
+      chainKeywords.some((keyword) => matchesKeyword(sentence, keyword)) &&
+      hasEffectInSentence(sentence, targetEffectType)
+  );
+}
+
 export function getTraitConditionLabel(condition: TraitConditionType): string {
   return TRAIT_CONDITION_LABELS[condition];
 }
@@ -112,8 +128,6 @@ function extractConditionText(
   }
   return '';
 }
-
-
 
 type MatchRange = { index: number; end: number };
 
@@ -200,9 +214,7 @@ function findKeywordMatch(
       return { index, end: index + match[0].length };
     } catch {
       const index = text.indexOf(keyword, fromIndex);
-      return index === -1
-        ? null
-        : { index, end: index + keyword.length };
+      return index === -1 ? null : { index, end: index + keyword.length };
     }
   }
 

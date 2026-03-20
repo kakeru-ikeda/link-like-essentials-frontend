@@ -1,11 +1,21 @@
-import { Rarity, StyleType, LimitedType, FavoriteMode, DeckType, SongAttribute, SkillEffectType, SkillSearchTarget, TraitEffectType } from '@/models/shared/enums';
+import {
+  Rarity,
+  StyleType,
+  LimitedType,
+  FavoriteMode,
+  DeckType,
+  SongAttribute,
+  SkillEffectType,
+  SkillSearchTarget,
+  TraitEffectType,
+} from '@/models/shared/enums';
 import { CharacterName } from '@/config/characters';
 
 /**
  * フィルター条件の結合モード
  */
 export enum FilterMode {
-  OR = 'OR',   // いずれかに一致（デフォルト）
+  OR = 'OR', // いずれかに一致（デフォルト）
   AND = 'AND', // すべてに一致
 }
 
@@ -33,6 +43,9 @@ export interface CardFilter {
 
   // 特性効果絞り込み
   traitEffects?: TraitEffectType[];
+
+  // チェイン特性が参照するスキル効果の絞り込み
+  chainSkillEffects?: SkillEffectType[];
 
   // スキル検索対象（スペシャルアピール、スキル、特性）
   skillSearchTargets?: SkillSearchTarget[];

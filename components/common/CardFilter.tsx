@@ -2,7 +2,15 @@
 
 import React from 'react';
 import type { CardFilter as CardFilterType } from '@/models/shared/Filter';
-import { Rarity, StyleType, LimitedType, FavoriteMode, SkillEffectType, SkillSearchTarget, TraitEffectType } from '@/models/shared/enums';
+import {
+  Rarity,
+  StyleType,
+  LimitedType,
+  FavoriteMode,
+  SkillEffectType,
+  SkillSearchTarget,
+  TraitEffectType,
+} from '@/models/shared/enums';
 import { SearchModeFilter } from '@/components/common/filters/SearchModeFilter';
 import { KeywordSearchInput } from '@/components/common/KeywordSearchInput';
 import { CharacterFilter } from '@/components/cards/filters/CharacterFilter';
@@ -42,6 +50,9 @@ export const CardFilter: React.FC<CardFilterProps> = ({
     if (key === 'skillSearchTargets') {
       return visibleFilters.includes('skillEffects');
     }
+    if (key === 'chainSkillEffects') {
+      return visibleFilters.includes('traitEffects');
+    }
     return visibleFilters.includes(key);
   };
 
@@ -75,6 +86,10 @@ export const CardFilter: React.FC<CardFilterProps> = ({
 
   const toggleTraitEffect = (traitEffect: TraitEffectType): void => {
     updateFilter(toggleFilterList(filter, 'traitEffects', traitEffect));
+  };
+
+  const toggleChainSkillEffect = (skillEffect: SkillEffectType): void => {
+    updateFilter(toggleFilterList(filter, 'chainSkillEffects', skillEffect));
   };
 
   return (
@@ -149,7 +164,9 @@ export const CardFilter: React.FC<CardFilterProps> = ({
         <FilterWrapper>
           <TraitEffectFilter
             selectedEffects={filter.traitEffects}
+            selectedChainSkillEffects={filter.chainSkillEffects}
             onToggleEffect={toggleTraitEffect}
+            onToggleChainSkillEffect={toggleChainSkillEffect}
           />
         </FilterWrapper>
       )}

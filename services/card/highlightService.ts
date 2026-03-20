@@ -14,7 +14,8 @@ export interface HighlightKeywordsByTarget {
  * @returns ハイライト対象のキーワード配列
  */
 export function getHighlightKeywords(filter: CardFilter | null): string[] {
-  const { general, skillTargets, traitTargets } = getHighlightKeywordsByTarget(filter);
+  const { general, skillTargets, traitTargets } =
+    getHighlightKeywordsByTarget(filter);
   return [...general, ...skillTargets, ...traitTargets];
 }
 
@@ -45,6 +46,12 @@ export function getHighlightKeywordsByTarget(
 
   if (filter.traitEffects && filter.traitEffects.length > 0) {
     result.traitTargets.push(...getTraitEffectKeywords(filter.traitEffects));
+  }
+
+  if (filter.chainSkillEffects && filter.chainSkillEffects.length > 0) {
+    result.traitTargets.push(
+      ...getSkillEffectKeywords(filter.chainSkillEffects)
+    );
   }
 
   return result;

@@ -54,7 +54,11 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
       className="px-2 py-1 text-xs rounded-full flex items-center gap-1 border"
       style={createChipStyle(color)}
     >
-      <span className={options?.truncate ? 'max-w-[140px] truncate' : undefined}>{label}</span>
+      <span
+        className={options?.truncate ? 'max-w-[140px] truncate' : undefined}
+      >
+        {label}
+      </span>
       <button
         onClick={onClear}
         className="rounded-full p-0.5 hover:opacity-75"
@@ -81,6 +85,7 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
     (filter.skillEffects && filter.skillEffects.length > 0) ||
     (filter.skillSearchTargets && filter.skillSearchTargets.length > 0) ||
     (filter.traitEffects && filter.traitEffects.length > 0) ||
+    (filter.chainSkillEffects && filter.chainSkillEffects.length > 0) ||
     filter.hasTokens !== undefined;
 
   if (!hasActiveFilters) {
@@ -94,9 +99,15 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
 
         {/* キーワード */}
         {filter.keyword &&
-          renderChip('keyword', filter.keyword, FILTER_COLOR_KEYWORD, () => clearFilterKey('keyword'), {
-            truncate: true,
-          })}
+          renderChip(
+            'keyword',
+            filter.keyword,
+            FILTER_COLOR_KEYWORD,
+            () => clearFilterKey('keyword'),
+            {
+              truncate: true,
+            }
+          )}
 
         {/* レアリティ */}
         {filter.rarities &&
@@ -108,7 +119,9 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
               RARITY_COLORS[rarity],
               () =>
                 updateFilter
-                  ? updateFilter(removeFromFilterList(filter, 'rarities', rarity))
+                  ? updateFilter(
+                      removeFromFilterList(filter, 'rarities', rarity)
+                    )
                   : clearFilterKey('rarities')
             )
           )}
@@ -123,7 +136,9 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
               STYLE_TYPE_COLORS[styleType],
               () =>
                 updateFilter
-                  ? updateFilter(removeFromFilterList(filter, 'styleTypes', styleType))
+                  ? updateFilter(
+                      removeFromFilterList(filter, 'styleTypes', styleType)
+                    )
                   : clearFilterKey('styleTypes')
             )
           )}
@@ -138,7 +153,13 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
               FAVORITE_MODE_COLORS[favoriteMode],
               () =>
                 updateFilter
-                  ? updateFilter(removeFromFilterList(filter, 'favoriteModes', favoriteMode))
+                  ? updateFilter(
+                      removeFromFilterList(
+                        filter,
+                        'favoriteModes',
+                        favoriteMode
+                      )
+                    )
                   : clearFilterKey('favoriteModes')
             )
           )}
@@ -153,7 +174,13 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
               getCharacterColor(characterName),
               () =>
                 updateFilter
-                  ? updateFilter(removeFromFilterList(filter, 'characterNames', characterName))
+                  ? updateFilter(
+                      removeFromFilterList(
+                        filter,
+                        'characterNames',
+                        characterName
+                      )
+                    )
                   : clearFilterKey('characterNames')
             )
           )}
@@ -168,7 +195,9 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
               FILTER_COLOR_SKILL_EFFECT,
               () =>
                 updateFilter
-                  ? updateFilter(removeFromFilterList(filter, 'skillEffects', skillEffect))
+                  ? updateFilter(
+                      removeFromFilterList(filter, 'skillEffects', skillEffect)
+                    )
                   : clearFilterKey('skillEffects')
             )
           )}
@@ -183,7 +212,13 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
               FILTER_COLOR_SKILL_SEARCH_TARGET,
               () =>
                 updateFilter
-                  ? updateFilter(removeFromFilterList(filter, 'skillSearchTargets', skillSearchTarget))
+                  ? updateFilter(
+                      removeFromFilterList(
+                        filter,
+                        'skillSearchTargets',
+                        skillSearchTarget
+                      )
+                    )
                   : clearFilterKey('skillSearchTargets')
             )
           )}
@@ -198,8 +233,30 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
               FILTER_COLOR_TRAIT_EFFECT,
               () =>
                 updateFilter
-                  ? updateFilter(removeFromFilterList(filter, 'traitEffects', traitEffect))
+                  ? updateFilter(
+                      removeFromFilterList(filter, 'traitEffects', traitEffect)
+                    )
                   : clearFilterKey('traitEffects')
+            )
+          )}
+
+        {filter.chainSkillEffects &&
+          filter.chainSkillEffects.length > 0 &&
+          filter.chainSkillEffects.map((chainSkillEffect) =>
+            renderChip(
+              `chain-${chainSkillEffect}`,
+              `チェイン: ${SKILL_EFFECT_LABELS[chainSkillEffect]}`,
+              FILTER_COLOR_SKILL_EFFECT,
+              () =>
+                updateFilter
+                  ? updateFilter(
+                      removeFromFilterList(
+                        filter,
+                        'chainSkillEffects',
+                        chainSkillEffect
+                      )
+                    )
+                  : clearFilterKey('chainSkillEffects')
             )
           )}
 
@@ -213,7 +270,9 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
               LIMITED_TYPE_COLORS[limitedType],
               () =>
                 updateFilter
-                  ? updateFilter(removeFromFilterList(filter, 'limitedTypes', limitedType))
+                  ? updateFilter(
+                      removeFromFilterList(filter, 'limitedTypes', limitedType)
+                    )
                   : clearFilterKey('limitedTypes')
             )
           )}

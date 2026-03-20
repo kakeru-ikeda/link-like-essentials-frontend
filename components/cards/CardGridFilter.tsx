@@ -28,6 +28,7 @@ const VISIBLE_FILTERS: (keyof CardFilterType)[] = [
   'skillEffects',
   'skillSearchTargets',
   'traitEffects',
+  'chainSkillEffects',
   'styleTypes',
   'hasTokens',
 ];
