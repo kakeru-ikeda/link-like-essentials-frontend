@@ -46,8 +46,8 @@ export const SKILL_EFFECT_DESCRIPTIONS: Record<SkillEffectType, string> = {
     'メンタルが0以下になってもメンタルダウンしなくなる。',
   [SkillEffectType.IGNITION]:
     '姫芽を《イグニッションモード》にする。104期以降の楽曲でのみ効果がある。103期楽曲では何の効果も及ぼさない。',
-  [SkillEffectType.CHAIN]:
-    '特性のチェインと同義で、スキル使用後にドロー確率を上げる効果を検索する。',
+  [SkillEffectType.SEARCH]:
+    'カードドロー確率を大幅に上げる効果を検索する。',
 };
 
 /**
@@ -70,6 +70,9 @@ export const SKILL_EFFECT_KEYWORDS: Record<SkillEffectType, string[]> = {
   [SkillEffectType.MENTAL_GUARD]: ['メンタル直接ダメージを無効'],
   [SkillEffectType.RESHUFFLE]: ['シャッフル', '手札をすべて捨てて', '手札を全て捨てて'],
   [SkillEffectType.EXTEND_HAND]: ['手札の上限枚数を\\d+枚増加', '手札の枚数上限を\\d+枚増加'],
+  [SkillEffectType.SEARCH]: [
+    'ドローする確率大幅アップ',
+  ],
   [SkillEffectType.BLESSING]: [
     'デッキ内の.+の消費AP-\\d+',
     'デッキ内の.+の消費APを-\\d+',
@@ -81,13 +84,4 @@ export const SKILL_EFFECT_KEYWORDS: Record<SkillEffectType, string[]> = {
   [SkillEffectType.HEAT_UP]: ['AP回復速度を+\\d+%増加', 'AP回復速度を+'],
   [SkillEffectType.BELIEF]: ['メンタルダウンしなくなり'],
   [SkillEffectType.IGNITION]: ['イグニッションモード'],
-  [SkillEffectType.CHAIN]: [
-    'チェイン',
-    'スキル使用後、ドローされる確率が増加',
-    'スキル使用後、ドローされる確率が大幅に増加',
-    'スキルを使用した後、ドローされる確率が増加',
-    'スキルを使用した後、ドローされる確率が大幅に増加',
-    'スキルを使用した際、ドローされる確率が増加する',
-    'スキルを使用した際、ドローされる確率が大幅に増加する',
-  ],
 };
