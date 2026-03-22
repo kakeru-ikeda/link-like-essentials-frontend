@@ -20,6 +20,7 @@ interface SkillEffectFilterProps {
   onToggleTarget: (target: SkillSearchTarget) => void;
   selectedMainEffects?: SkillEffectType[] | undefined;
   onToggleMainEffect?: (effect: SkillEffectType) => void;
+  mode?: 'include' | 'exclude';
 }
 
 export const SkillEffectFilter: React.FC<SkillEffectFilterProps> = ({
@@ -29,6 +30,7 @@ export const SkillEffectFilter: React.FC<SkillEffectFilterProps> = ({
   onToggleTarget,
   selectedMainEffects,
   onToggleMainEffect,
+  mode = 'include',
 }) => {
   const skillDescriptions = useEffectKeywordsStore((state) => state.skillDescriptions);
   const skillLabels = useEffectKeywordsStore((state) => state.skillLabels);
@@ -45,7 +47,11 @@ export const SkillEffectFilter: React.FC<SkillEffectFilterProps> = ({
           スキル効果
         </label>
         <HelpTooltip
-          content="スキル効果を選択して、該当するカードのみを表示します。スキル文言全体を対象として検索します。"
+          content={
+            mode === 'exclude'
+              ? 'スキル効果を選択して、該当するカードを検索結果から除外します。スキル文言全体を対象として検索します。'
+              : 'スキル効果を選択して、該当するカードのみを表示します。スキル文言全体を対象として検索します。'
+          }
           className="ml-2 mb-3"
           size={4}
         />
@@ -84,7 +90,11 @@ export const SkillEffectFilter: React.FC<SkillEffectFilterProps> = ({
             <span className="flex items-center gap-1">
               メイン効果検索
               <HelpTooltip
-                content="スキル文言の最初の文節で最初にヒットする効果を「メイン効果」として判定し、選択した効果に一致するカードのみを表示します。対象はスキル効果のみです。"
+                content={
+                  mode === 'exclude'
+                    ? 'スキル文言の最初の文節で最初にヒットする効果を「メイン効果」として判定し、選択した効果に一致するカードを除外します。対象はスキル効果のみです。'
+                    : 'スキル文言の最初の文節で最初にヒットする効果を「メイン効果」として判定し、選択した効果に一致するカードのみを表示します。対象はスキル効果のみです。'
+                }
                 size={4}
               />
             </span>

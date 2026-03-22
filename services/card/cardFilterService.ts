@@ -486,13 +486,6 @@ export function buildTraitEffectSearchQuery(filter: CardFilter): string | undefi
 }
 
 /**
- * 配列型フィルターの値をトグル（追加/削除）するユーティリティ関数
- * 
- * @param currentList 現在の配列（undefined も可）
- * @param value トグル対象の値
- * @returns 更新後の配列、または undefined（空の場合）
- */
-/**
  * ターゲットに応じたスキルテキスト配列を返すヘルパー
  */
 function getSkillTextsForTarget(card: Card, target: SkillSearchTarget): (string | undefined)[] {
@@ -514,6 +507,13 @@ function getSkillTextsForTarget(card: Card, target: SkillSearchTarget): (string 
   }
 }
 
+/**
+ * 配列型フィルターの値をトグル（追加/削除）するユーティリティ関数
+ * 
+ * @param currentList 現在の配列（undefined も可）
+ * @param value トグル対象の値
+ * @returns 更新後の配列、または undefined（空の場合）
+ */
 function toggleArrayValue<T>(currentList: T[] | undefined, value: T): T[] | undefined {
   const list = currentList ?? []; // undefined の場合は空配列として扱う
   

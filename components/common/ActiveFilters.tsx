@@ -86,7 +86,10 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
     (filter.traitEffects && filter.traitEffects.length > 0) ||
     filter.hasTokens !== undefined ||
     (filter.excludeSkillEffects && filter.excludeSkillEffects.length > 0) ||
-    (filter.excludeSkillSearchTargets && filter.excludeSkillSearchTargets.length > 0) ||
+    (filter.excludeSkillEffects &&
+      filter.excludeSkillEffects.length > 0 &&
+      filter.excludeSkillSearchTargets &&
+      filter.excludeSkillSearchTargets.length > 0) ||
     (filter.excludeSkillMainEffects && filter.excludeSkillMainEffects.length > 0) ||
     (filter.excludeTraitEffects && filter.excludeTraitEffects.length > 0);
 
@@ -265,7 +268,9 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
           )}
 
         {/* 除外：検索範囲 */}
-        {filter.excludeSkillSearchTargets &&
+        {filter.excludeSkillEffects &&
+          filter.excludeSkillEffects.length > 0 &&
+          filter.excludeSkillSearchTargets &&
           filter.excludeSkillSearchTargets.length > 0 &&
           filter.excludeSkillSearchTargets.map((target) =>
             renderChip(

@@ -61,6 +61,7 @@ export const ExcludeFilters: React.FC<ExcludeFiltersProps> = ({
             onToggleTarget={toggleExcludeSkillSearchTarget}
             selectedMainEffects={filter.excludeSkillMainEffects}
             onToggleMainEffect={toggleExcludeSkillMainEffect}
+            mode="exclude"
           />
         </FilterWrapper>
 

@@ -134,24 +134,21 @@ export interface CardFilter {
 ### 3. `services/card/cardFilterService.ts`
 
 `filterCardsOnClient` に `skillMainEffects` フィルタ条件を追加する。  
-また、ターゲット別テキスト取得の内部ヘルパー `getSkillTextsForTarget` を追加する。
+メイン効果の判定には、スキル効果テキストから先頭文節のメイン効果を抽出するヘルパー `getMainSkillEffect` を利用する。  
+**対象はスキル効果テキスト（`card.detail.skill?.effect` およびアクセサリー効果）のみ**。
 
 ```typescript
 // --- filterCardsOnClient 内: skillEffects フィルタの後に追加 ---
 
-// メイン効果検索
+// メイン効果検索（スキル効果テキストのみ対象）
 if (filter.skillMainEffects && filter.skillMainEffects.length > 0) {
-  const targets = filter.skillSearchTargets ?? [
-    SkillSearchTarget.SKILL,
-    SkillSearchTarget.SPECIAL_APPEAL,
+  const skillTexts: (string | undefined)[] = [
+    card.detail?.skill?.effect,
+    ...(card.accessories?.map((acc) => acc.effect) ?? []),
   ];
 
   const checkMainEffect = (effectType: SkillEffectType): boolean =>
-    targets.some((target) =>
-      getSkillTextsForTarget(card, target).some(
-        (text) => getMainSkillEffect(text) === effectType
-      )
-    );
+    skillTexts.some((text) => getMainSkillEffect(text) === effectType);
 
   const mode = filter.filterMode ?? FilterMode.OR;
   const hasMainEffect =
@@ -198,7 +195,7 @@ function getSkillTextsForTarget(
 ### 4. `hooks/card/useCardFilterQuery.ts`
 
 `skillMainEffects` を URL クエリパラメータとして管理する。  
-`skillEffects` との排他制御（片方をセットしたらもう片方をクリア）は `normalizeFilter` で行う。
+`skillEffects` と `skillMainEffects` は**排他制御を行わず、両方を同時に保持できる**（ExpansionPanel による追加選択UI）。
 
 ```typescript
 // CardFilterQueryParams に追加
@@ -220,19 +217,6 @@ skillMainEffects: {
   serialize: (value) => serializeList(value),
 },
 
-// normalizeFilter に排他制御を追加
-// （skillMainEffects が指定されている場合は skillEffects をクリア、逆も同様）
-const normalizeFilter = (filter: CardFilter): CardFilter => {
-  const normalized = { ...filter };
-  if (normalized.skillMainEffects?.length) {
-    normalized.skillEffects = undefined;
-  } else if (normalized.skillEffects?.length) {
-    normalized.skillMainEffects = undefined;
-  }
-  // ...既存の正規化処理...
-  return normalized;
-};
-
 // toQueryParams に追加
 skillMainEffects: filter.skillMainEffects,
 ```
@@ -241,53 +225,22 @@ skillMainEffects: filter.skillMainEffects,
 
 ### 5. `components/cards/filters/SkillEffectFilter.tsx`
 
-検索モードを切り替えるトグルUI（「全体検索」/「メイン効果のみ」）を追加する。
+メイン効果検索を ExpansionPanel で折りたたんで表示する（追加選択UI）。`skillEffects` と `skillMainEffects` は同時に有効にできる。
 
-**UI案:**
+include/exclude の両モードで共用するため、`mode` プロップでツールチップ文言を切り替える。
 
-```
-┌─────────────────────────────────────┐
-│ スキル効果                     [?]  │
-│                                     │
-│ 検索モード:                         │
-│ [全体検索] [メイン効果のみ]         │  ← トグル（排他）
-│                                     │
-│ ○ リシャッフル  ○ ハート獲得      │
-│ ○ ハート上限   ○ ...              │
-│                                     │
-│ 検索範囲:                           │
-│ [スキル] [スペシャルアピール]       │
-└─────────────────────────────────────┘
-```
-
-**Props 変更:**
+**Props:**
 
 ```typescript
 interface SkillEffectFilterProps {
   selectedEffects: SkillEffectType[] | undefined;
-  selectedMainEffects: SkillEffectType[] | undefined; // 追加
   selectedTargets: SkillSearchTarget[] | undefined;
   onToggleEffect: (effect: SkillEffectType) => void;
-  onToggleMainEffect: (effect: SkillEffectType) => void; // 追加
   onToggleTarget: (target: SkillSearchTarget) => void;
+  selectedMainEffects?: SkillEffectType[] | undefined;
+  onToggleMainEffect?: (effect: SkillEffectType) => void;
+  mode?: 'include' | 'exclude'; // ツールチップ文言の切り替えに使用
 }
-```
-
-**検索モード判定ロジック（コンポーネント内）:**
-
-```typescript
-// selectedMainEffects に値があればメイン効果モード、なければ全体検索モード
-const isMainEffectMode = (selectedMainEffects?.length ?? 0) > 0;
-
-// モード切り替え時は反対側をクリアする
-const handleModeChange = (mode: 'all' | 'main') => {
-  if (mode === 'all' && isMainEffectMode) {
-    // メイン効果で選択されているものを全体検索に移し替え
-    selectedMainEffects?.forEach(onToggleMainEffect); // クリア
-  } else if (mode === 'main' && !isMainEffectMode) {
-    selectedEffects?.forEach(onToggleEffect); // クリア
-  }
-};
 ```
 
 ---
