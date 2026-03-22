@@ -5,10 +5,9 @@ import { MultiSelectFilter } from '@/components/common/filters/MultiSelectFilter
 import { Tooltip } from '@/components/common/Tooltip';
 import { SkillEffectType, SkillSearchTarget } from '@/models/shared/enums';
 import {
-  SKILL_EFFECT_LABELS,
   SKILL_SEARCH_TARGET_LABELS,
 } from '@/mappers/enumMappers';
-import { SKILL_EFFECT_DESCRIPTIONS } from '@/config/skillEffects';
+import { useEffectKeywordsStore } from '@/store/effectKeywordsStore';
 import {
   FILTER_COLOR_SKILL_EFFECT,
   FILTER_COLOR_SKILL_SEARCH_TARGET,
@@ -28,12 +27,15 @@ export const SkillEffectFilter: React.FC<SkillEffectFilterProps> = ({
   onToggleEffect,
   onToggleTarget,
 }) => {
+  const skillDescriptions = useEffectKeywordsStore((state) => state.skillDescriptions);
+  const skillLabels = useEffectKeywordsStore((state) => state.skillLabels);
+  const skillEffectTypes = useEffectKeywordsStore((state) => state.skillEffectTypes);
   const skillEffectLabel = (effect: SkillEffectType) =>
-    SKILL_EFFECT_LABELS[effect];
+    skillLabels[effect] ?? '';
   const skillSearchTargetLabel = (skillSearchTarget: SkillSearchTarget) =>
     SKILL_SEARCH_TARGET_LABELS[skillSearchTarget];
   const skillEffectTooltip = (effect: SkillEffectType) =>
-    SKILL_EFFECT_DESCRIPTIONS[effect];
+    skillDescriptions[effect] ?? '';
 
   return (
     <div className="p-4">
@@ -51,7 +53,7 @@ export const SkillEffectFilter: React.FC<SkillEffectFilterProps> = ({
       {/* スキル効果の選択 */}
       <div className="mb-4">
         <MultiSelectFilter
-          values={Object.values(SkillEffectType)}
+          values={skillEffectTypes}
           selectedValues={selectedEffects}
           onToggle={onToggleEffect}
           label={skillEffectLabel}

@@ -1,7 +1,7 @@
 import { SkillEffectType } from '@/models/shared/enums';
-import { SKILL_EFFECT_KEYWORDS } from '@/config/skillEffects';
 import type { Card } from '@/models/card/Card';
 import { matchesKeywords } from '@/utils/keywordMatcher';
+import { useEffectKeywordsStore } from '@/store/effectKeywordsStore';
 
 /**
  * スキル効果の検索キーワードを取得
@@ -9,7 +9,7 @@ import { matchesKeywords } from '@/utils/keywordMatcher';
  * @returns 検索キーワードの配列
  */
 export function getSkillEffectKeyword(effectType: SkillEffectType): string[] {
-  return SKILL_EFFECT_KEYWORDS[effectType];
+  return useEffectKeywordsStore.getState().getSkillKeywords(effectType);
 }
 
 /**
@@ -18,7 +18,7 @@ export function getSkillEffectKeyword(effectType: SkillEffectType): string[] {
  * @returns 検索キーワードの配列（フラット化）
  */
 export function getSkillEffectKeywords(effectTypes: SkillEffectType[]): string[] {
-  return effectTypes.flatMap((type) => SKILL_EFFECT_KEYWORDS[type]);
+  return effectTypes.flatMap((type) => useEffectKeywordsStore.getState().getSkillKeywords(type));
 }
 
 /**

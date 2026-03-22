@@ -1,35 +1,30 @@
-import { TraitConditionType, TraitEffectType } from '@/models/shared/enums';
-import { TRAIT_EFFECT_KEYWORDS } from '@/config/traitEffects';
+import { TraitConditionType } from '@/models/shared/enums';
+import type { TraitEffectType } from '@/models/shared/enums';
+import { useEffectKeywordsStore } from '@/store/effectKeywordsStore';
 
 const toRegexPatterns = (keywords: string[]): RegExp[] =>
-  keywords.map((keyword) => new RegExp(keyword));
+  keywords.reduce<RegExp[]>((patterns, keyword) => {
+    try {
+      patterns.push(new RegExp(keyword));
+    } catch {
+      // 無効な正規表現パターンはスキップする
+    }
+    return patterns;
+  }, []);
 
-const HEART_COLLECT_PATTERNS = toRegexPatterns(
-  TRAIT_EFFECT_KEYWORDS[TraitEffectType.HEART_COLLECT]
-);
-const DRAW_PATTERNS = toRegexPatterns(
-  TRAIT_EFFECT_KEYWORDS[TraitEffectType.DRAW]
-);
-const SHOT_PATTERNS = toRegexPatterns(
-  TRAIT_EFFECT_KEYWORDS[TraitEffectType.SHOT]
-);
-const OVER_SECTION_PATTERNS = toRegexPatterns(
-  TRAIT_EFFECT_KEYWORDS[TraitEffectType.OVER_SECTION]
-);
-const ACCUMULATE_PATTERNS = toRegexPatterns(
-  TRAIT_EFFECT_KEYWORDS[TraitEffectType.ACCUMULATE]
-);
+export function getTraitConditionPatterns(): Record<TraitConditionType, RegExp[]> {
+  const getKeywords = (effectType: TraitEffectType) =>
+    useEffectKeywordsStore.getState().getTraitKeywords(effectType);
 
-export const TRAIT_CONDITION_PATTERNS: Record<TraitConditionType, RegExp[]> = {
-  [TraitConditionType.NONE]: [],
-  [TraitConditionType.DRAW]: [...DRAW_PATTERNS],
-  [TraitConditionType.HEART_COLLECT]: [
-    ...HEART_COLLECT_PATTERNS,
-  ],
-  [TraitConditionType.SHOT]: [...SHOT_PATTERNS],
-  [TraitConditionType.OVER_SECTION]: [...OVER_SECTION_PATTERNS],
-  [TraitConditionType.ACCUMULATE]: [...ACCUMULATE_PATTERNS],
-};
+  return {
+    [TraitConditionType.NONE]: [],
+    [TraitConditionType.DRAW]: toRegexPatterns(getKeywords('DRAW' as TraitEffectType)),
+    [TraitConditionType.HEART_COLLECT]: toRegexPatterns(getKeywords('HEART_COLLECT' as TraitEffectType)),
+    [TraitConditionType.SHOT]: toRegexPatterns(getKeywords('SHOT' as TraitEffectType)),
+    [TraitConditionType.OVER_SECTION]: toRegexPatterns(getKeywords('OVER_SECTION' as TraitEffectType)),
+    [TraitConditionType.ACCUMULATE]: toRegexPatterns(getKeywords('ACCUMULATE' as TraitEffectType)),
+  };
+}
 
 export const TRAIT_CONDITION_LABELS: Record<TraitConditionType, string> = {
   [TraitConditionType.NONE]: 'その他',

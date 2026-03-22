@@ -69,53 +69,19 @@ export enum UserRole {
 
 /**
  * スキル効果の種類
+ * DB管理の値を正義とする branded string type
  */
-export enum SkillEffectType {
-  HEART_CAPTURE = 'HEART_CAPTURE',
-  WIDE_HEART = 'WIDE_HEART',
-  LOVE_ATTRACT = 'LOVE_ATTRACT',
-  VOLTAGE_GAIN = 'VOLTAGE_GAIN',
-  HEART_BOOST = 'HEART_BOOST',
-  WIDE_HEART_BOOST = 'WIDE_HEART_BOOST',
-  ATTRACT_BOOST = 'ATTRACT_BOOST',
-  VOLTAGE_BOOST = 'VOLTAGE_BOOST',
-  VIBES = 'VIBES',
-  AMBIENCE = 'AMBIENCE',
-  MENTAL_RECOVER = 'MENTAL_RECOVER',
-  MENTAL_PROTECT = 'MENTAL_PROTECT',
-  MENTAL_GUARD = 'MENTAL_GUARD',
-  RESHUFFLE = 'RESHUFFLE',
-  EXTEND_HAND = 'EXTEND_HAND',
-  SEARCH = 'SEARCH',
-  IMITATION = 'IMITATION',
-  BLESSING = 'BLESSING',
-  AP_GAIN = 'AP_GAIN',
-  HEAT_UP = 'HEAT_UP',
-  BELIEF = 'BELIEF',
-  IGNITION = 'IGNITION',
-}
+export type SkillEffectType = string & { readonly _brand: 'SkillEffectType' };
+
+/** 文字列リテラルを SkillEffectType に変換するヘルパー。静的定数での使用を一箇所に集約する */
+export const asSkillEffectType = (value: string): SkillEffectType =>
+  value as SkillEffectType;
 
 /**
  * 特性効果の種類
+ * DB管理の値を正義とする branded string type
  */
-export enum TraitEffectType {
-  HEART_COLLECT = 'HEART_COLLECT',
-  ENCORE = 'ENCORE',
-  SHOT = 'SHOT',
-  DRAW = 'DRAW',
-  AP_REDUCE = 'AP_REDUCE',
-  AP_SUPPORT = 'AP_SUPPORT',
-  INSTANCE = 'INSTANCE',
-  IMMORTAL = 'IMMORTAL',
-  INTERPRETATION = 'INTERPRETATION',
-  ACCUMULATE = 'ACCUMULATE',
-  OVER_SECTION = 'OVER_SECTION',
-  ALTERNATE_IGNITION = 'ALTERNATE_IGNITION',
-  CHAIN = 'CHAIN',
-  FAVORITE = 'FAVORITE',
-  REINFORCE = 'REINFORCE',
-  UN_DRAW = 'UN_DRAW',
-}
+export type TraitEffectType = string & { readonly _brand: 'TraitEffectType' };
 
 export enum TraitConditionType {
   NONE = 'NONE',

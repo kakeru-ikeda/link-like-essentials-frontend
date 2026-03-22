@@ -5,7 +5,8 @@ import type {
   DetectedSkillEffect,
   DetectedTraitEffect,
 } from '@/models/deck/DeckAnalysis';
-import { TraitConditionType, TraitEffectType, SkillEffectType } from '@/models/shared/enums';
+import { TraitConditionType } from '@/models/shared/enums';
+import type { TraitEffectType, SkillEffectType } from '@/models/shared/enums';
 import { HighlightText } from '@/components/common/HighlightText';
 import { CHARACTER_COLORS } from '@/styles/colors';
 import { hasTraitEffect } from '@/services/game/traitEffectService';
@@ -39,9 +40,9 @@ export const DeckAnalyzerCardItem: React.FC<DeckAnalyzerCardItemProps> = ({
     : undefined;
 
   // アンドロー特性の判定
-  const hasUnDrawTrait = hasTraitEffect(match.card, TraitEffectType.UN_DRAW);
+  const hasUnDrawTrait = hasTraitEffect(match.card, 'UN_DRAW' as TraitEffectType);
   // イミテーションスキルの判定
-  const hasImitationSkill = hasSkillEffect(match.card, SkillEffectType.IMITATION);
+  const hasImitationSkill = hasSkillEffect(match.card, 'IMITATION' as SkillEffectType);
 
   return (
     <div

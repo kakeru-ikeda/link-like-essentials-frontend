@@ -10,7 +10,7 @@ import { SkillEffectType, TraitConditionType } from '@/models/shared/enums';
 import { DeckAnalyzerCardItem } from '@/components/deck-builder/DeckAnalyzerCardItem';
 import { SectionHeading } from '@/components/common/SectionHeading';
 import { Sparkles, Zap } from 'lucide-react';
-import { SKILL_EFFECT_COLORS } from '@/styles/colors';
+import { getSkillEffectColor } from '@/styles/colors';
 
 interface SkillsAnalyzerPanelProps {
   analysis: DeckAnalysis;
@@ -20,7 +20,7 @@ export const SkillsAnalyzerPanel: React.FC<SkillsAnalyzerPanelProps> = ({
   analysis,
 }) => {
   const [selectedEffect, setSelectedEffect] = useState<SkillEffectType>(
-    SkillEffectType.HEART_CAPTURE
+    'HEART_CAPTURE' as SkillEffectType
   );
 
   const currentEffect = analysis.requiredEffects.find(
@@ -32,7 +32,7 @@ export const SkillsAnalyzerPanel: React.FC<SkillsAnalyzerPanelProps> = ({
       <div className="border-b border-gray-100 pb-3 mb-3">
         <div className="grid grid-cols-4 gap-1.5">
           {analysis.requiredEffects.map((effect) => {
-            const colors = SKILL_EFFECT_COLORS[effect.effectType];
+            const colors = getSkillEffectColor(effect.effectType);
             const isSelected = selectedEffect === effect.effectType;
             return (
               <button

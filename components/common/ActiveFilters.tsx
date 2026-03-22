@@ -7,10 +7,9 @@ import {
   STYLE_TYPE_LABELS,
   LIMITED_TYPE_LABELS,
   FAVORITE_MODE_LABELS,
-  SKILL_EFFECT_LABELS,
   SKILL_SEARCH_TARGET_LABELS,
-  TRAIT_EFFECT_LABELS,
 } from '@/mappers/enumMappers';
+import { useEffectKeywordsStore } from '@/store/effectKeywordsStore';
 import { removeFromFilterList } from '@/services/card/cardFilterService';
 import {
   FAVORITE_MODE_COLORS,
@@ -36,6 +35,8 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
   clearFilterKey,
   updateFilter,
 }) => {
+  const skillLabels = useEffectKeywordsStore((state) => state.skillLabels);
+  const traitLabels = useEffectKeywordsStore((state) => state.traitLabels);
   const createChipStyle = (color: string) => ({
     borderColor: color,
     backgroundColor: `${color}10`,
@@ -164,7 +165,7 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
           filter.skillEffects.map((skillEffect) =>
             renderChip(
               skillEffect,
-              SKILL_EFFECT_LABELS[skillEffect],
+              skillLabels[skillEffect] ?? skillEffect,
               FILTER_COLOR_SKILL_EFFECT,
               () =>
                 updateFilter
@@ -194,7 +195,7 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
           filter.traitEffects.map((traitEffect) =>
             renderChip(
               traitEffect,
-              TRAIT_EFFECT_LABELS[traitEffect],
+              traitLabels[traitEffect] ?? traitEffect,
               FILTER_COLOR_TRAIT_EFFECT,
               () =>
                 updateFilter

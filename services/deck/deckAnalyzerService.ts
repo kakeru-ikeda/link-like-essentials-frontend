@@ -11,7 +11,8 @@ import type {
   UnDrawCardInfo,
 } from '@/models/deck/DeckAnalysis';
 import type { CardTraitAnalysisData } from '@/models/card/TraitAnalysis';
-import { SkillEffectType, TraitConditionType, TraitEffectType } from '@/models/shared/enums';
+import type { SkillEffectType, TraitEffectType } from '@/models/shared/enums';
+import { TraitConditionType, asSkillEffectType } from '@/models/shared/enums';
 import {
   getSkillEffectKeyword,
   hasSkillEffect,
@@ -24,18 +25,18 @@ import {
 import { hasTraitEffect } from '@/services/game/traitEffectService';
 
 const REQUIRED_EFFECTS: { effectType: SkillEffectType; label: string }[] = [
-  { effectType: SkillEffectType.HEART_CAPTURE, label: 'ハートキャプチャ' },
-  { effectType: SkillEffectType.HEART_BOOST, label: 'ハートブースト' },
-  { effectType: SkillEffectType.WIDE_HEART, label: 'ワイドハート' },
-  { effectType: SkillEffectType.WIDE_HEART_BOOST, label: 'ワイドブースト' },
-  { effectType: SkillEffectType.LOVE_ATTRACT, label: 'ラブアトラクト' },
-  { effectType: SkillEffectType.ATTRACT_BOOST, label: 'アトラクトブースト' },
-  { effectType: SkillEffectType.VOLTAGE_GAIN, label: 'ボルテージゲイン' },
-  { effectType: SkillEffectType.VOLTAGE_BOOST, label: 'ボルテージブースト' },
-  { effectType: SkillEffectType.MENTAL_RECOVER, label: 'メンタルリカバー' },
-  { effectType: SkillEffectType.MENTAL_PROTECT, label: 'メンタルプロテクト' },
-  { effectType: SkillEffectType.EXTEND_HAND, label: 'エクステンドハンド' },
-  { effectType: SkillEffectType.RESHUFFLE, label: 'リシャッフル' },
+  { effectType: asSkillEffectType('HEART_CAPTURE'), label: 'ハートキャプチャ' },
+  { effectType: asSkillEffectType('HEART_BOOST'), label: 'ハートブースト' },
+  { effectType: asSkillEffectType('WIDE_HEART'), label: 'ワイドハート' },
+  { effectType: asSkillEffectType('WIDE_HEART_BOOST'), label: 'ワイドブースト' },
+  { effectType: asSkillEffectType('LOVE_ATTRACT'), label: 'ラブアトラクト' },
+  { effectType: asSkillEffectType('ATTRACT_BOOST'), label: 'アトラクトブースト' },
+  { effectType: asSkillEffectType('VOLTAGE_GAIN'), label: 'ボルテージゲイン' },
+  { effectType: asSkillEffectType('VOLTAGE_BOOST'), label: 'ボルテージブースト' },
+  { effectType: asSkillEffectType('MENTAL_RECOVER'), label: 'メンタルリカバー' },
+  { effectType: asSkillEffectType('MENTAL_PROTECT'), label: 'メンタルプロテクト' },
+  { effectType: asSkillEffectType('EXTEND_HAND'), label: 'エクステンドハンド' },
+  { effectType: asSkillEffectType('RESHUFFLE'), label: 'リシャッフル' },
 ];
 
 export function analyzeDeck(
@@ -100,11 +101,11 @@ export function analyzeDeck(
 }
 
 function countImitationCards(cards: Card[]): number {
-  return cards.filter((card) => hasSkillEffect(card, SkillEffectType.IMITATION)).length;
+  return cards.filter((card) => hasSkillEffect(card, 'IMITATION' as SkillEffectType)).length;
 }
 
 function countInstanceCards(cards: Card[]): number {
-  return cards.filter((card) => hasTraitEffect(card, TraitEffectType.INSTANCE)).length;
+  return cards.filter((card) => hasTraitEffect(card, 'INSTANCE' as TraitEffectType)).length;
 }
 
 function buildExcludedCards(
@@ -122,10 +123,10 @@ function buildExcludedCards(
 
   cards.forEach((card) => {
     ensureEntry(card);
-    if (hasSkillEffect(card, SkillEffectType.IMITATION)) {
+    if (hasSkillEffect(card, 'IMITATION' as SkillEffectType)) {
       ensureEntry(card).reasons.add('IMITATION');
     }
-    if (hasTraitEffect(card, TraitEffectType.INSTANCE)) {
+    if (hasTraitEffect(card, 'INSTANCE' as TraitEffectType)) {
       ensureEntry(card).reasons.add('INSTANCE');
     }
   });

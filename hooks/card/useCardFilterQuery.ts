@@ -15,6 +15,7 @@ import {
   TraitEffectType,
 } from '@/models/shared/enums';
 import { CHARACTERS } from '@/config/characters';
+import { useEffectKeywordsStore } from '@/store/effectKeywordsStore';
 import {
   buildQueryString,
   parseQueryParams,
@@ -110,12 +111,24 @@ const cardFilterQuerySchema: QuerySchema<CardFilterQueryParams> = {
   },
   skillEffects: {
     defaultValue: undefined,
-    parse: (value) => parseEnumList(value, Object.values(SkillEffectType)),
+    parse: (value) => {
+      const state = useEffectKeywordsStore.getState();
+      const validTypes = state.isLoaded
+        ? state.skillEffectTypes
+        : (parseStringList(value)?.filter((s) => /^[A-Z][A-Z0-9_]*$/.test(s)) as SkillEffectType[] | undefined);
+      return parseEnumList(value, validTypes ?? []);
+    },
     serialize: (value) => serializeList(value),
   },
   traitEffects: {
     defaultValue: undefined,
-    parse: (value) => parseEnumList(value, Object.values(TraitEffectType)),
+    parse: (value) => {
+      const state = useEffectKeywordsStore.getState();
+      const validTypes = state.isLoaded
+        ? state.traitEffectTypes
+        : (parseStringList(value)?.filter((s) => /^[A-Z][A-Z0-9_]*$/.test(s)) as TraitEffectType[] | undefined);
+      return parseEnumList(value, validTypes ?? []);
+    },
     serialize: (value) => serializeList(value),
   },
   skillSearchTargets: {
