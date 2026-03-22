@@ -63,7 +63,7 @@ export const SKILL_EFFECT_KEYWORDS: Record<SkillEffectType, string[]> = {
   [SkillEffectType.WIDE_HEART_BOOST]: ['ハート上限個数増加効果を\\+\\d+%', 'ハート上限増加効果を\\+\\d+%'],
   [SkillEffectType.ATTRACT_BOOST]: ['ラブアトラクト効果を\\+\\d+%'],
   [SkillEffectType.VOLTAGE_BOOST]: ['ボルテージゲイン効果を\\+\\d+%'],
-  [SkillEffectType.VIBES]: ['ビートハートの出現個数を\\+\\d+'],
+  [SkillEffectType.VIBES]: ['ビートハートの出現個数を\\+\\d+', 'ビートハートの出現個数を増加'],
   [SkillEffectType.AMBIENCE]: ['ムード値を'],
   [SkillEffectType.MENTAL_RECOVER]: ['メンタルを最大値の\\d+%回復', 'メンタルを\\d+%回復'],
   [SkillEffectType.MENTAL_PROTECT]: ['メンタル自然減少を無効','メンタルダメージを無効', 'メンタルの最大値の割合分のダメージを無効'],
