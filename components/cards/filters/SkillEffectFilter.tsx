@@ -5,7 +5,6 @@ import { MultiSelectFilter } from '@/components/common/filters/MultiSelectFilter
 import { Tooltip } from '@/components/common/Tooltip';
 import { SkillEffectType, SkillSearchTarget } from '@/models/shared/enums';
 import {
-  SKILL_EFFECT_LABELS,
   SKILL_SEARCH_TARGET_LABELS,
 } from '@/mappers/enumMappers';
 import { useEffectKeywordsStore } from '@/store/effectKeywordsStore';
@@ -29,8 +28,9 @@ export const SkillEffectFilter: React.FC<SkillEffectFilterProps> = ({
   onToggleTarget,
 }) => {
   const skillDescriptions = useEffectKeywordsStore((state) => state.skillDescriptions);
+  const skillLabels = useEffectKeywordsStore((state) => state.skillLabels);
   const skillEffectLabel = (effect: SkillEffectType) =>
-    SKILL_EFFECT_LABELS[effect];
+    skillLabels[effect] ?? '';
   const skillSearchTargetLabel = (skillSearchTarget: SkillSearchTarget) =>
     SKILL_SEARCH_TARGET_LABELS[skillSearchTarget];
   const skillEffectTooltip = (effect: SkillEffectType) =>

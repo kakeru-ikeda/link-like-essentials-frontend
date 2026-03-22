@@ -4,9 +4,7 @@ import {
   FavoriteMode,
   LimitedType,
   DeckType,
-  SkillEffectType,
   SkillSearchTarget,
-  TraitEffectType,
 } from '@/models/shared/enums';
 import { SortField } from '@/models/shared/Filter';
 
@@ -80,60 +78,10 @@ export const SORT_FIELD_LABELS: Record<SortField, string> = {
 };
 
 /**
- * スキル効果のラベル定義
- */
-export const SKILL_EFFECT_LABELS: Record<SkillEffectType, string> = {
-  [SkillEffectType.HEART_CAPTURE]: 'ハートキャプチャ',
-  [SkillEffectType.WIDE_HEART]: 'ワイドハート',
-  [SkillEffectType.LOVE_ATTRACT]: 'ラブアトラクト',
-  [SkillEffectType.VOLTAGE_GAIN]: 'ボルテージゲイン',
-  [SkillEffectType.HEART_BOOST]: 'ハートブースト',
-  [SkillEffectType.WIDE_HEART_BOOST]: 'ワイドハートブースト',
-  [SkillEffectType.ATTRACT_BOOST]: 'アトラクトブースト',
-  [SkillEffectType.VOLTAGE_BOOST]: 'ボルテージブースト',
-  [SkillEffectType.VIBES]: 'バイブス',
-  [SkillEffectType.AMBIENCE]: 'アンビエンス',
-  [SkillEffectType.MENTAL_RECOVER]: 'メンタルリカバー',
-  [SkillEffectType.MENTAL_PROTECT]: 'メンタルプロテクト',
-  [SkillEffectType.MENTAL_GUARD]: 'メンタルガード',
-  [SkillEffectType.RESHUFFLE]: 'リシャッフル',
-  [SkillEffectType.EXTEND_HAND]: 'エクステンドハンド',
-  [SkillEffectType.SEARCH]: 'サーチ',
-  [SkillEffectType.IMITATION]: 'イミテーション',
-  [SkillEffectType.BLESSING]: 'ブレッシング',
-  [SkillEffectType.AP_GAIN]: 'APゲイン',
-  [SkillEffectType.HEAT_UP]: 'ヒートアップ',
-  [SkillEffectType.BELIEF]: 'ビリーフ',
-  [SkillEffectType.IGNITION]: 'イグニッション',
-};
-
-/**
  * スキル検索対象のラベル定義
  */
 export const SKILL_SEARCH_TARGET_LABELS: Record<SkillSearchTarget, string> = {
   [SkillSearchTarget.SPECIAL_APPEAL]: 'スペシャルアピール',
   [SkillSearchTarget.SKILL]: 'スキル',
   [SkillSearchTarget.TRAIT]: '特性',
-};
-
-/**
- * 特性効果のラベル定義
- */
-export const TRAIT_EFFECT_LABELS: Record<TraitEffectType, string> = {
-  [TraitEffectType.ENCORE]: 'アンコール',
-  [TraitEffectType.SHOT]: 'ショット',
-  [TraitEffectType.AP_REDUCE]: 'APレデュース',
-  [TraitEffectType.AP_SUPPORT]: 'APサポート',
-  [TraitEffectType.INTERPRETATION]: 'インタープリテーション',
-  [TraitEffectType.ACCUMULATE]: 'アキューミュレイト',
-  [TraitEffectType.OVER_SECTION]: 'オーバーセクション',
-  [TraitEffectType.ALTERNATE_IGNITION]: 'オルタネイト：イグニッション',
-  [TraitEffectType.CHAIN]: 'チェイン',
-  [TraitEffectType.DRAW]: 'ドロー',
-  [TraitEffectType.FAVORITE]: 'フェイバリット',
-  [TraitEffectType.REINFORCE]: 'リインフォース',
-  [TraitEffectType.INSTANCE]: 'インスタンス',
-  [TraitEffectType.IMMORTAL]: 'インモータル',
-  [TraitEffectType.HEART_COLLECT]: 'ハートコレクト',
-  [TraitEffectType.UN_DRAW]: 'アンドロー',
 };

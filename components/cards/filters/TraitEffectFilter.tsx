@@ -3,7 +3,6 @@
 import React from 'react';
 import { MultiSelectFilter } from '@/components/common/filters/MultiSelectFilter';
 import { TraitEffectType } from '@/models/shared/enums';
-import { TRAIT_EFFECT_LABELS } from '@/mappers/enumMappers';
 import { useEffectKeywordsStore } from '@/store/effectKeywordsStore';
 import { FILTER_COLOR_TRAIT_EFFECT } from '@/styles/colors';
 import { HelpTooltip } from '@/components/common/HelpTooltip';
@@ -18,7 +17,8 @@ export const TraitEffectFilter: React.FC<TraitEffectFilterProps> = ({
   onToggleEffect,
 }) => {
   const traitDescriptions = useEffectKeywordsStore((state) => state.traitDescriptions);
-  const traitEffectLabel = (effect: TraitEffectType) => TRAIT_EFFECT_LABELS[effect];
+  const traitLabels = useEffectKeywordsStore((state) => state.traitLabels);
+  const traitEffectLabel = (effect: TraitEffectType) => traitLabels[effect] ?? '';
   const traitEffectTooltip = (effect: TraitEffectType) => traitDescriptions[effect] ?? '';
 
   return (

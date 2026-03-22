@@ -20,6 +20,8 @@ export function useEffectKeywordsLoader() {
     setTraitEffectKeywords,
     setSkillDescriptions,
     setTraitDescriptions,
+    setSkillLabels,
+    setTraitLabels,
     setLoaded,
   } = useEffectKeywordsStore();
 
@@ -38,22 +40,28 @@ export function useEffectKeywordsLoader() {
 
     const skillMap: Record<string, string[]> = {};
     const skillDescMap: Record<string, string> = {};
+    const skillLabelMap: Record<string, string> = {};
     for (const group of skillData.skillEffectKeywords) {
       skillMap[group.effectType] = group.keywords;
       skillDescMap[group.effectType] = group.description;
+      skillLabelMap[group.effectType] = group.label;
     }
 
     const traitMap: Record<string, string[]> = {};
     const traitDescMap: Record<string, string> = {};
+    const traitLabelMap: Record<string, string> = {};
     for (const group of traitData.traitEffectKeywords) {
       traitMap[group.effectType] = group.keywords;
       traitDescMap[group.effectType] = group.description;
+      traitLabelMap[group.effectType] = group.label;
     }
 
     setSkillEffectKeywords(skillMap);
     setTraitEffectKeywords(traitMap);
     setSkillDescriptions(skillDescMap);
     setTraitDescriptions(traitDescMap);
+    setSkillLabels(skillLabelMap);
+    setTraitLabels(traitLabelMap);
     setLoaded();
   }, [
     skillData,
@@ -62,6 +70,8 @@ export function useEffectKeywordsLoader() {
     setTraitEffectKeywords,
     setSkillDescriptions,
     setTraitDescriptions,
+    setSkillLabels,
+    setTraitLabels,
     setLoaded,
   ]);
 }
