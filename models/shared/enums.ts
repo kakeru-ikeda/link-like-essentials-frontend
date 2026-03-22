@@ -73,6 +73,10 @@ export enum UserRole {
  */
 export type SkillEffectType = string & { readonly _brand: 'SkillEffectType' };
 
+/** 文字列リテラルを SkillEffectType に変換するヘルパー。静的定数での使用を一箇所に集約する */
+export const asSkillEffectType = (value: string): SkillEffectType =>
+  value as SkillEffectType;
+
 /**
  * 特性効果の種類
  * DB管理の値を正義とする branded string type

@@ -28,15 +28,22 @@ export function useEffectKeywordsLoader() {
     setLoaded,
   } = useEffectKeywordsStore();
 
-  const { data: skillData } = useQuery<SkillEffectKeywordsQueryData>(
+  const { data: skillData, error: skillError } = useQuery<SkillEffectKeywordsQueryData>(
     GET_SKILL_EFFECT_KEYWORDS,
     { fetchPolicy: 'cache-first' }
   );
 
-  const { data: traitData } = useQuery<TraitEffectKeywordsQueryData>(
+  const { data: traitData, error: traitError } = useQuery<TraitEffectKeywordsQueryData>(
     GET_TRAIT_EFFECT_KEYWORDS,
     { fetchPolicy: 'cache-first' }
   );
+
+  useEffect(() => {
+    if (skillError || traitError) {
+      console.error('エフェクトキーワードの取得に失敗しました:', skillError ?? traitError);
+      setLoaded();
+    }
+  }, [skillError, traitError, setLoaded]);
 
   useEffect(() => {
     if (!skillData || !traitData) return;

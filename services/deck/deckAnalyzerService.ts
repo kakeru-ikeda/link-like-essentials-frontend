@@ -12,7 +12,7 @@ import type {
 } from '@/models/deck/DeckAnalysis';
 import type { CardTraitAnalysisData } from '@/models/card/TraitAnalysis';
 import type { SkillEffectType, TraitEffectType } from '@/models/shared/enums';
-import { TraitConditionType } from '@/models/shared/enums';
+import { TraitConditionType, asSkillEffectType } from '@/models/shared/enums';
 import {
   getSkillEffectKeyword,
   hasSkillEffect,
@@ -25,18 +25,18 @@ import {
 import { hasTraitEffect } from '@/services/game/traitEffectService';
 
 const REQUIRED_EFFECTS: { effectType: SkillEffectType; label: string }[] = [
-  { effectType: 'HEART_CAPTURE' as SkillEffectType, label: 'ハートキャプチャ' },
-  { effectType: 'HEART_BOOST' as SkillEffectType, label: 'ハートブースト' },
-  { effectType: 'WIDE_HEART' as SkillEffectType, label: 'ワイドハート' },
-  { effectType: 'WIDE_HEART_BOOST' as SkillEffectType, label: 'ワイドブースト' },
-  { effectType: 'LOVE_ATTRACT' as SkillEffectType, label: 'ラブアトラクト' },
-  { effectType: 'ATTRACT_BOOST' as SkillEffectType, label: 'アトラクトブースト' },
-  { effectType: 'VOLTAGE_GAIN' as SkillEffectType, label: 'ボルテージゲイン' },
-  { effectType: 'VOLTAGE_BOOST' as SkillEffectType, label: 'ボルテージブースト' },
-  { effectType: 'MENTAL_RECOVER' as SkillEffectType, label: 'メンタルリカバー' },
-  { effectType: 'MENTAL_PROTECT' as SkillEffectType, label: 'メンタルプロテクト' },
-  { effectType: 'EXTEND_HAND' as SkillEffectType, label: 'エクステンドハンド' },
-  { effectType: 'RESHUFFLE' as SkillEffectType, label: 'リシャッフル' },
+  { effectType: asSkillEffectType('HEART_CAPTURE'), label: 'ハートキャプチャ' },
+  { effectType: asSkillEffectType('HEART_BOOST'), label: 'ハートブースト' },
+  { effectType: asSkillEffectType('WIDE_HEART'), label: 'ワイドハート' },
+  { effectType: asSkillEffectType('WIDE_HEART_BOOST'), label: 'ワイドブースト' },
+  { effectType: asSkillEffectType('LOVE_ATTRACT'), label: 'ラブアトラクト' },
+  { effectType: asSkillEffectType('ATTRACT_BOOST'), label: 'アトラクトブースト' },
+  { effectType: asSkillEffectType('VOLTAGE_GAIN'), label: 'ボルテージゲイン' },
+  { effectType: asSkillEffectType('VOLTAGE_BOOST'), label: 'ボルテージブースト' },
+  { effectType: asSkillEffectType('MENTAL_RECOVER'), label: 'メンタルリカバー' },
+  { effectType: asSkillEffectType('MENTAL_PROTECT'), label: 'メンタルプロテクト' },
+  { effectType: asSkillEffectType('EXTEND_HAND'), label: 'エクステンドハンド' },
+  { effectType: asSkillEffectType('RESHUFFLE'), label: 'リシャッフル' },
 ];
 
 export function analyzeDeck(

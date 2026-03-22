@@ -9,6 +9,7 @@ import { useAuthStore } from '@/store/authStore';
 import { Loading } from '@/components/common/Loading';
 import { UserRole } from '@/models/shared/enums';
 import { useEffectKeywordsLoader } from '@/hooks/card/useEffectKeywords';
+import { useEffectKeywordsStore } from '@/store/effectKeywordsStore';
 
 interface ProvidersProps {
   children: React.ReactNode;
@@ -17,6 +18,14 @@ interface ProvidersProps {
 function EffectKeywordsInitializer() {
   useEffectKeywordsLoader();
   return null;
+}
+
+function EffectKeywordsGate({ children }: { children: React.ReactNode }) {
+  const isKeywordsLoaded = useEffectKeywordsStore((state) => state.isLoaded);
+  if (!isKeywordsLoaded) {
+    return <Loading fullScreen message="Loading..." />;
+  }
+  return <>{children}</>;
 }
 
 export const Providers: React.FC<ProvidersProps> = ({ children }) => {
@@ -59,7 +68,9 @@ export const Providers: React.FC<ProvidersProps> = ({ children }) => {
   return (
     <ApolloProvider client={apolloClient}>
       <EffectKeywordsInitializer />
-      {children}
+      <EffectKeywordsGate>
+        {children}
+      </EffectKeywordsGate>
     </ApolloProvider>
   );
 };

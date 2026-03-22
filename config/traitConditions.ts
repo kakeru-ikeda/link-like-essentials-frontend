@@ -3,7 +3,14 @@ import type { TraitEffectType } from '@/models/shared/enums';
 import { useEffectKeywordsStore } from '@/store/effectKeywordsStore';
 
 const toRegexPatterns = (keywords: string[]): RegExp[] =>
-  keywords.map((keyword) => new RegExp(keyword));
+  keywords.reduce<RegExp[]>((patterns, keyword) => {
+    try {
+      patterns.push(new RegExp(keyword));
+    } catch {
+      // 無効な正規表現パターンはスキップする
+    }
+    return patterns;
+  }, []);
 
 export function getTraitConditionPatterns(): Record<TraitConditionType, RegExp[]> {
   const getKeywords = (effectType: TraitEffectType) =>

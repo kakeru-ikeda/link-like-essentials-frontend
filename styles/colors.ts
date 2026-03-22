@@ -81,10 +81,22 @@ export const FILTER_COLOR_SKILL_SEARCH_TARGET = '#f97316';
 export const FILTER_COLOR_TRAIT_EFFECT = '#9333ea';
 export const FILTER_COLOR_TOKEN = '#06b6d4';
 
+interface SkillEffectColor {
+  border: string;
+  bg: string;
+  text: string;
+}
+
+const DEFAULT_SKILL_EFFECT_COLOR: SkillEffectColor = {
+  border: '#6b7280',
+  bg: '#6b7280',
+  text: '#ffffff',
+};
+
 /**
  * スキル効果の色定義（デッキアナライザー用）
  */
-export const SKILL_EFFECT_COLORS: Record<string, { border: string; bg: string; text: string }> = {
+export const SKILL_EFFECT_COLORS: Partial<Record<string, SkillEffectColor>> = {
   HEART_CAPTURE: { border: '#ef4444', bg: '#ef4444', text: '#ffffff' },
   HEART_BOOST: { border: '#ef4444', bg: '#ef4444', text: '#ffffff' },
   WIDE_HEART: { border: '#dc2626', bg: '#dc2626', text: '#ffffff' },
@@ -108,6 +120,10 @@ export const SKILL_EFFECT_COLORS: Record<string, { border: string; bg: string; t
   IGNITION: { border: '#6b7280', bg: '#6b7280', text: '#ffffff' },
   SEARCH: { border: '#6b7280', bg: '#6b7280', text: '#ffffff' },
 };
+
+export function getSkillEffectColor(effectType: string): SkillEffectColor {
+  return SKILL_EFFECT_COLORS[effectType] ?? DEFAULT_SKILL_EFFECT_COLOR;
+}
 
 /**
  * イベントボタン用カラー定義
