@@ -137,6 +137,10 @@ export function filterCardsOnClient(cards: Card[], filter: CardFilter): Card[] {
       }
     }
 
+    // ANDモードかつTRAITのみターゲット＋traitEffects指定時は，同一エンティティ上での
+    // 結合チェックを行うため，後続の traitEffects 独立チェックをスキップするフラグ
+    let traitEntityJointCheckDone = false;
+
     // スキル効果検索
     if (filter.skillEffects && filter.skillEffects.length > 0) {
       const targets = filter.skillSearchTargets ?? [
@@ -146,71 +150,120 @@ export function filterCardsOnClient(cards: Card[], filter: CardFilter): Card[] {
       ];
 
       const mode = filter.filterMode ?? FilterMode.OR;
-      
-      // 各スキル効果タイプが一致するかチェックする関数
-      const checkSkillEffect = (effectType: SkillEffectType): boolean => {
-        const keywords = getSkillEffectKeyword(effectType);
-        
-        // 1つのスキル効果タイプ内の複数キーワードは常にOR検索
-        // （例：RESHUFFLE = ['シャッフル' OR '手札をすべて捨てて' OR '手札を全て捨てて']）
-        return keywords.some((keyword) => {
-          // 検索対象（スキル、スペシャルアピール、特性）はOR検索
-          // 「スキル」「特性」を選択 → スキル OR 特性のいずれかにマッチすればOK
-          return targets.some((target) => {
-            const texts: (string | undefined)[] = [];
-            
-            switch (target) {
-              case SkillSearchTarget.SKILL:
-                // カード本体のスキルとトークンのスキル
-                texts.push(card.detail?.skill?.effect);
-                card.accessories?.forEach((acc) => texts.push(acc.effect));
-                break;
-              case SkillSearchTarget.SPECIAL_APPEAL:
-                // カード本体のスペシャルアピールのみ（アクセサリーにはない）
-                texts.push(card.detail?.specialAppeal?.effect);
-                break;
-              case SkillSearchTarget.TRAIT:
-                // カード本体の特性とトークンの特性
-                texts.push(card.detail?.trait?.effect);
-                card.accessories?.forEach((acc) => texts.push(acc.traitEffect));
-                break;
-            }
-            
-            // いずれかのテキストにキーワードが含まれているかチェック
-            return texts.some(text => {
-              if (!text) return false;
 
-              // 正規表現パターンかどうかをチェック（\\ を含む場合は正規表現として扱う）
-              if (keyword.includes('\\')) {
-                try {
-                  const regex = new RegExp(keyword);
-                  return regex.test(text);
-                } catch {
-                  // 正規表現が不正な場合は通常の文字列検索にフォールバック
-                  return text.includes(keyword);
-                }
+      if (
+        mode === FilterMode.AND &&
+        targets.length > 0 &&
+        targets.every((t) => t === SkillSearchTarget.TRAIT) &&
+        filter.traitEffects && filter.traitEffects.length > 0
+      ) {
+        // ANDモードでTRAITのみをターゲットとし、traitEffectsも指定されている場合：
+        // 本体とトークンを独立したエンティティとして扱い、
+        // すべての条件が同一エンティティ上で満たされるかを検証する
+        const traitEntities = [
+          { name: card.detail?.trait?.name, effect: card.detail?.trait?.effect },
+          ...(card.accessories?.map((acc) => ({
+            name: acc.traitName,
+            effect: acc.traitEffect,
+          })) ?? []),
+        ];
+
+        const matchText = (text: string | undefined, keyword: string): boolean => {
+          if (!text) return false;
+          if (keyword.includes('\\')) {
+            try {
+              return new RegExp(keyword).test(text);
+            } catch {
+              return text.includes(keyword);
+            }
+          }
+          return text.includes(keyword);
+        };
+
+        const hasJointMatch = traitEntities.some((entity) => {
+          const skillMet = filter.skillEffects!.every((effectType) => {
+            const kws = getSkillEffectKeyword(effectType);
+            return kws.some((kw) => matchText(entity.effect, kw));
+          });
+          const traitMet = filter.traitEffects!.every((effectType) => {
+            const kws = getTraitEffectKeyword(effectType);
+            return kws.some(
+              (kw) => matchText(entity.name, kw) || matchText(entity.effect, kw)
+            );
+          });
+          return skillMet && traitMet;
+        });
+
+        if (!hasJointMatch) {
+          return false;
+        }
+        traitEntityJointCheckDone = true;
+      } else {
+        // 通常のスキル効果チェック
+        const checkSkillEffect = (effectType: SkillEffectType): boolean => {
+          const keywords = getSkillEffectKeyword(effectType);
+
+          // 1つのスキル効果タイプ内の複数キーワードは常にOR検索
+          // （例：RESHUFFLE = ['シャッフル' OR '手札をすべて捨てて' OR '手札を全て捨てて']）
+          return keywords.some((keyword) => {
+            // 検索対象（スキル、スペシャルアピール、特性）はOR検索
+            // 「スキル」「特性」を選択 → スキル OR 特性のいずれかにマッチすればOK
+            return targets.some((target) => {
+              const texts: (string | undefined)[] = [];
+
+              switch (target) {
+                case SkillSearchTarget.SKILL:
+                  // カード本体のスキルとトークンのスキル
+                  texts.push(card.detail?.skill?.effect);
+                  card.accessories?.forEach((acc) => texts.push(acc.effect));
+                  break;
+                case SkillSearchTarget.SPECIAL_APPEAL:
+                  // カード本体のスペシャルアピールのみ（アクセサリーにはない）
+                  texts.push(card.detail?.specialAppeal?.effect);
+                  break;
+                case SkillSearchTarget.TRAIT:
+                  // カード本体の特性とトークンの特性
+                  texts.push(card.detail?.trait?.effect);
+                  card.accessories?.forEach((acc) => texts.push(acc.traitEffect));
+                  break;
               }
 
-              // 通常の文字列検索
-              return text.includes(keyword);
+              // いずれかのテキストにキーワードが含まれているかチェック
+              return texts.some(text => {
+                if (!text) return false;
+
+                // 正規表現パターンかどうかをチェック（\\ を含む場合は正規表現として扱う）
+                if (keyword.includes('\\')) {
+                  try {
+                    const regex = new RegExp(keyword);
+                    return regex.test(text);
+                  } catch {
+                    // 正規表現が不正な場合は通常の文字列検索にフォールバック
+                    return text.includes(keyword);
+                  }
+                }
+
+                // 通常の文字列検索
+                return text.includes(keyword);
+              });
             });
           });
-        });
-      };
+        };
 
-      let hasEffect: boolean;
-      if (mode === FilterMode.OR) {
-        // OR検索: いずれかのスキル効果タイプに一致
-        // 例：HEART_CAPTURE OR RESHUFFLE
-        hasEffect = filter.skillEffects.some(checkSkillEffect);
-      } else {
-        // AND検索: すべてのスキル効果タイプに一致
-        // 例：HEART_CAPTURE AND RESHUFFLE（両方の効果を持つカード）
-        hasEffect = filter.skillEffects.every(checkSkillEffect);
-      }
+        let hasEffect: boolean;
+        if (mode === FilterMode.OR) {
+          // OR検索: いずれかのスキル効果タイプに一致
+          // 例：HEART_CAPTURE OR RESHUFFLE
+          hasEffect = filter.skillEffects.some(checkSkillEffect);
+        } else {
+          // AND検索: すべてのスキル効果タイプに一致
+          // 例：HEART_CAPTURE AND RESHUFFLE（両方の効果を持つカード）
+          hasEffect = filter.skillEffects.every(checkSkillEffect);
+        }
 
-      if (!hasEffect) {
-        return false;
+        if (!hasEffect) {
+          return false;
+        }
       }
     }
 
@@ -223,7 +276,9 @@ export function filterCardsOnClient(cards: Card[], filter: CardFilter): Card[] {
     }
 
     // 特性効果検索（特性のみを対象）
-    if (filter.traitEffects && filter.traitEffects.length > 0) {
+    // ANDモードでTRAITターゲットのみかつskillEffectsも指定されている場合は，
+    // スキル効果検索内でエンティティ単位の結合チェックを実施済みのためスキップする
+    if (!traitEntityJointCheckDone && filter.traitEffects && filter.traitEffects.length > 0) {
       const mode = filter.filterMode ?? FilterMode.OR;
 
       const checkTraitEffect = (effectType: TraitEffectType): boolean => {
