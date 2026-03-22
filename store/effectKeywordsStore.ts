@@ -8,6 +8,8 @@ interface EffectKeywordsState {
   traitDescriptions: Record<string, string>;
   skillLabels: Record<string, string>;
   traitLabels: Record<string, string>;
+  skillEffectTypes: SkillEffectType[];
+  traitEffectTypes: TraitEffectType[];
   isLoaded: boolean;
   setSkillEffectKeywords: (keywords: Record<string, string[]>) => void;
   setTraitEffectKeywords: (keywords: Record<string, string[]>) => void;
@@ -15,6 +17,8 @@ interface EffectKeywordsState {
   setTraitDescriptions: (descriptions: Record<string, string>) => void;
   setSkillLabels: (labels: Record<string, string>) => void;
   setTraitLabels: (labels: Record<string, string>) => void;
+  setSkillEffectTypes: (types: SkillEffectType[]) => void;
+  setTraitEffectTypes: (types: TraitEffectType[]) => void;
   setLoaded: () => void;
   getSkillKeywords: (effectType: SkillEffectType) => string[];
   getTraitKeywords: (effectType: TraitEffectType) => string[];
@@ -31,6 +35,8 @@ export const useEffectKeywordsStore = create<EffectKeywordsState>((set, get) => 
   traitDescriptions: {},
   skillLabels: {},
   traitLabels: {},
+  skillEffectTypes: [],
+  traitEffectTypes: [],
   isLoaded: false,
 
   setSkillEffectKeywords: (keywords) => set({ skillEffectKeywords: keywords }),
@@ -44,6 +50,10 @@ export const useEffectKeywordsStore = create<EffectKeywordsState>((set, get) => 
   setSkillLabels: (labels) => set({ skillLabels: labels }),
 
   setTraitLabels: (labels) => set({ traitLabels: labels }),
+
+  setSkillEffectTypes: (types) => set({ skillEffectTypes: types }),
+
+  setTraitEffectTypes: (types) => set({ traitEffectTypes: types }),
 
   setLoaded: () => set({ isLoaded: true }),
 

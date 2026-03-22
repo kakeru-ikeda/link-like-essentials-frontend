@@ -1,5 +1,4 @@
 import { Rarity, StyleType, LimitedType, FavoriteMode } from '@/models/shared/enums';
-import { SkillEffectType } from '@/models/shared/enums';
 
 /**
  * キャラクターごとのテーマカラー定義
@@ -85,29 +84,29 @@ export const FILTER_COLOR_TOKEN = '#06b6d4';
 /**
  * スキル効果の色定義（デッキアナライザー用）
  */
-export const SKILL_EFFECT_COLORS: Record<SkillEffectType, { border: string; bg: string; text: string }> = {
-  [SkillEffectType.HEART_CAPTURE]: { border: '#ef4444', bg: '#ef4444', text: '#ffffff' },
-  [SkillEffectType.HEART_BOOST]: { border: '#ef4444', bg: '#ef4444', text: '#ffffff' },
-  [SkillEffectType.WIDE_HEART]: { border: '#dc2626', bg: '#dc2626', text: '#ffffff' },
-  [SkillEffectType.WIDE_HEART_BOOST]: { border: '#dc2626', bg: '#dc2626', text: '#ffffff' },
-  [SkillEffectType.LOVE_ATTRACT]: { border: '#f97316', bg: '#f97316', text: '#ffffff' },
-  [SkillEffectType.ATTRACT_BOOST]: { border: '#f97316', bg: '#f97316', text: '#ffffff' },
-  [SkillEffectType.VOLTAGE_GAIN]: { border: '#f59e0b', bg: '#f59e0b', text: '#ffffff' },
-  [SkillEffectType.VOLTAGE_BOOST]: { border: '#f59e0b', bg: '#f59e0b', text: '#ffffff' },
-  [SkillEffectType.MENTAL_RECOVER]: { border: '#22c55e', bg: '#22c55e', text: '#ffffff' },
-  [SkillEffectType.MENTAL_PROTECT]: { border: '#22c55e', bg: '#22c55e', text: '#ffffff' },
-  [SkillEffectType.EXTEND_HAND]: { border: '#a855f7', bg: '#a855f7', text: '#ffffff' },
-  [SkillEffectType.RESHUFFLE]: { border: '#a855f7', bg: '#a855f7', text: '#ffffff' },
-  [SkillEffectType.VIBES]: { border: '#6b7280', bg: '#6b7280', text: '#ffffff' },
-  [SkillEffectType.AMBIENCE]: { border: '#6b7280', bg: '#6b7280', text: '#ffffff' },
-  [SkillEffectType.MENTAL_GUARD]: { border: '#6b7280', bg: '#6b7280', text: '#ffffff' },
-  [SkillEffectType.IMITATION]: { border: '#6b7280', bg: '#6b7280', text: '#ffffff' },
-  [SkillEffectType.BLESSING]: { border: '#6b7280', bg: '#6b7280', text: '#ffffff' },
-  [SkillEffectType.AP_GAIN]: { border: '#6b7280', bg: '#6b7280', text: '#ffffff' },
-  [SkillEffectType.HEAT_UP]: { border: '#6b7280', bg: '#6b7280', text: '#ffffff' },
-  [SkillEffectType.BELIEF]: { border: '#6b7280', bg: '#6b7280', text: '#ffffff' },
-  [SkillEffectType.IGNITION]: { border: '#6b7280', bg: '#6b7280', text: '#ffffff' },
-  [SkillEffectType.SEARCH]: { border: '#6b7280', bg: '#6b7280', text: '#ffffff' },
+export const SKILL_EFFECT_COLORS: Record<string, { border: string; bg: string; text: string }> = {
+  HEART_CAPTURE: { border: '#ef4444', bg: '#ef4444', text: '#ffffff' },
+  HEART_BOOST: { border: '#ef4444', bg: '#ef4444', text: '#ffffff' },
+  WIDE_HEART: { border: '#dc2626', bg: '#dc2626', text: '#ffffff' },
+  WIDE_HEART_BOOST: { border: '#dc2626', bg: '#dc2626', text: '#ffffff' },
+  LOVE_ATTRACT: { border: '#f97316', bg: '#f97316', text: '#ffffff' },
+  ATTRACT_BOOST: { border: '#f97316', bg: '#f97316', text: '#ffffff' },
+  VOLTAGE_GAIN: { border: '#f59e0b', bg: '#f59e0b', text: '#ffffff' },
+  VOLTAGE_BOOST: { border: '#f59e0b', bg: '#f59e0b', text: '#ffffff' },
+  MENTAL_RECOVER: { border: '#22c55e', bg: '#22c55e', text: '#ffffff' },
+  MENTAL_PROTECT: { border: '#22c55e', bg: '#22c55e', text: '#ffffff' },
+  EXTEND_HAND: { border: '#a855f7', bg: '#a855f7', text: '#ffffff' },
+  RESHUFFLE: { border: '#a855f7', bg: '#a855f7', text: '#ffffff' },
+  VIBES: { border: '#6b7280', bg: '#6b7280', text: '#ffffff' },
+  AMBIENCE: { border: '#6b7280', bg: '#6b7280', text: '#ffffff' },
+  MENTAL_GUARD: { border: '#6b7280', bg: '#6b7280', text: '#ffffff' },
+  IMITATION: { border: '#6b7280', bg: '#6b7280', text: '#ffffff' },
+  BLESSING: { border: '#6b7280', bg: '#6b7280', text: '#ffffff' },
+  AP_GAIN: { border: '#6b7280', bg: '#6b7280', text: '#ffffff' },
+  HEAT_UP: { border: '#6b7280', bg: '#6b7280', text: '#ffffff' },
+  BELIEF: { border: '#6b7280', bg: '#6b7280', text: '#ffffff' },
+  IGNITION: { border: '#6b7280', bg: '#6b7280', text: '#ffffff' },
+  SEARCH: { border: '#6b7280', bg: '#6b7280', text: '#ffffff' },
 };
 
 /**

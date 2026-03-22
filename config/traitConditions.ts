@@ -1,4 +1,5 @@
-import { TraitConditionType, TraitEffectType } from '@/models/shared/enums';
+import { TraitConditionType } from '@/models/shared/enums';
+import type { TraitEffectType } from '@/models/shared/enums';
 import { useEffectKeywordsStore } from '@/store/effectKeywordsStore';
 
 const toRegexPatterns = (keywords: string[]): RegExp[] =>
@@ -10,11 +11,11 @@ export function getTraitConditionPatterns(): Record<TraitConditionType, RegExp[]
 
   return {
     [TraitConditionType.NONE]: [],
-    [TraitConditionType.DRAW]: toRegexPatterns(getKeywords(TraitEffectType.DRAW)),
-    [TraitConditionType.HEART_COLLECT]: toRegexPatterns(getKeywords(TraitEffectType.HEART_COLLECT)),
-    [TraitConditionType.SHOT]: toRegexPatterns(getKeywords(TraitEffectType.SHOT)),
-    [TraitConditionType.OVER_SECTION]: toRegexPatterns(getKeywords(TraitEffectType.OVER_SECTION)),
-    [TraitConditionType.ACCUMULATE]: toRegexPatterns(getKeywords(TraitEffectType.ACCUMULATE)),
+    [TraitConditionType.DRAW]: toRegexPatterns(getKeywords('DRAW' as TraitEffectType)),
+    [TraitConditionType.HEART_COLLECT]: toRegexPatterns(getKeywords('HEART_COLLECT' as TraitEffectType)),
+    [TraitConditionType.SHOT]: toRegexPatterns(getKeywords('SHOT' as TraitEffectType)),
+    [TraitConditionType.OVER_SECTION]: toRegexPatterns(getKeywords('OVER_SECTION' as TraitEffectType)),
+    [TraitConditionType.ACCUMULATE]: toRegexPatterns(getKeywords('ACCUMULATE' as TraitEffectType)),
   };
 }
 

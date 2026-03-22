@@ -20,7 +20,7 @@ export const SkillsAnalyzerPanel: React.FC<SkillsAnalyzerPanelProps> = ({
   analysis,
 }) => {
   const [selectedEffect, setSelectedEffect] = useState<SkillEffectType>(
-    SkillEffectType.HEART_CAPTURE
+    'HEART_CAPTURE' as SkillEffectType
   );
 
   const currentEffect = analysis.requiredEffects.find(

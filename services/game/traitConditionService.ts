@@ -64,7 +64,7 @@ export function analyzeTraitForEffect(
 
     const conditions = detectConditionsInSentence(sentence);
     const shouldIncludeDrawCondition =
-      targetEffectType !== SkillEffectType.HEART_CAPTURE ||
+      targetEffectType !== ('HEART_CAPTURE' as SkillEffectType) ||
       canAttributeDrawHeartCapture(sentence);
 
     conditions.forEach((condition) => {
@@ -127,7 +127,7 @@ function canAttributeDrawHeartCapture(sentence: string): boolean {
 
   const effectMatch = findFirstKeywordMatch(
     sentence,
-    getSkillEffectKeyword(SkillEffectType.HEART_CAPTURE),
+    getSkillEffectKeyword('HEART_CAPTURE' as SkillEffectType),
     drawMatch.end
   );
   if (!effectMatch) return false;

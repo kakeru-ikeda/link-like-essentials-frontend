@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useQuery } from '@apollo/client';
+import type { SkillEffectType, TraitEffectType } from '@/models/shared/enums';
 import {
   GET_SKILL_EFFECT_KEYWORDS,
   GET_TRAIT_EFFECT_KEYWORDS,
@@ -22,6 +23,8 @@ export function useEffectKeywordsLoader() {
     setTraitDescriptions,
     setSkillLabels,
     setTraitLabels,
+    setSkillEffectTypes,
+    setTraitEffectTypes,
     setLoaded,
   } = useEffectKeywordsStore();
 
@@ -41,19 +44,25 @@ export function useEffectKeywordsLoader() {
     const skillMap: Record<string, string[]> = {};
     const skillDescMap: Record<string, string> = {};
     const skillLabelMap: Record<string, string> = {};
+    const skillTypes: SkillEffectType[] = [];
     for (const group of skillData.skillEffectKeywords) {
-      skillMap[group.effectType] = group.keywords;
-      skillDescMap[group.effectType] = group.description;
-      skillLabelMap[group.effectType] = group.label;
+      const t = group.effectType as SkillEffectType;
+      skillMap[t] = group.keywords;
+      skillDescMap[t] = group.description;
+      skillLabelMap[t] = group.label;
+      skillTypes.push(t);
     }
 
     const traitMap: Record<string, string[]> = {};
     const traitDescMap: Record<string, string> = {};
     const traitLabelMap: Record<string, string> = {};
+    const traitTypes: TraitEffectType[] = [];
     for (const group of traitData.traitEffectKeywords) {
-      traitMap[group.effectType] = group.keywords;
-      traitDescMap[group.effectType] = group.description;
-      traitLabelMap[group.effectType] = group.label;
+      const t = group.effectType as TraitEffectType;
+      traitMap[t] = group.keywords;
+      traitDescMap[t] = group.description;
+      traitLabelMap[t] = group.label;
+      traitTypes.push(t);
     }
 
     setSkillEffectKeywords(skillMap);
@@ -62,6 +71,8 @@ export function useEffectKeywordsLoader() {
     setTraitDescriptions(traitDescMap);
     setSkillLabels(skillLabelMap);
     setTraitLabels(traitLabelMap);
+    setSkillEffectTypes(skillTypes);
+    setTraitEffectTypes(traitTypes);
     setLoaded();
   }, [
     skillData,
@@ -72,6 +83,8 @@ export function useEffectKeywordsLoader() {
     setTraitDescriptions,
     setSkillLabels,
     setTraitLabels,
+    setSkillEffectTypes,
+    setTraitEffectTypes,
     setLoaded,
   ]);
 }

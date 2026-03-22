@@ -18,6 +18,7 @@ export const TraitEffectFilter: React.FC<TraitEffectFilterProps> = ({
 }) => {
   const traitDescriptions = useEffectKeywordsStore((state) => state.traitDescriptions);
   const traitLabels = useEffectKeywordsStore((state) => state.traitLabels);
+  const traitEffectTypes = useEffectKeywordsStore((state) => state.traitEffectTypes);
   const traitEffectLabel = (effect: TraitEffectType) => traitLabels[effect] ?? '';
   const traitEffectTooltip = (effect: TraitEffectType) => traitDescriptions[effect] ?? '';
 
@@ -34,7 +35,7 @@ export const TraitEffectFilter: React.FC<TraitEffectFilterProps> = ({
         />
       </div>
       <MultiSelectFilter
-        values={Object.values(TraitEffectType)}
+        values={traitEffectTypes}
         selectedValues={selectedEffects}
         onToggle={onToggleEffect}
         label={traitEffectLabel}

@@ -29,6 +29,7 @@ export const SkillEffectFilter: React.FC<SkillEffectFilterProps> = ({
 }) => {
   const skillDescriptions = useEffectKeywordsStore((state) => state.skillDescriptions);
   const skillLabels = useEffectKeywordsStore((state) => state.skillLabels);
+  const skillEffectTypes = useEffectKeywordsStore((state) => state.skillEffectTypes);
   const skillEffectLabel = (effect: SkillEffectType) =>
     skillLabels[effect] ?? '';
   const skillSearchTargetLabel = (skillSearchTarget: SkillSearchTarget) =>
@@ -52,7 +53,7 @@ export const SkillEffectFilter: React.FC<SkillEffectFilterProps> = ({
       {/* スキル効果の選択 */}
       <div className="mb-4">
         <MultiSelectFilter
-          values={Object.values(SkillEffectType)}
+          values={skillEffectTypes}
           selectedValues={selectedEffects}
           onToggle={onToggleEffect}
           label={skillEffectLabel}
