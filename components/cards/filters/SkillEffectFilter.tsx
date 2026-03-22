@@ -8,7 +8,7 @@ import {
   SKILL_EFFECT_LABELS,
   SKILL_SEARCH_TARGET_LABELS,
 } from '@/mappers/enumMappers';
-import { SKILL_EFFECT_DESCRIPTIONS } from '@/config/skillEffects';
+import { useEffectKeywordsStore } from '@/store/effectKeywordsStore';
 import {
   FILTER_COLOR_SKILL_EFFECT,
   FILTER_COLOR_SKILL_SEARCH_TARGET,
@@ -28,12 +28,13 @@ export const SkillEffectFilter: React.FC<SkillEffectFilterProps> = ({
   onToggleEffect,
   onToggleTarget,
 }) => {
+  const skillDescriptions = useEffectKeywordsStore((state) => state.skillDescriptions);
   const skillEffectLabel = (effect: SkillEffectType) =>
     SKILL_EFFECT_LABELS[effect];
   const skillSearchTargetLabel = (skillSearchTarget: SkillSearchTarget) =>
     SKILL_SEARCH_TARGET_LABELS[skillSearchTarget];
   const skillEffectTooltip = (effect: SkillEffectType) =>
-    SKILL_EFFECT_DESCRIPTIONS[effect];
+    skillDescriptions[effect] ?? '';
 
   return (
     <div className="p-4">

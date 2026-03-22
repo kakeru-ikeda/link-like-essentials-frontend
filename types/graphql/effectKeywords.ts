@@ -1,5 +1,6 @@
 export interface EffectKeywordGroup {
   effectType: string;
+  description: string;
   keywords: string[];
 }
 

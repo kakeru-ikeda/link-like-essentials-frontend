@@ -69,6 +69,32 @@ Configファイル（コード）→ RDB（skill_effect_keywords / trait_effect_
 
 ### 1-1. DBテーブル設計（Prisma スキーマ追加）
 
+**新規テーブル: effectType ごとの説明文（1:1対応）**
+
+```prisma
+model SkillEffectDefinition {
+  effectType   String    @id @map("effect_type") @db.VarChar(50)
+  description  String    @db.Text
+  isLocked     Boolean?  @default(false) @map("is_locked")
+  createdAt    DateTime? @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt    DateTime? @default(now()) @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  @@map("skill_effect_definitions")
+}
+
+model TraitEffectDefinition {
+  effectType   String    @id @map("effect_type") @db.VarChar(50)
+  description  String    @db.Text
+  isLocked     Boolean?  @default(false) @map("is_locked")
+  createdAt    DateTime? @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt    DateTime? @default(now()) @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  @@map("trait_effect_definitions")
+}
+```
+
+**既存テーブル（型定義）**
+
 ```prisma
 model SkillEffectKeyword {
   id           Int       @id @default(autoincrement())
@@ -124,11 +150,13 @@ type TraitEffectKeyword {
 
 type SkillEffectKeywordGroup {
   effectType: String!
+  description: String!
   keywords: [String!]!
 }
 
 type TraitEffectKeywordGroup {
   effectType: String!
+  description: String!
   keywords: [String!]!
 }
 ```
@@ -163,21 +191,34 @@ export class EffectKeywordRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
   async getSkillEffectKeywords(): Promise<EffectKeywordGroup[]> {
-    const rows = await this.prisma.skillEffectKeyword.findMany({
-      orderBy: [{ effectType: 'asc' }, { displayOrder: 'asc' }],
-    });
-    return this.groupByEffectType(rows);
+    const [rows, definitions] = await Promise.all([
+      this.prisma.skillEffectKeyword.findMany({
+        orderBy: [{ effectType: 'asc' }, { displayOrder: 'asc' }],
+      }),
+      this.prisma.skillEffectDefinition.findMany(),
+    ]);
+    const descMap = new Map(
+      definitions.map((d) => [d.effectType, d.description])
+    );
+    return this.groupByEffectType(rows, descMap);
   }
 
   async getTraitEffectKeywords(): Promise<EffectKeywordGroup[]> {
-    const rows = await this.prisma.traitEffectKeyword.findMany({
-      orderBy: [{ effectType: 'asc' }, { displayOrder: 'asc' }],
-    });
-    return this.groupByEffectType(rows);
+    const [rows, definitions] = await Promise.all([
+      this.prisma.traitEffectKeyword.findMany({
+        orderBy: [{ effectType: 'asc' }, { displayOrder: 'asc' }],
+      }),
+      this.prisma.traitEffectDefinition.findMany(),
+    ]);
+    const descMap = new Map(
+      definitions.map((d) => [d.effectType, d.description])
+    );
+    return this.groupByEffectType(rows, descMap);
   }
 
   private groupByEffectType(
-    rows: { effectType: string; keyword: string }[]
+    rows: { effectType: string; keyword: string }[],
+    descMap: Map<string, string>
   ): EffectKeywordGroup[] {
     const map = new Map<string, string[]>();
     for (const row of rows) {
@@ -187,6 +228,7 @@ export class EffectKeywordRepository {
     }
     return Array.from(map.entries()).map(([effectType, keywords]) => ({
       effectType,
+      description: descMap.get(effectType) ?? '',
       keywords,
     }));
   }
@@ -250,6 +292,21 @@ const skillEffectKeywords = [
 
 await prisma.skillEffectKeyword.createMany({ data: skillEffectKeywords });
 
+// スキル効果説明文のシードデータ
+const skillEffectDefinitions = [
+  {
+    effectType: 'HEART_CAPTURE',
+    description:
+      'スキルハートを生成する。多くのものは、現在の1回あたりビートハート出現個数に比例して効果が増減する。',
+  },
+  {
+    effectType: 'WIDE_HEART',
+    description: '画面上に同時に存在できるハート数の上限を増加させる。',
+  },
+  // ... 全エントリを移行（config/skillEffects.ts の SKILL_EFFECT_DESCRIPTIONS の値を使用）
+];
+await prisma.skillEffectDefinition.createMany({ data: skillEffectDefinitions });
+
 // 特性効果キーワードのシードデータ
 const traitEffectKeywords = [
   { effectType: 'HEART_COLLECT', keyword: 'ハートコレクト', displayOrder: 0 },
@@ -262,6 +319,17 @@ const traitEffectKeywords = [
 ];
 
 await prisma.traitEffectKeyword.createMany({ data: traitEffectKeywords });
+
+// 特性効果説明文のシードデータ
+const traitEffectDefinitions = [
+  {
+    effectType: 'HEART_COLLECT',
+    description: 'ハート回収条件で発動する特性。',
+  },
+  { effectType: 'ENCORE', description: 'スキル使用後に山札へ戻る特性。' },
+  // ... 全エントリを移行（config/traitEffects.ts の TRAIT_EFFECT_DESCRIPTIONS の値を使用）
+];
+await prisma.traitEffectDefinition.createMany({ data: traitEffectDefinitions });
 ```
 
 ---
@@ -279,6 +347,7 @@ export const GET_SKILL_EFFECT_KEYWORDS = gql`
   query GetSkillEffectKeywords {
     skillEffectKeywords {
       effectType
+      description
       keywords
     }
   }
@@ -288,6 +357,7 @@ export const GET_TRAIT_EFFECT_KEYWORDS = gql`
   query GetTraitEffectKeywords {
     traitEffectKeywords {
       effectType
+      description
       keywords
     }
   }
@@ -324,12 +394,18 @@ import { SkillEffectType, TraitEffectType } from '@/models/shared/enums';
 interface EffectKeywordsState {
   skillEffectKeywords: Record<string, string[]>;
   traitEffectKeywords: Record<string, string[]>;
+  skillDescriptions: Record<string, string>;
+  traitDescriptions: Record<string, string>;
   isLoaded: boolean;
   setSkillEffectKeywords: (keywords: Record<string, string[]>) => void;
   setTraitEffectKeywords: (keywords: Record<string, string[]>) => void;
+  setSkillDescriptions: (descriptions: Record<string, string>) => void;
+  setTraitDescriptions: (descriptions: Record<string, string>) => void;
   setLoaded: () => void;
   getSkillKeywords: (effectType: SkillEffectType) => string[];
   getTraitKeywords: (effectType: TraitEffectType) => string[];
+  getSkillDescription: (effectType: SkillEffectType) => string;
+  getTraitDescription: (effectType: TraitEffectType) => string;
 }
 
 export const useEffectKeywordsStore = create<EffectKeywordsState>(
@@ -541,13 +617,13 @@ Zustand Store に effectType → keywords[] のマップとして格納
 
 ## Phase 3: 整理・削除
 
-キーワードDBへの完全移行確認後、以下を削除する。
+キーワード・説明文のDBへの完全移行確認後、以下を削除する。
 
-| ファイル                    | 削除対象                           | 残すもの                                                            |
-| --------------------------- | ---------------------------------- | ------------------------------------------------------------------- |
-| `config/skillEffects.ts`    | `SKILL_EFFECT_KEYWORDS`            | `SKILL_EFFECT_DESCRIPTIONS`（UI表示用）                             |
-| `config/traitEffects.ts`    | `TRAIT_EFFECT_KEYWORDS`            | `TRAIT_EFFECT_DESCRIPTIONS`（UI表示用）                             |
-| `config/traitConditions.ts` | `TRAIT_CONDITION_PATTERNS`（定数） | `TRAIT_CONDITION_LABELS`、`getTraitConditionPatterns`（関数に変換） |
+| ファイル                    | 削除対象                                               | 残すもの                                              |
+| --------------------------- | ------------------------------------------------------ | ----------------------------------------------------- |
+| `config/skillEffects.ts`    | ファイルごと削除（`SKILL_EFFECT_DESCRIPTIONS` も含む） | —                                                     |
+| `config/traitEffects.ts`    | ファイルごと削除（`TRAIT_EFFECT_DESCRIPTIONS` も含む） | —                                                     |
+| `config/traitConditions.ts` | `TRAIT_CONDITION_PATTERNS`（定数）                     | `TRAIT_CONDITION_LABELS`、`getTraitConditionPatterns` |
 
 ---
 
@@ -555,10 +631,10 @@ Zustand Store に effectType → keywords[] のマップとして格納
 
 ### バックエンド（新規）
 
-- `prisma/schema.prisma` — `SkillEffectKeyword` / `TraitEffectKeyword` モデル追加
+- `prisma/schema.prisma` — `SkillEffectKeyword` / `TraitEffectKeyword` / `SkillEffectDefinition` / `TraitEffectDefinition` モデル追加
 - `prisma/migrations/xxx_add_effect_keywords/` — マイグレーション
-- `prisma/seed.ts` — 初期データ
-- `src/presentation/graphql/schema/effectKeyword.graphql` — スキーマ定義
+- `prisma/seed.ts` — 初期データ（キーワード + 説明文）
+- `src/presentation/graphql/schema/effectKeyword.graphql` — スキーマ定義（`description` フィールド込み）
 - `src/infrastructure/database/repositories/EffectKeywordRepository.ts` — リポジトリ
 - `src/presentation/graphql/resolvers/effectKeywordResolver.ts` — リゾルバ
 - `src/presentation/graphql/resolvers/index.ts` — リゾルバ統合
@@ -577,10 +653,15 @@ Zustand Store に effectType → keywords[] のマップとして格納
 - `config/traitConditions.ts` — 定数→関数に変更
 - `app/providers.tsx` — 初期化処理追加
 
+### フロントエンド（変更: descriptions 対応追加）
+
+- `components/cards/filters/SkillEffectFilter.tsx` — Storeから `description` 取得
+- `components/cards/filters/TraitEffectFilter.tsx` — Storeから `description` 取得
+
 ### フロントエンド（削除）
 
-- `config/skillEffects.ts` から `SKILL_EFFECT_KEYWORDS` を削除（`SKILL_EFFECT_DESCRIPTIONS` は残す）
-- `config/traitEffects.ts` から `TRAIT_EFFECT_KEYWORDS` を削除（`TRAIT_EFFECT_DESCRIPTIONS` は残す）
+- `config/skillEffects.ts` — ファイルごと削除（`SKILL_EFFECT_DESCRIPTIONS` もDB移行するため）
+- `config/traitEffects.ts` — ファイルごと削除（`TRAIT_EFFECT_DESCRIPTIONS` もDB移行するため）
 
 ---
 
