@@ -58,6 +58,7 @@ export function useFilter(): UseFilterReturn {
     if (filter.favoriteModes && filter.favoriteModes.length > 0) count += filter.favoriteModes.length;
     if (filter.characterNames && filter.characterNames.length > 0) count += filter.characterNames.length;
     if (filter.skillEffects && filter.skillEffects.length > 0) count += filter.skillEffects.length;
+    if (filter.skillMainEffects && filter.skillMainEffects.length > 0) count += filter.skillMainEffects.length;
     if (filter.skillSearchTargets && filter.skillSearchTargets.length > 0) count += filter.skillSearchTargets.length;
     if (filter.traitEffects && filter.traitEffects.length > 0) count += filter.traitEffects.length;
     if (filter.hasTokens !== undefined) count++;

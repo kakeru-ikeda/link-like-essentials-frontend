@@ -1,7 +1,7 @@
 import { Card } from '@/models/card/Card';
 import { CardFilter, FilterMode } from '@/models/shared/Filter';
 import { FavoriteMode, SkillEffectType, SkillSearchTarget, TraitEffectType } from '@/models/shared/enums';
-import { getSkillEffectKeyword, getSkillEffectKeywords } from '@/services/game/skillEffectService';
+import { getSkillEffectKeyword, getSkillEffectKeywords, getMainSkillEffect } from '@/services/game/skillEffectService';
 import { getTraitEffectKeyword, getTraitEffectKeywords } from '@/services/game/traitEffectService';
 
 /**
@@ -266,6 +266,25 @@ export function filterCardsOnClient(cards: Card[], filter: CardFilter): Card[] {
       }
     }
 
+    // メイン効果検索（スキル文言のみを対象）
+    if (filter.skillMainEffects && filter.skillMainEffects.length > 0) {
+      const skillTexts: (string | undefined)[] = [
+        card.detail?.skill?.effect,
+        ...(card.accessories?.map((acc) => acc.effect) ?? []),
+      ];
+
+      const checkMainEffect = (effectType: SkillEffectType): boolean =>
+        skillTexts.some((text) => getMainSkillEffect(text) === effectType);
+
+      const mode = filter.filterMode ?? FilterMode.OR;
+      const hasMainEffect =
+        mode === FilterMode.OR
+          ? filter.skillMainEffects.some(checkMainEffect)
+          : filter.skillMainEffects.every(checkMainEffect);
+
+      if (!hasMainEffect) return false;
+    }
+
     // 特性効果検索（特性のみを対象）
     // ANDモードでTRAITターゲットのみかつskillEffectsも指定されている場合は，
     // スキル効果検索内でエンティティ単位の結合チェックを実施済みのためスキップする
@@ -405,6 +424,28 @@ export function buildTraitEffectSearchQuery(filter: CardFilter): string | undefi
  * @param value トグル対象の値
  * @returns 更新後の配列、または undefined（空の場合）
  */
+/**
+ * ターゲットに応じたスキルテキスト配列を返すヘルパー
+ */
+function getSkillTextsForTarget(card: Card, target: SkillSearchTarget): (string | undefined)[] {
+  switch (target) {
+    case SkillSearchTarget.SKILL:
+      return [
+        card.detail?.skill?.effect,
+        ...(card.accessories?.map((acc) => acc.effect) ?? []),
+      ];
+    case SkillSearchTarget.SPECIAL_APPEAL:
+      return [card.detail?.specialAppeal?.effect];
+    case SkillSearchTarget.TRAIT:
+      return [
+        card.detail?.trait?.effect,
+        ...(card.accessories?.map((acc) => acc.traitEffect) ?? []),
+      ];
+    default:
+      return [];
+  }
+}
+
 function toggleArrayValue<T>(currentList: T[] | undefined, value: T): T[] | undefined {
   const list = currentList ?? []; // undefined の場合は空配列として扱う
   

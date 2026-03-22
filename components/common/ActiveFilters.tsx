@@ -80,6 +80,7 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
     (filter.characterNames && filter.characterNames.length > 0) ||
     (filter.limitedTypes && filter.limitedTypes.length > 0) ||
     (filter.skillEffects && filter.skillEffects.length > 0) ||
+    (filter.skillMainEffects && filter.skillMainEffects.length > 0) ||
     (filter.skillSearchTargets && filter.skillSearchTargets.length > 0) ||
     (filter.traitEffects && filter.traitEffects.length > 0) ||
     filter.hasTokens !== undefined;
@@ -171,6 +172,21 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
                 updateFilter
                   ? updateFilter(removeFromFilterList(filter, 'skillEffects', skillEffect))
                   : clearFilterKey('skillEffects')
+            )
+          )}
+
+        {/* メイン効果 */}
+        {filter.skillMainEffects &&
+          filter.skillMainEffects.length > 0 &&
+          filter.skillMainEffects.map((skillEffect) =>
+            renderChip(
+              `main-${skillEffect}`,
+              `メイン:${skillLabels[skillEffect] ?? skillEffect}`,
+              FILTER_COLOR_SKILL_EFFECT,
+              () =>
+                updateFilter
+                  ? updateFilter(removeFromFilterList(filter, 'skillMainEffects', skillEffect))
+                  : clearFilterKey('skillMainEffects')
             )
           )}
 

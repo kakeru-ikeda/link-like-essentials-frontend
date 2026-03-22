@@ -2,11 +2,8 @@
 
 import React from 'react';
 import { MultiSelectFilter } from '@/components/common/filters/MultiSelectFilter';
-import { Tooltip } from '@/components/common/Tooltip';
 import { SkillEffectType, SkillSearchTarget } from '@/models/shared/enums';
-import {
-  SKILL_SEARCH_TARGET_LABELS,
-} from '@/mappers/enumMappers';
+import { SKILL_SEARCH_TARGET_LABELS } from '@/mappers/enumMappers';
 import { useEffectKeywordsStore } from '@/store/effectKeywordsStore';
 import {
   FILTER_COLOR_SKILL_EFFECT,
@@ -30,12 +27,10 @@ export const SkillEffectFilter: React.FC<SkillEffectFilterProps> = ({
   const skillDescriptions = useEffectKeywordsStore((state) => state.skillDescriptions);
   const skillLabels = useEffectKeywordsStore((state) => state.skillLabels);
   const skillEffectTypes = useEffectKeywordsStore((state) => state.skillEffectTypes);
-  const skillEffectLabel = (effect: SkillEffectType) =>
-    skillLabels[effect] ?? '';
-  const skillSearchTargetLabel = (skillSearchTarget: SkillSearchTarget) =>
-    SKILL_SEARCH_TARGET_LABELS[skillSearchTarget];
-  const skillEffectTooltip = (effect: SkillEffectType) =>
-    skillDescriptions[effect] ?? '';
+
+  const skillEffectLabel = (effect: SkillEffectType) => skillLabels[effect] ?? '';
+  const skillSearchTargetLabel = (target: SkillSearchTarget) => SKILL_SEARCH_TARGET_LABELS[target];
+  const skillEffectTooltip = (effect: SkillEffectType) => skillDescriptions[effect] ?? '';
 
   return (
     <div className="p-4">
@@ -44,12 +39,12 @@ export const SkillEffectFilter: React.FC<SkillEffectFilterProps> = ({
           スキル効果
         </label>
         <HelpTooltip
-          content="スキル効果を選択して、該当するカードのみを表示します。検索対象は下の検索範囲で指定します。"
+          content="スキル効果を選択して、該当するカードのみを表示します。スキル文言全体を対象として検索します。"
           className="ml-2 mb-3"
           size={4}
         />
       </div>
-      
+
       {/* スキル効果の選択 */}
       <div className="mb-4">
         <MultiSelectFilter
@@ -78,3 +73,5 @@ export const SkillEffectFilter: React.FC<SkillEffectFilterProps> = ({
     </div>
   );
 };
+
+

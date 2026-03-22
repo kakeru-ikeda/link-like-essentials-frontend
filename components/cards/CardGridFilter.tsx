@@ -26,6 +26,7 @@ const VISIBLE_FILTERS: (keyof CardFilterType)[] = [
   'limitedTypes',
   'rarities',
   'skillEffects',
+  'skillMainEffects',
   'skillSearchTargets',
   'traitEffects',
   'styleTypes',

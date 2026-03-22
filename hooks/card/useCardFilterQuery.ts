@@ -30,6 +30,7 @@ type CardFilterQueryParams = {
   favoriteModes?: FavoriteMode[];
   characterNames?: string[];
   skillEffects?: SkillEffectType[];
+  skillMainEffects?: SkillEffectType[];
   traitEffects?: TraitEffectType[];
   skillSearchTargets?: SkillSearchTarget[];
   filterMode?: FilterMode;
@@ -120,6 +121,17 @@ const cardFilterQuerySchema: QuerySchema<CardFilterQueryParams> = {
     },
     serialize: (value) => serializeList(value),
   },
+  skillMainEffects: {
+    defaultValue: undefined,
+    parse: (value) => {
+      const state = useEffectKeywordsStore.getState();
+      const validTypes = state.isLoaded
+        ? state.skillEffectTypes
+        : (parseStringList(value)?.filter((s) => /^[A-Z][A-Z0-9_]*$/.test(s)) as SkillEffectType[] | undefined);
+      return parseEnumList(value, validTypes ?? []);
+    },
+    serialize: (value) => serializeList(value),
+  },
   traitEffects: {
     defaultValue: undefined,
     parse: (value) => {
@@ -170,6 +182,8 @@ const normalizeFilter = (filter: CardFilter): CardFilter => {
     normalized.characterNames = [...new Set(filter.characterNames)].sort();
   if (filter.skillEffects?.length)
     normalized.skillEffects = [...new Set(filter.skillEffects)].sort();
+  if (filter.skillMainEffects?.length)
+    normalized.skillMainEffects = [...new Set(filter.skillMainEffects)].sort();
   if (filter.traitEffects?.length)
     normalized.traitEffects = [...new Set(filter.traitEffects)].sort();
   if (filter.skillSearchTargets?.length)
@@ -190,6 +204,7 @@ const toQueryParams = (filter: CardFilter): CardFilterQueryParams => ({
   favoriteModes: filter.favoriteModes,
   characterNames: filter.characterNames,
   skillEffects: filter.skillEffects,
+  skillMainEffects: filter.skillMainEffects,
   traitEffects: filter.traitEffects,
   skillSearchTargets: filter.skillSearchTargets,
   filterMode: filter.filterMode,

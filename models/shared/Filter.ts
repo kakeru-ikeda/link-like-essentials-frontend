@@ -31,6 +31,9 @@ export interface CardFilter {
   // スキル効果絞り込み
   skillEffects?: SkillEffectType[];
 
+  // メイン効果絞り込み（スキル文言の最初の文節で最初にヒットする効果で判定）
+  skillMainEffects?: SkillEffectType[];
+
   // 特性効果絞り込み
   traitEffects?: TraitEffectType[];
 

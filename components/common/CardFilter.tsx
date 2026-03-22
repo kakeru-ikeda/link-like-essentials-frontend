@@ -9,12 +9,15 @@ import { CharacterFilter } from '@/components/cards/filters/CharacterFilter';
 import { RarityFilter } from '@/components/cards/filters/RarityFilter';
 import { FavoriteModeFilter } from '@/components/cards/filters/FavoriteModeFilter';
 import { SkillEffectFilter } from '@/components/cards/filters/SkillEffectFilter';
+import { SkillMainEffectFilter } from '@/components/cards/filters/SkillMainEffectFilter';
 import { TraitEffectFilter } from '@/components/cards/filters/TraitEffectFilter';
 import { StyleTypeFilter } from '@/components/cards/filters/StyleTypeFilter';
 import { LimitedTypeFilter } from '@/components/cards/filters/LimitedTypeFilter';
 import { TokenCardFilter } from '@/components/cards/filters/TokenCardFilter';
 import { toggleFilterList } from '@/services/card/cardFilterService';
 import { FilterWrapper } from '@/components/common/filters/FilterWrapper';
+import { ExpansionPanel } from '@/components/common/ExpansionPanel';
+import { HelpTooltip } from '@/components/common/HelpTooltip';
 import type { DeckType } from '@/models/shared/enums';
 
 interface CardFilterProps {
@@ -67,6 +70,10 @@ export const CardFilter: React.FC<CardFilterProps> = ({
 
   const toggleSkillEffect = (skillEffect: SkillEffectType): void => {
     updateFilter(toggleFilterList(filter, 'skillEffects', skillEffect));
+  };
+
+  const toggleSkillMainEffect = (skillEffect: SkillEffectType): void => {
+    updateFilter(toggleFilterList(filter, 'skillMainEffects', skillEffect));
   };
 
   const toggleSkillSearchTarget = (target: SkillSearchTarget): void => {
@@ -141,6 +148,31 @@ export const CardFilter: React.FC<CardFilterProps> = ({
             onToggleEffect={toggleSkillEffect}
             onToggleTarget={toggleSkillSearchTarget}
           />
+        </FilterWrapper>
+      )}
+
+      {/* メイン効果検索 */}
+      {isVisible('skillMainEffects') && (
+        <FilterWrapper>
+          <ExpansionPanel
+            title={
+              <span className="flex items-center gap-1">
+                メイン効果検索
+                <HelpTooltip
+                  content="スキル文言の最初の文節で最初にヒットする効果を「メイン効果」として判定し、選択した効果に一致するカードのみを表示します。"
+                  size={4}
+                />
+              </span>
+            }
+            defaultExpanded={false}
+          >
+            <div className="pt-2">
+              <SkillMainEffectFilter
+                selectedEffects={filter.skillMainEffects}
+                onToggleEffect={toggleSkillMainEffect}
+              />
+            </div>
+          </ExpansionPanel>
         </FilterWrapper>
       )}
 
