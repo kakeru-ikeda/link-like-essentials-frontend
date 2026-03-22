@@ -5,6 +5,22 @@ import { getSkillEffectKeyword, getSkillEffectKeywords } from '@/services/game/s
 import { getTraitEffectKeyword, getTraitEffectKeywords } from '@/services/game/traitEffectService';
 
 /**
+ * キーワードをテキストに対してマッチするか判定する共通ヘルパー
+ * \\ を含む場合は正規表現として評価し、失敗時は includes にフォールバックする
+ */
+function matchKeyword(text: string | undefined, keyword: string): boolean {
+  if (!text) return false;
+  if (keyword.includes('\\')) {
+    try {
+      return new RegExp(keyword).test(text);
+    } catch {
+      return text.includes(keyword);
+    }
+  }
+  return text.includes(keyword);
+}
+
+/**
  * クライアントサイドでカードをフィルタリング
  * 
  * @param cards カード配列
@@ -160,6 +176,9 @@ export function filterCardsOnClient(cards: Card[], filter: CardFilter): Card[] {
         // ANDモードでTRAITのみをターゲットとし、traitEffectsも指定されている場合：
         // 本体とトークンを独立したエンティティとして扱い、
         // すべての条件が同一エンティティ上で満たされるかを検証する
+        const skillEffects = filter.skillEffects;
+        const traitEffects = filter.traitEffects;
+
         const traitEntities = [
           { name: card.detail?.trait?.name, effect: card.detail?.trait?.effect },
           ...(card.accessories?.map((acc) => ({
@@ -168,27 +187,15 @@ export function filterCardsOnClient(cards: Card[], filter: CardFilter): Card[] {
           })) ?? []),
         ];
 
-        const matchText = (text: string | undefined, keyword: string): boolean => {
-          if (!text) return false;
-          if (keyword.includes('\\')) {
-            try {
-              return new RegExp(keyword).test(text);
-            } catch {
-              return text.includes(keyword);
-            }
-          }
-          return text.includes(keyword);
-        };
-
         const hasJointMatch = traitEntities.some((entity) => {
-          const skillMet = filter.skillEffects!.every((effectType) => {
+          const skillMet = skillEffects.every((effectType) => {
             const kws = getSkillEffectKeyword(effectType);
-            return kws.some((kw) => matchText(entity.effect, kw));
+            return kws.some((kw) => matchKeyword(entity.effect, kw));
           });
-          const traitMet = filter.traitEffects!.every((effectType) => {
+          const traitMet = traitEffects.every((effectType) => {
             const kws = getTraitEffectKeyword(effectType);
             return kws.some(
-              (kw) => matchText(entity.name, kw) || matchText(entity.effect, kw)
+              (kw) => matchKeyword(entity.name, kw) || matchKeyword(entity.effect, kw)
             );
           });
           return skillMet && traitMet;
@@ -229,23 +236,7 @@ export function filterCardsOnClient(cards: Card[], filter: CardFilter): Card[] {
               }
 
               // いずれかのテキストにキーワードが含まれているかチェック
-              return texts.some(text => {
-                if (!text) return false;
-
-                // 正規表現パターンかどうかをチェック（\\ を含む場合は正規表現として扱う）
-                if (keyword.includes('\\')) {
-                  try {
-                    const regex = new RegExp(keyword);
-                    return regex.test(text);
-                  } catch {
-                    // 正規表現が不正な場合は通常の文字列検索にフォールバック
-                    return text.includes(keyword);
-                  }
-                }
-
-                // 通常の文字列検索
-                return text.includes(keyword);
-              });
+              return texts.some(text => matchKeyword(text, keyword));
             });
           });
         };
@@ -292,20 +283,7 @@ export function filterCardsOnClient(cards: Card[], filter: CardFilter): Card[] {
         });
 
         return keywords.some((keyword) =>
-          texts.some((text) => {
-            if (!text) return false;
-
-            if (keyword.includes('\\')) {
-              try {
-                const regex = new RegExp(keyword);
-                return regex.test(text);
-              } catch {
-                return text.includes(keyword);
-              }
-            }
-
-            return text.includes(keyword);
-          })
+          texts.some((text) => matchKeyword(text, keyword))
         );
       };
 
