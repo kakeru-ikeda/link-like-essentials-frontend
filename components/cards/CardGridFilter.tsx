@@ -31,6 +31,9 @@ const VISIBLE_FILTERS: (keyof CardFilterType)[] = [
   'traitEffects',
   'styleTypes',
   'hasTokens',
+  'excludeSkillEffects',
+  'excludeSkillMainEffects',
+  'excludeTraitEffects',
 ];
 
 export const CardGridFilter: React.FC<CardGridFilterProps> = ({

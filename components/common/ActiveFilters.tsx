@@ -18,6 +18,7 @@ import {
   FILTER_COLOR_SKILL_SEARCH_TARGET,
   FILTER_COLOR_TOKEN,
   FILTER_COLOR_TRAIT_EFFECT,
+  FILTER_COLOR_EXCLUDE,
   LIMITED_TYPE_COLORS,
   RARITY_COLORS,
   STYLE_TYPE_COLORS,
@@ -83,7 +84,11 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
     (filter.skillMainEffects && filter.skillMainEffects.length > 0) ||
     (filter.skillSearchTargets && filter.skillSearchTargets.length > 0) ||
     (filter.traitEffects && filter.traitEffects.length > 0) ||
-    filter.hasTokens !== undefined;
+    filter.hasTokens !== undefined ||
+    (filter.excludeSkillEffects && filter.excludeSkillEffects.length > 0) ||
+    (filter.excludeSkillSearchTargets && filter.excludeSkillSearchTargets.length > 0) ||
+    (filter.excludeSkillMainEffects && filter.excludeSkillMainEffects.length > 0) ||
+    (filter.excludeTraitEffects && filter.excludeTraitEffects.length > 0);
 
   if (!hasActiveFilters) {
     return null;
@@ -242,6 +247,66 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
             `トークン${filter.hasTokens ? 'あり' : 'なし'}`,
             FILTER_COLOR_TOKEN,
             () => clearFilterKey('hasTokens')
+          )}
+
+        {/* 除外：スキル効果 */}
+        {filter.excludeSkillEffects &&
+          filter.excludeSkillEffects.length > 0 &&
+          filter.excludeSkillEffects.map((skillEffect) =>
+            renderChip(
+              `ex-skill-${skillEffect}`,
+              `除外:スキル ${skillLabels[skillEffect] ?? skillEffect}`,
+              FILTER_COLOR_EXCLUDE,
+              () =>
+                updateFilter
+                  ? updateFilter(removeFromFilterList(filter, 'excludeSkillEffects', skillEffect))
+                  : clearFilterKey('excludeSkillEffects')
+            )
+          )}
+
+        {/* 除外：検索範囲 */}
+        {filter.excludeSkillSearchTargets &&
+          filter.excludeSkillSearchTargets.length > 0 &&
+          filter.excludeSkillSearchTargets.map((target) =>
+            renderChip(
+              `ex-target-${target}`,
+              `除外:範囲 ${SKILL_SEARCH_TARGET_LABELS[target]}`,
+              FILTER_COLOR_EXCLUDE,
+              () =>
+                updateFilter
+                  ? updateFilter(removeFromFilterList(filter, 'excludeSkillSearchTargets', target))
+                  : clearFilterKey('excludeSkillSearchTargets')
+            )
+          )}
+
+        {/* 除外：メイン効果 */}
+        {filter.excludeSkillMainEffects &&
+          filter.excludeSkillMainEffects.length > 0 &&
+          filter.excludeSkillMainEffects.map((skillEffect) =>
+            renderChip(
+              `ex-main-${skillEffect}`,
+              `除外:メイン ${skillLabels[skillEffect] ?? skillEffect}`,
+              FILTER_COLOR_EXCLUDE,
+              () =>
+                updateFilter
+                  ? updateFilter(removeFromFilterList(filter, 'excludeSkillMainEffects', skillEffect))
+                  : clearFilterKey('excludeSkillMainEffects')
+            )
+          )}
+
+        {/* 除外：特性効果 */}
+        {filter.excludeTraitEffects &&
+          filter.excludeTraitEffects.length > 0 &&
+          filter.excludeTraitEffects.map((traitEffect) =>
+            renderChip(
+              `ex-trait-${traitEffect}`,
+              `除外:特性 ${traitLabels[traitEffect] ?? traitEffect}`,
+              FILTER_COLOR_EXCLUDE,
+              () =>
+                updateFilter
+                  ? updateFilter(removeFromFilterList(filter, 'excludeTraitEffects', traitEffect))
+                  : clearFilterKey('excludeTraitEffects')
+            )
           )}
       </div>
     </div>

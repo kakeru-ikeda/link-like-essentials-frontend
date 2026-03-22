@@ -45,6 +45,16 @@ export interface CardFilter {
 
   // トークンカードの有無
   hasTokens?: boolean;
+
+  // --- 除外検索 ---
+  // スキル効果除外（いずれかに一致したら除外）
+  excludeSkillEffects?: SkillEffectType[];
+  // excludeSkillEffects の検索範囲
+  excludeSkillSearchTargets?: SkillSearchTarget[];
+  // メイン効果除外（いずれかのメイン効果に一致したら除外）
+  excludeSkillMainEffects?: SkillEffectType[];
+  // 特性効果除外（いずれかに一致したら除外）
+  excludeTraitEffects?: TraitEffectType[];
 }
 
 export enum SortField {

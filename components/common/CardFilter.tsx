@@ -9,15 +9,13 @@ import { CharacterFilter } from '@/components/cards/filters/CharacterFilter';
 import { RarityFilter } from '@/components/cards/filters/RarityFilter';
 import { FavoriteModeFilter } from '@/components/cards/filters/FavoriteModeFilter';
 import { SkillEffectFilter } from '@/components/cards/filters/SkillEffectFilter';
-import { SkillMainEffectFilter } from '@/components/cards/filters/SkillMainEffectFilter';
 import { TraitEffectFilter } from '@/components/cards/filters/TraitEffectFilter';
 import { StyleTypeFilter } from '@/components/cards/filters/StyleTypeFilter';
 import { LimitedTypeFilter } from '@/components/cards/filters/LimitedTypeFilter';
 import { TokenCardFilter } from '@/components/cards/filters/TokenCardFilter';
+import { ExcludeFilters } from '@/components/cards/filters/ExcludeFilters';
 import { toggleFilterList } from '@/services/card/cardFilterService';
 import { FilterWrapper } from '@/components/common/filters/FilterWrapper';
-import { ExpansionPanel } from '@/components/common/ExpansionPanel';
-import { HelpTooltip } from '@/components/common/HelpTooltip';
 import type { DeckType } from '@/models/shared/enums';
 
 interface CardFilterProps {
@@ -44,6 +42,10 @@ export const CardFilter: React.FC<CardFilterProps> = ({
     // skillSearchTargets は skillEffects とセットで表示
     if (key === 'skillSearchTargets') {
       return visibleFilters.includes('skillEffects');
+    }
+    // excludeSkillSearchTargets は excludeSkillEffects とセットで表示
+    if (key === 'excludeSkillSearchTargets') {
+      return visibleFilters.includes('excludeSkillEffects');
     }
     return visibleFilters.includes(key);
   };
@@ -147,32 +149,9 @@ export const CardFilter: React.FC<CardFilterProps> = ({
             selectedTargets={filter.skillSearchTargets}
             onToggleEffect={toggleSkillEffect}
             onToggleTarget={toggleSkillSearchTarget}
+            selectedMainEffects={isVisible('skillMainEffects') ? filter.skillMainEffects : undefined}
+            onToggleMainEffect={isVisible('skillMainEffects') ? toggleSkillMainEffect : undefined}
           />
-        </FilterWrapper>
-      )}
-
-      {/* メイン効果検索 */}
-      {isVisible('skillMainEffects') && (
-        <FilterWrapper>
-          <ExpansionPanel
-            title={
-              <span className="flex items-center gap-1">
-                メイン効果検索
-                <HelpTooltip
-                  content="スキル文言の最初の文節で最初にヒットする効果を「メイン効果」として判定し、選択した効果に一致するカードのみを表示します。"
-                  size={4}
-                />
-              </span>
-            }
-            defaultExpanded={false}
-          >
-            <div className="pt-2">
-              <SkillMainEffectFilter
-                selectedEffects={filter.skillMainEffects}
-                onToggleEffect={toggleSkillMainEffect}
-              />
-            </div>
-          </ExpansionPanel>
         </FilterWrapper>
       )}
 
@@ -183,6 +162,13 @@ export const CardFilter: React.FC<CardFilterProps> = ({
             selectedEffects={filter.traitEffects}
             onToggleEffect={toggleTraitEffect}
           />
+        </FilterWrapper>
+      )}
+
+      {/* 除外検索 */}
+      {(isVisible('excludeSkillEffects') || isVisible('excludeSkillMainEffects') || isVisible('excludeTraitEffects')) && (
+        <FilterWrapper>
+          <ExcludeFilters filter={filter} updateFilter={updateFilter} />
         </FilterWrapper>
       )}
 

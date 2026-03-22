@@ -10,12 +10,16 @@ import {
   FILTER_COLOR_SKILL_SEARCH_TARGET,
 } from '@/styles/colors';
 import { HelpTooltip } from '@/components/common/HelpTooltip';
+import { ExpansionPanel } from '@/components/common/ExpansionPanel';
+import { SkillMainEffectFilter } from '@/components/cards/filters/SkillMainEffectFilter';
 
 interface SkillEffectFilterProps {
   selectedEffects: SkillEffectType[] | undefined;
   selectedTargets: SkillSearchTarget[] | undefined;
   onToggleEffect: (effect: SkillEffectType) => void;
   onToggleTarget: (target: SkillSearchTarget) => void;
+  selectedMainEffects?: SkillEffectType[] | undefined;
+  onToggleMainEffect?: (effect: SkillEffectType) => void;
 }
 
 export const SkillEffectFilter: React.FC<SkillEffectFilterProps> = ({
@@ -23,6 +27,8 @@ export const SkillEffectFilter: React.FC<SkillEffectFilterProps> = ({
   selectedTargets,
   onToggleEffect,
   onToggleTarget,
+  selectedMainEffects,
+  onToggleMainEffect,
 }) => {
   const skillDescriptions = useEffectKeywordsStore((state) => state.skillDescriptions);
   const skillLabels = useEffectKeywordsStore((state) => state.skillLabels);
@@ -58,7 +64,7 @@ export const SkillEffectFilter: React.FC<SkillEffectFilterProps> = ({
       </div>
 
       {/* 検索範囲の選択 */}
-      <div>
+      <div className="mb-4">
         <label className="block text-xs font-medium text-gray-600 mb-2">
           検索範囲
         </label>
@@ -70,6 +76,29 @@ export const SkillEffectFilter: React.FC<SkillEffectFilterProps> = ({
           color={FILTER_COLOR_SKILL_SEARCH_TARGET}
         />
       </div>
+
+      {/* メイン効果検索 */}
+      {onToggleMainEffect && (
+        <ExpansionPanel
+          title={
+            <span className="flex items-center gap-1">
+              メイン効果検索
+              <HelpTooltip
+                content="スキル文言の最初の文節で最初にヒットする効果を「メイン効果」として判定し、選択した効果に一致するカードのみを表示します。対象はスキル効果のみです。"
+                size={4}
+              />
+            </span>
+          }
+          defaultExpanded={false}
+        >
+          <div className="pt-2">
+            <SkillMainEffectFilter
+              selectedEffects={selectedMainEffects}
+              onToggleEffect={onToggleMainEffect}
+            />
+          </div>
+        </ExpansionPanel>
+      )}
     </div>
   );
 };
