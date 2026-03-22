@@ -80,6 +80,7 @@ export const FILTER_COLOR_SKILL_EFFECT = '#10b981';
 export const FILTER_COLOR_SKILL_SEARCH_TARGET = '#f97316';
 export const FILTER_COLOR_TRAIT_EFFECT = '#9333ea';
 export const FILTER_COLOR_TOKEN = '#06b6d4';
+export const FILTER_COLOR_EXCLUDE = '#dc2626';
 
 interface SkillEffectColor {
   border: string;

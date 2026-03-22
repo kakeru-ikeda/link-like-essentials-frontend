@@ -30,10 +30,15 @@ type CardFilterQueryParams = {
   favoriteModes?: FavoriteMode[];
   characterNames?: string[];
   skillEffects?: SkillEffectType[];
+  skillMainEffects?: SkillEffectType[];
   traitEffects?: TraitEffectType[];
   skillSearchTargets?: SkillSearchTarget[];
   filterMode?: FilterMode;
   hasTokens?: boolean;
+  excludeSkillEffects?: SkillEffectType[];
+  excludeSkillSearchTargets?: SkillSearchTarget[];
+  excludeSkillMainEffects?: SkillEffectType[];
+  excludeTraitEffects?: TraitEffectType[];
 };
 
 const parseStringList = (value: string | null): string[] | undefined => {
@@ -120,6 +125,17 @@ const cardFilterQuerySchema: QuerySchema<CardFilterQueryParams> = {
     },
     serialize: (value) => serializeList(value),
   },
+  skillMainEffects: {
+    defaultValue: undefined,
+    parse: (value) => {
+      const state = useEffectKeywordsStore.getState();
+      const validTypes = state.isLoaded
+        ? state.skillEffectTypes
+        : (parseStringList(value)?.filter((s) => /^[A-Z][A-Z0-9_]*$/.test(s)) as SkillEffectType[] | undefined);
+      return parseEnumList(value, validTypes ?? []);
+    },
+    serialize: (value) => serializeList(value),
+  },
   traitEffects: {
     defaultValue: undefined,
     parse: (value) => {
@@ -152,6 +168,44 @@ const cardFilterQuerySchema: QuerySchema<CardFilterQueryParams> = {
       return value ? '1' : '0';
     },
   },
+  excludeSkillEffects: {
+    defaultValue: undefined,
+    parse: (value) => {
+      const state = useEffectKeywordsStore.getState();
+      const validTypes = state.isLoaded
+        ? state.skillEffectTypes
+        : (parseStringList(value)?.filter((s) => /^[A-Z][A-Z0-9_]*$/.test(s)) as SkillEffectType[] | undefined);
+      return parseEnumList(value, validTypes ?? []);
+    },
+    serialize: (value) => serializeList(value),
+  },
+  excludeSkillSearchTargets: {
+    defaultValue: undefined,
+    parse: (value) => parseEnumList(value, Object.values(SkillSearchTarget)),
+    serialize: (value) => serializeList(value),
+  },
+  excludeSkillMainEffects: {
+    defaultValue: undefined,
+    parse: (value) => {
+      const state = useEffectKeywordsStore.getState();
+      const validTypes = state.isLoaded
+        ? state.skillEffectTypes
+        : (parseStringList(value)?.filter((s) => /^[A-Z][A-Z0-9_]*$/.test(s)) as SkillEffectType[] | undefined);
+      return parseEnumList(value, validTypes ?? []);
+    },
+    serialize: (value) => serializeList(value),
+  },
+  excludeTraitEffects: {
+    defaultValue: undefined,
+    parse: (value) => {
+      const state = useEffectKeywordsStore.getState();
+      const validTypes = state.isLoaded
+        ? state.traitEffectTypes
+        : (parseStringList(value)?.filter((s) => /^[A-Z][A-Z0-9_]*$/.test(s)) as TraitEffectType[] | undefined);
+      return parseEnumList(value, validTypes ?? []);
+    },
+    serialize: (value) => serializeList(value),
+  },
 };
 
 const normalizeFilter = (filter: CardFilter): CardFilter => {
@@ -170,6 +224,8 @@ const normalizeFilter = (filter: CardFilter): CardFilter => {
     normalized.characterNames = [...new Set(filter.characterNames)].sort();
   if (filter.skillEffects?.length)
     normalized.skillEffects = [...new Set(filter.skillEffects)].sort();
+  if (filter.skillMainEffects?.length)
+    normalized.skillMainEffects = [...new Set(filter.skillMainEffects)].sort();
   if (filter.traitEffects?.length)
     normalized.traitEffects = [...new Set(filter.traitEffects)].sort();
   if (filter.skillSearchTargets?.length)
@@ -178,6 +234,14 @@ const normalizeFilter = (filter: CardFilter): CardFilter => {
     ].sort();
   if (filter.filterMode) normalized.filterMode = filter.filterMode;
   if (filter.hasTokens !== undefined) normalized.hasTokens = filter.hasTokens;
+  if (filter.excludeSkillEffects?.length)
+    normalized.excludeSkillEffects = [...new Set(filter.excludeSkillEffects)].sort();
+  if (filter.excludeSkillSearchTargets?.length)
+    normalized.excludeSkillSearchTargets = [...new Set(filter.excludeSkillSearchTargets)].sort();
+  if (filter.excludeSkillMainEffects?.length)
+    normalized.excludeSkillMainEffects = [...new Set(filter.excludeSkillMainEffects)].sort();
+  if (filter.excludeTraitEffects?.length)
+    normalized.excludeTraitEffects = [...new Set(filter.excludeTraitEffects)].sort();
 
   return normalized;
 };
@@ -190,10 +254,15 @@ const toQueryParams = (filter: CardFilter): CardFilterQueryParams => ({
   favoriteModes: filter.favoriteModes,
   characterNames: filter.characterNames,
   skillEffects: filter.skillEffects,
+  skillMainEffects: filter.skillMainEffects,
   traitEffects: filter.traitEffects,
   skillSearchTargets: filter.skillSearchTargets,
   filterMode: filter.filterMode,
   hasTokens: filter.hasTokens,
+  excludeSkillEffects: filter.excludeSkillEffects,
+  excludeSkillSearchTargets: filter.excludeSkillSearchTargets,
+  excludeSkillMainEffects: filter.excludeSkillMainEffects,
+  excludeTraitEffects: filter.excludeTraitEffects,
 });
 
 export const useCardFilterQuery = (): UseFilterReturn => {

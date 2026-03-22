@@ -31,6 +31,9 @@ export interface CardFilter {
   // スキル効果絞り込み
   skillEffects?: SkillEffectType[];
 
+  // メイン効果絞り込み（スキル文言の最初の文節で最初にヒットする効果で判定）
+  skillMainEffects?: SkillEffectType[];
+
   // 特性効果絞り込み
   traitEffects?: TraitEffectType[];
 
@@ -42,6 +45,16 @@ export interface CardFilter {
 
   // トークンカードの有無
   hasTokens?: boolean;
+
+  // --- 除外検索 ---
+  // スキル効果除外（いずれかに一致したら除外）
+  excludeSkillEffects?: SkillEffectType[];
+  // excludeSkillEffects の検索範囲
+  excludeSkillSearchTargets?: SkillSearchTarget[];
+  // メイン効果除外（いずれかのメイン効果に一致したら除外）
+  excludeSkillMainEffects?: SkillEffectType[];
+  // 特性効果除外（いずれかに一致したら除外）
+  excludeTraitEffects?: TraitEffectType[];
 }
 
 export enum SortField {

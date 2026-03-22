@@ -1,7 +1,7 @@
 import { Card } from '@/models/card/Card';
 import { CardFilter, FilterMode } from '@/models/shared/Filter';
 import { FavoriteMode, SkillEffectType, SkillSearchTarget, TraitEffectType } from '@/models/shared/enums';
-import { getSkillEffectKeyword, getSkillEffectKeywords } from '@/services/game/skillEffectService';
+import { getSkillEffectKeyword, getSkillEffectKeywords, getMainSkillEffect } from '@/services/game/skillEffectService';
 import { getTraitEffectKeyword, getTraitEffectKeywords } from '@/services/game/traitEffectService';
 
 /**
@@ -18,6 +18,38 @@ function matchKeyword(text: string | undefined, keyword: string): boolean {
     }
   }
   return text.includes(keyword);
+}
+
+/**
+ * カードが指定のスキル効果を持つか判定するヘルパー（除外検索でも使用）
+ */
+function cardHasSkillEffect(
+  card: Card,
+  effectType: SkillEffectType,
+  targets: SkillSearchTarget[]
+): boolean {
+  const keywords = getSkillEffectKeyword(effectType);
+  return keywords.some((keyword) =>
+    targets.some((target) => {
+      const texts = getSkillTextsForTarget(card, target);
+      return texts.some((text) => matchKeyword(text, keyword));
+    })
+  );
+}
+
+/**
+ * カードが指定の特性効果を持つか判定するヘルパー（除外検索でも使用）
+ */
+function cardHasTraitEffect(card: Card, effectType: TraitEffectType): boolean {
+  const keywords = getTraitEffectKeyword(effectType);
+  const texts: (string | undefined)[] = [
+    card.detail?.trait?.name,
+    card.detail?.trait?.effect,
+  ];
+  card.accessories?.forEach((acc) => {
+    texts.push(acc.traitName, acc.traitEffect);
+  });
+  return keywords.some((keyword) => texts.some((text) => matchKeyword(text, keyword)));
 }
 
 /**
@@ -266,6 +298,25 @@ export function filterCardsOnClient(cards: Card[], filter: CardFilter): Card[] {
       }
     }
 
+    // メイン効果検索（スキル文言のみを対象）
+    if (filter.skillMainEffects && filter.skillMainEffects.length > 0) {
+      const skillTexts: (string | undefined)[] = [
+        card.detail?.skill?.effect,
+        ...(card.accessories?.map((acc) => acc.effect) ?? []),
+      ];
+
+      const checkMainEffect = (effectType: SkillEffectType): boolean =>
+        skillTexts.some((text) => getMainSkillEffect(text) === effectType);
+
+      const mode = filter.filterMode ?? FilterMode.OR;
+      const hasMainEffect =
+        mode === FilterMode.OR
+          ? filter.skillMainEffects.some(checkMainEffect)
+          : filter.skillMainEffects.every(checkMainEffect);
+
+      if (!hasMainEffect) return false;
+    }
+
     // 特性効果検索（特性のみを対象）
     // ANDモードでTRAITターゲットのみかつskillEffectsも指定されている場合は，
     // スキル効果検索内でエンティティ単位の結合チェックを実施済みのためスキップする
@@ -295,6 +346,42 @@ export function filterCardsOnClient(cards: Card[], filter: CardFilter): Card[] {
       if (!hasTraitEffect) {
         return false;
       }
+    }
+
+    // --- 除外検索 ---
+    const defaultExcludeTargets: SkillSearchTarget[] = [
+      SkillSearchTarget.SKILL,
+      SkillSearchTarget.SPECIAL_APPEAL,
+      SkillSearchTarget.TRAIT,
+    ];
+
+    // 除外：スキル効果（いずれかの除外効果に一致したら除外）
+    if (filter.excludeSkillEffects && filter.excludeSkillEffects.length > 0) {
+      const targets = filter.excludeSkillSearchTargets ?? defaultExcludeTargets;
+      const isExcluded = filter.excludeSkillEffects.some((effectType) =>
+        cardHasSkillEffect(card, effectType, targets)
+      );
+      if (isExcluded) return false;
+    }
+
+    // 除外：メイン効果（いずれかの除外メイン効果に一致したら除外）
+    if (filter.excludeSkillMainEffects && filter.excludeSkillMainEffects.length > 0) {
+      const skillTexts: (string | undefined)[] = [
+        card.detail?.skill?.effect,
+        ...(card.accessories?.map((acc) => acc.effect) ?? []),
+      ];
+      const isExcluded = filter.excludeSkillMainEffects.some((effectType) =>
+        skillTexts.some((text) => getMainSkillEffect(text) === effectType)
+      );
+      if (isExcluded) return false;
+    }
+
+    // 除外：特性効果（いずれかの除外特性効果に一致したら除外）
+    if (filter.excludeTraitEffects && filter.excludeTraitEffects.length > 0) {
+      const isExcluded = filter.excludeTraitEffects.some((effectType) =>
+        cardHasTraitEffect(card, effectType)
+      );
+      if (isExcluded) return false;
     }
 
     return true;
@@ -396,6 +483,28 @@ export function buildTraitEffectSearchQuery(filter: CardFilter): string | undefi
 
   const keywords = getTraitEffectKeywords(filter.traitEffects);
   return keywords.join(' OR ');
+}
+
+/**
+ * ターゲットに応じたスキルテキスト配列を返すヘルパー
+ */
+function getSkillTextsForTarget(card: Card, target: SkillSearchTarget): (string | undefined)[] {
+  switch (target) {
+    case SkillSearchTarget.SKILL:
+      return [
+        card.detail?.skill?.effect,
+        ...(card.accessories?.map((acc) => acc.effect) ?? []),
+      ];
+    case SkillSearchTarget.SPECIAL_APPEAL:
+      return [card.detail?.specialAppeal?.effect];
+    case SkillSearchTarget.TRAIT:
+      return [
+        card.detail?.trait?.effect,
+        ...(card.accessories?.map((acc) => acc.traitEffect) ?? []),
+      ];
+    default:
+      return [];
+  }
 }
 
 /**

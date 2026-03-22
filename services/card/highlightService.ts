@@ -43,6 +43,10 @@ export function getHighlightKeywordsByTarget(
     result.skillTargets.push(...getSkillEffectKeywords(filter.skillEffects));
   }
 
+  if (filter.skillMainEffects && filter.skillMainEffects.length > 0) {
+    result.skillTargets.push(...getSkillEffectKeywords(filter.skillMainEffects));
+  }
+
   if (filter.traitEffects && filter.traitEffects.length > 0) {
     result.traitTargets.push(...getTraitEffectKeywords(filter.traitEffects));
   }

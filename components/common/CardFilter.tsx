@@ -13,6 +13,7 @@ import { TraitEffectFilter } from '@/components/cards/filters/TraitEffectFilter'
 import { StyleTypeFilter } from '@/components/cards/filters/StyleTypeFilter';
 import { LimitedTypeFilter } from '@/components/cards/filters/LimitedTypeFilter';
 import { TokenCardFilter } from '@/components/cards/filters/TokenCardFilter';
+import { ExcludeFilters } from '@/components/cards/filters/ExcludeFilters';
 import { toggleFilterList } from '@/services/card/cardFilterService';
 import { FilterWrapper } from '@/components/common/filters/FilterWrapper';
 import type { DeckType } from '@/models/shared/enums';
@@ -42,6 +43,10 @@ export const CardFilter: React.FC<CardFilterProps> = ({
     if (key === 'skillSearchTargets') {
       return visibleFilters.includes('skillEffects');
     }
+    // excludeSkillSearchTargets は excludeSkillEffects とセットで表示
+    if (key === 'excludeSkillSearchTargets') {
+      return visibleFilters.includes('excludeSkillEffects');
+    }
     return visibleFilters.includes(key);
   };
 
@@ -67,6 +72,10 @@ export const CardFilter: React.FC<CardFilterProps> = ({
 
   const toggleSkillEffect = (skillEffect: SkillEffectType): void => {
     updateFilter(toggleFilterList(filter, 'skillEffects', skillEffect));
+  };
+
+  const toggleSkillMainEffect = (skillEffect: SkillEffectType): void => {
+    updateFilter(toggleFilterList(filter, 'skillMainEffects', skillEffect));
   };
 
   const toggleSkillSearchTarget = (target: SkillSearchTarget): void => {
@@ -140,6 +149,8 @@ export const CardFilter: React.FC<CardFilterProps> = ({
             selectedTargets={filter.skillSearchTargets}
             onToggleEffect={toggleSkillEffect}
             onToggleTarget={toggleSkillSearchTarget}
+            selectedMainEffects={isVisible('skillMainEffects') ? filter.skillMainEffects : undefined}
+            onToggleMainEffect={isVisible('skillMainEffects') ? toggleSkillMainEffect : undefined}
           />
         </FilterWrapper>
       )}
@@ -151,6 +162,13 @@ export const CardFilter: React.FC<CardFilterProps> = ({
             selectedEffects={filter.traitEffects}
             onToggleEffect={toggleTraitEffect}
           />
+        </FilterWrapper>
+      )}
+
+      {/* 除外検索 */}
+      {(isVisible('excludeSkillEffects') || isVisible('excludeSkillMainEffects') || isVisible('excludeTraitEffects')) && (
+        <FilterWrapper>
+          <ExcludeFilters filter={filter} updateFilter={updateFilter} />
         </FilterWrapper>
       )}
 

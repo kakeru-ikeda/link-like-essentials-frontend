@@ -2,23 +2,25 @@
 
 import React from 'react';
 import { MultiSelectFilter } from '@/components/common/filters/MultiSelectFilter';
-import { Tooltip } from '@/components/common/Tooltip';
 import { SkillEffectType, SkillSearchTarget } from '@/models/shared/enums';
-import {
-  SKILL_SEARCH_TARGET_LABELS,
-} from '@/mappers/enumMappers';
+import { SKILL_SEARCH_TARGET_LABELS } from '@/mappers/enumMappers';
 import { useEffectKeywordsStore } from '@/store/effectKeywordsStore';
 import {
   FILTER_COLOR_SKILL_EFFECT,
   FILTER_COLOR_SKILL_SEARCH_TARGET,
 } from '@/styles/colors';
 import { HelpTooltip } from '@/components/common/HelpTooltip';
+import { ExpansionPanel } from '@/components/common/ExpansionPanel';
+import { SkillMainEffectFilter } from '@/components/cards/filters/SkillMainEffectFilter';
 
 interface SkillEffectFilterProps {
   selectedEffects: SkillEffectType[] | undefined;
   selectedTargets: SkillSearchTarget[] | undefined;
   onToggleEffect: (effect: SkillEffectType) => void;
   onToggleTarget: (target: SkillSearchTarget) => void;
+  selectedMainEffects?: SkillEffectType[] | undefined;
+  onToggleMainEffect?: (effect: SkillEffectType) => void;
+  mode?: 'include' | 'exclude';
 }
 
 export const SkillEffectFilter: React.FC<SkillEffectFilterProps> = ({
@@ -26,16 +28,17 @@ export const SkillEffectFilter: React.FC<SkillEffectFilterProps> = ({
   selectedTargets,
   onToggleEffect,
   onToggleTarget,
+  selectedMainEffects,
+  onToggleMainEffect,
+  mode = 'include',
 }) => {
   const skillDescriptions = useEffectKeywordsStore((state) => state.skillDescriptions);
   const skillLabels = useEffectKeywordsStore((state) => state.skillLabels);
   const skillEffectTypes = useEffectKeywordsStore((state) => state.skillEffectTypes);
-  const skillEffectLabel = (effect: SkillEffectType) =>
-    skillLabels[effect] ?? '';
-  const skillSearchTargetLabel = (skillSearchTarget: SkillSearchTarget) =>
-    SKILL_SEARCH_TARGET_LABELS[skillSearchTarget];
-  const skillEffectTooltip = (effect: SkillEffectType) =>
-    skillDescriptions[effect] ?? '';
+
+  const skillEffectLabel = (effect: SkillEffectType) => skillLabels[effect] ?? '';
+  const skillSearchTargetLabel = (target: SkillSearchTarget) => SKILL_SEARCH_TARGET_LABELS[target];
+  const skillEffectTooltip = (effect: SkillEffectType) => skillDescriptions[effect] ?? '';
 
   return (
     <div className="p-4">
@@ -44,12 +47,16 @@ export const SkillEffectFilter: React.FC<SkillEffectFilterProps> = ({
           スキル効果
         </label>
         <HelpTooltip
-          content="スキル効果を選択して、該当するカードのみを表示します。検索対象は下の検索範囲で指定します。"
+          content={
+            mode === 'exclude'
+              ? 'スキル効果を選択して、該当するカードを検索結果から除外します。スキル文言全体を対象として検索します。'
+              : 'スキル効果を選択して、該当するカードのみを表示します。スキル文言全体を対象として検索します。'
+          }
           className="ml-2 mb-3"
           size={4}
         />
       </div>
-      
+
       {/* スキル効果の選択 */}
       <div className="mb-4">
         <MultiSelectFilter
@@ -63,7 +70,7 @@ export const SkillEffectFilter: React.FC<SkillEffectFilterProps> = ({
       </div>
 
       {/* 検索範囲の選択 */}
-      <div>
+      <div className="mb-4">
         <label className="block text-xs font-medium text-gray-600 mb-2">
           検索範囲
         </label>
@@ -75,6 +82,35 @@ export const SkillEffectFilter: React.FC<SkillEffectFilterProps> = ({
           color={FILTER_COLOR_SKILL_SEARCH_TARGET}
         />
       </div>
+
+      {/* メイン効果検索 */}
+      {onToggleMainEffect && (
+        <ExpansionPanel
+          title={
+            <span className="flex items-center gap-1">
+              メイン効果検索
+              <HelpTooltip
+                content={
+                  mode === 'exclude'
+                    ? 'スキル文言の最初の文節で最初にヒットする効果を「メイン効果」として判定し、選択した効果に一致するカードを除外します。対象はスキル効果のみです。'
+                    : 'スキル文言の最初の文節で最初にヒットする効果を「メイン効果」として判定し、選択した効果に一致するカードのみを表示します。対象はスキル効果のみです。'
+                }
+                size={4}
+              />
+            </span>
+          }
+          defaultExpanded={false}
+        >
+          <div className="pt-2">
+            <SkillMainEffectFilter
+              selectedEffects={selectedMainEffects}
+              onToggleEffect={onToggleMainEffect}
+            />
+          </div>
+        </ExpansionPanel>
+      )}
     </div>
   );
 };
+
+
