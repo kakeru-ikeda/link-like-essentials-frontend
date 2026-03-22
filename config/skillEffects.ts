@@ -46,6 +46,8 @@ export const SKILL_EFFECT_DESCRIPTIONS: Record<SkillEffectType, string> = {
     'メンタルが0以下になってもメンタルダウンしなくなる。',
   [SkillEffectType.IGNITION]:
     '姫芽を《イグニッションモード》にする。104期以降の楽曲でのみ効果がある。103期楽曲では何の効果も及ぼさない。',
+  [SkillEffectType.SEARCH]:
+    'カードドロー確率を大幅に上げる効果を検索する。',
 };
 
 /**
@@ -61,13 +63,16 @@ export const SKILL_EFFECT_KEYWORDS: Record<SkillEffectType, string[]> = {
   [SkillEffectType.WIDE_HEART_BOOST]: ['ハート上限個数増加効果を\\+\\d+%', 'ハート上限増加効果を\\+\\d+%'],
   [SkillEffectType.ATTRACT_BOOST]: ['ラブアトラクト効果を\\+\\d+%'],
   [SkillEffectType.VOLTAGE_BOOST]: ['ボルテージゲイン効果を\\+\\d+%'],
-  [SkillEffectType.VIBES]: ['ビートハートの出現個数を\\+\\d+'],
+  [SkillEffectType.VIBES]: ['ビートハートの出現個数を\\+\\d+', 'ビートハートの出現個数を増加'],
   [SkillEffectType.AMBIENCE]: ['ムード値を'],
   [SkillEffectType.MENTAL_RECOVER]: ['メンタルを最大値の\\d+%回復', 'メンタルを\\d+%回復'],
   [SkillEffectType.MENTAL_PROTECT]: ['メンタル自然減少を無効','メンタルダメージを無効', 'メンタルの最大値の割合分のダメージを無効'],
   [SkillEffectType.MENTAL_GUARD]: ['メンタル直接ダメージを無効'],
   [SkillEffectType.RESHUFFLE]: ['シャッフル', '手札をすべて捨てて', '手札を全て捨てて'],
   [SkillEffectType.EXTEND_HAND]: ['手札の上限枚数を\\d+枚増加', '手札の枚数上限を\\d+枚増加'],
+  [SkillEffectType.SEARCH]: [
+    'ドローする確率大幅アップ',
+  ],
   [SkillEffectType.BLESSING]: [
     'デッキ内の.+の消費AP-\\d+',
     'デッキ内の.+の消費APを-\\d+',

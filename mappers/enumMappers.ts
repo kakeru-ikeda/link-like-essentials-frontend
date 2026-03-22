@@ -98,6 +98,7 @@ export const SKILL_EFFECT_LABELS: Record<SkillEffectType, string> = {
   [SkillEffectType.MENTAL_GUARD]: 'メンタルガード',
   [SkillEffectType.RESHUFFLE]: 'リシャッフル',
   [SkillEffectType.EXTEND_HAND]: 'エクステンドハンド',
+  [SkillEffectType.SEARCH]: 'サーチ',
   [SkillEffectType.IMITATION]: 'イミテーション',
   [SkillEffectType.BLESSING]: 'ブレッシング',
   [SkillEffectType.AP_GAIN]: 'APゲイン',
@@ -127,7 +128,6 @@ export const TRAIT_EFFECT_LABELS: Record<TraitEffectType, string> = {
   [TraitEffectType.ACCUMULATE]: 'アキューミュレイト',
   [TraitEffectType.OVER_SECTION]: 'オーバーセクション',
   [TraitEffectType.ALTERNATE_IGNITION]: 'オルタネイト：イグニッション',
-  [TraitEffectType.SEARCH]: 'サーチ',
   [TraitEffectType.CHAIN]: 'チェイン',
   [TraitEffectType.DRAW]: 'ドロー',
   [TraitEffectType.FAVORITE]: 'フェイバリット',
@@ -135,5 +135,5 @@ export const TRAIT_EFFECT_LABELS: Record<TraitEffectType, string> = {
   [TraitEffectType.INSTANCE]: 'インスタンス',
   [TraitEffectType.IMMORTAL]: 'インモータル',
   [TraitEffectType.HEART_COLLECT]: 'ハートコレクト',
-  [TraitEffectType.UN_DRAW]: 'アンドロー(仮)',
+  [TraitEffectType.UN_DRAW]: 'アンドロー',
 };

@@ -15,7 +15,6 @@ export const TRAIT_EFFECT_DESCRIPTIONS: Record<TraitEffectType, string> = {
   [TraitEffectType.INTERPRETATION]: 'ムード補正の効果量を引き上げる特性。',
   [TraitEffectType.OVER_SECTION]: 'セクション跨ぎで発動する特性。',
   [TraitEffectType.ALTERNATE_IGNITION]: '姫芽の《イグニッションモード》状態に応じて効果が変化する特性。',
-  [TraitEffectType.SEARCH]: 'カードドロー確率を大幅に上げる特性。',
   [TraitEffectType.CHAIN]: '特定スキル使用後のドロー確率を上げる特性。',
   [TraitEffectType.FAVORITE]: '特定セクションでのドロー確率を上げる特性。',
   [TraitEffectType.REINFORCE]: 'スキル効果量を増加させる特性。',
@@ -73,7 +72,6 @@ export const TRAIT_EFFECT_KEYWORDS: Record<TraitEffectType, string[]> = {
     'オルタネイト：イグニッション',
     'イグニッションモード',
   ],
-  [TraitEffectType.SEARCH]: ['サーチ', 'カードをドローする確率大幅アップ'],
   [TraitEffectType.CHAIN]: [
     'チェイン',
     'スキル使用後、ドローされる確率が増加',

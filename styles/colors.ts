@@ -107,6 +107,7 @@ export const SKILL_EFFECT_COLORS: Record<SkillEffectType, { border: string; bg: 
   [SkillEffectType.HEAT_UP]: { border: '#6b7280', bg: '#6b7280', text: '#ffffff' },
   [SkillEffectType.BELIEF]: { border: '#6b7280', bg: '#6b7280', text: '#ffffff' },
   [SkillEffectType.IGNITION]: { border: '#6b7280', bg: '#6b7280', text: '#ffffff' },
+  [SkillEffectType.SEARCH]: { border: '#6b7280', bg: '#6b7280', text: '#ffffff' },
 };
 
 /**
