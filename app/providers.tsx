@@ -8,9 +8,15 @@ import { userService } from '@/services/user/userService';
 import { useAuthStore } from '@/store/authStore';
 import { Loading } from '@/components/common/Loading';
 import { UserRole } from '@/models/shared/enums';
+import { useEffectKeywordsLoader } from '@/hooks/card/useEffectKeywords';
 
 interface ProvidersProps {
   children: React.ReactNode;
+}
+
+function EffectKeywordsInitializer() {
+  useEffectKeywordsLoader();
+  return null;
 }
 
 export const Providers: React.FC<ProvidersProps> = ({ children }) => {
@@ -50,5 +56,10 @@ export const Providers: React.FC<ProvidersProps> = ({ children }) => {
     return <Loading fullScreen message="Loading..." />;
   }
 
-  return <ApolloProvider client={apolloClient}>{children}</ApolloProvider>;
+  return (
+    <ApolloProvider client={apolloClient}>
+      <EffectKeywordsInitializer />
+      {children}
+    </ApolloProvider>
+  );
 };

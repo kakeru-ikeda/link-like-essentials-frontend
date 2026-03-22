@@ -1,7 +1,7 @@
 import { TraitEffectType } from '@/models/shared/enums';
-import { TRAIT_EFFECT_KEYWORDS } from '@/config/traitEffects';
 import type { Card } from '@/models/card/Card';
 import { matchesKeywords } from '@/utils/keywordMatcher';
+import { useEffectKeywordsStore } from '@/store/effectKeywordsStore';
 
 /**
  * 特性効果の検索キーワードを取得
@@ -9,7 +9,7 @@ import { matchesKeywords } from '@/utils/keywordMatcher';
  * @returns 検索キーワードの配列
  */
 export function getTraitEffectKeyword(effectType: TraitEffectType): string[] {
-  return TRAIT_EFFECT_KEYWORDS[effectType];
+  return useEffectKeywordsStore.getState().getTraitKeywords(effectType);
 }
 
 /**
@@ -18,7 +18,7 @@ export function getTraitEffectKeyword(effectType: TraitEffectType): string[] {
  * @returns 検索キーワードの配列（フラット化）
  */
 export function getTraitEffectKeywords(effectTypes: TraitEffectType[]): string[] {
-  return effectTypes.flatMap((type) => TRAIT_EFFECT_KEYWORDS[type]);
+  return effectTypes.flatMap((type) => useEffectKeywordsStore.getState().getTraitKeywords(type));
 }
 
 /**

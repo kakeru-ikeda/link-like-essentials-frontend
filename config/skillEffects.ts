@@ -49,39 +49,3 @@ export const SKILL_EFFECT_DESCRIPTIONS: Record<SkillEffectType, string> = {
   [SkillEffectType.SEARCH]:
     'カードドロー確率を大幅に上げる効果を検索する。',
 };
-
-/**
- * スキル効果の検索キーワードマッピング
- * 各効果に対応する検索文言を配列で定義
- */
-export const SKILL_EFFECT_KEYWORDS: Record<SkillEffectType, string[]> = {
-  [SkillEffectType.HEART_CAPTURE]: ['スキルハートを獲得', 'ビートハート\\d+回分のスキルハートを獲得'],
-  [SkillEffectType.WIDE_HEART]: ['ハート上限を\\+\\d+', 'ハート上限[^\\n]*?を増加'],
-  [SkillEffectType.LOVE_ATTRACT]: ['獲得するLOVEを\\+\\d+%', 'ラブアトラクト効果を発動', '獲得するLOVE[^\\n]*?を増加'],
-  [SkillEffectType.VOLTAGE_GAIN]: ['ボルテージPt.を\\+\\d+', 'ボルテージPt.を獲得', 'ボルテージPt\\.[^\\n]*?を増加'],
-  [SkillEffectType.HEART_BOOST]: ['スキルハート獲得効果による獲得数を\\+\\d+%', 'スキルハート獲得効果による獲得数を増加'],
-  [SkillEffectType.WIDE_HEART_BOOST]: ['ハート上限個数増加効果を\\+\\d+%', 'ハート上限増加効果を\\+\\d+%'],
-  [SkillEffectType.ATTRACT_BOOST]: ['ラブアトラクト効果を\\+\\d+%'],
-  [SkillEffectType.VOLTAGE_BOOST]: ['ボルテージゲイン効果を\\+\\d+%'],
-  [SkillEffectType.VIBES]: ['ビートハートの出現個数を\\+\\d+', 'ビートハートの出現個数を増加'],
-  [SkillEffectType.AMBIENCE]: ['ムード値を'],
-  [SkillEffectType.MENTAL_RECOVER]: ['メンタルを最大値の\\d+%回復', 'メンタルを\\d+%回復'],
-  [SkillEffectType.MENTAL_PROTECT]: ['メンタル自然減少を無効','メンタルダメージを無効', 'メンタルの最大値の割合分のダメージを無効'],
-  [SkillEffectType.MENTAL_GUARD]: ['メンタル直接ダメージを無効'],
-  [SkillEffectType.RESHUFFLE]: ['シャッフル', '手札をすべて捨てて', '手札を全て捨てて'],
-  [SkillEffectType.EXTEND_HAND]: ['手札の上限枚数を\\d+枚増加', '手札の枚数上限を\\d+枚増加'],
-  [SkillEffectType.SEARCH]: [
-    'ドローする確率大幅アップ',
-  ],
-  [SkillEffectType.BLESSING]: [
-    'デッキ内の.+の消費AP-\\d+',
-    'デッキ内の.+の消費APを-\\d+',
-    '手札の(?!このスキル).*の消費AP-\\d+',
-    '手札の(?!このスキル).*の消費APを-\\d+',
-  ],
-  [SkillEffectType.IMITATION]: ['カードがステージにセットされ'],
-  [SkillEffectType.AP_GAIN]: ['APを\\d+回復'],
-  [SkillEffectType.HEAT_UP]: ['AP回復速度を+\\d+%増加', 'AP回復速度を+'],
-  [SkillEffectType.BELIEF]: ['メンタルダウンしなくなり'],
-  [SkillEffectType.IGNITION]: ['イグニッションモード'],
-};

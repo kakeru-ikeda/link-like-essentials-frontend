@@ -1,7 +1,7 @@
 import { SkillEffectType, TraitConditionType } from '@/models/shared/enums';
 import {
   TRAIT_CONDITION_LABELS,
-  TRAIT_CONDITION_PATTERNS,
+  getTraitConditionPatterns,
 } from '@/config/traitConditions';
 import { getSkillEffectKeyword } from '@/services/game/skillEffectService';
 import { matchesKeyword } from '@/utils/keywordMatcher';
@@ -27,7 +27,7 @@ export function detectConditionsInSentence(
   const detected = new Set<TraitConditionType>();
 
   for (const [conditionType, patterns] of Object.entries(
-    TRAIT_CONDITION_PATTERNS
+    getTraitConditionPatterns()
   )) {
     if (conditionType === TraitConditionType.NONE) continue;
 
@@ -103,7 +103,7 @@ function extractConditionText(
   sentence: string,
   condition: TraitConditionType
 ): string {
-  const patterns = TRAIT_CONDITION_PATTERNS[condition];
+  const patterns = getTraitConditionPatterns()[condition];
   for (const pattern of patterns) {
     const match = sentence.match(pattern);
     if (match) {
@@ -118,9 +118,10 @@ function extractConditionText(
 type MatchRange = { index: number; end: number };
 
 function canAttributeDrawHeartCapture(sentence: string): boolean {
+  const conditionPatterns = getTraitConditionPatterns();
   const drawMatch = findFirstPatternMatch(
     sentence,
-    TRAIT_CONDITION_PATTERNS[TraitConditionType.DRAW]
+    conditionPatterns[TraitConditionType.DRAW]
   );
   if (!drawMatch) return false;
 
@@ -133,7 +134,7 @@ function canAttributeDrawHeartCapture(sentence: string): boolean {
 
   const heartCollectBetween = findFirstPatternMatch(
     sentence,
-    TRAIT_CONDITION_PATTERNS[TraitConditionType.HEART_COLLECT],
+    conditionPatterns[TraitConditionType.HEART_COLLECT],
     drawMatch.end,
     effectMatch.index
   );
