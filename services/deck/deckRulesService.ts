@@ -154,9 +154,15 @@ export function canPlaceCardInSlot(
   // Edel Note＆カード（桂城泉＆セラス）
   const cardUnit = getCharacterUnit(cardInfo.characterName);
   if (cardUnit === 'Edel Note' && cardInfo.characterName.includes('＆')) {
+    const slotUnit = getCharacterUnit(slotCharacter);
     const slotGeneration = getCharacterGeneration(slotCharacter);
 
-    // 102期・103期・104期のサイドに配置可能
+    // Edel Noteのサイドに配置可能
+    if (slotUnit === 'Edel Note' && slotType === 'side') {
+      return { allowed: true };
+    }
+
+    // 102期・103期・104期のサイドにも配置可能
     const allowedGenerations: number[] = [GENERATION.TERM_102, GENERATION.TERM_103, GENERATION.TERM_104];
     if (slotGeneration && allowedGenerations.includes(slotGeneration) && slotType === 'side') {
       return { allowed: true };
@@ -164,7 +170,7 @@ export function canPlaceCardInSlot(
 
     return {
       allowed: false,
-      reason: 'Edeliedは102〜104期のサイドカードにのみ配置できます',
+      reason: 'Edeliedは102〜104期またはEdel Noteのサイドカードにのみ配置できます',
     };
   }
 
