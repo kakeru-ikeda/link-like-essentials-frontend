@@ -155,15 +155,21 @@ export function canPlaceCardInSlot(
   const cardUnit = getCharacterUnit(cardInfo.characterName);
   if (cardUnit === 'Edel Note' && cardInfo.characterName.includes('＆')) {
     const slotUnit = getCharacterUnit(slotCharacter);
-    
-    // Edel Noteのサイドのみ配置可能
+
+    // Edel Noteスロットのサイドは配置可能（105期のEdel Note枠）
     if (slotUnit === 'Edel Note' && slotType === 'side') {
       return { allowed: true };
     }
-    
+
+    // デッキタイプが102期・103期・104期のサイドに配置可能
+    const allowedDeckTypes = [DeckType.TERM_102, DeckType.TERM_103, DeckType.TERM_104];
+    if (deckType && allowedDeckTypes.includes(deckType) && slotType === 'side') {
+      return { allowed: true };
+    }
+
     return {
       allowed: false,
-      reason: 'EdeliedはEdel Noteのサイドカードにのみ配置できます',
+      reason: 'Edeliedは102〜104期またはEdel Noteのサイドカードにのみ配置できます',
     };
   }
 
