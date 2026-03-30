@@ -9,6 +9,7 @@ import {
   DECK_SLOT_MAPPING_105_FT_KOZUE,
   DECK_SLOT_MAPPING_105_FT_TSUZURI,
   DECK_SLOT_MAPPING_105_FT_MEGUMI,
+  DECK_SLOT_MAPPING_105_BGP,
 } from '@/config/deckSlots';
 
 /**
@@ -34,6 +35,8 @@ export function getDeckSlotMapping(deckType?: DeckType): DeckSlotMapping[] {
       return DECK_SLOT_MAPPING_105_FT_TSUZURI;
     case DeckType.TERM_105_FT_MEGUMI:
       return DECK_SLOT_MAPPING_105_FT_MEGUMI;
+    case DeckType.TERM_105_BGP:
+      return DECK_SLOT_MAPPING_105_BGP;
     default:
       return DECK_SLOT_MAPPING_105;
   }
@@ -62,6 +65,8 @@ export function getDeckFrame(deckType?: DeckType): (CharacterName | 'フリー' 
       return ['夕霧綴理', '桂城泉', 'セラス', 'フレンド', '百生吟子', '徒町小鈴', '安養寺姫芽', '日野下花帆', '村野さやか', '大沢瑠璃乃'];
     case DeckType.TERM_105_FT_MEGUMI:
       return ['藤島慈', '桂城泉', 'セラス', 'フレンド', '百生吟子', '徒町小鈴', '安養寺姫芽', '日野下花帆', '村野さやか', '大沢瑠璃乃'];
+    case DeckType.TERM_105_BGP:
+      return ['セラス', '桂城泉', 'フレンド', '百生吟子', '徒町小鈴', '安養寺姫芽', '日野下花帆', '村野さやか', '大沢瑠璃乃', '乙宗梢', '夕霧綴理', '藤島慈'];
     default:
       return ['セラス', '桂城泉', 'フリー', 'フレンド', '百生吟子', '徒町小鈴', '安養寺姫芽', '日野下花帆', '村野さやか', '大沢瑠璃乃'];
   }

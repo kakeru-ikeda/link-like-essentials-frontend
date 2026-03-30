@@ -54,6 +54,7 @@ export enum DeckType {
   TERM_105_FT_KOZUE = '105期ft.梢',
   TERM_105_FT_TSUZURI = '105期ft.綴理',
   TERM_105_FT_MEGUMI = '105期ft.慈',
+  TERM_105_BGP = '105期BGP',
 }
 
 export enum SongAttribute {
