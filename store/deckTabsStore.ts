@@ -4,6 +4,7 @@ import { Deck } from '@/models/deck/Deck';
 import { DeckService } from '@/services/deck/deckService';
 import { DeckTabsRepository } from '@/repositories/localStorage/deckTabsRepository';
 import { logDeckCreated } from '@/services/infrastructure/analyticsService';
+import { getDeckSlotMapping } from '@/services/deck/deckConfigService';
 
 /**
  * デッキタブ管理専用ストア
@@ -98,7 +99,21 @@ export const useDeckTabsStore = create<DeckTabsState>()(
         const saved = DeckTabsRepository.loadTabs();
         
         if (saved) {
-          state.tabs = saved.tabs;
+          // 各タブのdeckTypeに対応したスロット配置で正規化（LocalStorageの古い構成と不整合を防ぐ）
+          state.tabs = saved.tabs.map((deck) => {
+            const slotMapping = getDeckSlotMapping(deck.deckType);
+            const normalizedSlots = slotMapping.map((m) => {
+              const existing = deck.slots.find((s) => s.slotId === m.slotId);
+              return {
+                slotId: m.slotId,
+                characterName: m.characterName,
+                cardId: existing?.cardId ?? null,
+                card: existing?.card,
+                limitBreak: existing?.limitBreak,
+              };
+            });
+            return { ...deck, slots: normalizedSlots };
+          });
           state.activeTabId = saved.activeTabId;
         } else {
           // デフォルト: 初期タブを作成

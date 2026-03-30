@@ -48,7 +48,38 @@ export const DECK_SLOT_MAPPING_105: DeckSlotMapping[] = [
   { slotId: 16, characterName: '大沢瑠璃乃', slotType: 'main', row: 2, col: 4 },
   { slotId: 17, characterName: '大沢瑠璃乃', slotType: 'side', row: 2, col: 5 },
 ];
+export const DECK_SLOT_MAPPING_105_BGP: DeckSlotMapping[] = [
+  // 上段（105期生 + フレンド、フリー枠なし）
+  { slotId: 0, characterName: 'セラス', slotType: 'main', row: 0, col: 1 },
+  { slotId: 1, characterName: 'セラス', slotType: 'side', row: 0, col: 2 },
+  { slotId: 2, characterName: '桂城泉', slotType: 'main', row: 0, col: 3 },
+  { slotId: 3, characterName: '桂城泉', slotType: 'side', row: 0, col: 4 },
+  { slotId: FRIEND_SLOT_ID, characterName: 'フレンド', slotType: 'side', row: 0, col: 0 },
 
+  // 中段（104期生）
+  { slotId: 4, characterName: '百生吟子', slotType: 'main', row: 1, col: 0 },
+  { slotId: 5, characterName: '百生吟子', slotType: 'side', row: 1, col: 1 },
+  { slotId: 6, characterName: '徒町小鈴', slotType: 'main', row: 1, col: 2 },
+  { slotId: 7, characterName: '徒町小鈴', slotType: 'side', row: 1, col: 3 },
+  { slotId: 8, characterName: '安養寺姫芽', slotType: 'main', row: 1, col: 4 },
+  { slotId: 9, characterName: '安養寺姫芽', slotType: 'side', row: 1, col: 5 },
+
+  // 下段（103期生）
+  { slotId: 10, characterName: '日野下花帆', slotType: 'main', row: 2, col: 0 },
+  { slotId: 11, characterName: '日野下花帆', slotType: 'side', row: 2, col: 1 },
+  { slotId: 12, characterName: '村野さやか', slotType: 'main', row: 2, col: 2 },
+  { slotId: 13, characterName: '村野さやか', slotType: 'side', row: 2, col: 3 },
+  { slotId: 14, characterName: '大沢瑠璃乃', slotType: 'main', row: 2, col: 4 },
+  { slotId: 15, characterName: '大沢瑠璃乃', slotType: 'side', row: 2, col: 5 },
+
+  // 最下段（102期生）
+  { slotId: 16, characterName: '乙宗梢', slotType: 'main', row: 3, col: 0 },
+  { slotId: 17, characterName: '乙宗梢', slotType: 'side', row: 3, col: 1 },
+  { slotId: 18, characterName: '夕霧綴理', slotType: 'main', row: 3, col: 2 },
+  { slotId: 19, characterName: '夕霧綴理', slotType: 'side', row: 3, col: 3 },
+  { slotId: 20, characterName: '藤島慈', slotType: 'main', row: 3, col: 4 },
+  { slotId: 21, characterName: '藤島慈', slotType: 'side', row: 3, col: 5 },
+];
 export const DECK_SLOT_MAPPING_104: DeckSlotMapping[] = [
   // 上段（104期生 + フレンド）
   { slotId: 0, characterName: '百生吟子', slotType: 'main', row: 0, col: 1 },

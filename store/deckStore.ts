@@ -6,6 +6,7 @@ import { Song } from '@/models/song/Song';
 import { DeckType } from '@/models/shared/enums';
 import { DeckRepository } from '@/repositories/localStorage/deckRepository';
 import { DeckService } from '@/services/deck/deckService';
+import { getDeckSlotMapping } from '@/services/deck/deckConfigService';
 
 /**
  * デッキストアの状態管理インターフェース
@@ -344,7 +345,19 @@ export const useDeckStore = create<DeckState>()(
       set((state) => {
         const savedDeck = DeckRepository.loadDeck();
         if (savedDeck) {
-          state.deck = savedDeck;
+          // deckTypeに対応したスロット配置で正規化（LocalStorageの古い構成と不整合を防ぐ）
+          const slotMapping = getDeckSlotMapping(savedDeck.deckType);
+          const normalizedSlots = slotMapping.map((m) => {
+            const existing = savedDeck.slots.find((s) => s.slotId === m.slotId);
+            return {
+              slotId: m.slotId,
+              characterName: m.characterName,
+              cardId: existing?.cardId ?? null,
+              card: existing?.card,
+              limitBreak: existing?.limitBreak,
+            };
+          });
+          state.deck = { ...savedDeck, slots: normalizedSlots };
         } else {
           state.deck = DeckService.createEmptyDeck();
         }

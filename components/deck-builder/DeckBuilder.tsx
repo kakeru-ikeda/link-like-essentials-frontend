@@ -331,6 +331,16 @@ export const DeckBuilder: React.FC = () => {
   const topRowGroups = characterGroups.filter((g) => g.row === 0);
   const middleRowGroups = characterGroups.filter((g) => g.row === 1);
   const bottomRowGroups = characterGroups.filter((g) => g.row === 2);
+  const extraRowGroups = characterGroups.filter((g) => g.row === 3);
+
+  // SP用: フレンドを末尾に移し、ゲーム上の段ごとにセクション分割
+  const spRowSections = React.useMemo(() => {
+    const spTop = topRowGroups.filter((g) => g.character !== 'フレンド');
+    const friend = topRowGroups.filter((g) => g.character === 'フレンド');
+    return [spTop, middleRowGroups, bottomRowGroups, extraRowGroups, friend].filter(
+      (r) => r.length > 0
+    );
+  }, [topRowGroups, middleRowGroups, bottomRowGroups, extraRowGroups]);
 
   if (!deck) {
     return (
@@ -357,38 +367,42 @@ export const DeckBuilder: React.FC = () => {
         className={
           isSp
             ? 'w-full py-2 px-3'
-            : `flex-1 w-full self-center py-2 px-2 overflow-x-auto pl-14 ${!isFriendSlotEnabled ? 'flex justify-center' : ''}`
+            : `flex-1 min-h-0 w-full self-center py-2 px-2 overflow-auto pl-14 ${!isFriendSlotEnabled ? 'flex justify-center' : ''}`
         }
       >
         {isSp ? (
-          <div className="grid grid-cols-3 gap-2 sm:gap-3">
-            {characterGroups.map(({ character, slots, key }) => (
-              <div key={key}>
-                <CharacterDeckGroup
-                  character={character}
-                  slots={slots}
-                  aceSlotId={deck.aceSlotId}
-                  draggingSlotId={draggingSlotId}
-                  isCenter={deck?.centerCharacter === character}
-                  isSinger={deck?.participations?.includes(character) || false}
-                  showLimitBreak={showLimitBreak}
-                  onSlotClick={handleSlotClick}
-                  onRemoveCard={removeCard}
-                  onToggleAce={toggleAceCard}
-                  onShowDetail={handleShowDetail}
-                  onLimitBreakChange={updateLimitBreakCount}
-                  onDragStart={handleDragStart}
-                  onDragEnd={handleDragEnd}
-                  onDrop={handleDrop}
-                  canDropToSlot={canDropToSlot}
-                  isSpLayout
-                />
+          <div className="flex flex-col gap-2 sm:gap-3">
+            {spRowSections.map((rowGroups, rowIdx) => (
+              <div key={rowIdx} className="grid grid-cols-3 gap-2 sm:gap-3">
+                {rowGroups.map(({ character, slots, key }) => (
+                  <div key={key}>
+                    <CharacterDeckGroup
+                      character={character}
+                      slots={slots}
+                      aceSlotId={deck.aceSlotId}
+                      draggingSlotId={draggingSlotId}
+                      isCenter={deck?.centerCharacter === character}
+                      isSinger={deck?.participations?.includes(character) || false}
+                      showLimitBreak={showLimitBreak}
+                      onSlotClick={handleSlotClick}
+                      onRemoveCard={removeCard}
+                      onToggleAce={toggleAceCard}
+                      onShowDetail={handleShowDetail}
+                      onLimitBreakChange={updateLimitBreakCount}
+                      onDragStart={handleDragStart}
+                      onDragEnd={handleDragEnd}
+                      onDrop={handleDrop}
+                      canDropToSlot={canDropToSlot}
+                      isSpLayout
+                    />
+                  </div>
+                ))}
               </div>
             ))}
           </div>
         ) : (
           <div
-            className="h-full flex flex-col gap-2 sm:gap-3 md:gap-4 justify-center"
+            className={`flex flex-col gap-2 sm:gap-3 md:gap-4 ${extraRowGroups.length === 0 ? 'min-h-full justify-center' : ''}`}
             style={{ width: 'min(100%, 896px)' }}
           >
             {/* 上段 - 固定幅で並べ、フレンド有効時は4つ目がはみ出す */}
@@ -491,6 +505,40 @@ export const DeckBuilder: React.FC = () => {
                 </div>
               ))}
             </div>
+
+            {/* 最下段（BGP等の追加段） */}
+            {extraRowGroups.length > 0 && (
+              <div className="flex gap-2 sm:gap-3 md:gap-4 lg:gap-5">
+                {extraRowGroups.map(({ character, slots, key }) => (
+                  <div
+                    key={key}
+                    className="flex-shrink-0"
+                    style={{ width: 'calc((90% - (2 * 0.5rem)) / 3)' }}
+                  >
+                    <CharacterDeckGroup
+                      character={character}
+                      slots={slots}
+                      aceSlotId={deck.aceSlotId}
+                      draggingSlotId={draggingSlotId}
+                      isCenter={deck?.centerCharacter === character}
+                      isSinger={
+                        deck?.participations?.includes(character) || false
+                      }
+                      showLimitBreak={showLimitBreak}
+                      onSlotClick={handleSlotClick}
+                      onRemoveCard={removeCard}
+                      onToggleAce={toggleAceCard}
+                      onShowDetail={handleShowDetail}
+                      onLimitBreakChange={updateLimitBreakCount}
+                      onDragStart={handleDragStart}
+                      onDragEnd={handleDragEnd}
+                      onDrop={handleDrop}
+                      canDropToSlot={canDropToSlot}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>

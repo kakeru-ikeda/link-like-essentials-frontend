@@ -25,6 +25,7 @@ export const DeckTypeSelect: React.FC<DeckTypeProps> = ({
     { value: DeckType.TERM_103, label: '103期' },
     { value: DeckType.TERM_104, label: '104期' },
     { value: DeckType.TERM_105, label: '105期' },
+    { value: DeckType.TERM_105_BGP, label: '105期BGP' },
     { value: DeckType.TERM_105_FT_KOZUE, label: '105期ft.梢' },
     { value: DeckType.TERM_105_FT_TSUZURI, label: '105期ft.綴理' },
     { value: DeckType.TERM_105_FT_MEGUMI, label: '105期ft.慈' },
