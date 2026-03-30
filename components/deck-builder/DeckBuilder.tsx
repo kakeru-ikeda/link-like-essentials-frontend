@@ -333,6 +333,15 @@ export const DeckBuilder: React.FC = () => {
   const bottomRowGroups = characterGroups.filter((g) => g.row === 2);
   const extraRowGroups = characterGroups.filter((g) => g.row === 3);
 
+  // SP用: フレンドを末尾に移し、ゲーム上の段ごとにセクション分割
+  const spRowSections = React.useMemo(() => {
+    const spTop = topRowGroups.filter((g) => g.character !== 'フレンド');
+    const friend = topRowGroups.filter((g) => g.character === 'フレンド');
+    return [spTop, middleRowGroups, bottomRowGroups, extraRowGroups, friend].filter(
+      (r) => r.length > 0
+    );
+  }, [topRowGroups, middleRowGroups, bottomRowGroups, extraRowGroups]);
+
   if (!deck) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -362,28 +371,32 @@ export const DeckBuilder: React.FC = () => {
         }
       >
         {isSp ? (
-          <div className="grid grid-cols-3 gap-2 sm:gap-3">
-            {characterGroups.map(({ character, slots, key }) => (
-              <div key={key}>
-                <CharacterDeckGroup
-                  character={character}
-                  slots={slots}
-                  aceSlotId={deck.aceSlotId}
-                  draggingSlotId={draggingSlotId}
-                  isCenter={deck?.centerCharacter === character}
-                  isSinger={deck?.participations?.includes(character) || false}
-                  showLimitBreak={showLimitBreak}
-                  onSlotClick={handleSlotClick}
-                  onRemoveCard={removeCard}
-                  onToggleAce={toggleAceCard}
-                  onShowDetail={handleShowDetail}
-                  onLimitBreakChange={updateLimitBreakCount}
-                  onDragStart={handleDragStart}
-                  onDragEnd={handleDragEnd}
-                  onDrop={handleDrop}
-                  canDropToSlot={canDropToSlot}
-                  isSpLayout
-                />
+          <div className="flex flex-col gap-2 sm:gap-3">
+            {spRowSections.map((rowGroups, rowIdx) => (
+              <div key={rowIdx} className="grid grid-cols-3 gap-2 sm:gap-3">
+                {rowGroups.map(({ character, slots, key }) => (
+                  <div key={key}>
+                    <CharacterDeckGroup
+                      character={character}
+                      slots={slots}
+                      aceSlotId={deck.aceSlotId}
+                      draggingSlotId={draggingSlotId}
+                      isCenter={deck?.centerCharacter === character}
+                      isSinger={deck?.participations?.includes(character) || false}
+                      showLimitBreak={showLimitBreak}
+                      onSlotClick={handleSlotClick}
+                      onRemoveCard={removeCard}
+                      onToggleAce={toggleAceCard}
+                      onShowDetail={handleShowDetail}
+                      onLimitBreakChange={updateLimitBreakCount}
+                      onDragStart={handleDragStart}
+                      onDragEnd={handleDragEnd}
+                      onDrop={handleDrop}
+                      canDropToSlot={canDropToSlot}
+                      isSpLayout
+                    />
+                  </div>
+                ))}
               </div>
             ))}
           </div>
