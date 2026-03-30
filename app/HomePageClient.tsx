@@ -6,25 +6,42 @@ import { DeckTabs } from '@/components/deck-builder/DeckTabs';
 import { useDeckTabs } from '@/hooks/deck/useDeckTabs';
 import { useDeck } from '@/hooks/deck/useDeck';
 import { useResponsiveDevice } from '@/hooks/ui/useResponsiveDevice';
+import { getDeckSlotMapping } from '@/services/deck/deckConfigService';
 
 export function HomePageClient() {
   const { tabs, activeTabId, addTab, deleteTab, switchTab } = useDeckTabs();
-  const { isFriendSlotEnabled } = useDeck();
+  const { deck, isFriendSlotEnabled } = useDeck();
   const { isSp } = useResponsiveDevice();
 
-  // DeckBuilderの必要幅を計算
+  // DeckBuilderの必要幅を上段の実際のグループ数から計算
   const deckBuilderWidth = React.useMemo(() => {
-    if (isSp) {
-      return '100%';
-    }
-    if (isFriendSlotEnabled) {
-      // フレンド有効: 4グループ分の幅 + 余裕
-      return 'clamp(896px, 65%, 1280px)';
+    if (isSp) return '100%';
+
+    const mapping = getDeckSlotMapping(deck?.deckType);
+    const topRowNonFriendChars = [
+      ...new Set(
+        mapping
+          .filter((m) => m.row === 0 && m.characterName !== 'フレンド')
+          .map((m) => m.characterName)
+      ),
+    ];
+    const nonFriendCount = topRowNonFriendChars.length;
+    const hasFriend =
+      isFriendSlotEnabled &&
+      mapping.some((m) => m.row === 0 && m.characterName === 'フレンド');
+
+    if (nonFriendCount >= 3) {
+      // 3キャラ + フレンド有無
+      return hasFriend
+        ? 'clamp(896px, 65%, 1280px)'
+        : 'clamp(640px, 58%, 928px)';
     } else {
-      // フレンド無効: 3グループ分の幅
-      return 'clamp(640px, 58%, 928px)';
+      // 2キャラ（BGP等）+ フレンド有無
+      return hasFriend
+        ? 'clamp(640px, 58%, 928px)'
+        : 'clamp(640px, 58%, 928px)';
     }
-  }, [isFriendSlotEnabled, isSp]);
+  }, [deck?.deckType, isFriendSlotEnabled, isSp]);
 
   return (
     <div className={isSp ? 'min-h-screen flex flex-col bg-white' : 'h-screen flex flex-col overflow-hidden'}>
