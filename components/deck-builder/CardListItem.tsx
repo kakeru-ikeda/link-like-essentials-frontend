@@ -7,7 +7,7 @@ import { StyleTypeBadge } from '@/components/shared/StyleTypeBadge';
 import { FavoriteModeBadge } from '@/components/shared/FavoriteModeBadge';
 import { CardDetailSections } from '@/components/deck-builder/CardDetailSections';
 import { ChevronDown, ChevronUp, Plus, Minus, ArrowLeftRight } from 'lucide-react';
-import { useAwakeStateStore } from '@/store/awakeStateStore';
+import { useAwakeState } from '@/hooks/card/useAwakeState';
 
 interface CardListItemProps {
   card: Card;
@@ -19,7 +19,7 @@ export const CardListItem: React.FC<CardListItemProps> = ({ card, onSelect, vari
   const [imageError, setImageError] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
-  const isAwakeAfter = useAwakeStateStore((state) => state.awakeStates[card.id] ?? true);
+  const { isAwakeAfter } = useAwakeState(card.id);
   const imageUrl = isAwakeAfter
     ? card.detail?.awakeAfterStorageUrl
     : (card.detail?.awakeBeforeStorageUrl ?? card.detail?.awakeAfterStorageUrl);

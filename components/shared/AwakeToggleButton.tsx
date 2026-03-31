@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useAwakeStateStore } from '@/store/awakeStateStore';
+import { useAwakeState } from '@/hooks/card/useAwakeState';
 
 interface AwakeToggleButtonProps {
   cardId: string;
@@ -16,16 +16,13 @@ export const AwakeToggleButton: React.FC<AwakeToggleButtonProps> = ({
   className = '',
   onClick,
 }) => {
-  const { isAwakeAfter, setAwakeState } = useAwakeStateStore((state) => ({
-    isAwakeAfter: state.awakeStates[cardId] ?? true,
-    setAwakeState: state.setAwakeState,
-  }));
+  const { isAwakeAfter, setAwakeState } = useAwakeState(cardId);
 
   if (!hasAwakeToggle) return null;
 
   const handleClick = (e: React.MouseEvent): void => {
     e.stopPropagation();
-    setAwakeState(cardId, !isAwakeAfter);
+    setAwakeState(!isAwakeAfter);
     onClick?.(e);
   };
 

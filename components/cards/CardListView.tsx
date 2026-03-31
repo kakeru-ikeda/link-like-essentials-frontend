@@ -8,7 +8,7 @@ import { FavoriteModeBadge } from '@/components/shared/FavoriteModeBadge';
 import { LimitedTypeBadge } from '@/components/shared/LimitedTypeBadge';
 import { HighlightText } from '@/components/common/HighlightText';
 import { getCharacterColor } from '@/utils/colorUtils';
-import { useAwakeStateStore } from '@/store/awakeStateStore';
+import { useAwakeStates } from '@/hooks/card/useAwakeState';
 
 interface CardListViewProps {
   cards: Card[];
@@ -19,7 +19,7 @@ interface CardListViewProps {
 
 export const CardListView: React.FC<CardListViewProps> = ({ cards, loading, highlightKeywords, onClickCard }) => {
   const [errorMap, setErrorMap] = useState<Record<string, boolean>>({});
-  const awakeStates = useAwakeStateStore((state) => state.awakeStates);
+  const awakeStates = useAwakeStates();
 
   if (loading) {
     return (

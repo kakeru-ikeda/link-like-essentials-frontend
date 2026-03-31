@@ -4,7 +4,7 @@ import React from 'react';
 import { Card } from '@/models/card/Card';
 import { HighlightText } from '@/components/common/HighlightText';
 import { getCharacterColor } from '@/utils/colorUtils';
-import { useAwakeStateStore } from '@/store/awakeStateStore';
+import { useAwakeState } from '@/hooks/card/useAwakeState';
 import { AwakeToggleButton } from '@/components/shared/AwakeToggleButton';
 
 interface CardGridItemProps {
@@ -19,7 +19,7 @@ export const CardGridItem: React.FC<CardGridItemProps> = ({
   onClick,
 }) => {
   const characterColor = getCharacterColor(card.characterName);
-  const isAwakeAfter = useAwakeStateStore((state) => state.awakeStates[card.id] ?? true);
+  const { isAwakeAfter } = useAwakeState(card.id);
 
   const hasAwakeToggle =
     !!card.detail?.awakeBeforeStorageUrl &&

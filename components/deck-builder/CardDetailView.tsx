@@ -9,7 +9,7 @@ import { LimitedTypeBadge } from '@/components/shared/LimitedTypeBadge';
 import { Loading } from '@/components/common/Loading';
 import { CardDetailSections } from '@/components/deck-builder/CardDetailSections';
 import { getCharacterColor } from '@/utils/colorUtils';
-import { useAwakeStateStore } from '@/store/awakeStateStore';
+import { useAwakeState } from '@/hooks/card/useAwakeState';
 
 interface CardDetailViewProps {
   cardId: string;
@@ -21,10 +21,7 @@ export const CardDetailView: React.FC<CardDetailViewProps> = ({ cardId }) => {
   const [imageLoading, setImageLoading] = React.useState(false);
 
   // cardId をキーにストアと双方向同期
-  const { isAwakeAfter, setAwakeState } = useAwakeStateStore((state) => ({
-    isAwakeAfter: state.awakeStates[cardId] ?? true,
-    setAwakeState: state.setAwakeState,
-  }));
+  const { isAwakeAfter, setAwakeState } = useAwakeState(cardId);
 
   /**
    * 覚醒状態を切り替える共通関数
@@ -45,11 +42,10 @@ export const CardDetailView: React.FC<CardDetailViewProps> = ({ cardId }) => {
 
       setImageError(false);
 
-      setAwakeState(cardId, targetIsAfter);
+      setAwakeState(targetIsAfter);
     },
     [
       isAwakeAfter,
-      cardId,
       setAwakeState,
       card?.detail?.awakeBeforeStorageUrl,
       card?.detail?.awakeAfterStorageUrl,

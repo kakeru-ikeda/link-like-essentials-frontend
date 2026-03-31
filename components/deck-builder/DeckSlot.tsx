@@ -8,7 +8,7 @@ import { RarityBadge } from '@/components/shared/RarityBadge';
 import { AceBadge } from '@/components/shared/AceBadge';
 import { LimitBreakBadge } from '@/components/deck-builder/LimitBreakBadge';
 import { useResponsiveDevice } from '@/hooks/ui/useResponsiveDevice';
-import { useAwakeStateStore } from '@/store/awakeStateStore';
+import { useAwakeState } from '@/hooks/card/useAwakeState';
 import { AwakeToggleButton } from '@/components/shared/AwakeToggleButton';
 
 interface DeckSlotProps {
@@ -54,9 +54,7 @@ export const DeckSlot: React.FC<DeckSlotProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const { isSp } = useResponsiveDevice();
 
-  const isAwakeAfter = useAwakeStateStore((state) =>
-    slot.card ? (state.awakeStates[slot.card.id] ?? true) : true
-  );
+  const { isAwakeAfter } = useAwakeState(slot.card?.id);
 
   const shouldShowHoverActions = isHovered || (isSp && isSpHoverActive);
 
