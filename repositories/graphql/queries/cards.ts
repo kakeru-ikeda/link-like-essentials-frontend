@@ -17,6 +17,7 @@ export const GET_CARDS = gql`
       detail {
         id
         cardId
+        awakeBeforeStorageUrl
         awakeAfterStorageUrl
         favoriteMode
         specialAppeal {

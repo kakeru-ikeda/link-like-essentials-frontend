@@ -8,6 +8,7 @@ import { RarityBadge } from '@/components/shared/RarityBadge';
 import { AceBadge } from '@/components/shared/AceBadge';
 import { LimitBreakBadge } from '@/components/deck-builder/LimitBreakBadge';
 import { useResponsiveDevice } from '@/hooks/ui/useResponsiveDevice';
+import { useAwakeStateStore } from '@/store/awakeStateStore';
 
 interface DeckSlotProps {
   slot: DeckSlotType;
@@ -52,10 +53,28 @@ export const DeckSlot: React.FC<DeckSlotProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const { isSp } = useResponsiveDevice();
 
+  const { isAwakeAfter, setAwakeState } = useAwakeStateStore((state) => ({
+    isAwakeAfter: slot.card ? (state.awakeStates[slot.card.id] ?? true) : true,
+    setAwakeState: state.setAwakeState,
+  }));
+
   const shouldShowHoverActions = isHovered || (isSp && isSpHoverActive);
 
   // キャラクターカラーを取得（画像枠線用）
   const characterColor = getCharacterColor(slot.characterName);
+
+  // 覚醒前後切り替えが可能かどうか
+  const hasAwakeToggle =
+    !!slot.card?.detail?.awakeBeforeStorageUrl &&
+    !!slot.card?.detail?.awakeAfterStorageUrl &&
+    slot.card.detail.awakeBeforeStorageUrl !== slot.card.detail.awakeAfterStorageUrl;
+
+  // 表示する画像URL
+  const currentImageUrl = slot.card
+    ? isAwakeAfter
+      ? slot.card.detail?.awakeAfterStorageUrl
+      : (slot.card.detail?.awakeBeforeStorageUrl ?? slot.card.detail?.awakeAfterStorageUrl)
+    : undefined;
 
   const containerClass = isPortrait
     ? `relative w-full aspect-[5/7] ${isMain ? 'border-2' : 'border'} border-gray-300 rounded-lg overflow-hidden hover:border-blue-500 transition-colors bg-white`
@@ -71,10 +90,17 @@ export const DeckSlot: React.FC<DeckSlotProps> = ({
   };
 
   const handleDetailClick = (e: React.MouseEvent): void => {
-    e.stopPropagation(); // スロットのクリックイベントを防ぐ
+    e.stopPropagation();
     if (onShowDetail && slot.card) {
       onShowDetail(slot.card.id);
     }
+  };
+
+  const handleAwakeToggle = (e: React.MouseEvent): void => {
+    e.stopPropagation();
+    if (!slot.card) return;
+    setAwakeState(slot.card.id, !isAwakeAfter);
+    setImageError(false);
   };
 
   const handleSlotClick = (): void => {
@@ -254,6 +280,19 @@ export const DeckSlot: React.FC<DeckSlotProps> = ({
             />
           )}
           
+          {/* 覚醒前後切り替えボタン */}
+          {shouldShowHoverActions && hasAwakeToggle && !(isSp && showLimitBreak) && (
+            <button
+              onClick={handleAwakeToggle}
+              className="absolute top-1 left-1 z-10 p-1 bg-black/50 rounded-md text-white hover:bg-black/70 transition-colors"
+              aria-label={isAwakeAfter ? '覚醒前イラストに切り替え' : '覚醒後イラストに切り替え'}
+            >
+              <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+              </svg>
+            </button>
+          )}
+
           {/* ホバー時のボタングループ */}
           {shouldShowHoverActions && !(isSp && showLimitBreak) && (
             <div className={`absolute top-1 right-1 z-10 flex ${actionContainerClass}`}>
@@ -265,13 +304,13 @@ export const DeckSlot: React.FC<DeckSlotProps> = ({
             </div>
           )}
           
-          {!imageError && slot.card.detail?.awakeAfterStorageUrl ? (
+          {!imageError && currentImageUrl ? (
             <div
               className="relative w-full h-full border-2 overflow-hidden"
               style={{ borderColor: characterColor }}
             >
               <img
-                src={slot.card.detail.awakeAfterStorageUrl}
+                src={currentImageUrl}
                 alt={slot.card.cardName}
                 className={
                   isPortrait
