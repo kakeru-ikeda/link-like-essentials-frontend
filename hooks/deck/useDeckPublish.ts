@@ -8,6 +8,7 @@ import { deckPublishService } from '@/services/deck/deckPublishService';
 import { thumbnailService } from '@/services/deck/thumbnailService';
 import { useUserProfile } from '@/hooks/user/useUserProfile';
 import { FRIEND_SLOT_ID } from '@/config/deckSlots';
+import { useAwakeStates } from '@/hooks/card/useAwakeState';
 
 export interface UseDeckPublishReturn {
   /** 表示名 */
@@ -54,6 +55,7 @@ export const useDeckPublish = (
   onPublished?: (publishedDeck: PublishedDeck) => void
 ): UseDeckPublishReturn => {
   const { profile, isLoadingProfile, fetchProfile } = useUserProfile();
+  const awakeStates = useAwakeStates();
   const { uploadImage, error: uploadError } = useImageUpload({
     enableCropping: false,
   });
@@ -153,7 +155,7 @@ export const useDeckPublish = (
     try {
       let thumbnailUrl: string | undefined;
       try {
-        thumbnailUrl = await thumbnailService.generateThumbnail(deckForPublish);
+        thumbnailUrl = await thumbnailService.generateThumbnail(deckForPublish, awakeStates);
       } catch (captureError) {
         const errorMessage =
           captureError instanceof Error
@@ -167,6 +169,7 @@ export const useDeckPublish = (
       const publishedDeck: PublishedDeck = await deckPublishService.publishDeck(
         deckForPublish,
         {
+          awakeStates,
           comment: comment || undefined,
           hashtags,
           isUnlisted,
@@ -189,7 +192,7 @@ export const useDeckPublish = (
     } finally {
       setIsPublishing(false);
     }
-  }, [comment, deck, hashtags, isUnlisted, onPublished, setFriendSlotEnabled, uploadedImageUrls]);
+  }, [awakeStates, comment, deck, hashtags, isUnlisted, onPublished, setFriendSlotEnabled, uploadedImageUrls]);
 
   return {
     displayName,

@@ -2,7 +2,7 @@ import type { Deck } from '@/models/deck/Deck';
 import type { GenerateThumbnailRequest, ThumbnailCardPayload, ThumbnailDeckPayload } from '@/models/deck/Thumbnail';
 import { thumbnailRepository } from '@/repositories/api/thumbnailRepository';
 
-function buildThumbnailDeckPayload(deck: Deck): ThumbnailDeckPayload {
+function buildThumbnailDeckPayload(deck: Deck, awakeStates: Record<string, boolean>): ThumbnailDeckPayload {
   return {
     id: deck.id,
     name: deck.name,
@@ -10,6 +10,7 @@ function buildThumbnailDeckPayload(deck: Deck): ThumbnailDeckPayload {
       slotId: slot.slotId,
       cardId: slot.cardId,
       ...(slot.limitBreak !== undefined && { limitBreak: slot.limitBreak }),
+      ...(slot.cardId !== null && { isAwakeAfter: awakeStates[slot.cardId] ?? true }),
     })),
     aceSlotId: deck.aceSlotId,
     deckType: deck.deckType,
@@ -37,7 +38,10 @@ function buildThumbnailCardsPayload(deck: Deck): ThumbnailCardPayload[] {
       characterName: slot.card.characterName,
       rarity: slot.card.rarity,
       detail: slot.card.detail
-        ? { awakeAfterStorageUrl: slot.card.detail.awakeAfterStorageUrl }
+        ? {
+            awakeBeforeStorageUrl: slot.card.detail.awakeBeforeStorageUrl,
+            awakeAfterStorageUrl: slot.card.detail.awakeAfterStorageUrl,
+          }
         : undefined,
     });
   });
@@ -46,9 +50,9 @@ function buildThumbnailCardsPayload(deck: Deck): ThumbnailCardPayload[] {
 }
 
 export const thumbnailService = {
-  async generateThumbnail(deck: Deck): Promise<string> {
+  async generateThumbnail(deck: Deck, awakeStates: Record<string, boolean>): Promise<string> {
     const request: GenerateThumbnailRequest = {
-      deck: buildThumbnailDeckPayload(deck),
+      deck: buildThumbnailDeckPayload(deck, awakeStates),
       cards: buildThumbnailCardsPayload(deck),
     };
 
