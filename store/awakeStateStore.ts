@@ -17,7 +17,8 @@ export const useAwakeStateStore = create<AwakeStateStore>()(
         })),
       clearAwakeState: (cardId) =>
         set((state) => {
-          const { [cardId]: _, ...rest } = state.awakeStates;
+          const rest = { ...state.awakeStates };
+          delete rest[cardId];
           return { awakeStates: rest };
         }),
     }),

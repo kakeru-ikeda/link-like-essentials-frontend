@@ -46,12 +46,13 @@ export const CardListView: React.FC<CardListViewProps> = ({ cards, loading, high
   return (
     <div className="flex flex-col gap-1.5">
       {cards.map((card) => {
-      const characterColor = getCharacterColor(card.characterName);
+        const characterColor = getCharacterColor(card.characterName);
         const isAwakeAfter = awakeStates[card.id] ?? true;
         const imageUrl = isAwakeAfter
           ? card.detail?.awakeAfterStorageUrl
           : (card.detail?.awakeBeforeStorageUrl ?? card.detail?.awakeAfterStorageUrl);
-        const showFallback = errorMap[card.id] || !imageUrl;
+        const errorKey = `${card.id}_${isAwakeAfter}`;
+        const showFallback = errorMap[errorKey] || !imageUrl;
 
         return (
           <button
@@ -68,7 +69,7 @@ export const CardListView: React.FC<CardListViewProps> = ({ cards, loading, high
                     src={imageUrl}
                     alt={card.cardName}
                     className="w-full h-full object-cover"
-                    onError={() => setErrorMap((prev) => ({ ...prev, [card.id]: true }))}
+                    onError={() => setErrorMap((prev) => ({ ...prev, [errorKey]: true }))}
                   />
                 ) : (
                   <div className="flex items-center justify-center h-full min-h-[84px]">

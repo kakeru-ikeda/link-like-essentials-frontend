@@ -28,7 +28,9 @@ export const AwakeToggleButton: React.FC<AwakeToggleButtonProps> = ({
 
   return (
     <button
+      type="button"
       onClick={handleClick}
+      aria-pressed={isAwakeAfter}
       className={`p-1 rounded-md transition-colors ${
         isAwakeAfter
           ? 'bg-yellow-400 text-gray-900 hover:bg-yellow-300'
