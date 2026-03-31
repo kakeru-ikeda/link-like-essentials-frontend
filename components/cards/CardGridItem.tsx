@@ -4,6 +4,8 @@ import React from 'react';
 import { Card } from '@/models/card/Card';
 import { HighlightText } from '@/components/common/HighlightText';
 import { getCharacterColor } from '@/utils/colorUtils';
+import { useAwakeStateStore } from '@/store/awakeStateStore';
+import { AwakeToggleButton } from '@/components/shared/AwakeToggleButton';
 
 interface CardGridItemProps {
   card: Card;
@@ -17,6 +19,16 @@ export const CardGridItem: React.FC<CardGridItemProps> = ({
   onClick,
 }) => {
   const characterColor = getCharacterColor(card.characterName);
+  const isAwakeAfter = useAwakeStateStore((state) => state.awakeStates[card.id] ?? true);
+
+  const hasAwakeToggle =
+    !!card.detail?.awakeBeforeStorageUrl &&
+    !!card.detail?.awakeAfterStorageUrl &&
+    card.detail.awakeBeforeStorageUrl !== card.detail.awakeAfterStorageUrl;
+
+  const imageUrl = isAwakeAfter
+    ? card.detail?.awakeAfterStorageUrl
+    : (card.detail?.awakeBeforeStorageUrl ?? card.detail?.awakeAfterStorageUrl);
 
   return (
     <button
@@ -27,9 +39,9 @@ export const CardGridItem: React.FC<CardGridItemProps> = ({
     >
       {/* カード画像 */}
       <div className="relative aspect-video bg-gray-100">
-        {card.detail?.awakeAfterStorageUrl ? (
+        {imageUrl ? (
           <img
-            src={card.detail.awakeAfterStorageUrl}
+            src={imageUrl}
             alt={card.cardName}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
           />
@@ -50,6 +62,11 @@ export const CardGridItem: React.FC<CardGridItemProps> = ({
             </svg>
           </div>
         )}
+
+        {/* 覚醒前後切り替えボタン（ホバー時のみ表示） */}
+        <div className="absolute top-1 left-1 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          <AwakeToggleButton cardId={card.id} hasAwakeToggle={hasAwakeToggle} />
+        </div>
 
         {/* ホバー時のカード情報オーバーレイ */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col justify-end p-3">

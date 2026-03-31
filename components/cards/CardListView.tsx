@@ -8,6 +8,7 @@ import { FavoriteModeBadge } from '@/components/shared/FavoriteModeBadge';
 import { LimitedTypeBadge } from '@/components/shared/LimitedTypeBadge';
 import { HighlightText } from '@/components/common/HighlightText';
 import { getCharacterColor } from '@/utils/colorUtils';
+import { useAwakeStateStore } from '@/store/awakeStateStore';
 
 interface CardListViewProps {
   cards: Card[];
@@ -18,6 +19,7 @@ interface CardListViewProps {
 
 export const CardListView: React.FC<CardListViewProps> = ({ cards, loading, highlightKeywords, onClickCard }) => {
   const [errorMap, setErrorMap] = useState<Record<string, boolean>>({});
+  const awakeStates = useAwakeStateStore((state) => state.awakeStates);
 
   if (loading) {
     return (
@@ -44,8 +46,12 @@ export const CardListView: React.FC<CardListViewProps> = ({ cards, loading, high
   return (
     <div className="flex flex-col gap-1.5">
       {cards.map((card) => {
-        const characterColor = getCharacterColor(card.characterName);
-        const showFallback = errorMap[card.id] || !card.detail?.awakeAfterStorageUrl;
+      const characterColor = getCharacterColor(card.characterName);
+        const isAwakeAfter = awakeStates[card.id] ?? true;
+        const imageUrl = isAwakeAfter
+          ? card.detail?.awakeAfterStorageUrl
+          : (card.detail?.awakeBeforeStorageUrl ?? card.detail?.awakeAfterStorageUrl);
+        const showFallback = errorMap[card.id] || !imageUrl;
 
         return (
           <button
@@ -59,7 +65,7 @@ export const CardListView: React.FC<CardListViewProps> = ({ cards, loading, high
               <div className="w-28 sm:w-36 bg-gray-100 h-full relative">
                 {!showFallback ? (
                   <img
-                    src={card.detail?.awakeAfterStorageUrl}
+                    src={imageUrl}
                     alt={card.cardName}
                     className="w-full h-full object-cover"
                     onError={() => setErrorMap((prev) => ({ ...prev, [card.id]: true }))}
