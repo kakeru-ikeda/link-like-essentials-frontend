@@ -3,11 +3,13 @@ import React from 'react';
 interface LoadingProps {
   fullScreen?: boolean;
   message?: string;
+  size?: 'sm' | 'md';
 }
 
 export const Loading: React.FC<LoadingProps> = ({
   fullScreen = false,
   message,
+  size = 'md',
 }) => {
   if (fullScreen) {
     return (
@@ -23,6 +25,15 @@ export const Loading: React.FC<LoadingProps> = ({
             </p>
           )}
         </div>
+      </div>
+    );
+  }
+
+  if (size === 'sm') {
+    return (
+      <div className="relative flex-shrink-0">
+        <div className="animate-spin rounded-full h-5 w-5 border-2 border-blue-200"></div>
+        <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-blue-500 absolute top-0 left-0"></div>
       </div>
     );
   }
