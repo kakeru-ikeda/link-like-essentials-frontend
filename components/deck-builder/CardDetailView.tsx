@@ -9,6 +9,7 @@ import { LimitedTypeBadge } from '@/components/shared/LimitedTypeBadge';
 import { Loading } from '@/components/common/Loading';
 import { CardDetailSections } from '@/components/deck-builder/CardDetailSections';
 import { getCharacterColor } from '@/utils/colorUtils';
+import { useAwakeState } from '@/hooks/card/useAwakeState';
 
 interface CardDetailViewProps {
   cardId: string;
@@ -17,8 +18,10 @@ interface CardDetailViewProps {
 export const CardDetailView: React.FC<CardDetailViewProps> = ({ cardId }) => {
   const { card, loading, error } = useCardDetail(cardId);
   const [imageError, setImageError] = React.useState(false);
-  const [isAwakeAfter, setIsAwakeAfter] = React.useState(true);
   const [imageLoading, setImageLoading] = React.useState(false);
+
+  // cardId をキーにストアと双方向同期
+  const { isAwakeAfter, setAwakeState } = useAwakeState(cardId);
 
   /**
    * 覚醒状態を切り替える共通関数
@@ -33,18 +36,17 @@ export const CardDetailView: React.FC<CardDetailViewProps> = ({ cardId }) => {
       const afterUrl = card?.detail?.awakeAfterStorageUrl;
 
       // URLが同じ場合はローディングを表示しない
-      if (beforeUrl === afterUrl) {
-        setIsAwakeAfter(targetIsAfter);
-        setImageError(false);
-        return;
+      if (beforeUrl !== afterUrl) {
+        setImageLoading(true);
       }
 
-      setImageLoading(true);
-      setIsAwakeAfter(targetIsAfter);
       setImageError(false);
+
+      setAwakeState(targetIsAfter);
     },
     [
       isAwakeAfter,
+      setAwakeState,
       card?.detail?.awakeBeforeStorageUrl,
       card?.detail?.awakeAfterStorageUrl,
     ]

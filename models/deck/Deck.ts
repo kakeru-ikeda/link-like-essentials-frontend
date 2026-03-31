@@ -11,7 +11,9 @@ export interface DeckSlot {
 }
 
 // クラウド送信用のDeckSlot型
-export type DeckSlotForCloud = Pick<DeckSlot, 'slotId' | 'cardId' | 'limitBreak'>;
+export type DeckSlotForCloud = Pick<DeckSlot, 'slotId' | 'cardId' | 'limitBreak'> & {
+  isAwakeAfter?: boolean; // 覚醒状態（true=覚醒後, false=覚醒前, undefined=覚醒後として扱う）
+};
 
 export interface Deck {
   id: string;

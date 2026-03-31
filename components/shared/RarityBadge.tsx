@@ -5,7 +5,7 @@ import { Rarity } from '@/models/shared/enums';
 
 interface RarityBadgeProps {
   rarity: Rarity;
-  size?: 'small' | 'large';
+  size?: 'xsmall' | 'small' | 'large';
   position?: 'absolute' | 'inline';
 }
 
@@ -34,16 +34,18 @@ export const RarityBadge: React.FC<RarityBadgeProps> = ({
     }
   };
 
-  const sizeClasses = size === 'large' 
-    ? 'px-2 py-1 text-xs' 
-    : 'px-1.5 py-0.5 text-[10px]';
+  const sizeClasses = size === 'large'
+    ? 'px-2 py-1 text-xs'
+    : size === 'small'
+    ? 'px-1.5 py-0.5 text-[10px]'
+    : 'px-1 py-0.5 text-[9px]';
 
   const positionClasses = position === 'absolute'
     ? 'absolute left-1 z-20 pointer-events-none'
     : 'inline-block';
 
   const topClasses = position === 'absolute'
-    ? (size === 'large' ? 'top-[32px]' : 'top-[25px]')
+    ? (size === 'large' ? 'top-[32px]' : size === 'small' ? 'top-[25px]' : 'top-[22px]')
     : '';
 
   return (

@@ -11,6 +11,7 @@ import type { DeckSlot } from '@/models/deck/Deck';
 import type { CharacterName } from '@/config/characters';
 import type { DeckSlotMapping } from '@/config/deckSlots';
 import { FRIEND_SLOT_ID } from '@/config/deckSlots';
+import { useAwakeState } from '@/hooks/card/useAwakeState';
 
 interface ExportDeckBuilderProps {
 }
@@ -37,6 +38,7 @@ const ExportCardSlot = React.memo<ExportCardSlotProps>((
 ) => {
   const limitBreakValue = slot.limitBreak ?? 14;
   const [isHovered, setIsHovered] = React.useState(false);
+  const { isAwakeAfter } = useAwakeState(slot.card?.id);
 
   const handleLimitIncrease = (e: React.MouseEvent<HTMLButtonElement>): void => {
     e.preventDefault();
@@ -80,18 +82,23 @@ const ExportCardSlot = React.memo<ExportCardSlotProps>((
       )}
 
       {/* カード画像 */}
-      {slot.card.detail?.awakeAfterStorageUrl ? (
-        <img
-          src={slot.card.detail.awakeAfterStorageUrl}
-          alt={slot.card.cardName}
-          crossOrigin="anonymous"
-          className="w-full h-full object-cover"
-        />
-      ) : (
-        <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-          <span className="text-gray-400 text-2xl">画像なし</span>
-        </div>
-      )}
+      {(() => {
+        const imageUrl = isAwakeAfter
+          ? slot.card.detail?.awakeAfterStorageUrl
+          : (slot.card.detail?.awakeBeforeStorageUrl ?? slot.card.detail?.awakeAfterStorageUrl);
+        return imageUrl ? (
+          <img
+            src={imageUrl}
+            alt={slot.card.cardName}
+            crossOrigin="anonymous"
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+            <span className="text-gray-400 text-2xl">画像なし</span>
+          </div>
+        );
+      })()}
 
       {/* 上限解放数表示 */}
       <LimitBreakBadge

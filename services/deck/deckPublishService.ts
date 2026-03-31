@@ -7,7 +7,7 @@ import { logDeckPublished } from '@/services/infrastructure/analyticsService';
 /**
  * Deckをクラウド送信用の形式に変換
  */
-function convertToDeckForCloud(deck: Deck): DeckForCloud {
+function convertToDeckForCloud(deck: Deck, awakeStates: Record<string, boolean>): DeckForCloud {
   return {
     id: deck.id,
     name: deck.name,
@@ -15,6 +15,7 @@ function convertToDeckForCloud(deck: Deck): DeckForCloud {
       slotId: slot.slotId,
       cardId: slot.cardId,
       ...(slot.limitBreak !== undefined && { limitBreak: slot.limitBreak }),
+      ...(slot.cardId !== null && { isAwakeAfter: awakeStates[slot.cardId] ?? true }),
     })),
     aceSlotId: deck.aceSlotId,
     deckType: deck.deckType,
@@ -42,6 +43,7 @@ export const deckPublishService = {
   async publishDeck(
     deck: Deck,
     options: {
+      awakeStates: Record<string, boolean>;
       comment?: string;
       hashtags: string[];
       imageUrls?: string[];
@@ -56,7 +58,7 @@ export const deckPublishService = {
     // DeckPublicationRequestを構築
     const publication: DeckPublicationRequest = {
       id: publicationId,
-      deck: convertToDeckForCloud(deck),
+      deck: convertToDeckForCloud(deck, options.awakeStates),
       comment: options.comment,
       hashtags: options.hashtags,
       isUnlisted: options.isUnlisted ?? false,
