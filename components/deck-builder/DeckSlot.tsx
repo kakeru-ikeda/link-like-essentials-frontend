@@ -229,9 +229,9 @@ export const DeckSlot: React.FC<DeckSlotProps> = ({
     >
       {slot.card ? (
         <div className="w-full h-full relative">
-          {/* 上部の表示エリア: 上限解放表示 or バッジ群 */}
-          <div className="absolute top-1 left-1 z-20 flex items-center gap-1 pointer-events-none">
-            {showLimitBreak ? (
+          {/* 上部の表示エリア: 上限解放表示のみ */}
+          {showLimitBreak && (
+            <div className="absolute top-1 left-1 z-20 flex items-center gap-1 pointer-events-none">
               <LimitBreakBadge
                 value={limitBreakCount}
                 isMain={isMain}
@@ -241,22 +241,8 @@ export const DeckSlot: React.FC<DeckSlotProps> = ({
                 min={1}
                 max={14}
               />
-            ) : (
-              <>
-                {slot.card.detail?.skill?.ap && (
-                  <ApBadge 
-                    ap={slot.card.detail.skill.ap}
-                    favoriteMode={slot.card.detail.favoriteMode}
-                    size={isMain ? 'large' : 'small'}
-                  />
-                )}
-                <RarityBadge 
-                  rarity={slot.card.rarity}
-                  size={isMain ? 'large' : 'small'}
-                />
-              </>
-            )}
-          </div>
+            </div>
+          )}
 
           {/* エースバッジ（ホバー時 or エース設定済みの場合のみ表示、フレンドカードは除外） */}
           {slot.slotId !== 99 && (shouldShowHoverActions || isAce) && (
@@ -316,7 +302,25 @@ export const DeckSlot: React.FC<DeckSlotProps> = ({
               </div>
             </div>
           )}
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-1">
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent px-1 pb-1 pt-1.5">
+            {/* バッジ群（カード名の上に横並び） */}
+            {!showLimitBreak && (
+              <div className="flex items-center gap-1 mb-0.5 pointer-events-none">
+                {slot.card.detail?.skill?.ap && (
+                  <ApBadge
+                    ap={slot.card.detail.skill.ap}
+                    favoriteMode={slot.card.detail.favoriteMode}
+                    size="xsmall"
+                    position="inline"
+                  />
+                )}
+                <RarityBadge
+                  rarity={slot.card.rarity}
+                  size="xsmall"
+                  position="inline"
+                />
+              </div>
+            )}
             <p className={`text-white ${isMain ? 'text-xs' : 'text-[10px]'} font-medium truncate`}>
               {slot.card.cardName}
             </p>

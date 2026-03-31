@@ -5,7 +5,7 @@ import React from 'react';
 interface ApBadgeProps {
   ap: string;
   favoriteMode?: string;
-  size?: 'small' | 'large';
+  size?: 'xsmall' | 'small' | 'large';
   position?: 'absolute' | 'inline';
 }
 
@@ -30,9 +30,11 @@ export const ApBadge: React.FC<ApBadgeProps> = ({
     return 'bg-blue-600'; // デフォルト
   };
 
-  const sizeClasses = size === 'large' 
-    ? 'px-2 py-1 text-xs' 
-    : 'px-1.5 py-0.5 text-[10px]';
+  const sizeClasses = size === 'large'
+    ? 'px-2 py-1 text-xs'
+    : size === 'small'
+    ? 'px-1.5 py-0.5 text-[10px]'
+    : 'px-1 py-0.5 text-[9px]';
 
   const positionClasses = position === 'absolute'
     ? 'absolute top-1 left-1 z-20 pointer-events-none bg-opacity-75 shadow-lg'
