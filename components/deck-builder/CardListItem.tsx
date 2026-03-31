@@ -7,6 +7,7 @@ import { StyleTypeBadge } from '@/components/shared/StyleTypeBadge';
 import { FavoriteModeBadge } from '@/components/shared/FavoriteModeBadge';
 import { CardDetailSections } from '@/components/deck-builder/CardDetailSections';
 import { ChevronDown, ChevronUp, Plus, Minus, ArrowLeftRight } from 'lucide-react';
+import { useAwakeStateStore } from '@/store/awakeStateStore';
 
 interface CardListItemProps {
   card: Card;
@@ -18,6 +19,10 @@ export const CardListItem: React.FC<CardListItemProps> = ({ card, onSelect, vari
   const [imageError, setImageError] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const isAwakeAfter = useAwakeStateStore((state) => state.awakeStates[card.id] ?? true);
+  const imageUrl = isAwakeAfter
+    ? card.detail?.awakeAfterStorageUrl
+    : (card.detail?.awakeBeforeStorageUrl ?? card.detail?.awakeAfterStorageUrl);
 
   const handleToggleExpand = (e: React.MouseEvent): void => {
     e.stopPropagation();
@@ -83,9 +88,9 @@ export const CardListItem: React.FC<CardListItemProps> = ({ card, onSelect, vari
       >
         {/* カード画像サムネイル */}
         <div className="w-24 h-16 flex-shrink-0 rounded-lg overflow-hidden border-2 border-gray-200 relative">
-          {!imageError && card.detail?.awakeAfterStorageUrl ? (
+          {!imageError && imageUrl ? (
             <img
-              src={card.detail.awakeAfterStorageUrl}
+              src={imageUrl}
               alt={card.cardName}
               className="w-full h-full object-cover"
               onError={() => setImageError(true)}
