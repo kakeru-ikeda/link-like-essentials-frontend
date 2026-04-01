@@ -59,7 +59,7 @@ export function MultiSelectDropdown(props: ArrayOfPrimitivesInputProps) {
         <span>
           {selected.length === 0
             ? '選択してください'
-            : selected.join('、')}
+            : selected.join('・')}
         </span>
         <span style={{ marginLeft: 8 }}>{open ? '▲' : '▼'}</span>
       </button>

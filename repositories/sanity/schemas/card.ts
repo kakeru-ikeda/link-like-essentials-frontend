@@ -194,5 +194,12 @@ export const cardSchema = {
       title: 'cardName',
       subtitle: 'characterName',
     },
+    prepare(selection: { title: string; subtitle: string | string[] }) {
+      const { title, subtitle } = selection;
+      return {
+        title,
+        subtitle: Array.isArray(subtitle) ? subtitle.join(' & ') : subtitle,
+      };
+    },
   },
 };
