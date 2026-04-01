@@ -16,6 +16,7 @@
     "@apollo/client": "^3.11.8",
     "@hookform/resolvers": "^3.9.1",
     "@sanity/client": "^7.20.0",
+    "@sanity/vision": "^5.19.0",
     "@sentry/nextjs": "^10.32.1",
     "firebase": "^10.14.1",
     "graphql": "^16.9.0",
