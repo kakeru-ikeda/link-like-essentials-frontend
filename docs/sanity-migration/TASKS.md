@@ -3,8 +3,8 @@
 ## Phase 1: 環境セットアップとデータ移行
 
 - [ ] Vercel プロジェクト環境変数に Sanity の各種キー (`NEXT_PUBLIC_SANITY_PROJECT_ID` 等) を追加
-- [ ] クライアント側に `@sanity/client` を導入
-- [ ] `repositories/sanity/client.ts` の作成
+- [x] クライアント側に `@sanity/client` を導入
+- [x] `repositories/sanity/client.ts` の作成
 - [ ] Sanity Studio のスキーマ定義構築（Card, Song, GC, LGP, SkillEffectKeywordGroup, TraitEffectKeywordGroup, news, maintenance 等）
 - [ ] GraphQL DB / MicroCMS コンテンツのデータ変換＆インポートスクリプト作成
 - [ ] データインポートの実施（初回）
