@@ -70,8 +70,9 @@ export function getSelectableCharactersForSlot(
     // 102期生の追加チェック: LRカードが配置可能か
     const characterGeneration = getCharacterGeneration(characterName);
     if (characterGeneration === GENERATION.TERM_102) {
-      // 102期生LRは103期・104期のサイドに配置可能
+      // 102期生LRは102期・103期・104期のサイドに配置可能
       const allowedGenerations: number[] = [
+        GENERATION.TERM_102,
         GENERATION.TERM_103,
         GENERATION.TERM_104,
       ];
