@@ -69,6 +69,18 @@ export const songSchema = {
       },
     },
     {
+      name: 'participations',
+      title: '参加メンバー',
+      type: 'array',
+      of: [{ type: 'string' }],
+      options: {
+        list: characterValues.map((v) => ({ title: v, value: v })),
+      },
+      components: {
+        input: MultiSelectDropdown,
+      },
+    },
+    {
       name: 'jacketImageUrl',
       title: 'ジャケット画像URL',
       type: 'url',

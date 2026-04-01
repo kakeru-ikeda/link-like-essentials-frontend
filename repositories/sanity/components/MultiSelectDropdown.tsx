@@ -8,7 +8,7 @@ import type { ArrayOfPrimitivesInputProps } from 'sanity';
  * Sanity Studio 用カスタム入力: ドロップダウン複数選択
  */
 export function MultiSelectDropdown(props: ArrayOfPrimitivesInputProps) {
-  const { value = [], onChange, schemaType } = props;
+  const { value = [], onChange, schemaType, readOnly } = props;
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -19,6 +19,7 @@ export function MultiSelectDropdown(props: ArrayOfPrimitivesInputProps) {
   const selected = value as string[];
 
   const toggle = (v: string) => {
+    if (readOnly) return;
     const next = selected.includes(v)
       ? selected.filter((s) => s !== v)
       : [...selected, v];
@@ -41,19 +42,21 @@ export function MultiSelectDropdown(props: ArrayOfPrimitivesInputProps) {
       {/* トリガーボタン */}
       <button
         type="button"
-        onClick={() => setOpen((prev) => !prev)}
+        disabled={readOnly}
+        onClick={() => !readOnly && setOpen((prev) => !prev)}
         style={{
           width: '100%',
           padding: '8px 12px',
           border: '1px solid var(--card-border-color, #ccc)',
           borderRadius: 4,
-          background: 'var(--card-bg-color, #fff)',
-          color: 'inherit',
+          background: readOnly ? 'var(--card-muted-bg, #f5f5f5)' : 'var(--card-bg-color, #fff)',
+          color: readOnly ? 'var(--card-muted-fg, #999)' : 'inherit',
           textAlign: 'left',
-          cursor: 'pointer',
+          cursor: readOnly ? 'not-allowed' : 'pointer',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
+          opacity: readOnly ? 0.6 : 1,
         }}
       >
         <span>
