@@ -37,8 +37,8 @@ export function getSelectableCharactersForSlot(
 
   const slotCharacter = slotMapping.characterName;
 
-  // フリー枠の場合に、'フリー'を除く全キャラクターを表示
-  if (slotCharacter === 'フリー') {
+  // フリー枠・フレンド枠の場合に、特殊枠名を除く全キャラクターを表示
+  if (slotCharacter === 'フリー' || slotCharacter === 'フレンド') {
     return [...CHARACTERS];
   }
 
