@@ -6,6 +6,9 @@
  * SongMoodProgression は移行対象外（廃止）のためスキーマに含めない。
  */
 
+import { MultiSelectDropdown } from '../components/MultiSelectDropdown';
+import { characterValues } from './characterValues';
+
 const deckTypeValues = [
   '102期',
   '103期',
@@ -30,11 +33,6 @@ export const songSchema = {
       type: 'string',
     },
     {
-      name: 'songUrl',
-      title: '楽曲URL',
-      type: 'url',
-    },
-    {
       name: 'deckType',
       title: 'デッキタイプ（期）',
       type: 'string',
@@ -54,18 +52,21 @@ export const songSchema = {
       name: 'centerCharacter',
       title: 'センターキャラクター',
       type: 'string',
+      options: {
+        list: characterValues.map((v) => ({ title: v, value: v })),
+      },
     },
     {
       name: 'singers',
       title: '歌唱メンバー',
       type: 'array',
       of: [{ type: 'string' }],
-    },
-    {
-      name: 'participations',
-      title: '参加メンバー',
-      type: 'array',
-      of: [{ type: 'string' }],
+      options: {
+        list: characterValues.map((v) => ({ title: v, value: v })),
+      },
+      components: {
+        input: MultiSelectDropdown,
+      },
     },
     {
       name: 'jacketImageUrl',

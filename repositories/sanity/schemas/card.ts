@@ -7,6 +7,9 @@
  * Accessory は card ドキュメントの配列（inline object）として保持。
  */
 
+import { MultiSelectDropdown } from '../components/MultiSelectDropdown';
+import { characterValues } from './characterValues';
+
 const rarityValues = ['UR', 'SR', 'R', 'DR', 'BR', 'LR'] as const;
 
 const styleTypeValues = [
@@ -52,7 +55,14 @@ export const cardSchema = {
     {
       name: 'characterName',
       title: 'キャラクター名',
-      type: 'string',
+      type: 'array',
+      of: [{ type: 'string' }],
+      options: {
+        list: characterValues.map((v) => ({ title: v, value: v })),
+      },
+      components: {
+        input: MultiSelectDropdown,
+      },
     },
     {
       name: 'rarity',
@@ -72,16 +82,11 @@ export const cardSchema = {
     },
     {
       name: 'limited',
-      title: 'リミテッドタイプ',
+      title: '入手方法',
       type: 'string',
       options: {
         list: limitedTypeValues.map((v) => ({ title: v, value: v })),
       },
-    },
-    {
-      name: 'cardUrl',
-      title: 'カード画像URL',
-      type: 'url',
     },
     {
       name: 'releaseDate',
@@ -95,7 +100,7 @@ export const cardSchema = {
       fields: [
         {
           name: 'favoriteMode',
-          title: 'ファボモード',
+          title: '得意ムード',
           type: 'string',
           options: {
             list: favoriteModeValues.map((v) => ({ title: v, value: v })),
@@ -115,11 +120,6 @@ export const cardSchema = {
           name: 'awakeAfterStorageUrl',
           title: '覚醒後画像URL',
           type: 'url',
-        },
-        {
-          name: 'limitBreakCount',
-          title: '限界突破数',
-          type: 'number',
         },
         {
           name: 'stats',
