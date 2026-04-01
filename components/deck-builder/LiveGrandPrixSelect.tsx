@@ -57,7 +57,10 @@ export const LiveGrandPrixSelect: React.FC<LiveGrandPrixSelectProps> = ({
     ...(hasSelection ? [{ value: '', label: '選択を解除' }] : []),
     ...liveGrandPrix.map((event) => {
       // 日付フォーマットはserviceに委譲
-      const dateRange = LiveGrandPrixService.formatEventDateRange(event.startDate, event.endDate);
+      const dateRange = LiveGrandPrixService.formatEventDateRange(
+        event.startDate,
+        event.endDate
+      );
 
       return {
         value: event.id,
@@ -71,7 +74,7 @@ export const LiveGrandPrixSelect: React.FC<LiveGrandPrixSelectProps> = ({
     return (
       <div className={className}>
         <div className="h-10 px-4 py-2.5 bg-white border border-gray-300 rounded-lg flex items-center gap-2">
-          <Loading />
+          <Loading size="sm" />
           <span className="text-sm text-gray-600">読み込み中...</span>
         </div>
       </div>
