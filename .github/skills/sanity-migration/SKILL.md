@@ -41,7 +41,7 @@ EPIC/convert-to-sanity
 
 # 作業ブランチ（親ブランチから派生）
 git checkout EPIC/convert-to-sanity
-git checkout -b LLES-XXX/作業内容の短い説明
+git checkout -b LLES-XXX
 ```
 
 ### 4. 実装
