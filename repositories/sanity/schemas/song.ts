@@ -6,21 +6,12 @@
  * SongMoodProgression は移行対象外（廃止）のためスキーマに含めない。
  */
 
+import { CHARACTERS } from '@/config/characters';
+import { DeckType, SongAttribute } from '@/models/shared/enums';
 import { MultiSelectDropdown } from '../components/MultiSelectDropdown';
-import { characterValues } from './characterValues';
 
-const deckTypeValues = [
-  '102期',
-  '103期',
-  '104期',
-  '105期',
-  '105期BGP',
-  '105期ft.梢',
-  '105期ft.綴理',
-  '105期ft.慈',
-] as const;
-
-const songAttributeValues = ['スマイル', 'ピュア', 'クール'] as const;
+const deckTypeValues = Object.values(DeckType);
+const songAttributeValues = Object.values(SongAttribute);
 
 export const songSchema = {
   name: 'song',
@@ -53,7 +44,7 @@ export const songSchema = {
       title: 'センターキャラクター',
       type: 'string',
       options: {
-        list: characterValues.map((v) => ({ title: v, value: v })),
+        list: CHARACTERS.map((v) => ({ title: v, value: v })),
       },
     },
     {
@@ -62,7 +53,7 @@ export const songSchema = {
       type: 'array',
       of: [{ type: 'string' }],
       options: {
-        list: characterValues.map((v) => ({ title: v, value: v })),
+        list: CHARACTERS.map((v) => ({ title: v, value: v })),
       },
       components: {
         input: MultiSelectDropdown,
@@ -74,7 +65,7 @@ export const songSchema = {
       type: 'array',
       of: [{ type: 'string' }],
       options: {
-        list: characterValues.map((v) => ({ title: v, value: v })),
+        list: CHARACTERS.map((v) => ({ title: v, value: v })),
       },
       components: {
         input: MultiSelectDropdown,

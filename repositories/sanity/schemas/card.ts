@@ -7,40 +7,21 @@
  * Accessory は card ドキュメントの配列（inline object）として保持。
  */
 
+import { CHARACTERS } from '@/config/characters';
+import {
+  FavoriteMode,
+  LimitedType,
+  ParentType,
+  Rarity,
+  StyleType,
+} from '@/models/shared/enums';
 import { MultiSelectDropdown } from '../components/MultiSelectDropdown';
-import { characterValues } from './characterValues';
 
-const rarityValues = ['UR', 'SR', 'R', 'DR', 'BR', 'LR'] as const;
-
-const styleTypeValues = [
-  'CHEERLEADER',
-  'TRICKSTER',
-  'PERFORMER',
-  'MOODMAKER',
-] as const;
-
-const limitedTypeValues = [
-  'PERMANENT',
-  'LIMITED',
-  'SPRING_LIMITED',
-  'SUMMER_LIMITED',
-  'AUTUMN_LIMITED',
-  'WINTER_LIMITED',
-  'BIRTHDAY_LIMITED',
-  'LEG_LIMITED',
-  'SHUFFLE_LIMITED',
-  'BATTLE_LIMITED',
-  'BANGDREAM_LIMITED',
-  'PARTY_LIMITED',
-  'ACTIVITY_LIMITED',
-  'GRADUATE_LIMITED',
-  'LOGIN_BONUS',
-  'REWARD',
-] as const;
-
-const favoriteModeValues = ['NONE', 'HAPPY', 'MELLOW', 'NEUTRAL'] as const;
-
-const parentTypeValues = ['SPECIAL_APPEAL', 'SKILL', 'TRAIT'] as const;
+const rarityValues = Object.values(Rarity);
+const styleTypeValues = Object.values(StyleType);
+const limitedTypeValues = Object.values(LimitedType);
+const favoriteModeValues = Object.values(FavoriteMode);
+const parentTypeValues = Object.values(ParentType);
 
 export const cardSchema = {
   name: 'card',
@@ -58,7 +39,7 @@ export const cardSchema = {
       type: 'array',
       of: [{ type: 'string' }],
       options: {
-        list: characterValues.map((v) => ({ title: v, value: v })),
+        list: CHARACTERS.map((v) => ({ title: v, value: v })),
       },
       components: {
         input: MultiSelectDropdown,
