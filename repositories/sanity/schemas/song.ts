@@ -50,14 +50,7 @@ export const songSchema = {
     {
       name: 'singers',
       title: '歌唱メンバー',
-      type: 'array',
-      of: [{ type: 'string' }],
-      options: {
-        list: CHARACTERS.map((v) => ({ title: v, value: v })),
-      },
-      components: {
-        input: MultiSelectDropdown,
-      },
+      type: 'string',
     },
     {
       name: 'participations',
