@@ -1,6 +1,6 @@
 ---
 name: sanity-migration
-description: 'Sanity移行作業のワークフロースキル。Use when: Sanityスキーマ定義・リポジトリ実装・GROQクエリ実装・データインポートなど、Sanity移行タスク（Phase 1〜5）を行うとき。ドキュメント参照・TASKSチェック・Notionチケット確認・作業ブランチ生成・PR作成の手順を提供する。'
+description: 'Sanity移行作業のワークフロースキル。Use when: Sanityスキーマ定義・リポジトリ実装・GROQクエリ実装・データインポートなど、Sanity移行タスク（Phase 1〜5）を行うとき。ドキュメント参照・TASKSチェック・Notionチケット確認・作業ブランチ生成の手順を提供する。'
 argument-hint: '実施するPhaseまたはタスク（例: Phase 1, newsRepository）'
 ---
 
@@ -47,17 +47,11 @@ git checkout -b LLES-XXX
 ### 4. 実装
 
 - 対応ドキュメントの仕様に厳密に従って実装する
-- コミットメッセージは `[LLES-XXX] 作業内容` の形式にする
+- **コミット・PRは行わない**。実装のみを行いユーザーに引き渡す
 
 ### 5. TASKSの更新
 
 実装完了後、`docs/sanity-migration/TASKS.md` の該当チェックボックスを `[x]` にする。
-
-### 6. PR作成ルール
-
-- **base ブランチ**: `EPIC/convert-to-sanity`（`main` ではない）
-- PRタイトル: `[LLES-XXX] 作業内容`
-- PRの説明欄にNotionチケットのURLを記載する
 
 ## フェーズとチケット対応
 
@@ -73,6 +67,6 @@ git checkout -b LLES-XXX
 ## 注意事項
 
 - `docs/sanity-migration/` 配下の設計ドキュメントはソースオブトゥルース。実装で迷ったら必ず参照する
-- PRを `main` ブランチに直接出さない。必ず `EPIC/convert-to-sanity` に向ける
+- **コミット・PRは絶対に行わない**。実装完了後はユーザーに作業内容を報告して終了する
 - タスク完了後は必ず `TASKS.md` を更新する（チェックボックスを埋める）
 - Notionチケットのステータスも作業開始時→完了時に更新する
