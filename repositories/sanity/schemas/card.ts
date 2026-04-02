@@ -2,13 +2,19 @@
  * Sanity スキーマ定義: card
  *
  * models/card/Card.ts に対応するドキュメント型。
- * CardDetail は別ドキュメントにせず card ドキュメントに内包する（inline object）。
- * DB 結合用フィールド（CardDetail.id / CardDetail.cardId）は Sanity では不要のため削除。
- * Accessory は card ドキュメントの配列（inline object）として保持。
+ * カード本体情報と検索用トークンを保持する。
  */
 
 import { CHARACTERS } from '@/config/characters';
 import {
+  FAVORITE_MODE_LABELS,
+  LIMITED_TYPE_LABELS,
+  RARITY_LABELS,
+  SKILL_SEARCH_TARGET_LABELS,
+  STYLE_TYPE_LABELS,
+} from '@/mappers/enumMappers';
+import {
+  DeckType,
   FavoriteMode,
   LimitedType,
   ParentType,
@@ -22,6 +28,7 @@ const styleTypeValues = Object.values(StyleType);
 const limitedTypeValues = Object.values(LimitedType);
 const favoriteModeValues = Object.values(FavoriteMode);
 const parentTypeValues = Object.values(ParentType);
+const deckTypeValues = Object.values(DeckType);
 
 export const cardSchema = {
   name: 'card',
@@ -50,7 +57,7 @@ export const cardSchema = {
       title: 'レアリティ',
       type: 'string',
       options: {
-        list: rarityValues.map((v) => ({ title: v, value: v })),
+        list: rarityValues.map((v) => ({ title: RARITY_LABELS[v], value: v })),
       },
     },
     {
@@ -58,15 +65,21 @@ export const cardSchema = {
       title: 'スタイルタイプ',
       type: 'string',
       options: {
-        list: styleTypeValues.map((v) => ({ title: v, value: v })),
+        list: styleTypeValues.map((v) => ({
+          title: STYLE_TYPE_LABELS[v],
+          value: v,
+        })),
       },
     },
     {
       name: 'limited',
-      title: '入手方法',
+      title: '限定区分',
       type: 'string',
       options: {
-        list: limitedTypeValues.map((v) => ({ title: v, value: v })),
+        list: limitedTypeValues.map((v) => ({
+          title: LIMITED_TYPE_LABELS[v],
+          value: v,
+        })),
       },
     },
     {
@@ -75,78 +88,74 @@ export const cardSchema = {
       type: 'date',
     },
     {
-      name: 'detail',
-      title: 'カード詳細',
+      name: 'favoriteMode',
+      title: '得意ムード',
+      type: 'string',
+      options: {
+        list: favoriteModeValues.map((v) => ({
+          title: FAVORITE_MODE_LABELS[v],
+          value: v,
+        })),
+      },
+    },
+    {
+      name: 'acquisitionMethod',
+      title: '入手方法',
+      type: 'string',
+    },
+    {
+      name: 'awakeBeforeStorageUrl',
+      title: '覚醒前画像URL',
+      type: 'url',
+    },
+    {
+      name: 'awakeAfterStorageUrl',
+      title: '覚醒後画像URL',
+      type: 'url',
+    },
+    {
+      name: 'stats',
+      title: 'ステータス',
       type: 'object',
       fields: [
-        {
-          name: 'favoriteMode',
-          title: '得意ムード',
-          type: 'string',
-          options: {
-            list: favoriteModeValues.map((v) => ({ title: v, value: v })),
-          },
-        },
-        {
-          name: 'acquisitionMethod',
-          title: '入手方法',
-          type: 'string',
-        },
-        {
-          name: 'awakeBeforeStorageUrl',
-          title: '覚醒前画像URL',
-          type: 'url',
-        },
-        {
-          name: 'awakeAfterStorageUrl',
-          title: '覚醒後画像URL',
-          type: 'url',
-        },
-        {
-          name: 'stats',
-          title: 'ステータス',
-          type: 'object',
-          fields: [
-            { name: 'smile', title: 'スマイル', type: 'number' },
-            { name: 'pure', title: 'ピュア', type: 'number' },
-            { name: 'cool', title: 'クール', type: 'number' },
-            { name: 'mental', title: 'メンタル', type: 'number' },
-          ],
-        },
-        {
-          name: 'specialAppeal',
-          title: 'スペシャルアピール',
-          type: 'object',
-          fields: [
-            { name: 'name', title: '名前', type: 'string' },
-            { name: 'ap', title: 'AP', type: 'string' },
-            { name: 'effect', title: '効果', type: 'text' },
-          ],
-        },
-        {
-          name: 'skill',
-          title: 'スキル',
-          type: 'object',
-          fields: [
-            { name: 'name', title: '名前', type: 'string' },
-            { name: 'ap', title: 'AP', type: 'string' },
-            { name: 'effect', title: '効果', type: 'text' },
-          ],
-        },
-        {
-          name: 'trait',
-          title: '特性',
-          type: 'object',
-          fields: [
-            { name: 'name', title: '名前', type: 'string' },
-            { name: 'effect', title: '効果', type: 'text' },
-          ],
-        },
+        { name: 'smile', title: 'スマイル', type: 'number' },
+        { name: 'pure', title: 'ピュア', type: 'number' },
+        { name: 'cool', title: 'クール', type: 'number' },
+        { name: 'mental', title: 'メンタル', type: 'number' },
       ],
     },
     {
-      name: 'accessories',
-      title: 'アクセサリ',
+      name: 'specialAppeal',
+      title: 'スペシャルアピール',
+      type: 'object',
+      fields: [
+        { name: 'name', title: '名前', type: 'string' },
+        { name: 'ap', title: 'AP', type: 'string' },
+        { name: 'effect', title: '効果', type: 'text' },
+      ],
+    },
+    {
+      name: 'skill',
+      title: 'スキル',
+      type: 'object',
+      fields: [
+        { name: 'name', title: '名前', type: 'string' },
+        { name: 'ap', title: 'AP', type: 'string' },
+        { name: 'effect', title: '効果', type: 'text' },
+      ],
+    },
+    {
+      name: 'trait',
+      title: '特性',
+      type: 'object',
+      fields: [
+        { name: 'name', title: '名前', type: 'string' },
+        { name: 'effect', title: '効果', type: 'text' },
+      ],
+    },
+    {
+      name: 'tokens',
+      title: 'トークン',
       type: 'array',
       of: [
         {
@@ -157,7 +166,10 @@ export const cardSchema = {
               title: '親タイプ',
               type: 'string',
               options: {
-                list: parentTypeValues.map((v) => ({ title: v, value: v })),
+                list: parentTypeValues.map((v) => ({
+                  title: SKILL_SEARCH_TARGET_LABELS[v],
+                  value: v,
+                })),
               },
             },
             { name: 'name', title: '名前', type: 'string' },
@@ -165,6 +177,38 @@ export const cardSchema = {
             { name: 'effect', title: '効果', type: 'text' },
             { name: 'traitName', title: '特性名', type: 'string' },
             { name: 'traitEffect', title: '特性効果', type: 'text' },
+          ],
+        },
+      ],
+    },
+    {
+      name: 'sideCompositions',
+      title: 'サイド編成',
+      type: 'array',
+      of: [
+        {
+          type: 'object',
+          fields: [
+            {
+              name: 'characters',
+              title: 'キャラクター名',
+              type: 'array',
+              of: [{ type: 'string' }],
+              options: {
+                list: CHARACTERS.map((v) => ({ title: v, value: v })),
+              },
+              components: {
+                input: MultiSelectDropdown,
+              },
+            },
+            {
+              name: 'deckTypes',
+              title: 'デッキタイプ',
+              type: 'string',
+              options: {
+                list: deckTypeValues.map((v) => ({ title: v, value: v })),
+              },
+            },
           ],
         },
       ],
@@ -180,7 +224,9 @@ export const cardSchema = {
       const subtitle = selection['subtitle'];
       return {
         title,
-        subtitle: Array.isArray(subtitle) ? subtitle.join(' & ') : (subtitle as string | undefined),
+        subtitle: Array.isArray(subtitle)
+          ? subtitle.join(' & ')
+          : (subtitle as string | undefined),
       };
     },
   },
