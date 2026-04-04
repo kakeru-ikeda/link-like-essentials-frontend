@@ -7,7 +7,7 @@
 - [x] `repositories/sanity/client.ts` の作成
 - [x] Sanity Studio のスキーマ定義構築（Card, Song, GC, LGP, SkillEffectKeywordGroup, TraitEffectKeywordGroup, news, maintenance 等）
 - [x] Sanity Studio の Next.js App Router への組み込み（`/studio` ルート・`sanity.config.ts`）
-- [x] GraphQL DB / MicroCMS コンテンツのデータ変換＆インポートスクリプト作成
+- [x] GraphQL DB / MicroCMS コンテンツのデータ変換＆インポートスクリプト作成（LLES-271: ニュース記事 microCMS → Sanity インポートバッチ追加）
 - [ ] データインポートの実施（初回）
 
 ## Phase 2-A: MicroCMS → Sanity リプレイス（ニュース・メンテナンス）
