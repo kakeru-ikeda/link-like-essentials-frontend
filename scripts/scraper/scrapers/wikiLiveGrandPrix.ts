@@ -45,13 +45,8 @@ function makeEventId(eventName: string, yearTerm: string): string {
     .replace(/[^\w-]/g, '');
 }
 
-/**
- * LGP一覧ページをスクレイプ（1リクエスト）し、
- * 詳細URLがあるものは詳細もスクレイプして stages に詰める
- */
-export async function scrapeLiveGrandPrixAll(
-  existingIds: Set<string>
-): Promise<ScrapedLiveGrandPrix[]> {
+/** LGP一覧ページをパースしてイベント一覧を返す（内部共通局所） */
+async function parseLGPList(): Promise<ScrapedLiveGrandPrix[]> {
   console.log(`Fetching LGP list: ${LGP_URL}`);
   const html = await fetchWithRetry(LGP_URL);
   const $ = cheerio.load(html);
@@ -110,6 +105,24 @@ export async function scrapeLiveGrandPrixAll(
   });
 
   console.log(`Found ${events.length} LGP events`);
+  return events;
+}
+
+/**
+ * LGP一覧ページをスクレイプして一覧のみ返す（詳細スクレイプなし）
+ */
+export async function scrapeLiveGrandPrixList(): Promise<ScrapedLiveGrandPrix[]> {
+  return parseLGPList();
+}
+
+/**
+ * LGP一覧ページをスクレイプ（1リクエスト）し、
+ * 詳細URLがあるものは詳細もスクレイプして stages に詰める
+ */
+export async function scrapeLiveGrandPrixAll(
+  existingIds: Set<string>
+): Promise<ScrapedLiveGrandPrix[]> {
+  const events = await parseLGPList();
 
   // 詳細スクレイプ: existingIds にない or 詳細URLあり
   for (const event of events) {
@@ -131,7 +144,7 @@ export async function scrapeLiveGrandPrixAll(
   return events;
 }
 
-async function scrapeLiveGrandPrixDetail(
+export async function scrapeLiveGrandPrixDetail(
   url: string
 ): Promise<ScrapedStageDetail[]> {
   const html = await fetchWithRetry(url);

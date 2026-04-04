@@ -1,4 +1,4 @@
-import { fetchPublishedIds, fetchDraftIds, writeDraft } from '../lib/sanityWriter';
+import { fetchPublished, fetchDraftIds, writeDraft } from '../lib/sanityWriter';
 import { uploadImageFromUrl } from '../lib/firebaseStorage';
 import { scrapeSongList, scrapeSongDetail } from '../scrapers/wikiSong';
 import { DeckType, SongAttribute } from '@/models/shared/enums';
@@ -22,6 +22,13 @@ const DECK_TYPE_MAP: Record<string, DeckType> = {
   '105期ft.慈': DeckType.TERM_105_FT_MEGUMI,
 };
 
+// ---------- 型 ----------
+
+interface PublishedSongSnapshot {
+  _id: string;
+  songName: string;
+}
+
 // ---------- メイン ----------
 
 export interface ScrapeSongsResult {
@@ -42,21 +49,43 @@ export async function scrapesongsUseCase(): Promise<ScrapeSongsResult> {
 
   const scrapedList = await scrapeSongList();
 
-  const [publishedIds, draftIds] = await Promise.all([
-    fetchPublishedIds('song'),
+  const [publishedSongs, draftIds] = await Promise.all([
+    fetchPublished<PublishedSongSnapshot>('song', '_id, songName'),
     fetchDraftIds('song'),
   ]);
 
-  const publishedSet = new Set(publishedIds);
+  // 楽曲名でルックアップ（song-NNN ID の再利用のため）
+  const publishedMap = new Map<string, PublishedSongSnapshot>(
+    publishedSongs.map((s) => [s.songName, s])
+  );
   const draftSet = new Set(draftIds);
 
+  // 既存 song-NNN の最大番号を取得（新規楽曲の連番割り当て用）
+  const allExistingIds = [
+    ...publishedSongs.map((s) => s._id),
+    ...draftIds,
+  ];
+  let maxSongNum = allExistingIds.reduce((max, id) => {
+    const m = id.match(/^song-(\d+)$/);
+    return m ? Math.max(max, parseInt(m[1], 10)) : max;
+  }, 0);
+
   console.log(
-    `Sanity: ${publishedSet.size} published, ${draftSet.size} drafts`
+    `Sanity: ${publishedMap.size} published, ${draftSet.size} drafts`
   );
 
-  const targets = scrapedList.filter(
-    (s) => !publishedSet.has(s.songId) || draftSet.has(s.songId)
-  );
+  const targets: Array<{ song: (typeof scrapedList)[number]; resolvedId: string }> = [];
+  for (const song of scrapedList) {
+    const published = publishedMap.get(song.songName);
+    const resolvedId = published?._id ?? `song-${++maxSongNum}`;
+    const hasDraft = draftSet.has(resolvedId);
+
+    if (!published) {
+      targets.push({ song, resolvedId });
+    } else if (hasDraft) {
+      targets.push({ song, resolvedId });
+    }
+  }
 
   console.log(
     `Targets: ${targets.length} / ${scrapedList.length} (skipped: ${scrapedList.length - targets.length})`
@@ -64,9 +93,9 @@ export async function scrapesongsUseCase(): Promise<ScrapeSongsResult> {
 
   const written: string[] = [];
 
-  for (const song of targets) {
+  for (const { song, resolvedId } of targets) {
     try {
-      console.log(`  → ${song.songName} (${song.songId})`);
+      console.log(`  → ${song.songName} (${resolvedId})`);
       let jacketImageUrl: string | undefined;
       let liveAnalyzerImageUrl: string | undefined;
 
@@ -76,13 +105,13 @@ export async function scrapesongsUseCase(): Promise<ScrapeSongsResult> {
         if (detail.jacketImageUrl?.startsWith('http')) {
           jacketImageUrl = await uploadImageFromUrl(
             detail.jacketImageUrl,
-            `songs/${song.songId}/jacket.webp`
+            `songs/${resolvedId}/jacket.webp`
           );
         }
         if (detail.liveAnalyzerImageUrl?.startsWith('http')) {
           liveAnalyzerImageUrl = await uploadImageFromUrl(
             detail.liveAnalyzerImageUrl,
-            `songs/${song.songId}/live-analyzer.webp`
+            `songs/${resolvedId}/live-analyzer.webp`
           );
         }
       }
@@ -93,7 +122,7 @@ export async function scrapesongsUseCase(): Promise<ScrapeSongsResult> {
       );
 
       const doc = {
-        _id: song.songId,
+        _id: resolvedId,
         _type: 'song',
         songName: song.songName,
         deckType: DECK_TYPE_MAP[song.category] ?? song.category,

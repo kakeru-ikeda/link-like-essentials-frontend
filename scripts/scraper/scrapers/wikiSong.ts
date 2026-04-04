@@ -19,7 +19,7 @@ export interface ScrapedSongDetail {
 }
 
 const SONG_LIST_URL =
-  'https://wikiwiki.jp/llll_wiki/%E6%A5%BD%E6%9B%B2%E4%B8%80%E8%A6%A7';
+  'https://wikiwiki.jp/llll_wiki/%E3%82%B9%E3%82%AF%E3%82%B9%E3%83%86/%E3%82%B9%E3%83%86%E3%83%BC%E3%82%B8/%E6%A5%BD%E6%9B%B2%E4%B8%80%E8%A6%A7';
 
 const CHARACTER_NAME_MAP: Record<string, string> = {
   花帆: '日野下花帆',

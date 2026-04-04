@@ -4,29 +4,55 @@
  * ・yearTerm が Sanity liveGrandPrix スキーマの YearTerm enum 値に正しくマッピングされること
  * ・startDate/endDate が 'YYYY-MM-DD' 形式（Sanity date 型）に変換されること
  * ・songUrl が { _type: 'reference', _ref: songId } 形式に変換されること
- * ・新規 / スキップ判定が正しく動作すること
+ * ・Sanity公開済みデータと名前ベースでマッチングし、新規/スキップ判定が正しく動作すること
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { YearTerm } from '@/models/shared/enums';
 
 // --- モック ---
-const mockFetchPublishedIds = vi.fn();
-const mockFetchDraftIds = vi.fn();
+const mockFetchPublished = vi.fn();
+const mockFetchDrafts = vi.fn();
 const mockWriteDraft = vi.fn();
-const mockScrapeLiveGrandPrixAll = vi.fn();
+const mockScrapeLiveGrandPrixList = vi.fn();
+const mockScrapeLiveGrandPrixDetail = vi.fn();
+const mockScrapeSongList = vi.fn();
 
 vi.mock('../../lib/sanityWriter', () => ({
-  fetchPublishedIds: mockFetchPublishedIds,
-  fetchDraftIds: mockFetchDraftIds,
+  fetchPublished: mockFetchPublished,
+  fetchDrafts: mockFetchDrafts,
   writeDraft: mockWriteDraft,
 }));
 vi.mock('../../scrapers/wikiLiveGrandPrix', () => ({
-  scrapeLiveGrandPrixAll: mockScrapeLiveGrandPrixAll,
+  scrapeLiveGrandPrixList: mockScrapeLiveGrandPrixList,
+  scrapeLiveGrandPrixDetail: mockScrapeLiveGrandPrixDetail,
+}));
+vi.mock('../../scrapers/wikiSong', () => ({
+  scrapeSongList: mockScrapeSongList,
 }));
 
 const { scrapeLiveGrandPrixUseCase } = await import('../ScrapeLiveGrandPrixUseCase');
 
 // ---------- フィクスチャ ----------
+
+const STAGES = [
+  {
+    stageName: 'A',
+    specialEffect: 'スコアアップ(全体)',
+    songUrl: 'https://wikiwiki.jp/llll_wiki/KohnoBlossom',
+    sectionEffects: [
+      { sectionName: 'セクション1', effect: 'スマイルアップ', sectionOrder: 1 },
+      { sectionName: 'フィーバー', effect: 'スコアアップ', sectionOrder: 2 },
+    ],
+  },
+  {
+    stageName: 'B',
+    specialEffect: 'クールブースト',
+    songUrl: undefined,
+    sectionEffects: [
+      { sectionName: 'セクション1', effect: 'クールアップ', sectionOrder: 1 },
+    ],
+  },
+];
 
 const SCRAPED_EVENT = {
   eventId: 'lgp-105-SpringLGP',
@@ -35,46 +61,32 @@ const SCRAPED_EVENT = {
   startDate: '2025-04-10T00:00:00.000Z',
   endDate: '2025-04-14T00:00:00.000Z',
   eventUrl: 'https://wikiwiki.jp/llll_wiki/LGP-105-Spring',
-  stages: [
-    {
-      stageName: 'A',
-      specialEffect: 'スコアアップ(全体)',
-      songUrl: 'https://wikiwiki.jp/llll_wiki/KohnoBlossom',
-      sectionEffects: [
-        { sectionName: 'セクション1', effect: 'スマイルアップ', sectionOrder: 1 },
-        { sectionName: 'フィーバー', effect: 'スコアアップ', sectionOrder: 2 },
-      ],
-    },
-    {
-      stageName: 'B',
-      specialEffect: 'クールブースト',
-      songUrl: undefined,
-      sectionEffects: [
-        { sectionName: 'セクション1', effect: 'クールアップ', sectionOrder: 1 },
-      ],
-    },
-  ],
+  stages: undefined as typeof STAGES | undefined,
 };
 
 describe('scrapeLiveGrandPrixUseCase()', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockFetchDraftIds.mockResolvedValue([]);
+    mockFetchDrafts.mockResolvedValue([]);
     mockWriteDraft.mockResolvedValue(undefined);
+    mockScrapeLiveGrandPrixDetail.mockResolvedValue(STAGES);
+    mockScrapeSongList.mockResolvedValue([]);
   });
 
   describe('新規 / スキップ判定', () => {
     it('新規イベントは対象になる', async () => {
-      mockFetchPublishedIds.mockResolvedValue([]);
-      mockScrapeLiveGrandPrixAll.mockResolvedValue([SCRAPED_EVENT]);
+      mockFetchPublished.mockResolvedValue([]);
+      mockScrapeLiveGrandPrixList.mockResolvedValue([SCRAPED_EVENT]);
 
       const result = await scrapeLiveGrandPrixUseCase();
       expect(result.written).toContain(SCRAPED_EVENT.eventName);
     });
 
     it('公開済みイベントはスキップされる', async () => {
-      mockFetchPublishedIds.mockResolvedValue([SCRAPED_EVENT.eventId]);
-      mockScrapeLiveGrandPrixAll.mockResolvedValue([SCRAPED_EVENT]);
+      mockFetchPublished.mockResolvedValue([
+        { _id: 'liveGrandPrix-1', eventName: SCRAPED_EVENT.eventName, yearTerm: SCRAPED_EVENT.yearTerm },
+      ]);
+      mockScrapeLiveGrandPrixList.mockResolvedValue([SCRAPED_EVENT]);
 
       const result = await scrapeLiveGrandPrixUseCase();
       expect(result.skipped).toBe(1);
@@ -82,19 +94,35 @@ describe('scrapeLiveGrandPrixUseCase()', () => {
     });
 
     it('公開済みでもドラフト残存の場合は対象になる', async () => {
-      mockFetchPublishedIds.mockResolvedValue([SCRAPED_EVENT.eventId]);
-      mockFetchDraftIds.mockResolvedValue([SCRAPED_EVENT.eventId]);
-      mockScrapeLiveGrandPrixAll.mockResolvedValue([SCRAPED_EVENT]);
+      mockFetchPublished.mockResolvedValue([
+        { _id: 'liveGrandPrix-1', eventName: SCRAPED_EVENT.eventName, yearTerm: SCRAPED_EVENT.yearTerm },
+      ]);
+      mockFetchDrafts.mockResolvedValue([
+        { _id: 'liveGrandPrix-1', eventName: SCRAPED_EVENT.eventName, yearTerm: SCRAPED_EVENT.yearTerm },
+      ]);
+      mockScrapeLiveGrandPrixList.mockResolvedValue([SCRAPED_EVENT]);
 
       const result = await scrapeLiveGrandPrixUseCase();
       expect(result.written).toContain(SCRAPED_EVENT.eventName);
+    });
+
+    it('ドラフトのみ存在（未公開）の場合は既存 _id を再利用する', async () => {
+      mockFetchPublished.mockResolvedValue([]);
+      mockFetchDrafts.mockResolvedValue([
+        { _id: 'liveGrandPrix-99', eventName: SCRAPED_EVENT.eventName, yearTerm: SCRAPED_EVENT.yearTerm },
+      ]);
+      mockScrapeLiveGrandPrixList.mockResolvedValue([SCRAPED_EVENT]);
+
+      await scrapeLiveGrandPrixUseCase();
+      const [doc] = mockWriteDraft.mock.calls[0];
+      expect(doc._id).toBe('liveGrandPrix-99');
     });
   });
 
   describe('Sanity スキーマへのマッピング', () => {
     beforeEach(() => {
-      mockFetchPublishedIds.mockResolvedValue([]);
-      mockScrapeLiveGrandPrixAll.mockResolvedValue([SCRAPED_EVENT]);
+      mockFetchPublished.mockResolvedValue([]);
+      mockScrapeLiveGrandPrixList.mockResolvedValue([SCRAPED_EVENT]);
     });
 
     it('_type が "liveGrandPrix"', async () => {
@@ -103,10 +131,24 @@ describe('scrapeLiveGrandPrixUseCase()', () => {
       expect(doc._type).toBe('liveGrandPrix');
     });
 
-    it('_id が eventId と一致する', async () => {
+    it('_id が "liveGrandPrix-NNN" 形式になる（新規）', async () => {
       await scrapeLiveGrandPrixUseCase();
       const [doc] = mockWriteDraft.mock.calls[0];
-      expect(doc._id).toBe(SCRAPED_EVENT.eventId);
+      expect(doc._id).toBe('liveGrandPrix-1');
+    });
+
+    it('公開済みドラフトは既存 _id が再利用される', async () => {
+      mockFetchPublished.mockResolvedValue([
+        { _id: 'liveGrandPrix-42', eventName: SCRAPED_EVENT.eventName, yearTerm: SCRAPED_EVENT.yearTerm },
+      ]);
+      mockFetchDrafts.mockResolvedValue([
+        { _id: 'liveGrandPrix-42', eventName: SCRAPED_EVENT.eventName, yearTerm: SCRAPED_EVENT.yearTerm },
+      ]);
+      mockScrapeLiveGrandPrixList.mockResolvedValue([SCRAPED_EVENT]);
+
+      await scrapeLiveGrandPrixUseCase();
+      const [doc] = mockWriteDraft.mock.calls[0];
+      expect(doc._id).toBe('liveGrandPrix-42');
     });
 
     it('yearTerm が YearTerm.TERM_105 にマッピングされる', async () => {
@@ -142,12 +184,20 @@ describe('scrapeLiveGrandPrixUseCase()', () => {
     });
 
     it('ステージ A の song が reference 形式に変換される', async () => {
+      mockFetchPublished.mockImplementation((type: string) => {
+        if (type === 'song') return Promise.resolve([{ _id: 'song-1', songName: 'KohnoBlossom' }]);
+        return Promise.resolve([]);
+      });
+      mockScrapeSongList.mockResolvedValue([
+        { songName: 'KohnoBlossom', songUrl: 'https://wikiwiki.jp/llll_wiki/KohnoBlossom' },
+      ]);
+
       await scrapeLiveGrandPrixUseCase();
       const [doc] = mockWriteDraft.mock.calls[0];
       const stageA = doc.details[0];
       expect(stageA.song).toEqual({
         _type: 'reference',
-        _ref: 'KohnoBlossom',
+        _ref: 'song-1',
       });
     });
 
@@ -177,9 +227,9 @@ describe('scrapeLiveGrandPrixUseCase()', () => {
     it.each(YEAR_TERM_CASES)(
       '"%s" が %s にマッピングされる',
       async (yearTerm, expected) => {
-        mockFetchPublishedIds.mockResolvedValue([]);
-        mockScrapeLiveGrandPrixAll.mockResolvedValue([
-          { ...SCRAPED_EVENT, eventId: `lgp-test-${yearTerm}`, yearTerm },
+        mockFetchPublished.mockResolvedValue([]);
+        mockScrapeLiveGrandPrixList.mockResolvedValue([
+          { ...SCRAPED_EVENT, yearTerm },
         ]);
 
         await scrapeLiveGrandPrixUseCase();
@@ -191,38 +241,39 @@ describe('scrapeLiveGrandPrixUseCase()', () => {
   });
 
   describe('songUrl → songId 変換', () => {
-    it('wiki URL パスが songId に変換される', async () => {
-      mockFetchPublishedIds.mockResolvedValue([]);
-      const eventWith105BGPSong = {
-        ...SCRAPED_EVENT,
-        stages: [{
-          ...SCRAPED_EVENT.stages[0],
-          songUrl: 'https://wikiwiki.jp/llll_wiki/SubUnit-Song-Title',
-        }],
-      };
-      mockScrapeLiveGrandPrixAll.mockResolvedValue([eventWith105BGPSong]);
+    it('scrapeSongList と publishedSongs の組み合わせで song._ref が解決される', async () => {
+      mockFetchPublished.mockImplementation((type: string) => {
+        if (type === 'song') return Promise.resolve([{ _id: 'song-42', songName: 'テスト楽曲' }]);
+        return Promise.resolve([]);
+      });
+      mockScrapeLiveGrandPrixList.mockResolvedValue([SCRAPED_EVENT]);
+      mockScrapeSongList.mockResolvedValue([
+        { songName: 'テスト楽曲', songUrl: 'https://wikiwiki.jp/llll_wiki/SubUnit-Song-Title' },
+      ]);
+      mockScrapeLiveGrandPrixDetail.mockResolvedValue([{
+        ...STAGES[0],
+        songUrl: 'https://wikiwiki.jp/llll_wiki/SubUnit-Song-Title',
+      }]);
 
       await scrapeLiveGrandPrixUseCase();
 
       const [doc] = mockWriteDraft.mock.calls[0];
-      expect(doc.details[0].song._ref).toBe('SubUnit-Song-Title');
+      expect(doc.details[0].song).toEqual({ _type: 'reference', _ref: 'song-42' });
     });
 
-    it('スラッシュを含むURLも正しく songId に変換される', async () => {
-      mockFetchPublishedIds.mockResolvedValue([]);
-      const eventWithSlashUrl = {
-        ...SCRAPED_EVENT,
-        stages: [{
-          ...SCRAPED_EVENT.stages[0],
-          songUrl: 'https://wikiwiki.jp/llll_wiki/Song/Detail',
-        }],
-      };
-      mockScrapeLiveGrandPrixAll.mockResolvedValue([eventWithSlashUrl]);
+    it('scrapeSongList に存在しない songUrl は undefined になる', async () => {
+      mockFetchPublished.mockResolvedValue([]);
+      mockScrapeLiveGrandPrixList.mockResolvedValue([SCRAPED_EVENT]);
+      mockScrapeSongList.mockResolvedValue([]);
+      mockScrapeLiveGrandPrixDetail.mockResolvedValue([{
+        ...STAGES[0],
+        songUrl: 'https://wikiwiki.jp/llll_wiki/Unknown-Song',
+      }]);
 
       await scrapeLiveGrandPrixUseCase();
 
       const [doc] = mockWriteDraft.mock.calls[0];
-      expect(doc.details[0].song._ref).toBe('Song-Detail');
+      expect(doc.details[0].song).toBeUndefined();
     });
   });
 });

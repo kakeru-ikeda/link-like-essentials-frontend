@@ -9,7 +9,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { DeckType, SongAttribute } from '@/models/shared/enums';
 
 // --- モック ---
-const mockFetchPublishedIds = vi.fn();
+const mockFetchPublished = vi.fn();
 const mockFetchDraftIds = vi.fn();
 const mockWriteDraft = vi.fn();
 const mockScrapeSongList = vi.fn();
@@ -17,7 +17,7 @@ const mockScrapeSongDetail = vi.fn();
 const mockUploadImageFromUrl = vi.fn();
 
 vi.mock('../../lib/sanityWriter', () => ({
-  fetchPublishedIds: mockFetchPublishedIds,
+  fetchPublished: mockFetchPublished,
   fetchDraftIds: mockFetchDraftIds,
   writeDraft: mockWriteDraft,
 }));
@@ -62,7 +62,7 @@ describe('scrapesongsUseCase()', () => {
   describe('新規 / スキップ判定', () => {
     it('新規楽曲（Sanityに存在しない）は対象になる', async () => {
       mockScrapeSongList.mockResolvedValue([SCRAPED_SONG]);
-      mockFetchPublishedIds.mockResolvedValue([]);
+      mockFetchPublished.mockResolvedValue([]);
 
       const result = await scrapesongsUseCase();
       expect(result.written).toContain(SCRAPED_SONG.songName);
@@ -70,7 +70,7 @@ describe('scrapesongsUseCase()', () => {
 
     it('公開済み楽曲はスキップされる', async () => {
       mockScrapeSongList.mockResolvedValue([SCRAPED_SONG]);
-      mockFetchPublishedIds.mockResolvedValue([SCRAPED_SONG.songId]);
+      mockFetchPublished.mockResolvedValue([{ _id: 'song-1', songName: SCRAPED_SONG.songName }]);
 
       const result = await scrapesongsUseCase();
       expect(result.skipped).toBe(1);
@@ -79,18 +79,27 @@ describe('scrapesongsUseCase()', () => {
 
     it('公開済みでもドラフト残存の場合は対象になる', async () => {
       mockScrapeSongList.mockResolvedValue([SCRAPED_SONG]);
-      mockFetchPublishedIds.mockResolvedValue([SCRAPED_SONG.songId]);
-      mockFetchDraftIds.mockResolvedValue([SCRAPED_SONG.songId]);
+      mockFetchPublished.mockResolvedValue([{ _id: 'song-1', songName: SCRAPED_SONG.songName }]);
+      mockFetchDraftIds.mockResolvedValue(['song-1']);
 
       const result = await scrapesongsUseCase();
       expect(result.written).toContain(SCRAPED_SONG.songName);
+    });
+
+    it('新規楽曲の _id が song-NNN 形式の連番になる', async () => {
+      mockScrapeSongList.mockResolvedValue([SCRAPED_SONG]);
+      mockFetchPublished.mockResolvedValue([{ _id: 'song-50', songName: '別の楽曲' }]);
+
+      await scrapesongsUseCase();
+      const [doc] = mockWriteDraft.mock.calls[0];
+      expect(doc._id).toBe('song-51');
     });
   });
 
   describe('Sanity スキーマへのマッピング', () => {
     beforeEach(() => {
       mockScrapeSongList.mockResolvedValue([SCRAPED_SONG]);
-      mockFetchPublishedIds.mockResolvedValue([]);
+      mockFetchPublished.mockResolvedValue([]);
     });
 
     it('_type が "song"', async () => {
@@ -99,10 +108,10 @@ describe('scrapesongsUseCase()', () => {
       expect(doc._type).toBe('song');
     });
 
-    it('_id が songId と一致する', async () => {
+    it('_id が song-NNN 形式になる', async () => {
       await scrapesongsUseCase();
       const [doc] = mockWriteDraft.mock.calls[0];
-      expect(doc._id).toBe(SCRAPED_SONG.songId);
+      expect(doc._id).toMatch(/^song-\d+$/);
     });
 
     it('attribute が SongAttribute.SMILE にマッピングされる', async () => {
@@ -135,7 +144,7 @@ describe('scrapesongsUseCase()', () => {
       '"%s" が %s にマッピングされる',
       async (japanese, expected) => {
         mockScrapeSongList.mockResolvedValue([{ ...SCRAPED_SONG, attribute: japanese }]);
-        mockFetchPublishedIds.mockResolvedValue([]);
+        mockFetchPublished.mockResolvedValue([]);
 
         await scrapesongsUseCase();
 
@@ -160,7 +169,7 @@ describe('scrapesongsUseCase()', () => {
       '"%s" が %s にマッピングされる',
       async (japanese, expected) => {
         mockScrapeSongList.mockResolvedValue([{ ...SCRAPED_SONG, category: japanese }]);
-        mockFetchPublishedIds.mockResolvedValue([]);
+        mockFetchPublished.mockResolvedValue([]);
 
         await scrapesongsUseCase();
 
@@ -172,7 +181,7 @@ describe('scrapesongsUseCase()', () => {
 
   describe('participations の解決', () => {
     beforeEach(() => {
-      mockFetchPublishedIds.mockResolvedValue([]);
+      mockFetchPublished.mockResolvedValue([]);
     });
 
     it('Edel Note (105期) の参加者が解決される（桂城泉+セラス）', async () => {
@@ -216,7 +225,7 @@ describe('scrapesongsUseCase()', () => {
   describe('画像URL', () => {
     it('songUrl がある場合 scrapeSongDetail が呼ばれる', async () => {
       mockScrapeSongList.mockResolvedValue([SCRAPED_SONG]);
-      mockFetchPublishedIds.mockResolvedValue([]);
+      mockFetchPublished.mockResolvedValue([]);
 
       await scrapesongsUseCase();
 
@@ -225,7 +234,7 @@ describe('scrapesongsUseCase()', () => {
 
     it('songUrl がない場合 scrapeSongDetail は呼ばれない', async () => {
       mockScrapeSongList.mockResolvedValue([{ ...SCRAPED_SONG, songUrl: undefined }]);
-      mockFetchPublishedIds.mockResolvedValue([]);
+      mockFetchPublished.mockResolvedValue([]);
 
       await scrapesongsUseCase();
 

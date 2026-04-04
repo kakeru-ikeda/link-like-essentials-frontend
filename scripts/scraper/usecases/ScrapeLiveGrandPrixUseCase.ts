@@ -1,15 +1,12 @@
-import { fetchPublishedIds, fetchDraftIds, writeDraft } from '../lib/sanityWriter';
-import { scrapeLiveGrandPrixAll } from '../scrapers/wikiLiveGrandPrix';
+import { fetchPublished, fetchDrafts, writeDraft } from '../lib/sanityWriter';
+import {
+  scrapeLiveGrandPrixList,
+  scrapeLiveGrandPrixDetail,
+} from '../scrapers/wikiLiveGrandPrix';
+import { scrapeSongList } from '../scrapers/wikiSong';
 import { YearTerm } from '@/models/shared/enums';
 
 // ---------- ヘルパー ----------
-
-/** wiki の楽曲 URL から Sanity songId を導出 */
-function songIdFromUrl(songUrl: string): string {
-  return songUrl
-    .replace('https://wikiwiki.jp/llll_wiki/', '')
-    .replace(/\//g, '-');
-}
 
 const YEAR_TERM_MAP: Record<string, YearTerm> = {
   '103期': YearTerm.TERM_103,
@@ -23,6 +20,12 @@ function toDateString(iso: string): string | undefined {
   return iso.substring(0, 10);
 }
 
+interface LGPSnapshot {
+  _id: string;
+  eventName: string;
+  yearTerm: string;
+}
+
 // ---------- メイン ----------
 
 export interface ScrapeLiveGrandPrixResult {
@@ -34,52 +37,81 @@ export interface ScrapeLiveGrandPrixResult {
 /**
  * ライブグランプリスクレイプユースケース
  *
- * 1. LGP一覧取得（1リクエスト）+ 新規のみ詳細スクレイプ
- * 2. ドラフトとして Sanity に書き込み
+ * 1. Sanity公開済みを eventName+yearTerm で名前ベースマッチング
+ * 2. 一致しない（新規/ドラフト）のみ詳細スクレイプ
+ * 3. ドラフトとして Sanity に書き込み
  */
 export async function scrapeLiveGrandPrixUseCase(): Promise<ScrapeLiveGrandPrixResult> {
   console.log('\n=== ScrapeLiveGrandPrixUseCase start ===');
 
-  const [publishedIds, draftIds] = await Promise.all([
-    fetchPublishedIds('liveGrandPrix'),
-    fetchDraftIds('liveGrandPrix'),
+  const [publishedLGPs, draftLGPs, songList, publishedSongs] = await Promise.all([
+    fetchPublished<LGPSnapshot>('liveGrandPrix', '_id, eventName, yearTerm'),
+    fetchDrafts<LGPSnapshot>('liveGrandPrix', '_id, eventName, yearTerm'),
+    scrapeSongList(),
+    fetchPublished<{ _id: string; songName: string }>('song', '_id, songName'),
   ]);
 
-  const publishedSet = new Set(publishedIds);
-  const draftSet = new Set(draftIds);
+  // wiki songUrl → Sanity song._id マップ
+  const songNameToId = new Map(publishedSongs.map((s) => [s.songName, s._id]));
+  const songUrlToId = new Map(
+    songList
+      .filter((s) => s.songUrl && songNameToId.has(s.songName))
+      .map((s) => [s.songUrl!, songNameToId.get(s.songName)!])
+  );
+
+  // 名前ベースルックアップ: "yearTerm:eventName" → snapshot
+  // 公開済みが優先、なければドラフトの ID を再利用
+  const nameMap = new Map<string, LGPSnapshot>();
+  for (const lgp of draftLGPs) nameMap.set(`${lgp.yearTerm}:${lgp.eventName}`, lgp);
+  for (const lgp of publishedLGPs) nameMap.set(`${lgp.yearTerm}:${lgp.eventName}`, lgp);
+
+  // 公開済み ID セット（公開済みかつドラフトなし → スキップ判定用）
+  const publishedIds = new Set(publishedLGPs.map((lgp) => lgp._id));
+  const draftIds = new Set(draftLGPs.map((lgp) => lgp._id));
+
+  // 新規 ID 採番用の最大番号（published + drafts 両方から）
+  const allNums = [...publishedLGPs, ...draftLGPs]
+    .map((lgp) => parseInt(lgp._id.replace('liveGrandPrix-', ''), 10))
+    .filter((n) => !isNaN(n));
+  let maxLGPNum = allNums.length > 0 ? Math.max(...allNums) : 0;
 
   console.log(
-    `Sanity: ${publishedSet.size} published, ${draftSet.size} drafts`
+    `Sanity: ${publishedLGPs.length} published, ${draftLGPs.length} drafts`
   );
 
-  // 詳細スクレイプが必要な ID セット（公開済みでないもの）
-  const needDetailIds = new Set([
-    ...Array.from(draftSet),
-    // 公開済みでないものは scraper 内で詳細取得されるが、既存 draft は再取得する
-  ]);
-
-  // existingIds = 公開済みかつドラフトなし → 詳細スクレイプをスキップ
-  const existingIds = new Set(
-    [...publishedSet].filter((id) => !needDetailIds.has(id))
-  );
-
-  const events = await scrapeLiveGrandPrixAll(existingIds);
-
+  const events = await scrapeLiveGrandPrixList();
   console.log(`Found ${events.length} LGP events`);
 
   const written: string[] = [];
   let skipped = 0;
 
   for (const event of events) {
-    // 公開済みでドラフトなし → スキップ
-    if (publishedSet.has(event.eventId) && !draftSet.has(event.eventId)) {
+    const nameKey = `${event.yearTerm}:${event.eventName}`;
+    const existing = nameMap.get(nameKey);
+
+    // 公開済みかつドラフトなし → スキップ
+    if (existing && publishedIds.has(existing._id) && !draftIds.has(existing._id)) {
       skipped++;
+      console.log(`  ⏭️  Skipping (published): ${event.eventName}`);
       continue;
+    }
+
+    const resolvedId = existing?._id ?? `liveGrandPrix-${++maxLGPNum}`;
+
+    // 詳細スクレイプ
+    if (event.eventUrl) {
+      try {
+        console.log(`  → Scraping detail: ${event.eventName}`);
+        event.stages = await scrapeLiveGrandPrixDetail(event.eventUrl);
+        await new Promise((r) => setTimeout(r, 200));
+      } catch (err) {
+        console.error(`  ✗ Detail scrape failed: ${(err as Error).message}`);
+      }
     }
 
     try {
       const doc = {
-        _id: event.eventId,
+        _id: resolvedId,
         _type: 'liveGrandPrix',
         eventName: event.eventName,
         yearTerm: YEAR_TERM_MAP[event.yearTerm] ?? event.yearTerm,
@@ -91,10 +123,10 @@ export async function scrapeLiveGrandPrixUseCase(): Promise<ScrapeLiveGrandPrixR
           _type: 'object',
           stageName: stage.stageName,
           specialEffect: stage.specialEffect,
-          song: stage.songUrl
+          song: stage.songUrl && songUrlToId.has(stage.songUrl)
             ? {
                 _type: 'reference',
-                _ref: songIdFromUrl(stage.songUrl),
+                _ref: songUrlToId.get(stage.songUrl)!,
               }
             : undefined,
           sectionEffects: stage.sectionEffects.map((se, ei) => ({

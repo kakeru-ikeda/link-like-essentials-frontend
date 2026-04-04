@@ -47,12 +47,8 @@ function makeChallengeId(title: string): string {
   return `gc-${title.replace(/[^\w]/g, '-')}`;
 }
 
-/**
- * GC一覧ページをスクレイプし、新規エントリの詳細もスクレイプして返す
- */
-export async function scrapeGradeChallengeAll(
-  existingIds: Set<string>
-): Promise<ScrapedGradeChallenge[]> {
+/** GC一覧ページをパースしてエントリ一覧を返す（内部共通局所） */
+async function parseGCList(): Promise<ScrapedGradeChallenge[]> {
   console.log(`Fetching GC list: ${GC_URL}`);
   const html = await fetchWithRetry(GC_URL);
   const $ = cheerio.load(html);
@@ -62,7 +58,6 @@ export async function scrapeGradeChallengeAll(
   $('h3').each((_i, heading) => {
     if (!$(heading).text().trim().includes('ステージ詳細')) return;
 
-    // 直後にあるULを探す
     let el = $(heading).next();
     for (let d = 0; d < 50 && el.length > 0; d++) {
       if (el.is('h2') || el.is('h3')) break;
@@ -116,6 +111,23 @@ export async function scrapeGradeChallengeAll(
   });
 
   console.log(`Found ${challenges.length} GC entries`);
+  return challenges;
+}
+
+/**
+ * GC一覧ページをスクレイプして一覧のみ返す（詳細スクレイプなし）
+ */
+export async function scrapeGradeChallengeList(): Promise<ScrapedGradeChallenge[]> {
+  return parseGCList();
+}
+
+/**
+ * GC一覧ページをスクレイプし、新規エントリの詳細もスクレイプして返す
+ */
+export async function scrapeGradeChallengeAll(
+  existingIds: Set<string>
+): Promise<ScrapedGradeChallenge[]> {
+  const challenges = await parseGCList();
 
   // 詳細スクレイプ: 新規 or ドラフト残存のみ
   for (const challenge of challenges) {
@@ -137,7 +149,7 @@ export async function scrapeGradeChallengeAll(
   return challenges;
 }
 
-async function scrapeGradeChallengeDetail(
+export async function scrapeGradeChallengeDetail(
   url: string
 ): Promise<ScrapedGradeChallengeStage[]> {
   const html = await fetchWithRetry(url);

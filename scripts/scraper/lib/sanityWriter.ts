@@ -88,3 +88,18 @@ export async function fetchDraftIds(type: string): Promise<string[]> {
   // "drafts." プレフィックスを除いた実ドキュメントIDに変換
   return results.map((r) => r._id.replace(/^drafts\./, ''));
 }
+
+/**
+ * ドラフトドキュメントの軽量フィールドを取得する
+ * - "drafts." プレフィックスを除いた _id で返す
+ */
+export async function fetchDrafts<T extends { _id: string }>(
+  type: string,
+  fields: string
+): Promise<T[]> {
+  const results = await sanityQuery<T[]>(
+    `*[_id in path("drafts.**") && _type == $type]{${fields}}`,
+    { type }
+  );
+  return results.map((r) => ({ ...r, _id: (r._id as string).replace(/^drafts\./, '') }));
+}
