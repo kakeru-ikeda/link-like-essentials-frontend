@@ -179,14 +179,35 @@ function extractApEffect(
   $(table)
     .find('tr')
     .each((_i, row) => {
-      const cells = $(row).find('th, td');
-      const label = $(cells[0]).text().trim();
-      const value = $(cells[1])?.text().trim() ?? '';
-      if (label === 'AP') ap = value;
-      else if (label === '効果') effect = value;
+      const cells = $(row).find('td');
+      if (cells.length < 1) return;
+      const firstCell = $(cells[0]).text().trim();
+
+      // Lv1 または 共通 行: cells[1]=消費AP, cells[2]=効果
+      if (firstCell === '1' || firstCell === '共通') {
+        if (cells.length >= 2) {
+          const apText = $(cells[1]).text().trim();
+          // "2→1" 形式の場合は最後の値（最大レベル時）を使用
+          ap = apText.includes('→')
+            ? apText.split('→').pop()!.trim()
+            : apText;
+        }
+        if (cells.length >= 3) {
+          effect = $(cells[2]).text().trim();
+        }
+      }
+      // Lv14 行（最大レベル）: cells[1]=効果のみ（AP列なし）
+      else if (firstCell === '14') {
+        if (cells.length >= 2) {
+          effect = $(cells[1]).text().trim();
+        }
+      }
     });
 
-  return { ap, effect };
+  if (effect && !effect.includes('○○○') && effect !== '効果') {
+    return { ap, effect };
+  }
+  return { ap: '', effect: '' };
 }
 
 function extractAccessoriesToArray(

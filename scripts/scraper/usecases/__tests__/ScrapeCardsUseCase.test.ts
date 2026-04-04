@@ -75,15 +75,12 @@ describe('scrapeCardsUseCase()', () => {
       expect(result.written).toContain(SCRAPED_CARD.cardName);
     });
 
-    it('公開済みと一致するカードはスキップされる', async () => {
+    it('公開済みと一致するカードはスキップされる（name+character のみで判定）', async () => {
       mockScrapeCardList.mockResolvedValue([SCRAPED_CARD]);
       mockFetchPublished.mockResolvedValue([{
         _id: SCRAPED_CARD.cardId,
         cardName: SCRAPED_CARD.cardName,
-        rarity: Rarity.UR,     // マッピング済み値と一致
-        limited: LimitedType.PERMANENT,
-        styleType: StyleType.CHEERLEADER,
-        releaseDate: SCRAPED_CARD.releaseDate,
+        characterName: [SCRAPED_CARD.characterName],
       }]);
 
       const result = await scrapeCardsUseCase();
@@ -96,10 +93,7 @@ describe('scrapeCardsUseCase()', () => {
       mockFetchPublished.mockResolvedValue([{
         _id: SCRAPED_CARD.cardId,
         cardName: SCRAPED_CARD.cardName,
-        rarity: Rarity.UR,
-        limited: LimitedType.PERMANENT,
-        styleType: StyleType.CHEERLEADER,
-        releaseDate: SCRAPED_CARD.releaseDate,
+        characterName: [SCRAPED_CARD.characterName],
       }]);
       mockFetchDraftIds.mockResolvedValue([SCRAPED_CARD.cardId]);
 
@@ -107,15 +101,12 @@ describe('scrapeCardsUseCase()', () => {
       expect(result.written).toContain(SCRAPED_CARD.cardName);
     });
 
-    it('cardName が変わったカードは対象になる', async () => {
+    it('cardName が Sanity に存在しないカードは対象になる（name key 不一致→新規扱い）', async () => {
       mockScrapeCardList.mockResolvedValue([SCRAPED_CARD]);
       mockFetchPublished.mockResolvedValue([{
-        _id: SCRAPED_CARD.cardId,
-        cardName: '旧カード名', // 差分あり
-        rarity: Rarity.UR,
-        limited: LimitedType.PERMANENT,
-        styleType: StyleType.CHEERLEADER,
-        releaseDate: SCRAPED_CARD.releaseDate,
+        _id: 'card-99',
+        cardName: '別のカード名',
+        characterName: [SCRAPED_CARD.characterName],
       }]);
 
       const result = await scrapeCardsUseCase();
@@ -156,22 +147,22 @@ describe('scrapeCardsUseCase()', () => {
     it('stats の各値が number に変換される', async () => {
       await scrapeCardsUseCase();
       const [doc] = mockWriteDraft.mock.calls[0];
-      expect(doc.detail.stats.smile).toBe(5000);
-      expect(doc.detail.stats.pure).toBe(4000);
-      expect(doc.detail.stats.cool).toBe(3000);
-      expect(doc.detail.stats.mental).toBe(2500);
+      expect(doc.stats.smile).toBe(5000);
+      expect(doc.stats.pure).toBe(4000);
+      expect(doc.stats.cool).toBe(3000);
+      expect(doc.stats.mental).toBe(2500);
     });
 
-    it('specialAppeal.ap が number に変換される', async () => {
+    it('specialAppeal.ap が string のまま渡される', async () => {
       await scrapeCardsUseCase();
       const [doc] = mockWriteDraft.mock.calls[0];
-      expect(doc.detail.specialAppeal.ap).toBe(10);
+      expect(doc.specialAppeal.ap).toBe('10');
     });
 
-    it('skill.ap が number に変換される', async () => {
+    it('skill.ap が string のまま渡される', async () => {
       await scrapeCardsUseCase();
       const [doc] = mockWriteDraft.mock.calls[0];
-      expect(doc.detail.skill.ap).toBe(6);
+      expect(doc.skill.ap).toBe('6');
     });
 
     it('characterName が配列で渡される', async () => {
@@ -181,20 +172,36 @@ describe('scrapeCardsUseCase()', () => {
       expect(doc.characterName).toContain('日野下花帆');
     });
 
+    it('characterName が ＆ 区切りで複数キャラクターに分割される', async () => {
+      const multiCharCard = { ...SCRAPED_CARD, characterName: '花帆＆さやか＆瑠璃乃' };
+      mockScrapeCardList.mockResolvedValue([multiCharCard]);
+      await scrapeCardsUseCase();
+      const [doc] = mockWriteDraft.mock.calls[0];
+      expect(doc.characterName).toEqual(['日野下花帆', '村野さやか', '大沢瑠璃乃']);
+    });
+
+    it('characterName の短縮名がフルネームに正規化される', async () => {
+      const shortNameCard = { ...SCRAPED_CARD, characterName: '梢&綴理&慈' };
+      mockScrapeCardList.mockResolvedValue([shortNameCard]);
+      await scrapeCardsUseCase();
+      const [doc] = mockWriteDraft.mock.calls[0];
+      expect(doc.characterName).toEqual(['乙宗梢', '夕霧綴理', '藤島慈']);
+    });
+
     it('_type が "card"', async () => {
       await scrapeCardsUseCase();
       const [doc] = mockWriteDraft.mock.calls[0];
       expect(doc._type).toBe('card');
     });
 
-    it('_id が cardId と一致する', async () => {
+    it('_id が card-NNN 形式の連番になる（新規カード）', async () => {
       await scrapeCardsUseCase();
       const [doc] = mockWriteDraft.mock.calls[0];
-      expect(doc._id).toBe(SCRAPED_CARD.cardId);
+      expect(doc._id).toMatch(/^card-\d+$/);
     });
   });
 
-  describe('accessories のマッピング', () => {
+  describe('tokens のマッピング', () => {
     beforeEach(() => {
       const cardWithAccessory = { ...SCRAPED_CARD };
       const detailWithAccessory = {
@@ -216,13 +223,13 @@ describe('scrapeCardsUseCase()', () => {
     it('parentType が ParentType enum 値にマッピングされる', async () => {
       await scrapeCardsUseCase();
       const [doc] = mockWriteDraft.mock.calls[0];
-      expect(doc.accessories[0].parentType).toBe(ParentType.SPECIAL_APPEAL);
+      expect(doc.tokens[0].parentType).toBe(ParentType.SPECIAL_APPEAL);
     });
 
-    it('accessories.ap が number に変換される', async () => {
+    it('tokens.ap が string のまま渡される', async () => {
       await scrapeCardsUseCase();
       const [doc] = mockWriteDraft.mock.calls[0];
-      expect(doc.accessories[0].ap).toBe(5);
+      expect(doc.tokens[0].ap).toBe('5');
     });
   });
 

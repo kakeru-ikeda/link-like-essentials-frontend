@@ -86,7 +86,8 @@ export async function scrapeLiveGrandPrixUseCase(): Promise<ScrapeLiveGrandPrixR
         startDate: toDateString(event.startDate),
         endDate: toDateString(event.endDate),
         eventUrl: event.eventUrl,
-        details: (event.stages ?? []).map((stage) => ({
+        details: (event.stages ?? []).map((stage, si) => ({
+          _key: `stage-${si}`,
           _type: 'object',
           stageName: stage.stageName,
           specialEffect: stage.specialEffect,
@@ -96,7 +97,8 @@ export async function scrapeLiveGrandPrixUseCase(): Promise<ScrapeLiveGrandPrixR
                 _ref: songIdFromUrl(stage.songUrl),
               }
             : undefined,
-          sectionEffects: stage.sectionEffects.map((se) => ({
+          sectionEffects: stage.sectionEffects.map((se, ei) => ({
+            _key: `se-${ei}`,
             _type: 'object',
             sectionName: se.sectionName,
             effect: se.effect,

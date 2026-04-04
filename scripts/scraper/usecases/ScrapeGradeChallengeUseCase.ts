@@ -68,7 +68,8 @@ export async function scrapeGradeChallengeUseCase(): Promise<ScrapeGradeChalleng
         startDate: toDateString(challenge.startDate),
         endDate: toDateString(challenge.endDate),
         detailUrl: challenge.detailUrl,
-        details: (challenge.stages ?? []).map((stage) => ({
+        details: (challenge.stages ?? []).map((stage, si) => ({
+          _key: `stage-${si}`,
           _type: 'object',
           stageName: stage.stageName,
           specialEffect: stage.specialEffect,
@@ -78,7 +79,8 @@ export async function scrapeGradeChallengeUseCase(): Promise<ScrapeGradeChalleng
                 _ref: songIdFromUrl(stage.songUrl),
               }
             : undefined,
-          sectionEffects: stage.sectionEffects.map((se) => ({
+          sectionEffects: stage.sectionEffects.map((se, ei) => ({
+            _key: `se-${ei}`,
             _type: 'object',
             sectionName: se.sectionName,
             effect: se.effect,

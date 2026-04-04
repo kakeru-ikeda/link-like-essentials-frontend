@@ -71,9 +71,14 @@ describe('scrapeCardList()', () => {
   });
 
   describe('ScrapedCard の各フィールド（1件目）', () => {
-    it('cardId は href から生成される', async () => {
+    it('cardId は href から生成される（URLデコード後に特殊文字を_置換）', async () => {
       const [card] = await scrapeCardList();
-      expect(card.cardId).toBe('%E8%8A%B1%E5%B8%86%2FUR01');
+      // href: /llll_wiki/%E8%8A%B1%E5%B8%86%2FUR01
+      // → decodeURIComponent → /llll_wiki/花帆/UR01
+      // → /llll_wiki/ 除去 → 花帆/UR01
+      // → / を - に → 花帆-UR01
+      // → [^\w\-] を _ に → __-UR01
+      expect(card.cardId).toBe('__-UR01');
     });
 
     it('cardName が正しい', async () => {

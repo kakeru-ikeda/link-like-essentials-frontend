@@ -66,35 +66,43 @@ const PARENT_TYPE_MAP: Record<string, ParentType> = {
 
 // ---------- ヘルパー ----------
 
-interface PublishedCardSnapshot {
-  _id: string;
-  cardUrl?: string;
-  cardName: string;
-  rarity?: string;
-  limited?: string;
-  styleType?: string;
-  releaseDate?: string;
-}
+const CHARACTER_NAME_MAP: Record<string, string> = {
+  花帆: '日野下花帆',
+  さやか: '村野さやか',
+  梢: '乙宗梢',
+  綴理: '夕霧綴理',
+  瑠璃乃: '大沢瑠璃乃',
+  慈: '藤島慈',
+  小鈴: '徒町小鈴',
+  吟子: '百生吟子',
+  姫芽: '安養寺姫芽',
+  泉: '桂城泉',
+  セラス: 'セラス',
+};
 
 /**
- * スクレイプされたカードと公開済みスナップショットの差分を検出
+ * キャラクター名文字列を正規化して配列に変換
+ * 例: "花帆＆さやか＆瑠璃乃" → ["日野下花帆", "村野さやか", "大沢瑠璃乃"]
  */
-function hasDiff(
-  scraped: ScrapedCard,
-  published: PublishedCardSnapshot
-): boolean {
-  const mappedRarity = RARITY_MAP[scraped.rarity] ?? scraped.rarity;
-  const mappedLimited = LIMITED_MAP[scraped.limited] ?? scraped.limited;
-  const mappedStyle = STYLE_TYPE_MAP[scraped.styleType] ?? scraped.styleType;
+function parseCharacterNames(raw: string): string[] {
+  return raw
+    .split(/[&＆]/)  
+    .map((name) => {
+      const trimmed = name.trim();
+      return CHARACTER_NAME_MAP[trimmed] ?? trimmed;
+    })
+    .filter(Boolean);
+}
 
-  return (
-    scraped.cardName !== published.cardName ||
-    mappedRarity !== published.rarity ||
-    mappedLimited !== published.limited ||
-    mappedStyle !== published.styleType ||
-    (scraped.releaseDate !== undefined &&
-      scraped.releaseDate !== published.releaseDate)
-  );
+interface PublishedCardSnapshot {
+  _id: string;
+  cardName: string;
+  characterName?: string[];
+}
+
+/** 既存 Sanity ドキュメントとの照合キー（cardName + 最初のキャラクター名） */
+function nameKey(cardName: string, characterName: string): string {
+  return `${cardName}:${characterName}`;
 }
 
 // ---------- メイン ----------
@@ -123,37 +131,48 @@ export async function scrapeCardsUseCase(): Promise<ScrapeCardsResult> {
   const [publishedCards, draftIds] = await Promise.all([
     fetchPublished<PublishedCardSnapshot>(
       'card',
-      '_id, cardUrl, cardName, rarity, limited, styleType, releaseDate'
+      '_id, cardName, characterName'
     ),
     fetchDraftIds('card'),
   ]);
 
-  // cardUrl をキーにした照合（IDは card-527 のような連番形式のため）
-  const publishedByUrl = new Map<string, PublishedCardSnapshot>(
-    publishedCards.filter((c) => c.cardUrl).map((c) => [c.cardUrl!, c])
+  // 既存カードを「カード名:キャラ名」でルックアップ（card-NNN ID の再利用のため）
+  const publishedMap = new Map<string, PublishedCardSnapshot>(
+    publishedCards.map((c) => [nameKey(c.cardName, c.characterName?.[0] ?? ''), c])
   );
   const draftSet = new Set(draftIds);
 
+  // 既存 card-NNN の最大番号を取得（新規カードの連番割り当て用）
+  // published と draft の両方を考慮してズレを防ぐ
+  const allExistingIds = [
+    ...publishedCards.map((c) => c._id),
+    ...draftIds,
+  ];
+  let maxCardNum = allExistingIds.reduce((max, id) => {
+    const m = id.match(/^card-(\d+)$/);
+    return m ? Math.max(max, parseInt(m[1], 10)) : max;
+  }, 0);
+
   console.log(
-    `Sanity: ${publishedByUrl.size} published, ${draftSet.size} drafts`
+    `Sanity: ${publishedMap.size} published, ${draftSet.size} drafts`
   );
 
-  // 3. 対象絞り込み: 新規 or 一覧レベル差分 or ドラフト残存
-  const targets: ScrapedCard[] = [];
+  // 3. 対象絞り込み: 新規 or ドラフト残存
+  const targets: { card: ScrapedCard; resolvedId: string; characterNames: string[] }[] = [];
   for (const card of scrapedList) {
-    const published = publishedByUrl.get(card.cardUrl);
-    const resolvedId = published?._id ?? card.cardId;
+    const characterNames = parseCharacterNames(card.characterName);
+    const key = nameKey(card.cardName, characterNames[0] ?? card.characterName);
+    const published = publishedMap.get(key);
+    // 既存カードは card-NNN を再利用。新規は card-(maxNum+1) 以降の連番を割り当て
+    const resolvedId = published?._id ?? `card-${++maxCardNum}`;
     const hasDraft = draftSet.has(resolvedId);
 
     if (!published) {
       // 新規カード
-      targets.push(card);
-    } else if (hasDiff(card, published)) {
-      // 一覧情報に変化あり
-      targets.push(card);
+      targets.push({ card, resolvedId, characterNames });
     } else if (hasDraft) {
       // 既存ドラフトが残っている（管理者未Publish）
-      targets.push(card);
+      targets.push({ card, resolvedId, characterNames });
     }
   }
 
@@ -164,12 +183,9 @@ export async function scrapeCardsUseCase(): Promise<ScrapeCardsResult> {
   const written: string[] = [];
 
   // 4. 詳細スクレイプ & ドラフト書き込み
-  for (const card of targets) {
+  for (const { card, resolvedId, characterNames } of targets) {
     try {
-      const published = publishedByUrl.get(card.cardUrl);
-      // 既存ドキュメントがある場合はその _id を使用（card-527 形式を保持）
-      const docId = published?._id ?? card.cardId;
-      console.log(`  → ${card.cardName} (${docId})`);
+      console.log(`  → ${card.cardName} (${resolvedId})`);
       const detail = await scrapeCardDetail(card.cardUrl);
 
       // 画像アップロード
@@ -179,13 +195,13 @@ export async function scrapeCardsUseCase(): Promise<ScrapeCardsResult> {
       if (awakeBeforeUrl?.startsWith('http')) {
         awakeBeforeUrl = await uploadImageFromUrl(
           awakeBeforeUrl,
-          `cards/${docId}/awake-before.webp`
+          `cards/${resolvedId}/awake-before.webp`
         );
       }
       if (awakeAfterUrl?.startsWith('http') && awakeAfterUrl !== awakeBeforeUrl) {
         awakeAfterUrl = await uploadImageFromUrl(
           awakeAfterUrl,
-          `cards/${docId}/awake-after.webp`
+          `cards/${resolvedId}/awake-after.webp`
         );
       } else if (awakeAfterUrl === detail.awakeBeforeUrl && awakeBeforeUrl) {
         awakeAfterUrl = awakeBeforeUrl;
@@ -193,45 +209,43 @@ export async function scrapeCardsUseCase(): Promise<ScrapeCardsResult> {
 
       // Sanity ドキュメント構築
       const doc: Record<string, unknown> = {
-        _id: docId,
+        _id: resolvedId,
         _type: 'card',
         cardName: card.cardName,
-        characterName: [card.characterName],
+        characterName: characterNames,
         rarity: RARITY_MAP[card.rarity] ?? card.rarity,
         limited: LIMITED_MAP[card.limited] ?? card.limited,
         styleType: STYLE_TYPE_MAP[card.styleType] ?? card.styleType,
         releaseDate: card.releaseDate,
-        cardUrl: card.cardUrl,
         favoriteMode: FAVORITE_MODE_MAP[detail.favoriteMode ?? ''] ?? FavoriteMode.NONE,
         acquisitionMethod: detail.acquisitionMethod,
-        awakeBeforeUrl,
-        awakeAfterUrl,
-        detail: {
-          stats: {
-            smile: parseInt(detail.stats.smile) || 0,
-            pure: parseInt(detail.stats.pure) || 0,
-            cool: parseInt(detail.stats.cool) || 0,
-            mental: parseInt(detail.stats.mental) || 0,
-          },
-          specialAppeal: {
-            name: detail.specialAppeal.name,
-            ap: parseInt(detail.specialAppeal.ap) || 0,
-            effect: detail.specialAppeal.effect,
-          },
-          skill: {
-            name: detail.skill.name,
-            ap: parseInt(detail.skill.ap) || 0,
-            effect: detail.skill.effect,
-          },
-          trait: {
-            name: detail.trait.name,
-            effect: detail.trait.effect,
-          },
+        awakeBeforeImage: awakeBeforeUrl,
+        awakeAfterImage: awakeAfterUrl,
+        stats: {
+          smile: parseInt(detail.stats.smile) || 0,
+          pure: parseInt(detail.stats.pure) || 0,
+          cool: parseInt(detail.stats.cool) || 0,
+          mental: parseInt(detail.stats.mental) || 0,
         },
-        accessories: detail.accessories.map((acc) => ({
+        specialAppeal: {
+          name: detail.specialAppeal.name,
+          ap: detail.specialAppeal.ap,
+          effect: detail.specialAppeal.effect,
+        },
+        skill: {
+          name: detail.skill.name,
+          ap: detail.skill.ap,
+          effect: detail.skill.effect,
+        },
+        trait: {
+          name: detail.trait.name,
+          effect: detail.trait.effect,
+        },
+        tokens: detail.accessories.map((acc, i) => ({
+          _key: `token-${i}`,
           parentType: PARENT_TYPE_MAP[acc.parentType] ?? acc.parentType,
           name: acc.name,
-          ap: parseInt(acc.ap) || 0,
+          ap: acc.ap,
           effect: acc.effect,
           traitName: acc.traitName,
           traitEffect: acc.traitEffect,

@@ -47,15 +47,17 @@ const CARD_DETAIL_HTML = `
 <h4>スペシャルアピール：テストスペシャル</h4>
 <div>
   <table>
-    <tr><th>AP</th><td>10</td></tr>
-    <tr><th>効果</th><td>全体スコアを大アップ</td></tr>
+    <tr><th>Lv</th><th>消費AP</th><th>効果</th></tr>
+    <tr><td>1</td><td>10</td><td>全体スコアを大アップ</td></tr>
+    <tr><td>14</td><td>全体スコアを超大アップ</td></tr>
   </table>
 </div>
 <h4>スキル：テストスキル</h4>
 <div>
   <table>
-    <tr><th>AP</th><td>6</td></tr>
-    <tr><th>効果</th><td>スマイルスコアをアップ</td></tr>
+    <tr><th>Lv</th><th>消費AP</th><th>効果</th></tr>
+    <tr><td>1</td><td>6</td><td>スマイルスコアをアップ</td></tr>
+    <tr><td>14</td><td>スマイルスコアを大アップ</td></tr>
   </table>
 </div>
 <h4>特性：テスト特性</h4>
@@ -113,9 +115,9 @@ describe('scrapeCardDetail()', () => {
       expect(detail.specialAppeal.ap).toBe('10');
     });
 
-    it('effect がパースされる', async () => {
+    it('effect がパースされる（Lv14、最高レベル）', async () => {
       const detail = await scrapeCardDetail('https://wikiwiki.jp/llll_wiki/test');
-      expect(detail.specialAppeal.effect).toBe('全体スコアを大アップ');
+      expect(detail.specialAppeal.effect).toBe('全体スコアを超大アップ');
     });
   });
 
@@ -130,9 +132,9 @@ describe('scrapeCardDetail()', () => {
       expect(detail.skill.ap).toBe('6');
     });
 
-    it('effect がパースされる', async () => {
+    it('effect がパースされる（Lv14、最高レベル）', async () => {
       const detail = await scrapeCardDetail('https://wikiwiki.jp/llll_wiki/test');
-      expect(detail.skill.effect).toBe('スマイルスコアをアップ');
+      expect(detail.skill.effect).toBe('スマイルスコアを大アップ');
     });
   });
 
