@@ -7,6 +7,10 @@
  * Song は参照（reference）として持つ。
  */
 
+import { YearTerm } from "@/models/shared/enums";
+
+const yearTermValues = Object.values(YearTerm);
+
 export const liveGrandPrixSchema = {
   name: 'liveGrandPrix',
   title: 'ライブグランプリ',
@@ -21,6 +25,9 @@ export const liveGrandPrixSchema = {
       name: 'yearTerm',
       title: '年期',
       type: 'string',
+      options: {
+        list: yearTermValues,
+      },
     },
     {
       name: 'startDate',
