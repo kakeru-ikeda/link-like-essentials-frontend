@@ -1,0 +1,58 @@
+name: Scrape Wiki Data
+
+on:
+  schedule:
+    # 毎日 9 回実行（JST 0:00, 3:00, 6:00, 9:00, 12:00, 15:00, 18:00, 21:00, 23:00）
+    - cron: '0 15 * * *' # JST 0:00
+    - cron: '0 18 * * *' # JST 3:00
+    - cron: '0 21 * * *' # JST 6:00
+    - cron: '0  0 * * *' # JST 9:00
+    - cron: '0  3 * * *' # JST 12:00
+    - cron: '0  6 * * *' # JST 15:00
+    - cron: '0  9 * * *' # JST 18:00
+    - cron: '0 12 * * *' # JST 21:00
+    - cron: '0 14 * * *' # JST 23:00
+  workflow_dispatch:
+    inputs:
+      scrape_target:
+        description: 'スクレイプ対象 (all / cards / songs / lgp / gc)'
+        required: false
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - cards
+          - songs
+          - lgp
+          - gc
+
+jobs:
+  scrape:
+    name: Scrape and write drafts to Sanity
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run scraper
+        env:
+          NEXT_PUBLIC_SANITY_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_SANITY_PROJECT_ID }}
+          NEXT_PUBLIC_SANITY_DATASET: ${{ secrets.NEXT_PUBLIC_SANITY_DATASET || 'production' }}
+          SANITY_WRITE_TOKEN: ${{ secrets.SANITY_WRITE_TOKEN }}
+          FIREBASE_STORAGE_BUCKET: ${{ secrets.FIREBASE_STORAGE_BUCKET }}
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          SCRAPE_TARGET: ${{ github.event.inputs.scrape_target || 'all' }}
+        run: |
+          npx tsx --tsconfig tsconfig.scraper.json scripts/scraper/index.ts
