@@ -14,10 +14,21 @@ const YEAR_TERM_MAP: Record<string, YearTerm> = {
   '105期': YearTerm.TERM_105,
 };
 
-/** ISO 文字列 → 'YYYY-MM-DD' 形式（Sanity date 型用） */
+const TOKYO_DATE_FORMATTER = new Intl.DateTimeFormat('en-CA', {
+  timeZone: 'Asia/Tokyo',
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+});
+
+/** 日付文字列 → 'YYYY-MM-DD' 形式（Sanity date 型用） */
 function toDateString(iso: string): string | undefined {
   if (!iso) return undefined;
-  return iso.substring(0, 10);
+
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return undefined;
+
+  return TOKYO_DATE_FORMATTER.format(date);
 }
 
 interface LGPSnapshot {

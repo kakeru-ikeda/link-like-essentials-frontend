@@ -19,8 +19,8 @@ export interface ScrapedLiveGrandPrix {
   eventId: string;
   eventName: string;
   yearTerm: string;
-  startDate: string; // ISO文字列
-  endDate: string;
+  startDate: string; // 'YYYY-MM-DD'
+  endDate: string; // 'YYYY-MM-DD'
   eventUrl?: string;
   stages?: ScrapedStageDetail[];
 }
@@ -28,11 +28,10 @@ export interface ScrapedLiveGrandPrix {
 const LGP_URL =
   'https://wikiwiki.jp/llll_wiki/%E3%83%A9%E3%82%A4%E3%83%96%E3%82%B0%E3%83%A9%E3%83%B3%E3%83%97%E3%83%AA';
 
-/** JST の年月日をISO文字列に変換する（UTC+9 固定） */
+/** JST の年月日を 'YYYY-MM-DD' 形式に変換する */
 function jstDateToIso(dateStr: string): string {
-  // 'YYYY/M/D' 形式を JST の 00:00 として UTC に変換
   const [y, m, d] = dateStr.split('/').map(Number);
-  return new Date(Date.UTC(y, m - 1, d, -9, 0)).toISOString();
+  return `${String(y).padStart(4, '0')}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
 }
 
 function parseDateRange(text: string): { startDate: string; endDate: string } {

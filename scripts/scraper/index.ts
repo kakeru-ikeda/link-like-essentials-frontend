@@ -2,12 +2,12 @@
  * scripts/scraper/index.ts
  *
  * スクレイパーエントリポイント
- * GitHub Actions から `npx ts-node --project tsconfig.scraper.json scripts/scraper/index.ts` で実行
+ * GitHub Actions から `npx tsx --tsconfig tsconfig.scraper.json scripts/scraper/index.ts` で実行
  *
  * 環境変数（必須）:
  *   NEXT_PUBLIC_SANITY_PROJECT_ID
  *   NEXT_PUBLIC_SANITY_DATASET   (省略時 'production')
- *   SANITY_WRITE_TOKEN
+ *   SANITY_API_TOKEN
  *   FIREBASE_STORAGE_BUCKET
  *   FIREBASE_SERVICE_ACCOUNT_JSON  (GitHub Actions)
  *   または FIREBASE_SERVICE_ACCOUNT_PATH  (ローカル)

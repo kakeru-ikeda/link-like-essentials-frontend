@@ -5,10 +5,19 @@ import {
 } from '../scrapers/wikiGradeChallenge';
 import { scrapeSongList, ScrapedSong } from '../scrapers/wikiSong';
 
-/** ISO 文字列 → 'YYYY-MM-DD'（Sanity date 型用） */
+/** 日付文字列 → 'YYYY-MM-DD'（Sanity date 型用） */
 function toDateString(iso: string): string | undefined {
   if (!iso) return undefined;
-  return iso.substring(0, 10);
+
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return undefined;
+
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Tokyo',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(date);
 }
 
 interface GCSnapshot {

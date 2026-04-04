@@ -91,10 +91,20 @@ export async function uploadImageFromUrl(
   await downloadFile(imageUrl, tempFilePath);
 
   // Firebase Storage にアップロード
+  const ext = path.extname(destination).toLowerCase();
+  const contentTypeMap: Record<string, string> = {
+    '.jpg': 'image/jpeg',
+    '.jpeg': 'image/jpeg',
+    '.png': 'image/png',
+    '.webp': 'image/webp',
+    '.gif': 'image/gif',
+  };
+  const contentType = contentTypeMap[ext] ?? 'application/octet-stream';
+
   await bucket.upload(tempFilePath, {
     destination,
     metadata: {
-      contentType: 'image/jpeg',
+      contentType,
       cacheControl: 'public, max-age=31536000',
     },
   });

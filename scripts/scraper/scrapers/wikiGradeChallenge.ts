@@ -17,8 +17,8 @@ export interface ScrapedGradeChallenge {
   challengeId: string;
   title: string; // '2026年1月'
   termName?: string; // '104期 2nd Term'
-  startDate: string; // ISO
-  endDate: string;
+  startDate: string; // 'YYYY-MM-DD'
+  endDate: string; // 'YYYY-MM-DD'
   detailUrl?: string;
   stages?: ScrapedGradeChallengeStage[];
 }
@@ -26,10 +26,10 @@ export interface ScrapedGradeChallenge {
 const GC_URL =
   'https://wikiwiki.jp/llll_wiki/%E3%82%B9%E3%82%AF%E3%82%B9%E3%83%86/%E3%82%B9%E3%83%86%E3%83%BC%E3%82%B8/%E3%82%B0%E3%83%AC%E3%83%BC%E3%83%89%E3%83%A9%E3%82%A4%E3%83%96';
 
-/** JST の年月日をISO文字列に変換する（UTC+9 固定） */
-function jstToIso(year: number, month: number, day: number, hour = 0, minute = 0): string {
-  // JST = UTC+9 なので UTC で9時間前の時刻を計算
-  return new Date(Date.UTC(year, month, day, hour - 9, minute)).toISOString();
+/** JST の年月日を 'YYYY-MM-DD' 形式に変換する */
+function jstToIso(year: number, month: number, day: number): string {
+  // month は 0 始まりで渡される
+  return `${String(year).padStart(4, '0')}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 }
 
 function parseDateRange(text: string): { startDate: string; endDate: string } {
@@ -40,7 +40,7 @@ function parseDateRange(text: string): { startDate: string; endDate: string } {
   const [, sy, sm, sd, ey, em, ed] = m;
   return {
     startDate: jstToIso(+sy, +sm - 1, +sd),
-    endDate: jstToIso(+ey, +em - 1, +ed, 23, 59),
+    endDate: jstToIso(+ey, +em - 1, +ed),
   };
 }
 

@@ -73,7 +73,7 @@ const PARENT_TYPE_MAP: Record<string, ParentType> = {
  */
 function parseCharacterNames(raw: string): string[] {
   return raw
-    .split(/[&＆]/)  
+    .split(/[&＆]/)
     .map((name) => {
       const trimmed = name.trim();
       return CHARACTER_NAME_MAP[trimmed] ?? trimmed;
