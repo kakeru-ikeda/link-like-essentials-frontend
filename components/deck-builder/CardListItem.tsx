@@ -6,7 +6,13 @@ import { RarityBadge } from '@/components/shared/RarityBadge';
 import { StyleTypeBadge } from '@/components/shared/StyleTypeBadge';
 import { FavoriteModeBadge } from '@/components/shared/FavoriteModeBadge';
 import { CardDetailSections } from '@/components/deck-builder/CardDetailSections';
-import { ChevronDown, ChevronUp, Plus, Minus, ArrowLeftRight } from 'lucide-react';
+import {
+  ChevronDown,
+  ChevronUp,
+  Plus,
+  Minus,
+  ArrowLeftRight,
+} from 'lucide-react';
 import { useAwakeState } from '@/hooks/card/useAwakeState';
 
 interface CardListItemProps {
@@ -15,14 +21,18 @@ interface CardListItemProps {
   variant?: 'default' | 'current' | 'inProgress';
 }
 
-export const CardListItem: React.FC<CardListItemProps> = ({ card, onSelect, variant = 'default' }) => {
+export const CardListItem: React.FC<CardListItemProps> = ({
+  card,
+  onSelect,
+  variant = 'default',
+}) => {
   const [imageError, setImageError] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const { isAwakeAfter } = useAwakeState(card.id);
   const imageUrl = isAwakeAfter
-    ? card.detail?.awakeAfterStorageUrl
-    : (card.detail?.awakeBeforeStorageUrl ?? card.detail?.awakeAfterStorageUrl);
+    ? card.detail?.awakeAfterImage
+    : (card.detail?.awakeBeforeImage ?? card.detail?.awakeAfterImage);
 
   const handleToggleExpand = (e: React.MouseEvent): void => {
     e.stopPropagation();
@@ -67,10 +77,14 @@ export const CardListItem: React.FC<CardListItemProps> = ({ card, onSelect, vari
   // ホバー時のアクションアイコン
   const getActionIcon = () => {
     if (!isHovered) return null;
-    
+
     return (
-      <div className={`absolute inset-0 ${styles.actionBg} flex items-center justify-center pointer-events-none`}>
-        <div className={`${styles.actionIcon} text-white rounded-full p-2 shadow-lg`}>
+      <div
+        className={`absolute inset-0 ${styles.actionBg} flex items-center justify-center pointer-events-none`}
+      >
+        <div
+          className={`${styles.actionIcon} text-white rounded-full p-2 shadow-lg`}
+        >
           <ActionIcon className="w-4 h-4" strokeWidth={3} />
         </div>
       </div>
@@ -123,9 +137,13 @@ export const CardListItem: React.FC<CardListItemProps> = ({ card, onSelect, vari
             {card.styleType && (
               <StyleTypeBadge styleType={card.styleType} size="small" />
             )}
-            {card.detail?.favoriteMode && card.detail.favoriteMode !== 'NONE' && (
-              <FavoriteModeBadge favoriteMode={card.detail.favoriteMode} size="small" />
-            )}
+            {card.detail?.favoriteMode &&
+              card.detail.favoriteMode !== 'NONE' && (
+                <FavoriteModeBadge
+                  favoriteMode={card.detail.favoriteMode}
+                  size="small"
+                />
+              )}
           </div>
           <h3 className="font-bold text-gray-900 truncate">{card.cardName}</h3>
           <p className="text-sm text-gray-600">{card.characterName}</p>
@@ -151,8 +169,8 @@ export const CardListItem: React.FC<CardListItemProps> = ({ card, onSelect, vari
       {/* 展開エリア（詳細情報） */}
       {isExpanded && card.detail && (
         <div className={`px-4 pb-4 ${styles.detailBg}`}>
-          <CardDetailSections 
-            card={card} 
+          <CardDetailSections
+            card={card}
             variant="compact"
             showStats={false}
             showAcquisition={false}

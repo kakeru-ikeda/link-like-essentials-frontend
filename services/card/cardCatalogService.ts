@@ -29,7 +29,11 @@ export const cardCatalogService = {
   mapDetailToCard(detail: CardDetailNode): Card | null {
     if (!detail.card) return null;
 
-    const accessories = (detail.card.accessories ?? detail.accessories ?? []).map((accessory) => ({
+    const accessories = (
+      detail.card.accessories ??
+      detail.accessories ??
+      []
+    ).map((accessory) => ({
       ...accessory,
       cardId: Number(accessory.cardId),
     }));
@@ -42,8 +46,8 @@ export const cardCatalogService = {
         cardId: Number(detail.cardId),
         favoriteMode: detail.favoriteMode ?? '',
         acquisitionMethod: detail.acquisitionMethod ?? '',
-        awakeBeforeStorageUrl: detail.awakeBeforeStorageUrl ?? undefined,
-        awakeAfterStorageUrl: detail.awakeAfterStorageUrl ?? undefined,
+        awakeBeforeImage: detail.awakeBeforeStorageUrl ?? undefined,
+        awakeAfterImage: detail.awakeAfterStorageUrl ?? undefined,
         stats: detail.stats,
         specialAppeal: detail.specialAppeal ?? undefined,
         skill: detail.skill ?? undefined,

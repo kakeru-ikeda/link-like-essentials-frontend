@@ -1,8 +1,15 @@
 import type { Deck } from '@/models/deck/Deck';
-import type { GenerateThumbnailRequest, ThumbnailCardPayload, ThumbnailDeckPayload } from '@/models/deck/Thumbnail';
+import type {
+  GenerateThumbnailRequest,
+  ThumbnailCardPayload,
+  ThumbnailDeckPayload,
+} from '@/models/deck/Thumbnail';
 import { thumbnailRepository } from '@/repositories/api/thumbnailRepository';
 
-function buildThumbnailDeckPayload(deck: Deck, awakeStates: Record<string, boolean>): ThumbnailDeckPayload {
+function buildThumbnailDeckPayload(
+  deck: Deck,
+  awakeStates: Record<string, boolean>
+): ThumbnailDeckPayload {
   return {
     id: deck.id,
     name: deck.name,
@@ -10,11 +17,15 @@ function buildThumbnailDeckPayload(deck: Deck, awakeStates: Record<string, boole
       slotId: slot.slotId,
       cardId: slot.cardId,
       ...(slot.limitBreak !== undefined && { limitBreak: slot.limitBreak }),
-      ...(slot.cardId !== null && { isAwakeAfter: awakeStates[slot.cardId] ?? true }),
+      ...(slot.cardId !== null && {
+        isAwakeAfter: awakeStates[slot.cardId] ?? true,
+      }),
     })),
     aceSlotId: deck.aceSlotId,
     deckType: deck.deckType,
-    ...(deck.isFriendSlotEnabled !== undefined && { isFriendSlotEnabled: deck.isFriendSlotEnabled }),
+    ...(deck.isFriendSlotEnabled !== undefined && {
+      isFriendSlotEnabled: deck.isFriendSlotEnabled,
+    }),
     ...(deck.centerCharacter && { centerCharacter: deck.centerCharacter }),
     ...(deck.participations && { participations: deck.participations }),
   };
@@ -27,7 +38,9 @@ function buildThumbnailCardsPayload(deck: Deck): ThumbnailCardPayload[] {
     if (!slot.cardId) return;
 
     if (!slot.card) {
-      throw new Error(`カード情報が不足しています: slotId=${slot.slotId}, cardId=${slot.cardId}`);
+      throw new Error(
+        `カード情報が不足しています: slotId=${slot.slotId}, cardId=${slot.cardId}`
+      );
     }
 
     if (cardMap.has(slot.card.id)) return;
@@ -39,8 +52,8 @@ function buildThumbnailCardsPayload(deck: Deck): ThumbnailCardPayload[] {
       rarity: slot.card.rarity,
       detail: slot.card.detail
         ? {
-            awakeBeforeStorageUrl: slot.card.detail.awakeBeforeStorageUrl,
-            awakeAfterStorageUrl: slot.card.detail.awakeAfterStorageUrl,
+            awakeBeforeImage: slot.card.detail.awakeBeforeImage,
+            awakeAfterImage: slot.card.detail.awakeAfterImage,
           }
         : undefined,
     });
@@ -50,7 +63,10 @@ function buildThumbnailCardsPayload(deck: Deck): ThumbnailCardPayload[] {
 }
 
 export const thumbnailService = {
-  async generateThumbnail(deck: Deck, awakeStates: Record<string, boolean>): Promise<string> {
+  async generateThumbnail(
+    deck: Deck,
+    awakeStates: Record<string, boolean>
+  ): Promise<string> {
     const request: GenerateThumbnailRequest = {
       deck: buildThumbnailDeckPayload(deck, awakeStates),
       cards: buildThumbnailCardsPayload(deck),

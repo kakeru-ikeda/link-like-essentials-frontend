@@ -22,13 +22,13 @@ export const CardGridItem: React.FC<CardGridItemProps> = ({
   const { isAwakeAfter } = useAwakeState(card.id);
 
   const hasAwakeToggle =
-    !!card.detail?.awakeBeforeStorageUrl &&
-    !!card.detail?.awakeAfterStorageUrl &&
-    card.detail.awakeBeforeStorageUrl !== card.detail.awakeAfterStorageUrl;
+    !!card.detail?.awakeBeforeImage &&
+    !!card.detail?.awakeAfterImage &&
+    card.detail.awakeBeforeImage !== card.detail.awakeAfterImage;
 
   const imageUrl = isAwakeAfter
-    ? card.detail?.awakeAfterStorageUrl
-    : (card.detail?.awakeBeforeStorageUrl ?? card.detail?.awakeAfterStorageUrl);
+    ? card.detail?.awakeAfterImage
+    : (card.detail?.awakeBeforeImage ?? card.detail?.awakeAfterImage);
 
   return (
     <button
@@ -74,7 +74,10 @@ export const CardGridItem: React.FC<CardGridItemProps> = ({
             <HighlightText text={card.cardName} keywords={highlightKeywords} />
           </p>
           <p className="text-xs text-white/90">
-            <HighlightText text={card.characterName} keywords={highlightKeywords} />
+            <HighlightText
+              text={card.characterName}
+              keywords={highlightKeywords}
+            />
           </p>
         </div>
       </div>

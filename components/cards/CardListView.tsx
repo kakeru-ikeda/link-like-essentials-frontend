@@ -17,7 +17,12 @@ interface CardListViewProps {
   onClickCard: (card: Card) => void;
 }
 
-export const CardListView: React.FC<CardListViewProps> = ({ cards, loading, highlightKeywords, onClickCard }) => {
+export const CardListView: React.FC<CardListViewProps> = ({
+  cards,
+  loading,
+  highlightKeywords,
+  onClickCard,
+}) => {
   const [errorMap, setErrorMap] = useState<Record<string, boolean>>({});
   const awakeStates = useAwakeStates();
 
@@ -37,7 +42,9 @@ export const CardListView: React.FC<CardListViewProps> = ({ cards, loading, high
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
           <p className="text-gray-500 text-lg">カードが見つかりませんでした</p>
-          <p className="text-gray-400 text-sm mt-2">フィルター条件を変更してください</p>
+          <p className="text-gray-400 text-sm mt-2">
+            フィルター条件を変更してください
+          </p>
         </div>
       </div>
     );
@@ -49,8 +56,8 @@ export const CardListView: React.FC<CardListViewProps> = ({ cards, loading, high
         const characterColor = getCharacterColor(card.characterName);
         const isAwakeAfter = awakeStates[card.id] ?? true;
         const imageUrl = isAwakeAfter
-          ? card.detail?.awakeAfterStorageUrl
-          : (card.detail?.awakeBeforeStorageUrl ?? card.detail?.awakeAfterStorageUrl);
+          ? card.detail?.awakeAfterImage
+          : (card.detail?.awakeBeforeImage ?? card.detail?.awakeAfterImage);
         const errorKey = `${card.id}_${isAwakeAfter}`;
         const showFallback = errorMap[errorKey] || !imageUrl;
 
@@ -69,7 +76,9 @@ export const CardListView: React.FC<CardListViewProps> = ({ cards, loading, high
                     src={imageUrl}
                     alt={card.cardName}
                     className="w-full h-full object-cover"
-                    onError={() => setErrorMap((prev) => ({ ...prev, [errorKey]: true }))}
+                    onError={() =>
+                      setErrorMap((prev) => ({ ...prev, [errorKey]: true }))
+                    }
                   />
                 ) : (
                   <div className="flex items-center justify-center h-full min-h-[84px]">
@@ -92,19 +101,35 @@ export const CardListView: React.FC<CardListViewProps> = ({ cards, loading, high
 
               <div className="flex-1 p-3 flex flex-col gap-1">
                 <div className="flex items-center gap-1 flex-wrap">
-                  <RarityBadge rarity={card.rarity} position="inline" size="small" />
-                  {card.styleType && <StyleTypeBadge styleType={card.styleType} size="small" />}
-                  {card.detail?.favoriteMode && card.detail.favoriteMode !== 'NONE' && (
-                    <FavoriteModeBadge favoriteMode={card.detail.favoriteMode} size="small" />
+                  <RarityBadge
+                    rarity={card.rarity}
+                    position="inline"
+                    size="small"
+                  />
+                  {card.styleType && (
+                    <StyleTypeBadge styleType={card.styleType} size="small" />
                   )}
+                  {card.detail?.favoriteMode &&
+                    card.detail.favoriteMode !== 'NONE' && (
+                      <FavoriteModeBadge
+                        favoriteMode={card.detail.favoriteMode}
+                        size="small"
+                      />
+                    )}
                   <LimitedTypeBadge limitedType={card.limited} size="small" />
                 </div>
                 <div className="space-y-0.5">
                   <p className="text-sm sm:text-base font-bold text-gray-900 line-clamp-1">
-                    <HighlightText text={card.cardName} keywords={highlightKeywords} />
+                    <HighlightText
+                      text={card.cardName}
+                      keywords={highlightKeywords}
+                    />
                   </p>
                   <p className="text-xs text-gray-600">
-                    <HighlightText text={card.characterName} keywords={highlightKeywords} />
+                    <HighlightText
+                      text={card.characterName}
+                      keywords={highlightKeywords}
+                    />
                   </p>
                 </div>
               </div>
