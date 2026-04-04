@@ -1,7 +1,5 @@
 import { request } from 'undici';
 
-const WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
-
 export interface ScrapeReport {
   cards: { total: number; written: string[]; skipped: number };
   songs: { total: number; written: string[]; skipped: number };
@@ -67,6 +65,7 @@ function buildEmbed(report: ScrapeReport): object {
  * DISCORD_WEBHOOK_URL が未設定の場合はスキップ
  */
 export async function notifyDiscord(report: ScrapeReport): Promise<void> {
+  const WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
   if (!WEBHOOK_URL) {
     console.log('[Discord] DISCORD_WEBHOOK_URL not set, skipping notification');
     return;
