@@ -21,7 +21,45 @@ export const newsSchema = {
       name: 'body',
       title: '本文',
       type: 'array',
-      of: [{ type: 'block' }],
+      of: [
+        { type: 'block' },
+        {
+          type: 'image',
+          options: { hotspot: true },
+          fields: [
+            {
+              name: 'alt',
+              title: '代替テキスト',
+              type: 'string',
+            },
+            {
+              name: 'alignment',
+              title: '寄せ',
+              type: 'string',
+              options: {
+                list: [
+                  { title: '左', value: 'left' },
+                  { title: '中央', value: 'center' },
+                  { title: '右', value: 'right' },
+                ],
+              },
+            },
+            {
+              name: 'width',
+              title: '幅',
+              type: 'string',
+              options: {
+                list: [
+                  { title: '小 (25%)', value: 'small' },
+                  { title: '中 (50%)', value: 'medium' },
+                  { title: '大 (75%)', value: 'large' },
+                  { title: '全幅 (100%)', value: 'full' },
+                ],
+              },
+            },
+          ],
+        },
+      ],
       description: 'Portable Text 形式のリッチテキスト',
     },
     {
