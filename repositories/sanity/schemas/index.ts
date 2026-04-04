@@ -8,8 +8,8 @@ export { cardSchema } from './card';
 export { songSchema } from './song';
 export { gradeChallengeSchema } from './gradeChallenge';
 export { liveGrandPrixSchema } from './liveGrandPrix';
-export { skillEffectKeywordGroupSchema } from './skillEffectKeywordGroup';
-export { traitEffectKeywordGroupSchema } from './traitEffectKeywordGroup';
+export { skillEffectKeywordSchema } from './skillEffectKeyword';
+export { traitEffectKeywordSchema } from './traitEffectKeyword';
 export { newsSchema } from './news';
 export { maintenanceSchema } from './maintenance';
 
@@ -17,8 +17,8 @@ import { cardSchema } from './card';
 import { songSchema } from './song';
 import { gradeChallengeSchema } from './gradeChallenge';
 import { liveGrandPrixSchema } from './liveGrandPrix';
-import { skillEffectKeywordGroupSchema } from './skillEffectKeywordGroup';
-import { traitEffectKeywordGroupSchema } from './traitEffectKeywordGroup';
+import { skillEffectKeywordSchema } from './skillEffectKeyword';
+import { traitEffectKeywordSchema } from './traitEffectKeyword';
 import { newsSchema } from './news';
 import { maintenanceSchema } from './maintenance';
 
@@ -28,8 +28,8 @@ export const schemaTypes = [
   songSchema,
   gradeChallengeSchema,
   liveGrandPrixSchema,
-  skillEffectKeywordGroupSchema,
-  traitEffectKeywordGroupSchema,
+  skillEffectKeywordSchema,
+  traitEffectKeywordSchema,
   newsSchema,
   maintenanceSchema,
 ];
