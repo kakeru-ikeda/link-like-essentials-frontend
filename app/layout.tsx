@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import '@/styles/globals.css';
 import { Providers } from './providers';
-import { MaintenanceGate } from './MaintenanceGate';
 import { Sidebar } from '@/components/common/Sidebar';
 import { AnalyticsTracker } from '@/components/common/AnalyticsTracker';
 import PreviewBanner from '@/components/common/PreviewBanner';
@@ -27,10 +26,8 @@ export default function RootLayout({
       <body className={inter.className}>
         <PreviewBanner />
         <Providers>
-          <MaintenanceGate>
-            <AnalyticsTracker />
-            <Sidebar>{children}</Sidebar>
-          </MaintenanceGate>
+          <AnalyticsTracker />
+          <Sidebar>{children}</Sidebar>
         </Providers>
       </body>
     </html>

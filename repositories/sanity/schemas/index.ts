@@ -11,7 +11,6 @@ export { liveGrandPrixSchema } from './liveGrandPrix';
 export { skillEffectKeywordSchema } from './skillEffectKeyword';
 export { traitEffectKeywordSchema } from './traitEffectKeyword';
 export { newsSchema } from './news';
-export { maintenanceSchema } from './maintenance';
 
 import { cardSchema } from './card';
 import { songSchema } from './song';
@@ -20,7 +19,6 @@ import { liveGrandPrixSchema } from './liveGrandPrix';
 import { skillEffectKeywordSchema } from './skillEffectKeyword';
 import { traitEffectKeywordSchema } from './traitEffectKeyword';
 import { newsSchema } from './news';
-import { maintenanceSchema } from './maintenance';
 
 /** Sanity Studio の schemaTypes 設定に直接渡すスキーマ配列 */
 export const schemaTypes = [
@@ -31,5 +29,4 @@ export const schemaTypes = [
   skillEffectKeywordSchema,
   traitEffectKeywordSchema,
   newsSchema,
-  maintenanceSchema,
 ];

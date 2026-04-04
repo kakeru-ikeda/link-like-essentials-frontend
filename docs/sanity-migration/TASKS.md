@@ -7,15 +7,15 @@
 - [x] `repositories/sanity/client.ts` の作成
 - [x] Sanity Studio のスキーマ定義構築（Card, Song, GC, LGP, SkillEffectKeywordGroup, TraitEffectKeywordGroup, news, maintenance 等）
 - [x] Sanity Studio の Next.js App Router への組み込み（`/studio` ルート・`sanity.config.ts`）
-- [ ] GraphQL DB / MicroCMS コンテンツのデータ変換＆インポートスクリプト作成
+- [x] GraphQL DB / MicroCMS コンテンツのデータ変換＆インポートスクリプト作成
 - [ ] データインポートの実施（初回）
 
 ## Phase 2-A: MicroCMS → Sanity リプレイス（ニュース・メンテナンス）
 
 - [ ] `newsRepository.ts` の GROQ 対応（`*[_type == "news"]` クエリへ置き換え）
-- [ ] `maintenanceRepository.ts` の GROQ 対応（`*[_type == "maintenance"]` クエリへ置き換え）
-- [ ] Sanity Webhook → `/api/revalidate` Route Handler 実装（`revalidateTag("news")` / `revalidateTag("maintenance")`）
-- [ ] MicroCMS SDK の呼び出しが news / maintenance から消えていることの動作確認
+- [x] ~~`maintenanceRepository.ts` の GROQ 対応（`*[_type == "maintenance"]` クエリへ置き換え）~~ → **廃止（LLES-300）**: メンテナンス機能をほぼ使用しないため、関連ロジックをすべて削除
+- [ ] Sanity Webhook → `/api/revalidate` Route Handler 実装（`revalidateTag("news")`）
+- [ ] MicroCMS SDK の呼び出しが news から消えていることの動作確認
 
 ## Phase 2-B: GraphQL → Sanity リプレイス（Songs・EffectKeywords）
 
