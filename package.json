@@ -10,7 +10,14 @@
     "type-check": "tsc --noEmit",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,css,md}\"",
     "vercel": "vercel",
-    "vercel:prod": "vercel --prod"
+    "vercel:prod": "vercel --prod",
+    "scrape": "tsx --tsconfig tsconfig.scraper.json scripts/scraper/index.ts",
+    "scrape:cards": "SCRAPE_TARGET=cards tsx --tsconfig tsconfig.scraper.json scripts/scraper/index.ts",
+    "scrape:songs": "SCRAPE_TARGET=songs tsx --tsconfig tsconfig.scraper.json scripts/scraper/index.ts",
+    "scrape:lgp": "SCRAPE_TARGET=lgp tsx --tsconfig tsconfig.scraper.json scripts/scraper/index.ts",
+    "scrape:gc": "SCRAPE_TARGET=gc tsx --tsconfig tsconfig.scraper.json scripts/scraper/index.ts",
+    "test:scraper": "vitest run --config vitest.config.scraper.ts",
+    "test:scraper:watch": "vitest --config vitest.config.scraper.ts"
   },
   "dependencies": {
     "@apollo/client": "^3.11.8",
@@ -42,12 +49,18 @@
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@types/sanitize-html": "^2.16.0",
+    "@vitest/coverage-v8": "^4.1.2",
     "autoprefixer": "^10.4.20",
+    "cheerio": "^1.2.0",
     "eslint": "^8.57.1",
     "eslint-config-next": "^14.2.18",
+    "firebase-admin": "^13.7.0",
     "postcss": "^8.4.47",
     "prettier": "^3.3.3",
     "tailwindcss": "^3.4.14",
-    "typescript": "^5.6.3"
+    "tsx": "^4.21.0",
+    "typescript": "^5.6.3",
+    "undici": "^8.0.2",
+    "vitest": "^4.1.2"
   }
 }

@@ -29,3 +29,20 @@ export const UNIT_MEMBERS = {
 } as const;
 
 export type CharacterName = (typeof CHARACTERS)[number] | 'フリー' | 'フレンド';
+
+/**
+ * Wiki 等で使用される短縮名 → フルネームのマッピング
+ */
+export const CHARACTER_NAME_MAP: Record<string, string> = {
+  花帆: '日野下花帆',
+  さやか: '村野さやか',
+  梢: '乙宗梢',
+  綴理: '夕霧綴理',
+  瑠璃乃: '大沢瑠璃乃',
+  慈: '藤島慈',
+  小鈴: '徒町小鈴',
+  吟子: '百生吟子',
+  姫芽: '安養寺姫芽',
+  泉: '桂城泉',
+  セラス: 'セラス',
+};
