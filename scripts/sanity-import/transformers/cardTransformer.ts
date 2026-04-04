@@ -80,8 +80,8 @@ export interface SanityCard {
   releaseDate?: string;
   favoriteMode?: string;
   acquisitionMethod?: string;
-  awakeBeforeStorageUrl?: string;
-  awakeAfterStorageUrl?: string;
+  awakeBeforeImage?: string;
+  awakeAfterImage?: string;
   stats?: GraphQLStats;
   specialAppeal?: GraphQLSkill;
   skill?: GraphQLSkill;
@@ -97,7 +97,7 @@ export interface SanityCard {
  * - `accessories` → `tokens` にリネーム（`id` / `cardId` は除外）
  * - `cardUrl` / `isLocked` / `createdAt` / `updatedAt` は Sanity スキーマに存在しないため除外
  * - `isLocked` は無視して全件 published として投入
- * - `sideCompositions` は GraphQL に存在しないためスキップ
+ * - `sidePlacementRules` は GraphQL に存在しないためスキップ
  */
 export function transformCard(card: GraphQLCard): SanityCard {
   const doc: SanityCard = {
@@ -120,8 +120,8 @@ export function transformCard(card: GraphQLCard): SanityCard {
   if (detail) {
     if (detail.favoriteMode) doc.favoriteMode = detail.favoriteMode;
     if (detail.acquisitionMethod) doc.acquisitionMethod = detail.acquisitionMethod;
-    if (detail.awakeBeforeStorageUrl) doc.awakeBeforeStorageUrl = detail.awakeBeforeStorageUrl;
-    if (detail.awakeAfterStorageUrl) doc.awakeAfterStorageUrl = detail.awakeAfterStorageUrl;
+    if (detail.awakeBeforeStorageUrl) doc.awakeBeforeImage = detail.awakeBeforeStorageUrl;
+    if (detail.awakeAfterStorageUrl) doc.awakeAfterImage = detail.awakeAfterStorageUrl;
     if (detail.stats) doc.stats = detail.stats;
     if (detail.specialAppeal) doc.specialAppeal = detail.specialAppeal;
     if (detail.skill) doc.skill = detail.skill;
