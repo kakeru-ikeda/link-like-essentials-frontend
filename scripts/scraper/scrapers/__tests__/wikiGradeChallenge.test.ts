@@ -76,11 +76,11 @@ describe('scrapeGradeChallengeAll()', () => {
       expect(jan?.challengeId).toBe('gc-2025-01');
     });
 
-    it('startDate がISO形式', async () => {
+    it('startDate が YYYY-MM-DD 形式', async () => {
       const existingIds = new Set(['gc-2025-01', 'gc-2025-02', 'gc-2025-03']);
       const challenges = await scrapeGradeChallengeAll(existingIds);
       const jan = challenges.find((c) => c.title === '2025年1月');
-      expect(jan?.startDate).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+      expect(jan?.startDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     });
 
     it('termName がパースされる', async () => {

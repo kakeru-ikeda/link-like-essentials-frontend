@@ -121,16 +121,16 @@ describe('scrapeLiveGrandPrixAll()', () => {
       expect(ev!.yearTerm).toBe('103期');
     });
 
-    it('startDate が ISO 文字列で返る', async () => {
+    it('startDate が YYYY-MM-DD 形式で返る', async () => {
       const result = await scrapeLiveGrandPrixAll(new Set());
       const ev = result.find((e) => e.eventName === '春の祭典LGP');
-      expect(ev!.startDate).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+      expect(ev!.startDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     });
 
-    it('endDate が ISO 文字列で返る', async () => {
+    it('endDate が YYYY-MM-DD 形式で返る', async () => {
       const result = await scrapeLiveGrandPrixAll(new Set());
       const ev = result.find((e) => e.eventName === '春の祭典LGP');
-      expect(ev!.endDate).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+      expect(ev!.endDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     });
 
     it('eventUrl が絶対URLに変換される', async () => {
@@ -152,14 +152,28 @@ describe('scrapeLiveGrandPrixAll()', () => {
     });
 
     it('existingIds に含まれるイベントは stages がない（詳細スクレイプスキップ）', async () => {
-      const result = await scrapeLiveGrandPrixAll(
-        new Set(['lgp-105-LGP-105-Spring'])
-      );
-      // eventUrl があっても existingIds に入っていれば詳細なし
-      // ただし eventId は makeEventId() の結果に依存するので、詳細ありの件数で確認
-      const withStages = result.filter((e) => e.stages !== undefined);
-      // existingIds には 1 件、eventUrl あり 3 件 → 詳細あり 2 件
-      expect(withStages.length).toBeLessThan(4);
+      const initialResult = await scrapeLiveGrandPrixAll(new Set());
+      const targetEvent = initialResult.find((e) => e.eventName === '春の祭典LGP');
+
+      expect(targetEvent).toBeDefined();
+      expect(targetEvent!.eventUrl).toBe('https://wikiwiki.jp/llll_wiki/LGP-105-Spring');
+      expect(targetEvent!.stages).toBeDefined();
+
+      mockFetchWithRetry.mockReset();
+      mockFetchWithRetry
+        .mockResolvedValueOnce(LIST_HTML)
+        .mockResolvedValue(DETAIL_HTML);
+
+      const result = await scrapeLiveGrandPrixAll(new Set([targetEvent!.eventId]));
+      const skippedEvent = result.find((e) => e.eventId === targetEvent!.eventId);
+      const otherDetailedEvent = result.find((e) => e.eventName === '秋の大会LGP');
+
+      expect(skippedEvent).toBeDefined();
+      expect(skippedEvent!.eventUrl).toBe('https://wikiwiki.jp/llll_wiki/LGP-105-Spring');
+      expect(skippedEvent!.stages).toBeUndefined();
+
+      expect(otherDetailedEvent).toBeDefined();
+      expect(otherDetailedEvent!.stages).toBeDefined();
     });
   });
 
