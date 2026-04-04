@@ -32,8 +32,8 @@ export const CardDetailView: React.FC<CardDetailViewProps> = ({ cardId }) => {
       // 既に同じ状態なら何もしない
       if (isAwakeAfter === targetIsAfter) return;
 
-      const beforeUrl = card?.detail?.awakeBeforeStorageUrl;
-      const afterUrl = card?.detail?.awakeAfterStorageUrl;
+      const beforeUrl = card?.detail?.awakeBeforeImage;
+      const afterUrl = card?.detail?.awakeAfterImage;
 
       // URLが同じ場合はローディングを表示しない
       if (beforeUrl !== afterUrl) {
@@ -47,8 +47,8 @@ export const CardDetailView: React.FC<CardDetailViewProps> = ({ cardId }) => {
     [
       isAwakeAfter,
       setAwakeState,
-      card?.detail?.awakeBeforeStorageUrl,
-      card?.detail?.awakeAfterStorageUrl,
+      card?.detail?.awakeBeforeImage,
+      card?.detail?.awakeAfterImage,
     ]
   );
 
@@ -83,8 +83,8 @@ export const CardDetailView: React.FC<CardDetailViewProps> = ({ cardId }) => {
 
   const characterColor = getCharacterColor(card.characterName);
   const currentImageUrl = isAwakeAfter
-    ? card.detail?.awakeAfterStorageUrl
-    : card.detail?.awakeBeforeStorageUrl;
+    ? card.detail?.awakeAfterImage
+    : card.detail?.awakeBeforeImage;
 
   return (
     <div className="p-6 space-y-6">
@@ -94,33 +94,32 @@ export const CardDetailView: React.FC<CardDetailViewProps> = ({ cardId }) => {
         style={{ borderColor: characterColor }}
       >
         {/* 覚醒切り替えボタン */}
-        {card.detail?.awakeBeforeStorageUrl &&
-          card.detail?.awakeAfterStorageUrl && (
-            <div className="absolute top-2 right-2 z-10 flex gap-1 bg-black/50 rounded-lg p-1">
-              <button
-                onClick={() => switchAwake(false)}
-                disabled={!isAwakeAfter}
-                className={`px-3 py-1 text-xs font-medium rounded transition-colors ${
-                  !isAwakeAfter
-                    ? 'bg-white text-gray-900'
-                    : 'text-white hover:bg-white/20'
-                }`}
-              >
-                覚醒前
-              </button>
-              <button
-                onClick={() => switchAwake(true)}
-                disabled={isAwakeAfter}
-                className={`px-3 py-1 text-xs font-medium rounded transition-colors ${
-                  isAwakeAfter
-                    ? 'bg-white text-gray-900'
-                    : 'text-white hover:bg-white/20'
-                }`}
-              >
-                覚醒後
-              </button>
-            </div>
-          )}
+        {card.detail?.awakeBeforeImage && card.detail?.awakeAfterImage && (
+          <div className="absolute top-2 right-2 z-10 flex gap-1 bg-black/50 rounded-lg p-1">
+            <button
+              onClick={() => switchAwake(false)}
+              disabled={!isAwakeAfter}
+              className={`px-3 py-1 text-xs font-medium rounded transition-colors ${
+                !isAwakeAfter
+                  ? 'bg-white text-gray-900'
+                  : 'text-white hover:bg-white/20'
+              }`}
+            >
+              覚醒前
+            </button>
+            <button
+              onClick={() => switchAwake(true)}
+              disabled={isAwakeAfter}
+              className={`px-3 py-1 text-xs font-medium rounded transition-colors ${
+                isAwakeAfter
+                  ? 'bg-white text-gray-900'
+                  : 'text-white hover:bg-white/20'
+              }`}
+            >
+              覚醒後
+            </button>
+          </div>
+        )}
         {!imageError && currentImageUrl ? (
           <img
             src={currentImageUrl}

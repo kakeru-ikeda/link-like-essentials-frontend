@@ -30,8 +30,8 @@ interface DeckSlotProps {
   isPortrait?: boolean;
 }
 
-export const DeckSlot: React.FC<DeckSlotProps> = ({ 
-  slot, 
+export const DeckSlot: React.FC<DeckSlotProps> = ({
+  slot,
   onSlotClick,
   onRemoveCard,
   onToggleAce,
@@ -63,22 +63,23 @@ export const DeckSlot: React.FC<DeckSlotProps> = ({
 
   // 覚醒前後切り替えが可能かどうか
   const hasAwakeToggle =
-    !!slot.card?.detail?.awakeBeforeStorageUrl &&
-    !!slot.card?.detail?.awakeAfterStorageUrl &&
-    slot.card.detail.awakeBeforeStorageUrl !== slot.card.detail.awakeAfterStorageUrl;
+    !!slot.card?.detail?.awakeBeforeImage &&
+    !!slot.card?.detail?.awakeAfterImage &&
+    slot.card.detail.awakeBeforeImage !== slot.card.detail.awakeAfterImage;
 
   // 表示する画像URL
   const currentImageUrl = slot.card
     ? isAwakeAfter
-      ? slot.card.detail?.awakeAfterStorageUrl
-      : (slot.card.detail?.awakeBeforeStorageUrl ?? slot.card.detail?.awakeAfterStorageUrl)
+      ? slot.card.detail?.awakeAfterImage
+      : (slot.card.detail?.awakeBeforeImage ??
+        slot.card.detail?.awakeAfterImage)
     : undefined;
 
   const containerClass = isPortrait
     ? `relative w-full aspect-[5/7] ${isMain ? 'border-2' : 'border'} border-gray-300 rounded-lg overflow-hidden hover:border-blue-500 transition-colors bg-white`
     : isMain
-    ? `relative w-full aspect-[16/9] border-2 border-gray-300 rounded-lg overflow-hidden hover:border-blue-500 transition-colors bg-white`
-    : `relative w-full aspect-[16/9] border border-gray-300 rounded overflow-hidden hover:border-blue-500 transition-colors bg-white`;
+      ? `relative w-full aspect-[16/9] border-2 border-gray-300 rounded-lg overflow-hidden hover:border-blue-500 transition-colors bg-white`
+      : `relative w-full aspect-[16/9] border border-gray-300 rounded overflow-hidden hover:border-blue-500 transition-colors bg-white`;
 
   const handleRemoveClick = (e: React.MouseEvent): void => {
     e.stopPropagation(); // スロットのクリックイベントを防ぐ
@@ -105,7 +106,9 @@ export const DeckSlot: React.FC<DeckSlotProps> = ({
     onSlotClick(slot.slotId);
   };
 
-  const handleLimitIncrease = (e: React.MouseEvent<HTMLButtonElement>): void => {
+  const handleLimitIncrease = (
+    e: React.MouseEvent<HTMLButtonElement>
+  ): void => {
     e.preventDefault();
     e.stopPropagation();
     if (onLimitBreakChange && limitBreakCount < 14) {
@@ -113,7 +116,9 @@ export const DeckSlot: React.FC<DeckSlotProps> = ({
     }
   };
 
-  const handleLimitDecrease = (e: React.MouseEvent<HTMLButtonElement>): void => {
+  const handleLimitDecrease = (
+    e: React.MouseEvent<HTMLButtonElement>
+  ): void => {
     e.preventDefault();
     e.stopPropagation();
     if (onLimitBreakChange && limitBreakCount > 1) {
@@ -172,14 +177,16 @@ export const DeckSlot: React.FC<DeckSlotProps> = ({
 
   // ドラッグ中の透明度とドロップ可能時のハイライト
   const dragClass = isDragging ? 'opacity-50' : '';
-  const dropClass = isDroppable 
-    ? 'ring-4 ring-green-400 ring-offset-2 bg-green-50' 
+  const dropClass = isDroppable
+    ? 'ring-4 ring-green-400 ring-offset-2 bg-green-50'
     : '';
   const actionContainerClass = isSp ? 'flex-col gap-2' : 'flex-row gap-1';
   const actionButtonClass = isSp ? 'p-2' : 'p-1';
   const actionIconClass = isSp ? 'w-3 h-3' : 'w-3 h-3 sm:w-4 sm:h-4';
 
-  const renderActionButton = (type: 'detail' | 'remove'): JSX.Element | null => {
+  const renderActionButton = (
+    type: 'detail' | 'remove'
+  ): JSX.Element | null => {
     if (type === 'detail') {
       if (!onShowDetail) return null;
       return (
@@ -270,27 +277,30 @@ export const DeckSlot: React.FC<DeckSlotProps> = ({
               size={isMain ? 'large' : 'small'}
             />
           )}
-          
+
           {/* 覚醒前後切り替えボタン */}
-          {shouldShowHoverActions && hasAwakeToggle && !(isSp && showLimitBreak) && slot.card && (
-            <AwakeToggleButton
-              cardId={slot.card.id}
-              hasAwakeToggle={hasAwakeToggle}
-              className="absolute top-1 left-1 z-10"
-            />
-          )}
+          {shouldShowHoverActions &&
+            hasAwakeToggle &&
+            !(isSp && showLimitBreak) &&
+            slot.card && (
+              <AwakeToggleButton
+                cardId={slot.card.id}
+                hasAwakeToggle={hasAwakeToggle}
+                className="absolute top-1 left-1 z-10"
+              />
+            )}
 
           {/* ホバー時のボタングループ */}
           {shouldShowHoverActions && !(isSp && showLimitBreak) && (
-            <div className={`absolute top-1 right-1 z-10 flex ${actionContainerClass}`}>
-              {(
-                isSp ? ['remove', 'detail'] : ['detail', 'remove']
-              )
+            <div
+              className={`absolute top-1 right-1 z-10 flex ${actionContainerClass}`}
+            >
+              {(isSp ? ['remove', 'detail'] : ['detail', 'remove'])
                 .map((type) => renderActionButton(type as 'detail' | 'remove'))
                 .filter(Boolean)}
             </div>
           )}
-          
+
           {!imageError && currentImageUrl ? (
             <div
               className="relative w-full h-full border-2 overflow-hidden"
@@ -324,7 +334,9 @@ export const DeckSlot: React.FC<DeckSlotProps> = ({
                     d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
                   />
                 </svg>
-                <p className={`${isMain ? 'text-xs' : 'text-[10px]'}`}>画像なし</p>
+                <p className={`${isMain ? 'text-xs' : 'text-[10px]'}`}>
+                  画像なし
+                </p>
               </div>
             </div>
           )}
@@ -347,7 +359,9 @@ export const DeckSlot: React.FC<DeckSlotProps> = ({
                 />
               </div>
             )}
-            <p className={`text-white ${isMain ? 'text-xs' : 'text-[10px]'} font-medium truncate`}>
+            <p
+              className={`text-white ${isMain ? 'text-xs' : 'text-[10px]'} font-medium truncate`}
+            >
               {slot.card.cardName}
             </p>
           </div>

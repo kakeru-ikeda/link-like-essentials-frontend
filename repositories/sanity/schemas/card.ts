@@ -104,12 +104,12 @@ export const cardSchema = {
       type: 'string',
     },
     {
-      name: 'awakeBeforeStorageUrl',
+      name: 'awakeBeforeImage',
       title: '覚醒前画像URL',
       type: 'url',
     },
     {
-      name: 'awakeAfterStorageUrl',
+      name: 'awakeAfterImage',
       title: '覚醒後画像URL',
       type: 'url',
     },
@@ -182,8 +182,8 @@ export const cardSchema = {
       ],
     },
     {
-      name: 'sideCompositions',
-      title: 'サイド編成',
+      name: 'sidePlacementRules',
+      title: 'サイド配置ルール',
       type: 'array',
       of: [
         {

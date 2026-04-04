@@ -16,8 +16,8 @@ export interface ThumbnailDeckPayload
 }
 
 export interface ThumbnailCardDetailPayload {
-  awakeBeforeStorageUrl?: string;
-  awakeAfterStorageUrl?: string;
+  awakeBeforeImage?: string;
+  awakeAfterImage?: string;
 }
 
 export interface ThumbnailCardPayload {
