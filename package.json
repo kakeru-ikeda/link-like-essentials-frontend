@@ -16,8 +16,8 @@
     "scrape:songs": "SCRAPE_TARGET=songs tsx --tsconfig tsconfig.scraper.json scripts/scraper/index.ts",
     "scrape:lgp": "SCRAPE_TARGET=lgp tsx --tsconfig tsconfig.scraper.json scripts/scraper/index.ts",
     "scrape:gc": "SCRAPE_TARGET=gc tsx --tsconfig tsconfig.scraper.json scripts/scraper/index.ts",
-    "test:scraper": "vitest run --config vitest.config.ts",
-    "test:scraper:watch": "vitest --config vitest.config.ts"
+    "test:scraper": "vitest run --config vitest.config.scraper.ts",
+    "test:scraper:watch": "vitest --config vitest.config.scraper.ts"
   },
   "dependencies": {
     "@apollo/client": "^3.11.8",
