@@ -57,6 +57,14 @@ export enum DeckType {
   TERM_105_FT_MEGUMI = '105期ft.慈',
 }
 
+export enum YearTerm {
+  TERM_102 = '102期',
+  TERM_103 = '103期',
+  TERM_104 = '104期',
+  TERM_105 = '105期',
+  TERM_106 = '106期',
+}
+
 export enum SongAttribute {
   SMILE = 'スマイル',
   PURE = 'ピュア',
