@@ -2,7 +2,7 @@
  * ParticipationResolver
  *
  * 楽曲のcategoryとsingersから実際の参加メンバーを解決するサービス
- * 移植元: link-like-scraper/src/domain/services/ParticipationResolver.ts
+ * スクレイピング専用の情報とするため、メインアプリケーションとの重複定義は許容する
  */
 
 const CHARACTERS = [
@@ -17,6 +17,7 @@ const CHARACTERS = [
   '安養寺姫芽',
   '桂城泉',
   'セラス',
+  '大賀美沙知',
 ] as const;
 
 const UNIT_MEMBERS: Record<string, string[]> = {
