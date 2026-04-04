@@ -3,7 +3,7 @@ import {
   scrapeLiveGrandPrixList,
   scrapeLiveGrandPrixDetail,
 } from '../scrapers/wikiLiveGrandPrix';
-import { scrapeSongList } from '../scrapers/wikiSong';
+import { scrapeSongList, ScrapedSong } from '../scrapers/wikiSong';
 import { YearTerm } from '@/models/shared/enums';
 
 // ---------- ヘルパー ----------
@@ -41,15 +41,18 @@ export interface ScrapeLiveGrandPrixResult {
  * 2. 一致しない（新規/ドラフト）のみ詳細スクレイプ
  * 3. ドラフトとして Sanity に書き込み
  */
-export async function scrapeLiveGrandPrixUseCase(): Promise<ScrapeLiveGrandPrixResult> {
+export async function scrapeLiveGrandPrixUseCase(
+  prefetchedSongList?: ScrapedSong[]
+): Promise<ScrapeLiveGrandPrixResult> {
   console.log('\n=== ScrapeLiveGrandPrixUseCase start ===');
 
-  const [publishedLGPs, draftLGPs, songList, publishedSongs] = await Promise.all([
+  const [publishedLGPs, draftLGPs, publishedSongs] = await Promise.all([
     fetchPublished<LGPSnapshot>('liveGrandPrix', '_id, eventName, yearTerm'),
     fetchDrafts<LGPSnapshot>('liveGrandPrix', '_id, eventName, yearTerm'),
-    scrapeSongList(),
     fetchPublished<{ _id: string; songName: string }>('song', '_id, songName'),
   ]);
+
+  const songList = prefetchedSongList ?? await scrapeSongList();
 
   // wiki songUrl → Sanity song._id マップ
   const songNameToId = new Map(publishedSongs.map((s) => [s.songName, s._id]));

@@ -1,6 +1,7 @@
 import * as cheerio from 'cheerio';
 import { fetchWithRetry } from '../lib/httpClient';
 import { ParticipationResolver } from '../lib/participationResolver';
+import { CHARACTER_NAME_MAP } from '@/config/characters';
 
 export interface ScrapedSong {
   songId: string;
@@ -20,20 +21,6 @@ export interface ScrapedSongDetail {
 
 const SONG_LIST_URL =
   'https://wikiwiki.jp/llll_wiki/%E3%82%B9%E3%82%AF%E3%82%B9%E3%83%86/%E3%82%B9%E3%83%86%E3%83%BC%E3%82%B8/%E6%A5%BD%E6%9B%B2%E4%B8%80%E8%A6%A7';
-
-const CHARACTER_NAME_MAP: Record<string, string> = {
-  花帆: '日野下花帆',
-  さやか: '村野さやか',
-  梢: '乙宗梢',
-  綴理: '夕霧綴理',
-  瑠璃乃: '大沢瑠璃乃',
-  慈: '藤島慈',
-  小鈴: '徒町小鈴',
-  吟子: '百生吟子',
-  姫芽: '安養寺姫芽',
-  泉: '桂城泉',
-  セラス: 'セラス',
-};
 
 function normalizeCharacterName(name: string): string {
   return CHARACTER_NAME_MAP[name] ?? name;

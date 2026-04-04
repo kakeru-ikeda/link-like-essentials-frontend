@@ -29,8 +29,8 @@ vi.mock('../../lib/firebaseStorage', () => ({
   uploadImageFromUrl: mockUploadImageFromUrl,
 }));
 
-// NOTE: 関数名 scrapesongsUseCase（s が小文字）
-const { scrapesongsUseCase } = await import('../ScrapeSongsUseCase');
+// NOTE: 関数名 scrapeSongsUseCase（s が小文字）
+const { scrapeSongsUseCase } = await import('../ScrapeSongsUseCase');
 
 // ---------- フィクスチャ ----------
 
@@ -50,7 +50,7 @@ const SCRAPED_DETAIL = {
   liveAnalyzerImageUrl: 'https://example.com/la.webp',
 };
 
-describe('scrapesongsUseCase()', () => {
+describe('scrapeSongsUseCase()', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockFetchDraftIds.mockResolvedValue([]);
@@ -64,7 +64,7 @@ describe('scrapesongsUseCase()', () => {
       mockScrapeSongList.mockResolvedValue([SCRAPED_SONG]);
       mockFetchPublished.mockResolvedValue([]);
 
-      const result = await scrapesongsUseCase();
+      const result = await scrapeSongsUseCase();
       expect(result.written).toContain(SCRAPED_SONG.songName);
     });
 
@@ -72,7 +72,7 @@ describe('scrapesongsUseCase()', () => {
       mockScrapeSongList.mockResolvedValue([SCRAPED_SONG]);
       mockFetchPublished.mockResolvedValue([{ _id: 'song-1', songName: SCRAPED_SONG.songName }]);
 
-      const result = await scrapesongsUseCase();
+      const result = await scrapeSongsUseCase();
       expect(result.skipped).toBe(1);
       expect(result.written).toHaveLength(0);
     });
@@ -82,7 +82,7 @@ describe('scrapesongsUseCase()', () => {
       mockFetchPublished.mockResolvedValue([{ _id: 'song-1', songName: SCRAPED_SONG.songName }]);
       mockFetchDraftIds.mockResolvedValue(['song-1']);
 
-      const result = await scrapesongsUseCase();
+      const result = await scrapeSongsUseCase();
       expect(result.written).toContain(SCRAPED_SONG.songName);
     });
 
@@ -90,7 +90,7 @@ describe('scrapesongsUseCase()', () => {
       mockScrapeSongList.mockResolvedValue([SCRAPED_SONG]);
       mockFetchPublished.mockResolvedValue([{ _id: 'song-50', songName: '別の楽曲' }]);
 
-      await scrapesongsUseCase();
+      await scrapeSongsUseCase();
       const [doc] = mockWriteDraft.mock.calls[0];
       expect(doc._id).toBe('song-51');
     });
@@ -103,31 +103,31 @@ describe('scrapesongsUseCase()', () => {
     });
 
     it('_type が "song"', async () => {
-      await scrapesongsUseCase();
+      await scrapeSongsUseCase();
       const [doc] = mockWriteDraft.mock.calls[0];
       expect(doc._type).toBe('song');
     });
 
     it('_id が song-NNN 形式になる', async () => {
-      await scrapesongsUseCase();
+      await scrapeSongsUseCase();
       const [doc] = mockWriteDraft.mock.calls[0];
       expect(doc._id).toMatch(/^song-\d+$/);
     });
 
     it('attribute が SongAttribute.SMILE にマッピングされる', async () => {
-      await scrapesongsUseCase();
+      await scrapeSongsUseCase();
       const [doc] = mockWriteDraft.mock.calls[0];
       expect(doc.attribute).toBe(SongAttribute.SMILE);
     });
 
     it('deckType が DeckType.TERM_105 にマッピングされる（105期）', async () => {
-      await scrapesongsUseCase();
+      await scrapeSongsUseCase();
       const [doc] = mockWriteDraft.mock.calls[0];
       expect(doc.deckType).toBe(DeckType.TERM_105);
     });
 
     it('participations が配列に変換される', async () => {
-      await scrapesongsUseCase();
+      await scrapeSongsUseCase();
       const [doc] = mockWriteDraft.mock.calls[0];
       expect(Array.isArray(doc.participations)).toBe(true);
     });
@@ -146,7 +146,7 @@ describe('scrapesongsUseCase()', () => {
         mockScrapeSongList.mockResolvedValue([{ ...SCRAPED_SONG, attribute: japanese }]);
         mockFetchPublished.mockResolvedValue([]);
 
-        await scrapesongsUseCase();
+        await scrapeSongsUseCase();
 
         const [doc] = mockWriteDraft.mock.calls[0];
         expect(doc.attribute).toBe(expected);
@@ -171,7 +171,7 @@ describe('scrapesongsUseCase()', () => {
         mockScrapeSongList.mockResolvedValue([{ ...SCRAPED_SONG, category: japanese }]);
         mockFetchPublished.mockResolvedValue([]);
 
-        await scrapesongsUseCase();
+        await scrapeSongsUseCase();
 
         const [doc] = mockWriteDraft.mock.calls[0];
         expect(doc.deckType).toBe(expected);
@@ -189,7 +189,7 @@ describe('scrapesongsUseCase()', () => {
         { ...SCRAPED_SONG, category: '105期', singers: 'Edel Note' },
       ]);
 
-      await scrapesongsUseCase();
+      await scrapeSongsUseCase();
 
       const [doc] = mockWriteDraft.mock.calls[0];
       expect(doc.participations).toEqual(
@@ -202,7 +202,7 @@ describe('scrapesongsUseCase()', () => {
         { ...SCRAPED_SONG, songId: 'song-bouquet-103', category: '103期', singers: 'スリーズブーケ' },
       ]);
 
-      await scrapesongsUseCase();
+      await scrapeSongsUseCase();
 
       const [doc] = mockWriteDraft.mock.calls[0];
       expect(doc.participations).toEqual(
@@ -215,7 +215,7 @@ describe('scrapesongsUseCase()', () => {
         { ...SCRAPED_SONG, category: '105期', singers: '日野下花帆' },
       ]);
 
-      await scrapesongsUseCase();
+      await scrapeSongsUseCase();
 
       const [doc] = mockWriteDraft.mock.calls[0];
       expect(doc.participations).toContain('日野下花帆');
@@ -227,7 +227,7 @@ describe('scrapesongsUseCase()', () => {
       mockScrapeSongList.mockResolvedValue([SCRAPED_SONG]);
       mockFetchPublished.mockResolvedValue([]);
 
-      await scrapesongsUseCase();
+      await scrapeSongsUseCase();
 
       expect(mockScrapeSongDetail).toHaveBeenCalledWith(SCRAPED_SONG.songUrl);
     });
@@ -236,7 +236,7 @@ describe('scrapesongsUseCase()', () => {
       mockScrapeSongList.mockResolvedValue([{ ...SCRAPED_SONG, songUrl: undefined }]);
       mockFetchPublished.mockResolvedValue([]);
 
-      await scrapesongsUseCase();
+      await scrapeSongsUseCase();
 
       expect(mockScrapeSongDetail).not.toHaveBeenCalled();
     });

@@ -1,6 +1,6 @@
 import { fetchPublished, fetchDraftIds, writeDraft } from '../lib/sanityWriter';
 import { uploadImageFromUrl } from '../lib/firebaseStorage';
-import { scrapeSongList, scrapeSongDetail } from '../scrapers/wikiSong';
+import { scrapeSongList, scrapeSongDetail, ScrapedSong } from '../scrapers/wikiSong';
 import { DeckType, SongAttribute } from '@/models/shared/enums';
 import { ParticipationResolver } from '../lib/participationResolver';
 
@@ -44,10 +44,12 @@ export interface ScrapeSongsResult {
  * 2. 新規 or ドラフト残存の楽曲のみ詳細スクレイプ
  * 3. ドラフトとして Sanity に書き込み
  */
-export async function scrapesongsUseCase(): Promise<ScrapeSongsResult> {
+export async function scrapeSongsUseCase(
+  prefetchedSongList?: ScrapedSong[]
+): Promise<ScrapeSongsResult> {
   console.log('\n=== ScrapeSongsUseCase start ===');
 
-  const scrapedList = await scrapeSongList();
+  const scrapedList = prefetchedSongList ?? await scrapeSongList();
 
   const [publishedSongs, draftIds] = await Promise.all([
     fetchPublished<PublishedSongSnapshot>('song', '_id, songName'),

@@ -3,7 +3,7 @@ import {
   scrapeGradeChallengeList,
   scrapeGradeChallengeDetail,
 } from '../scrapers/wikiGradeChallenge';
-import { scrapeSongList } from '../scrapers/wikiSong';
+import { scrapeSongList, ScrapedSong } from '../scrapers/wikiSong';
 
 /** ISO 文字列 → 'YYYY-MM-DD'（Sanity date 型用） */
 function toDateString(iso: string): string | undefined {
@@ -29,15 +29,18 @@ export interface ScrapeGradeChallengeResult {
  * 2. 一致しない（新規/ドラフト）のみ詳細スクレイプ
  * 3. ドラフトとして Sanity に書き込み
  */
-export async function scrapeGradeChallengeUseCase(): Promise<ScrapeGradeChallengeResult> {
+export async function scrapeGradeChallengeUseCase(
+  prefetchedSongList?: ScrapedSong[]
+): Promise<ScrapeGradeChallengeResult> {
   console.log('\n=== ScrapeGradeChallengeUseCase start ===');
 
-  const [publishedGCs, draftGCs, songList, publishedSongs] = await Promise.all([
+  const [publishedGCs, draftGCs, publishedSongs] = await Promise.all([
     fetchPublished<GCSnapshot>('gradeChallenge', '_id, title'),
     fetchDrafts<GCSnapshot>('gradeChallenge', '_id, title'),
-    scrapeSongList(),
     fetchPublished<{ _id: string; songName: string }>('song', '_id, songName'),
   ]);
+
+  const songList = prefetchedSongList ?? await scrapeSongList();
 
   // wiki songUrl → Sanity song._id マップ
   const songNameToId = new Map(publishedSongs.map((s) => [s.songName, s._id]));

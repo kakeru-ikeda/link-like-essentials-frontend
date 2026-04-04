@@ -13,6 +13,7 @@ import {
   FavoriteMode,
   ParentType,
 } from '@/models/shared/enums';
+import { CHARACTER_NAME_MAP } from '@/config/characters';
 
 // ---------- マッパー ----------
 
@@ -65,20 +66,6 @@ const PARENT_TYPE_MAP: Record<string, ParentType> = {
 };
 
 // ---------- ヘルパー ----------
-
-const CHARACTER_NAME_MAP: Record<string, string> = {
-  花帆: '日野下花帆',
-  さやか: '村野さやか',
-  梢: '乙宗梢',
-  綴理: '夕霧綴理',
-  瑠璃乃: '大沢瑠璃乃',
-  慈: '藤島慈',
-  小鈴: '徒町小鈴',
-  吟子: '百生吟子',
-  姫芽: '安養寺姫芽',
-  泉: '桂城泉',
-  セラス: 'セラス',
-};
 
 /**
  * キャラクター名文字列を正規化して配列に変換
@@ -189,6 +176,7 @@ export async function scrapeCardsUseCase(): Promise<ScrapeCardsResult> {
       const detail = await scrapeCardDetail(card.cardUrl);
 
       // 画像アップロード
+      const originalBeforeUrl = detail.awakeBeforeUrl;
       let awakeBeforeUrl = detail.awakeBeforeUrl;
       let awakeAfterUrl = detail.awakeAfterUrl;
 
@@ -198,12 +186,13 @@ export async function scrapeCardsUseCase(): Promise<ScrapeCardsResult> {
           `cards/${resolvedId}/awake-before.webp`
         );
       }
-      if (awakeAfterUrl?.startsWith('http') && awakeAfterUrl !== awakeBeforeUrl) {
+      // 覚醒前後が同一 wiki URL（DR/BR/LR 等）の場合はアップロード済み URL を再利用
+      if (awakeAfterUrl?.startsWith('http') && awakeAfterUrl !== originalBeforeUrl) {
         awakeAfterUrl = await uploadImageFromUrl(
           awakeAfterUrl,
           `cards/${resolvedId}/awake-after.webp`
         );
-      } else if (awakeAfterUrl === detail.awakeBeforeUrl && awakeBeforeUrl) {
+      } else if (awakeAfterUrl === originalBeforeUrl && awakeBeforeUrl) {
         awakeAfterUrl = awakeBeforeUrl;
       }
 

@@ -14,17 +14,34 @@ function initFirebase(): void {
 
   const serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
   const serviceAccountPath = process.env.FIREBASE_SERVICE_ACCOUNT_PATH;
+  const storageBucket = process.env.FIREBASE_STORAGE_BUCKET;
+
+  if (!storageBucket) {
+    throw new Error('FIREBASE_STORAGE_BUCKET is required');
+  }
 
   let credential: admin.credential.Credential;
 
   if (serviceAccountJson) {
     // GitHub Actions: JSON文字列を環境変数から直接パース
-    credential = admin.credential.cert(JSON.parse(serviceAccountJson));
+    let parsed: object;
+    try {
+      parsed = JSON.parse(serviceAccountJson);
+    } catch {
+      throw new Error('FIREBASE_SERVICE_ACCOUNT_JSON is not valid JSON');
+    }
+    credential = admin.credential.cert(parsed as admin.ServiceAccount);
   } else if (serviceAccountPath) {
     // ローカル開発: ファイルパスから読み込み
-    credential = admin.credential.cert(
-      JSON.parse(fs.readFileSync(serviceAccountPath, 'utf-8'))
-    );
+    let parsed: object;
+    try {
+      parsed = JSON.parse(fs.readFileSync(serviceAccountPath, 'utf-8'));
+    } catch {
+      throw new Error(
+        `Failed to read or parse service account file: ${serviceAccountPath}`
+      );
+    }
+    credential = admin.credential.cert(parsed as admin.ServiceAccount);
   } else {
     throw new Error(
       'FIREBASE_SERVICE_ACCOUNT_JSON or FIREBASE_SERVICE_ACCOUNT_PATH is required'
@@ -33,7 +50,7 @@ function initFirebase(): void {
 
   admin.initializeApp({
     credential,
-    storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+    storageBucket,
   });
 
   initialized = true;
@@ -49,7 +66,8 @@ export async function uploadImageFromUrl(
 ): Promise<string> {
   initFirebase();
 
-  const bucketName = process.env.FIREBASE_STORAGE_BUCKET ?? '';
+  // initFirebase() でバリデーション済みなので non-null assertion で安全
+  const bucketName = process.env.FIREBASE_STORAGE_BUCKET!;
   const bucket = admin.storage().bucket(bucketName);
   const destination = storagePath.includes('/') ? storagePath : `cards/${storagePath}`;
 

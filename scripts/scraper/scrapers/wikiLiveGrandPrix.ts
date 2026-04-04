@@ -28,14 +28,21 @@ export interface ScrapedLiveGrandPrix {
 const LGP_URL =
   'https://wikiwiki.jp/llll_wiki/%E3%83%A9%E3%82%A4%E3%83%96%E3%82%B0%E3%83%A9%E3%83%B3%E3%83%97%E3%83%AA';
 
+/** JST の年月日をISO文字列に変換する（UTC+9 固定） */
+function jstDateToIso(dateStr: string): string {
+  // 'YYYY/M/D' 形式を JST の 00:00 として UTC に変換
+  const [y, m, d] = dateStr.split('/').map(Number);
+  return new Date(Date.UTC(y, m - 1, d, -9, 0)).toISOString();
+}
+
 function parseDateRange(text: string): { startDate: string; endDate: string } {
   const matches = text.match(/(\d{4}\/\d{1,2}\/\d{1,2})/g);
   if (!matches || matches.length < 2) {
     return { startDate: '', endDate: '' };
   }
   return {
-    startDate: new Date(matches[0].replace(/\//g, '-')).toISOString(),
-    endDate: new Date(matches[1].replace(/\//g, '-')).toISOString(),
+    startDate: jstDateToIso(matches[0]),
+    endDate: jstDateToIso(matches[1]),
   };
 }
 

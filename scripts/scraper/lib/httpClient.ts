@@ -20,6 +20,7 @@ export async function fetchHtml(url: string): Promise<string> {
   });
 
   if (statusCode !== 200) {
+    await body.dump();
     throw new Error(`HTTP ${statusCode}: ${url}`);
   }
 
@@ -45,6 +46,7 @@ export async function fetchWithRetry(
       });
 
       if (statusCode === 429) {
+        await body.dump();
         const delay = baseDelayMs * attempt;
         console.warn(`  ⚠ 429 Too Many Requests. Retrying in ${delay}ms...`);
         await new Promise((resolve) => setTimeout(resolve, delay));
@@ -52,6 +54,7 @@ export async function fetchWithRetry(
       }
 
       if (statusCode !== 200) {
+        await body.dump();
         throw new Error(`HTTP ${statusCode}: ${url}`);
       }
 

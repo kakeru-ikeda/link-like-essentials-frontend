@@ -22,10 +22,11 @@ import { config } from 'dotenv';
 config({ path: '.env.local' });
 
 import { scrapeCardsUseCase } from './usecases/ScrapeCardsUseCase';
-import { scrapesongsUseCase } from './usecases/ScrapeSongsUseCase';
+import { scrapeSongsUseCase } from './usecases/ScrapeSongsUseCase';
 import { scrapeLiveGrandPrixUseCase } from './usecases/ScrapeLiveGrandPrixUseCase';
 import { scrapeGradeChallengeUseCase } from './usecases/ScrapeGradeChallengeUseCase';
 import { notifyDiscord, ScrapeReport } from './notifications/discord';
+import { scrapeSongList, ScrapedSong } from './scrapers/wikiSong';
 
 const EMPTY_RESULT = { total: 0, written: [], skipped: 0 };
 
@@ -49,14 +50,23 @@ async function main(): Promise<void> {
     if (target === 'all' || target === 'cards') {
       report.cards = await scrapeCardsUseCase();
     }
+
+    // songs/lgp/gc はいずれも楽曲一覧が必要なため、1回だけ取得して共有する
+    let sharedSongList: ScrapedSong[] | undefined;
+    const needsSongList =
+      target === 'all' || target === 'songs' || target === 'lgp' || target === 'gc';
+    if (needsSongList) {
+      sharedSongList = await scrapeSongList();
+    }
+
     if (target === 'all' || target === 'songs') {
-      report.songs = await scrapesongsUseCase();
+      report.songs = await scrapeSongsUseCase(sharedSongList);
     }
     if (target === 'all' || target === 'lgp') {
-      report.lgp = await scrapeLiveGrandPrixUseCase();
+      report.lgp = await scrapeLiveGrandPrixUseCase(sharedSongList);
     }
     if (target === 'all' || target === 'gc') {
-      report.gc = await scrapeGradeChallengeUseCase();
+      report.gc = await scrapeGradeChallengeUseCase(sharedSongList);
     }
   } catch (err) {
     console.error('Fatal error:', err);
