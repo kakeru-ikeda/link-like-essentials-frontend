@@ -9,3 +9,4 @@ const FUNCTIONS_BASE_URL =
 // API Endpoints
 export const DECK_API_ENDPOINT = `${FUNCTIONS_BASE_URL}/deckApi`;
 export const USER_API_ENDPOINT = `${FUNCTIONS_BASE_URL}/userApi`;
+export const AI_API_ENDPOINT = `${FUNCTIONS_BASE_URL}/aiApi`;

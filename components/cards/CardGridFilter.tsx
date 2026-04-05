@@ -11,11 +11,13 @@ import { KeywordSearchInput } from '@/components/common/KeywordSearchInput';
 import { CharacterFilter } from '@/components/cards/filters/CharacterFilter';
 import { toggleFilterList } from '@/services/card/cardFilterService';
 import { FilterWrapper } from '../common/filters/FilterWrapper';
+import { AiSearchInput } from '@/components/common/AiSearchInput';
 
 interface CardGridFilterProps {
   activeFilterCount: number;
   filter: CardFilterType;
   updateFilter: (updates: Partial<CardFilterType>) => void;
+  setFilter: (filter: CardFilterType) => void;
   clearFilterKey: (key: keyof CardFilterType) => void;
   onFilterClear: () => void;
 }
@@ -40,6 +42,7 @@ export const CardGridFilter: React.FC<CardGridFilterProps> = ({
   activeFilterCount,
   filter,
   updateFilter,
+  setFilter,
   clearFilterKey,
   onFilterClear,
 }) => {
@@ -75,6 +78,11 @@ export const CardGridFilter: React.FC<CardGridFilterProps> = ({
 
         {/* スペーサー */}
         <div className="flex-grow" />
+      </div>
+
+      {/* AI検索 */}
+      <div className="px-4 pb-3">
+        <AiSearchInput onFilter={setFilter} />
       </div>
 
       {/* キャラクターフィルター */}
