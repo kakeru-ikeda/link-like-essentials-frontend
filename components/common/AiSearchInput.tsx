@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Sparkles, Loader2 } from 'lucide-react';
 import type { CardFilter } from '@/models/shared/Filter';
 import { useCardAiFilter } from '@/hooks/card/useCardAiFilter';
+import { AiFeedbackButtons } from '@/components/common/AiFeedbackButtons';
 
 interface AiSearchInputProps {
   onFilter: (filter: CardFilter) => void;
@@ -11,7 +12,8 @@ interface AiSearchInputProps {
 
 export const AiSearchInput: React.FC<AiSearchInputProps> = ({ onFilter }) => {
   const [query, setQuery] = useState('');
-  const { loading, error, applyAiFilter } = useCardAiFilter();
+  const { loading, error, aiSearchResult, feedbackSubmitted, applyAiFilter, submitFeedback } =
+    useCardAiFilter();
 
   const handleSubmit = async (): Promise<void> => {
     const filter = await applyAiFilter(query);
@@ -58,6 +60,9 @@ export const AiSearchInput: React.FC<AiSearchInputProps> = ({ onFilter }) => {
       </div>
       {error && (
         <p className="text-xs text-red-500">{error}</p>
+      )}
+      {aiSearchResult && (
+        <AiFeedbackButtons submitted={feedbackSubmitted} onSubmit={submitFeedback} />
       )}
     </div>
   );
