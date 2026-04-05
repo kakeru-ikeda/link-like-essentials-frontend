@@ -188,6 +188,7 @@ export const cardSchema = {
       of: [
         {
           type: 'object',
+          title: 'サイド配置ルール',
           fields: [
             {
               name: 'characters',
@@ -225,7 +226,7 @@ export const cardSchema = {
       return {
         title,
         subtitle: Array.isArray(subtitle)
-          ? subtitle.join(' & ')
+          ? subtitle.join('＆')
           : (subtitle as string | undefined),
       };
     },

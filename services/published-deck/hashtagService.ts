@@ -16,10 +16,7 @@ export const normalizeHashtag = (tag: string): string => {
 /**
  * ハッシュタグの重複チェック
  */
-export const isDuplicateHashtag = (
-  tag: string,
-  existingTags: string[]
-): boolean => {
+export const isDuplicateHashtag = (tag: string, existingTags: string[]): boolean => {
   return existingTags.includes(tag);
 };
 
@@ -79,17 +76,19 @@ export const generateAutoHashtags = (
     tags.push(`#${deck.songName}`);
   }
 
-  // センターキャラクターのカードIDが179の場合は#ジェネシス
+  // センターキャラクターの cardId が card-179 の場合は #ジェネシス
   if (deck.centerCharacter !== null) {
     const centerChar = CHARACTERS.find(c => c === deck.centerCharacter);
     const slotMapping: DeckSlotMapping[] = getDeckSlotMapping(deck.deckType);
     const centerSlot = slotMapping.find(slot => slot.characterName === centerChar);
 
     if (centerSlot?.characterName === CHARACTERS[0] && deck.slots) {
-        const centerDeckSlot = deck.slots.find(slot => slot.cardId && slot.characterName === centerChar);
-        if (centerSlot.slotId === centerDeckSlot?.slotId && centerDeckSlot?.cardId === '179') {
-            tags.push('#ジェネシス');
-        }
+      const centerDeckSlot = deck.slots.find(
+        slot => slot.cardId && slot.characterName === centerChar
+      );
+      if (centerSlot.slotId === centerDeckSlot?.slotId && centerDeckSlot?.cardId === 'card-179') {
+        tags.push('#ジェネシス');
+      }
     }
   }
 
@@ -128,19 +127,13 @@ export const addCustomHashtag = (
 /**
  * カスタムハッシュタグを削除
  */
-export const removeCustomHashtag = (
-  index: number,
-  customTags: string[]
-): string[] => {
+export const removeCustomHashtag = (index: number, customTags: string[]): string[] => {
   return customTags.filter((_, i) => i !== index);
 };
 
 /**
  * 全てのハッシュタグを結合
  */
-export const combineHashtags = (
-  autoTags: string[],
-  customTags: string[]
-): string[] => {
+export const combineHashtags = (autoTags: string[], customTags: string[]): string[] => {
   return [...autoTags, ...customTags];
 };

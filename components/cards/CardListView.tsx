@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Card } from '@/models/card/Card';
 import { RarityBadge } from '@/components/shared/RarityBadge';
 import { StyleTypeBadge } from '@/components/shared/StyleTypeBadge';
@@ -15,6 +15,9 @@ interface CardListViewProps {
   loading: boolean;
   highlightKeywords: string[];
   onClickCard: (card: Card) => void;
+  hasMore?: boolean;
+  isFetchingMore?: boolean;
+  onLoadMore?: () => void;
 }
 
 export const CardListView: React.FC<CardListViewProps> = ({
@@ -22,9 +25,30 @@ export const CardListView: React.FC<CardListViewProps> = ({
   loading,
   highlightKeywords,
   onClickCard,
+  hasMore,
+  isFetchingMore,
+  onLoadMore,
 }) => {
   const [errorMap, setErrorMap] = useState<Record<string, boolean>>({});
   const awakeStates = useAwakeStates();
+  const sentinelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!onLoadMore || !hasMore) return;
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries[0].isIntersecting) {
+          onLoadMore();
+        }
+      },
+      { rootMargin: '200px' }
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [onLoadMore, hasMore]);
 
   if (loading) {
     return (
@@ -42,9 +66,7 @@ export const CardListView: React.FC<CardListViewProps> = ({
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
           <p className="text-gray-500 text-lg">カードが見つかりませんでした</p>
-          <p className="text-gray-400 text-sm mt-2">
-            フィルター条件を変更してください
-          </p>
+          <p className="text-gray-400 text-sm mt-2">フィルター条件を変更してください</p>
         </div>
       </div>
     );
@@ -52,12 +74,12 @@ export const CardListView: React.FC<CardListViewProps> = ({
 
   return (
     <div className="flex flex-col gap-1.5">
-      {cards.map((card) => {
-        const characterColor = getCharacterColor(card.characterName);
+      {cards.map(card => {
+        const characterColor = getCharacterColor(card.characterName.join('＆'));
         const isAwakeAfter = awakeStates[card.id] ?? true;
         const imageUrl = isAwakeAfter
-          ? card.detail?.awakeAfterImage
-          : (card.detail?.awakeBeforeImage ?? card.detail?.awakeAfterImage);
+          ? card.awakeAfterImage
+          : (card.awakeBeforeImage ?? card.awakeAfterImage);
         const errorKey = `${card.id}_${isAwakeAfter}`;
         const showFallback = errorMap[errorKey] || !imageUrl;
 
@@ -76,9 +98,7 @@ export const CardListView: React.FC<CardListViewProps> = ({
                     src={imageUrl}
                     alt={card.cardName}
                     className="w-full h-full object-cover"
-                    onError={() =>
-                      setErrorMap((prev) => ({ ...prev, [errorKey]: true }))
-                    }
+                    onError={() => setErrorMap(prev => ({ ...prev, [errorKey]: true }))}
                   />
                 ) : (
                   <div className="flex items-center justify-center h-full min-h-[84px]">
@@ -101,33 +121,20 @@ export const CardListView: React.FC<CardListViewProps> = ({
 
               <div className="flex-1 p-3 flex flex-col gap-1">
                 <div className="flex items-center gap-1 flex-wrap">
-                  <RarityBadge
-                    rarity={card.rarity}
-                    position="inline"
-                    size="small"
-                  />
-                  {card.styleType && (
-                    <StyleTypeBadge styleType={card.styleType} size="small" />
+                  <RarityBadge rarity={card.rarity} position="inline" size="small" />
+                  {card.styleType && <StyleTypeBadge styleType={card.styleType} size="small" />}
+                  {card.favoriteMode && card.favoriteMode !== 'NONE' && (
+                    <FavoriteModeBadge favoriteMode={card.favoriteMode} size="small" />
                   )}
-                  {card.detail?.favoriteMode &&
-                    card.detail.favoriteMode !== 'NONE' && (
-                      <FavoriteModeBadge
-                        favoriteMode={card.detail.favoriteMode}
-                        size="small"
-                      />
-                    )}
                   <LimitedTypeBadge limitedType={card.limited} size="small" />
                 </div>
                 <div className="space-y-0.5">
                   <p className="text-sm sm:text-base font-bold text-gray-900 line-clamp-1">
-                    <HighlightText
-                      text={card.cardName}
-                      keywords={highlightKeywords}
-                    />
+                    <HighlightText text={card.cardName} keywords={highlightKeywords} />
                   </p>
                   <p className="text-xs text-gray-600">
                     <HighlightText
-                      text={card.characterName}
+                      text={card.characterName.join('＆')}
                       keywords={highlightKeywords}
                     />
                   </p>
@@ -137,6 +144,15 @@ export const CardListView: React.FC<CardListViewProps> = ({
           </button>
         );
       })}
+      {hasMore && <div ref={sentinelRef} className="h-1" />}
+      {isFetchingMore && (
+        <div className="flex items-center justify-center py-6">
+          <div className="relative">
+            <div className="animate-spin rounded-full h-8 w-8 border-4 border-blue-200"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-t-4 border-blue-500 absolute top-0 left-0"></div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

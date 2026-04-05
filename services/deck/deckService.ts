@@ -62,25 +62,29 @@ export class DeckService {
     const baseDeck: DeckForCloud = publishedDeck.deck;
     const song = await songCatalogService.getSongById(baseDeck.songId);
     const liveGp = await liveGrandPrixCatalogService.getById(baseDeck.liveGrandPrixId);
-    const stageDetail = liveGp?.details?.find((d) => d.id === baseDeck.liveGrandPrixDetailId);
+
+    const stageDetail = liveGp?.details?.find(d => d.id === baseDeck.liveGrandPrixDetailId);
+
     const gradeChallenge = await gradeChallengeCatalogService.getById(baseDeck.gradeChallengeId);
     const gradeChallengeDetail = gradeChallenge?.details?.find(
-      (detail) => detail.id === baseDeck.gradeChallengeDetailId
+      detail => detail.id === baseDeck.gradeChallengeDetailId
     );
+
     const deckType = baseDeck.deckType ?? song?.deckType ?? DeckType.TERM_105;
     const slotMapping = getDeckSlotMapping(deckType);
     const mappingById = new Map<number, CharacterName | 'フレンド' | 'フリー'>();
-    slotMapping.forEach((m) => mappingById.set(m.slotId, m.characterName));
+
+    slotMapping.forEach(m => mappingById.set(m.slotId, m.characterName));
 
     const cardIds = baseDeck.slots
-      .map((slot) => slot.cardId)
+      .map(slot => slot.cardId)
       .filter((id): id is string => Boolean(id));
     const cards = await cardCatalogService.getCardsByIds(cardIds);
-    const cardMap = new Map(cards.map((c) => [c.id, c] as const));
+    const cardMap = new Map(cards.map(card => [card.id, card] as const));
 
-    const slots: DeckSlot[] = baseDeck.slots.map((slot) => {
+    const slots: DeckSlot[] = baseDeck.slots.map(slot => {
       const characterName = mappingById.get(slot.slotId) ?? 'フリー';
-      const card = slot.cardId ? cardMap.get(slot.cardId) ?? null : null;
+      const card = slot.cardId ? (cardMap.get(slot.cardId) ?? null) : null;
 
       return {
         slotId: slot.slotId,
@@ -128,7 +132,7 @@ export class DeckService {
     deckType: DeckType = DeckType.TERM_105
   ): Deck {
     const mapping = getDeckSlotMapping(deckType);
-    const slots: DeckSlot[] = mapping.map((m) => ({
+    const slots: DeckSlot[] = mapping.map(m => ({
       slotId: m.slotId,
       characterName: m.characterName,
       cardId: null,
@@ -162,7 +166,12 @@ export class DeckService {
     deckType?: DeckType
   ): CardPlacementResult {
     const validationResult = canPlaceCardInSlot(
-      { characterName: card.characterName, rarity: card.rarity, cardName: card.cardName },
+      {
+        characterName: card.characterName,
+        rarity: card.rarity,
+        cardName: card.cardName,
+        sidePlacementRules: card.sidePlacementRules,
+      },
       slotId,
       deckType
     );
@@ -181,16 +190,16 @@ export class DeckService {
    * カードスワップ後の制約チェック
    * スワップ後に制約違反となるカードを検出
    */
-  static validateSwap(
-    deck: Deck,
-    slotId1: number,
-    slotId2: number
-  ): CardSwapResult {
-    const slot1 = deck.slots.find((s) => s.slotId === slotId1);
-    const slot2 = deck.slots.find((s) => s.slotId === slotId2);
+  static validateSwap(deck: Deck, slotId1: number, slotId2: number): CardSwapResult {
+    const slot1 = deck.slots.find(s => s.slotId === slotId1);
+    const slot2 = deck.slots.find(s => s.slotId === slotId2);
 
     if (!slot1 || !slot2) {
-      return { success: false, removedSlots: [], error: 'スロットが見つかりません' };
+      return {
+        success: false,
+        removedSlots: [],
+        error: 'スロットが見つかりません',
+      };
     }
 
     const removedSlots: number[] = [];
@@ -198,7 +207,12 @@ export class DeckService {
     // slot1に配置されるカード（元のslot2のカード）の検証
     if (slot2.card) {
       const canPlaceInSlot1 = canPlaceCardInSlot(
-        { characterName: slot2.card.characterName, rarity: slot2.card.rarity, cardName: slot2.card.cardName },
+        {
+          characterName: slot2.card.characterName,
+          rarity: slot2.card.rarity,
+          cardName: slot2.card.cardName,
+          sidePlacementRules: slot2.card.sidePlacementRules,
+        },
         slotId1,
         deck.deckType
       );
@@ -210,7 +224,12 @@ export class DeckService {
     // slot2に配置されるカード（元のslot1のカード）の検証
     if (slot1.card) {
       const canPlaceInSlot2 = canPlaceCardInSlot(
-        { characterName: slot1.card.characterName, rarity: slot1.card.rarity, cardName: slot1.card.cardName },
+        {
+          characterName: slot1.card.characterName,
+          rarity: slot1.card.rarity,
+          cardName: slot1.card.cardName,
+          sidePlacementRules: slot1.card.sidePlacementRules,
+        },
         slotId2,
         deck.deckType
       );
@@ -226,7 +245,7 @@ export class DeckService {
    * デッキにカードが編成されているかチェック
    */
   static hasCards(deck: Deck | null): boolean {
-    return deck?.slots.some((slot) => slot.card !== null || slot.cardId !== null) ?? false;
+    return deck?.slots.some(slot => slot.card !== null || slot.cardId !== null) ?? false;
   }
 
   /**
@@ -240,13 +259,13 @@ export class DeckService {
    * スロットにカードが配置されているかチェック
    */
   static hasCardInSlot(deck: Deck | null, slotId: number): boolean {
-    const slot = deck?.slots.find((s) => s.slotId === slotId);
+    const slot = deck?.slots.find(s => s.slotId === slotId);
     return slot?.card !== null;
   }
 
   /**
    * デッキタイプ変更を検証
-   * 
+   *
    * @param deck 現在のデッキ
    * @param newDeckType 新しいデッキタイプ
    * @returns 検証結果
@@ -268,7 +287,8 @@ export class DeckService {
       return {
         canChange: true,
         requiresConfirmation: true,
-        message: 'デッキタイプを変更すると、現在編成されているカードがすべてリセットされます。\n変更してもよろしいですか？',
+        message:
+          'デッキタイプを変更すると、現在編成されているカードがすべてリセットされます。\n変更してもよろしいですか？',
       };
     }
 
@@ -281,15 +301,12 @@ export class DeckService {
 
   /**
    * ライブグランプリステージ変更を検証
-   * 
+   *
    * @param deck 現在のデッキ
    * @param newDeckType 新しいデッキタイプ（楽曲から取得）
    * @returns 検証結果
    */
-  static validateStageChange(
-    deck: Deck | null,
-    newDeckType?: DeckType
-  ): StageChangeValidation {
+  static validateStageChange(deck: Deck | null, newDeckType?: DeckType): StageChangeValidation {
     // 新しいdeckTypeが存在し、現在のdeckTypeと異なる場合
     const deckTypeWillChange = Boolean(
       newDeckType && deck?.deckType && newDeckType !== deck.deckType
@@ -333,10 +350,10 @@ export class DeckService {
 
     const mapping = getDeckSlotMapping(deck.deckType);
 
-    return mapping.filter((slot) => {
+    return mapping.filter(slot => {
       if (slot.slotType !== 'main') return false;
 
-      const deckSlot = deck.slots.find((s) => s.slotId === slot.slotId);
+      const deckSlot = deck.slots.find(s => s.slotId === slot.slotId);
       const hasCard = Boolean(deckSlot?.card || deckSlot?.cardId);
 
       return !hasCard;

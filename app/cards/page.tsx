@@ -32,7 +32,7 @@ export default function CardsPage(): JSX.Element {
   const { highlightKeywords } = useCardHighlight({
     syncFilter: hasActiveFilter ? filter : null,
   });
-  const { cards, loading, error } = useCards(filter);
+  const { cards, loading, error, hasMore, isFetchingMore, loadMore } = useCards(filter);
 
   const sortedCards = useMemo(() => {
     return sortCards(cards, sortBy, order);
@@ -110,6 +110,9 @@ export default function CardsPage(): JSX.Element {
           loading={loading}
           highlightKeywords={highlightKeywords.general}
           onClickCard={(card) => openCardDetail(card.id)}
+          hasMore={hasMore}
+          isFetchingMore={isFetchingMore}
+          onLoadMore={loadMore}
         />
       ) : (
         <CardListView
@@ -117,6 +120,9 @@ export default function CardsPage(): JSX.Element {
           loading={loading}
           highlightKeywords={highlightKeywords.general}
           onClickCard={(card) => openCardDetail(card.id)}
+          hasMore={hasMore}
+          isFetchingMore={isFetchingMore}
+          onLoadMore={loadMore}
         />
       )}
 

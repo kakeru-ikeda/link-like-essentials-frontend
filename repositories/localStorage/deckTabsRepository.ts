@@ -1,4 +1,8 @@
 import { Deck } from '@/models/deck/Deck';
+import {
+  normalizePersistedDeck,
+  PersistedDeck,
+} from '@/repositories/localStorage/deckIdNormalizer';
 
 const STORAGE_KEY_TABS = 'deckTabs';
 
@@ -8,6 +12,11 @@ const STORAGE_KEY_TABS = 'deckTabs';
 export interface DeckTabsData {
   tabs: Deck[];
   activeTabId: string;
+}
+
+interface PersistedDeckTabsData {
+  tabs?: PersistedDeck[];
+  activeTabId?: string;
 }
 
 /**
@@ -23,8 +32,8 @@ export class DeckTabsRepository {
     try {
       const saved = localStorage.getItem(STORAGE_KEY_TABS);
       if (saved) {
-        const parsed = JSON.parse(saved);
-        const tabs = parsed.tabs ?? [];
+        const parsed = JSON.parse(saved) as PersistedDeckTabsData;
+        const tabs = (parsed.tabs ?? []).map(normalizePersistedDeck);
         const activeTabId = parsed.activeTabId ?? '';
 
         // タブが空の場合はnullを返す（サービス層で初期化処理を行う）

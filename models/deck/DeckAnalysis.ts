@@ -1,4 +1,4 @@
-import type { Card, Accessory } from '@/models/card/Card';
+import type { Card, Token } from '@/models/card/Card';
 import type { SkillEffectType, TraitConditionType } from '@/models/shared/enums';
 
 export type DetectedEffectSource = 'skill' | 'trait';
@@ -6,8 +6,8 @@ export type DetectedEffectSource = 'skill' | 'trait';
 export interface DetectedSkillEffect {
   card: Card;
   source: DetectedEffectSource;
-  isAccessory: boolean;
-  accessoryIndex?: number;
+  isToken: boolean;
+  tokenIndex?: number;
   effectText?: string;
 }
 
@@ -34,8 +34,8 @@ export interface RequiredEffectAnalysis {
 
 export interface UnDrawCardInfo {
   card: Card;
-  isAccessory: boolean;
-  accessoryIndex?: number;
+  isToken: boolean;
+  tokenIndex?: number;
   sections: {
     section1: boolean;
     section2: boolean;
@@ -63,10 +63,10 @@ export interface ExcludedCardInfo {
   reasons: ExcludedReason[];
 }
 
-export interface AccessoryCardInfo {
+export interface TokenCardInfo {
   card: Card;
-  accessory: Accessory;
-  accessoryIndex: number;
+  token: Token;
+  tokenIndex: number;
 }
 
 export interface DeckAnalysis {
@@ -87,5 +87,5 @@ export interface DeckAnalysis {
   requiredEffects: RequiredEffectAnalysis[];
   unDrawCards: UnDrawCardInfo[];
   excludedCards: ExcludedCardInfo[];
-  accessoryCards: AccessoryCardInfo[];
+  tokenCards: TokenCardInfo[];
 }

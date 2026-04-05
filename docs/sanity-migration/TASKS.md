@@ -28,8 +28,8 @@
 
 ## Phase 3: メインデータ・イベントのリプレイス
 
-- [ ] `useCards` の GROQ への置き換え（無限スクロール等のページネーション再設計含む）
-- [ ] クライアント側ソート・フィルタ (`cardFilterService.ts`) を活用したハイブリッドキャッシュ適用の疎通確認
+- [x] `useCards` の GROQ への置き換え（無限スクロール等のページネーション再設計含む）
+- [x] クライアント側ソート・フィルタ (`cardFilterService.ts`) を活用したハイブリッドキャッシュ適用の疎通確認
 - [ ] `remoteConfig.ts` にイベント ID 取得 (`active_grade_challenge_id` 等) 処理追加
 - [ ] 進行中イベントの `useGradeChallenge` / `useLiveGrandPrix` を Remote Config経由の単件取得へ切り替え
 

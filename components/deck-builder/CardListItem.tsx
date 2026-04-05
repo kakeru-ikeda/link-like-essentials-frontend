@@ -6,13 +6,7 @@ import { RarityBadge } from '@/components/shared/RarityBadge';
 import { StyleTypeBadge } from '@/components/shared/StyleTypeBadge';
 import { FavoriteModeBadge } from '@/components/shared/FavoriteModeBadge';
 import { CardDetailSections } from '@/components/deck-builder/CardDetailSections';
-import {
-  ChevronDown,
-  ChevronUp,
-  Plus,
-  Minus,
-  ArrowLeftRight,
-} from 'lucide-react';
+import { ChevronDown, ChevronUp, Plus, Minus, ArrowLeftRight } from 'lucide-react';
 import { useAwakeState } from '@/hooks/card/useAwakeState';
 
 interface CardListItemProps {
@@ -31,8 +25,8 @@ export const CardListItem: React.FC<CardListItemProps> = ({
   const [isHovered, setIsHovered] = useState(false);
   const { isAwakeAfter } = useAwakeState(card.id);
   const imageUrl = isAwakeAfter
-    ? card.detail?.awakeAfterImage
-    : (card.detail?.awakeBeforeImage ?? card.detail?.awakeAfterImage);
+    ? card.awakeAfterImage
+    : (card.awakeBeforeImage ?? card.awakeAfterImage);
 
   const handleToggleExpand = (e: React.MouseEvent): void => {
     e.stopPropagation();
@@ -82,9 +76,7 @@ export const CardListItem: React.FC<CardListItemProps> = ({
       <div
         className={`absolute inset-0 ${styles.actionBg} flex items-center justify-center pointer-events-none`}
       >
-        <div
-          className={`${styles.actionIcon} text-white rounded-full p-2 shadow-lg`}
-        >
+        <div className={`${styles.actionIcon} text-white rounded-full p-2 shadow-lg`}>
           <ActionIcon className="w-4 h-4" strokeWidth={3} />
         </div>
       </div>
@@ -134,19 +126,13 @@ export const CardListItem: React.FC<CardListItemProps> = ({
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1 flex-wrap">
             <RarityBadge rarity={card.rarity} position="inline" size="small" />
-            {card.styleType && (
-              <StyleTypeBadge styleType={card.styleType} size="small" />
+            {card.styleType && <StyleTypeBadge styleType={card.styleType} size="small" />}
+            {card.favoriteMode && card.favoriteMode !== 'NONE' && (
+              <FavoriteModeBadge favoriteMode={card.favoriteMode} size="small" />
             )}
-            {card.detail?.favoriteMode &&
-              card.detail.favoriteMode !== 'NONE' && (
-                <FavoriteModeBadge
-                  favoriteMode={card.detail.favoriteMode}
-                  size="small"
-                />
-              )}
           </div>
           <h3 className="font-bold text-gray-900 truncate">{card.cardName}</h3>
-          <p className="text-sm text-gray-600">{card.characterName}</p>
+          <p className="text-sm text-gray-600">{card.characterName.join('＆')}</p>
         </div>
 
         {/* 詳細展開ボタン */}
@@ -167,7 +153,7 @@ export const CardListItem: React.FC<CardListItemProps> = ({
       </button>
 
       {/* 展開エリア（詳細情報） */}
-      {isExpanded && card.detail && (
+      {isExpanded && (
         <div className={`px-4 pb-4 ${styles.detailBg}`}>
           <CardDetailSections
             card={card}

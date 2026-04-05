@@ -1,9 +1,4 @@
-import {
-  DeckType,
-  Rarity,
-  StyleType,
-  LimitedType,
-} from '@/models/shared/enums';
+import { DeckType, FavoriteMode, LimitedType, Rarity, StyleType } from '@/models/shared/enums';
 
 export interface Stats {
   smile: number;
@@ -28,7 +23,7 @@ export interface SidePlacementRule {
   deckTypes?: DeckType;
 }
 
-export interface Accessory {
+export interface Token {
   id: string;
   cardId: number;
   parentType: string;
@@ -39,34 +34,26 @@ export interface Accessory {
   traitEffect?: string;
 }
 
-export interface CardDetail {
-  id?: string;
-  cardId?: number;
-  favoriteMode: string;
-  acquisitionMethod: string;
-  awakeBeforeImage?: string;
-  awakeAfterImage?: string;
-  limitBreakCount?: number;
-  stats: Stats;
-  specialAppeal?: Skill;
-  skill?: Skill;
-  trait?: Trait;
-  accessories: Accessory[];
-}
-
 export interface Card {
   id: string;
   rarity: Rarity;
   limited: LimitedType;
   cardName: string;
   cardUrl: string;
-  characterName: string;
+  characterName: string[];
   styleType: StyleType;
   releaseDate: string;
   isLocked: boolean;
   createdAt: string;
   updatedAt: string;
-  detail?: CardDetail;
-  accessories: Accessory[];
+  favoriteMode?: FavoriteMode;
+  acquisitionMethod?: string;
+  awakeBeforeImage?: string;
+  awakeAfterImage?: string;
+  stats?: Stats;
+  specialAppeal?: Skill;
+  skill?: Skill;
+  trait?: Trait;
+  tokens: Token[];
   sidePlacementRules?: SidePlacementRule[];
 }

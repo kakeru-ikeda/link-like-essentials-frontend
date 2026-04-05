@@ -1,10 +1,7 @@
 'use client';
 
 import React from 'react';
-import type {
-  DetectedSkillEffect,
-  DetectedTraitEffect,
-} from '@/models/deck/DeckAnalysis';
+import type { DetectedSkillEffect, DetectedTraitEffect } from '@/models/deck/DeckAnalysis';
 import { TraitConditionType } from '@/models/shared/enums';
 import type { TraitEffectType, SkillEffectType } from '@/models/shared/enums';
 import { HighlightText } from '@/components/common/HighlightText';
@@ -28,10 +25,8 @@ export const DeckAnalyzerCardItem: React.FC<DeckAnalyzerCardItemProps> = ({
   const isTraitMatch = match.source === 'trait';
   const traitMatch = isTraitMatch ? (match as DetectedTraitEffect) : null;
   const skillMatch = !isTraitMatch ? (match as DetectedSkillEffect) : null;
-  const tokenName = match.isAccessory
-    ? match.card.accessories?.[match.accessoryIndex ?? -1]?.name
-    : undefined;
-  const characterColor = CHARACTER_COLORS[match.card.characterName] ?? '#9ca3af';
+  const tokenName = match.isToken ? match.card.tokens?.[match.tokenIndex ?? -1]?.name : undefined;
+  const characterColor = CHARACTER_COLORS[match.card.characterName.join('＆')] ?? '#9ca3af';
   const highlightKeywords = traitMatch?.condition
     ? buildConditionInclusiveKeywords(keywords, traitMatch.conditionText)
     : keywords;
@@ -52,18 +47,10 @@ export const DeckAnalyzerCardItem: React.FC<DeckAnalyzerCardItemProps> = ({
       style={{ borderLeftColor: characterColor }}
     >
       <div className="flex-1 min-w-0">
-        <p
-          className={`font-medium text-gray-800 truncate ${
-            dense ? 'text-xs' : 'text-sm'
-          }`}
-        >
+        <p className={`font-medium text-gray-800 truncate ${dense ? 'text-xs' : 'text-sm'}`}>
           {match.card.cardName}
-          {match.isAccessory && (
-            <span
-              className={`ml-1 text-orange-600 ${
-                dense ? 'text-[10px]' : 'text-xs'
-              }`}
-            >
+          {match.isToken && (
+            <span className={`ml-1 text-orange-600 ${dense ? 'text-[10px]' : 'text-xs'}`}>
               ({tokenName ? `${tokenName}` : 'トークン'})
             </span>
           )}
@@ -88,15 +75,11 @@ export const DeckAnalyzerCardItem: React.FC<DeckAnalyzerCardItemProps> = ({
         </p>
 
         <p className={`text-gray-500 ${dense ? 'text-[10px]' : 'text-xs'}`}>
-          {match.card.characterName}
+          {match.card.characterName.join('＆')}
         </p>
 
         {showCondition && traitMatch && (
-          <p
-            className={`text-gray-600 ${
-              dense ? 'text-[10px] mt-0.5' : 'text-xs mt-1'
-            }`}
-          >
+          <p className={`text-gray-600 ${dense ? 'text-[10px] mt-0.5' : 'text-xs mt-1'}`}>
             <HighlightText
               text={traitMatch.effectText}
               keywords={highlightKeywords}
@@ -105,11 +88,7 @@ export const DeckAnalyzerCardItem: React.FC<DeckAnalyzerCardItemProps> = ({
           </p>
         )}
         {showCondition && skillMatch?.effectText && (
-          <p
-            className={`text-gray-600 ${
-              dense ? 'text-[10px] mt-0.5' : 'text-xs mt-1'
-            }`}
-          >
+          <p className={`text-gray-600 ${dense ? 'text-[10px] mt-0.5' : 'text-xs mt-1'}`}>
             <HighlightText text={skillMatch.effectText} keywords={keywords} />
           </p>
         )}
@@ -118,29 +97,21 @@ export const DeckAnalyzerCardItem: React.FC<DeckAnalyzerCardItemProps> = ({
   );
 };
 
-const escapeRegExp = (value: string): string =>
-  value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const escapeRegExp = (value: string): string => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-const buildConditionInclusiveKeywords = (
-  keywords: string[],
-  conditionText: string
-): string[] => {
+const buildConditionInclusiveKeywords = (keywords: string[], conditionText: string): string[] => {
   if (!conditionText) return keywords;
 
   const escapedCondition = escapeRegExp(conditionText);
-  const conditionPatterns = keywords.map((keyword) => {
-    const effectPattern = keyword.includes('\\')
-      ? keyword
-      : escapeRegExp(keyword);
+  const conditionPatterns = keywords.map(keyword => {
+    const effectPattern = keyword.includes('\\') ? keyword : escapeRegExp(keyword);
     return `${escapedCondition}[\\s\\S]*?${effectPattern}`;
   });
 
   return conditionPatterns;
 };
 
-const getConditionHighlightClassName = (
-  condition: TraitConditionType
-): string => {
+const getConditionHighlightClassName = (condition: TraitConditionType): string => {
   switch (condition) {
     case TraitConditionType.DRAW:
       return 'bg-sky-200 text-sky-950 font-semibold px-0.5 rounded';

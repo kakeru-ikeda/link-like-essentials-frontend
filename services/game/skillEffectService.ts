@@ -29,7 +29,7 @@ export function getSkillEffectKeywords(effectTypes: SkillEffectType[]): string[]
  */
 export function hasSkillEffect(card: Card, effectType: SkillEffectType): boolean {
   const keywords = getSkillEffectKeyword(effectType);
-  const skillEffect = card.detail?.skill?.effect;
+  const skillEffect = card.skill?.effect;
   
   if (!skillEffect) return false;
 

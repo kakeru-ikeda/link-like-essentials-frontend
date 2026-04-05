@@ -31,10 +31,10 @@ const extractSkillApData = (deck: Deck | null): ApData[] => {
 
   const apDataList: ApData[] = [];
 
-  deck.slots.forEach((slot) => {
-    if (!slot.card?.detail) return;
+  deck.slots.forEach(slot => {
+    if (!slot.card) return;
 
-    const { skill, favoriteMode } = slot.card.detail;
+    const { skill, favoriteMode } = slot.card;
     const favMode = favoriteMode || FavoriteMode.NONE;
 
     // スキルAPを追加
@@ -81,7 +81,7 @@ export const SkillApGraph: React.FC<SkillApGraphProps> = ({ deck }) => {
 
   // 最大件数を取得（グラフの高さの基準）
   const maxCount = Math.max(
-    ...Object.values(groupedData).map((modes) =>
+    ...Object.values(groupedData).map(modes =>
       Object.values(modes).reduce((sum, count) => sum + count, 0)
     ),
     1 // 最低1にして0除算を防ぐ
@@ -89,7 +89,6 @@ export const SkillApGraph: React.FC<SkillApGraphProps> = ({ deck }) => {
 
   return (
     <div className="border border-gray-200 rounded-lg p-4">
-
       {/* グラフエリア */}
       <div className="flex items-end justify-between gap-1 h-20 border-b border-gray-300 bg-gray-50">
         {Object.entries(groupedData).map(([ap, modes]) => {
@@ -98,7 +97,7 @@ export const SkillApGraph: React.FC<SkillApGraphProps> = ({ deck }) => {
           const neutralCount = modes[FavoriteMode.NEUTRAL] || 0;
           const totalCount = happyCount + mellowCount + neutralCount;
           const heightPercentage = totalCount > 0 ? (totalCount / maxCount) * 100 : 0;
-          
+
           // X軸ラベル（10は10+と表示）
           const label = ap === '10' ? '10+' : ap;
 
@@ -106,11 +105,9 @@ export const SkillApGraph: React.FC<SkillApGraphProps> = ({ deck }) => {
             <div key={ap} className="flex flex-col items-center flex-1 h-full">
               {/* 件数表示 */}
               {totalCount > 0 && (
-                <div className="text-xs font-semibold text-gray-700 mb-1">
-                  {totalCount}
-                </div>
+                <div className="text-xs font-semibold text-gray-700 mb-1">{totalCount}</div>
               )}
-              
+
               {/* 積み上げ棒グラフ */}
               <div className="w-full flex flex-col justify-end items-stretch flex-1">
                 {totalCount > 0 ? (
@@ -151,7 +148,7 @@ export const SkillApGraph: React.FC<SkillApGraphProps> = ({ deck }) => {
                   </div>
                 ) : null}
               </div>
-              
+
               {/* X軸ラベル */}
               <div className="text-xs text-gray-500 mt-1">{label}</div>
             </div>

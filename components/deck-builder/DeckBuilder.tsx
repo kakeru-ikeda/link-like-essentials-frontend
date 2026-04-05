@@ -4,10 +4,7 @@ import React, { useState, useCallback } from 'react';
 import { useDeck } from '@/hooks/deck/useDeck';
 import { Checkbox } from '@/components/common/Checkbox';
 import { CharacterDeckGroup } from '@/components/deck-builder/CharacterDeckGroup';
-import {
-  getDeckSlotMapping,
-  getDeckFrame,
-} from '@/services/deck/deckConfigService';
+import { getDeckSlotMapping, getDeckFrame } from '@/services/deck/deckConfigService';
 import type { CharacterName } from '@/config/characters';
 import type { DeckSlotMapping } from '@/config/deckSlots';
 import { canPlaceCardInSlot } from '@/services/deck/deckRulesService';
@@ -28,16 +25,17 @@ import { useFilter } from '@/hooks/ui/useFilter';
 import type { Card } from '@/models/card/Card';
 import type { DeckSlot } from '@/models/deck/Deck';
 import {
+  filterAvailableCards,
   filterCardsBySlot,
   getAssignedCardsForSlot,
 } from '@/services/deck/deckFilterService';
-import { filterAvailableCards } from '@/services/card/characterFilterService';
 import { useResponsiveDevice } from '@/hooks/ui/useResponsiveDevice';
 import { HelpTooltip } from '../common/HelpTooltip';
 
 import { sortCards } from '@/services/card/cardSortService';
 import { useCardSort } from '@/hooks/ui/useCardSort';
 import { isPreview } from '@/utils/env';
+import { filterCardsOnClient } from '@/services/card/cardFilterService';
 
 export const DeckBuilder: React.FC = () => {
   const {
@@ -56,16 +54,10 @@ export const DeckBuilder: React.FC = () => {
   const { sortBy, order, handleSortChange, handleOrderChange } = useCardSort();
 
   const sideModal = useSideModal();
-  const { setActiveFilter } = useCardStore((state) => ({
+  const { setActiveFilter } = useCardStore(state => ({
     setActiveFilter: state.setActiveFilter,
   }));
-  const {
-    filter,
-    updateFilter,
-    resetFilter,
-    clearFilterKey,
-    countActiveFilters,
-  } = useFilter();
+  const { filter, updateFilter, resetFilter, clearFilterKey, countActiveFilters } = useFilter();
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const deckSlots = deck?.slots ?? [];
@@ -85,7 +77,7 @@ export const DeckBuilder: React.FC = () => {
 
   const handleDragStart = useCallback(
     (slotId: number): void => {
-      const slot = deck?.slots.find((s) => s.slotId === slotId);
+      const slot = deck?.slots.find(s => s.slotId === slotId);
       if (slot?.card) {
         setDraggingSlotId(slotId);
       }
@@ -109,7 +101,7 @@ export const DeckBuilder: React.FC = () => {
       if (draggingSlotId === null || draggingSlotId === targetSlotId) {
         return false;
       }
-      const draggingSlot = deck?.slots.find((s) => s.slotId === draggingSlotId);
+      const draggingSlot = deck?.slots.find(s => s.slotId === draggingSlotId);
       if (!draggingSlot?.card) {
         return false;
       }
@@ -118,6 +110,7 @@ export const DeckBuilder: React.FC = () => {
           characterName: draggingSlot.card.characterName,
           rarity: draggingSlot.card.rarity,
           cardName: draggingSlot.card.cardName,
+          sidePlacementRules: draggingSlot.card.sidePlacementRules,
         },
         targetSlotId,
         deck?.deckType
@@ -127,40 +120,33 @@ export const DeckBuilder: React.FC = () => {
     [draggingSlotId, deck?.slots, deck?.deckType]
   );
 
-  const { currentSlotCard, currentCharacterName, currentSlotType } =
-    React.useMemo(() => {
-      if (sideModal.currentSlotId === null || !deck) {
-        return {
-          currentSlotCard: null,
-          currentCharacterName: undefined,
-          currentSlotType: undefined,
-        };
-      }
-      const slot = deck.slots.find((s) => s.slotId === sideModal.currentSlotId);
-      const mapping = getDeckSlotMapping(deck.deckType);
-      const slotMapping = mapping.find(
-        (m) => m.slotId === sideModal.currentSlotId
-      );
+  const { currentSlotCard, currentCharacterName, currentSlotType } = React.useMemo(() => {
+    if (sideModal.currentSlotId === null || !deck) {
       return {
-        currentSlotCard: slot?.card || null,
-        currentCharacterName: slot?.characterName,
-        currentSlotType: slotMapping?.slotType,
+        currentSlotCard: null,
+        currentCharacterName: undefined,
+        currentSlotType: undefined,
       };
-    }, [sideModal.currentSlotId, deck]);
+    }
+    const slot = deck.slots.find(s => s.slotId === sideModal.currentSlotId);
+    const mapping = getDeckSlotMapping(deck.deckType);
+    const slotMapping = mapping.find(m => m.slotId === sideModal.currentSlotId);
+    return {
+      currentSlotCard: slot?.card || null,
+      currentCharacterName: slot?.characterName,
+      currentSlotType: slotMapping?.slotType,
+    };
+  }, [sideModal.currentSlotId, deck]);
 
   const assignedCardIds = React.useMemo(() => {
     return deckSlots
-      .filter((slot) => slot.slotId !== sideModal.currentSlotId && slot.card)
-      .map((slot) => slot.card!.id);
+      .filter(slot => slot.slotId !== sideModal.currentSlotId && slot.card)
+      .map(slot => slot.card!.id);
   }, [deckSlots, sideModal.currentSlotId]);
 
   const assignedCards = React.useMemo(() => {
     if (sideModal.currentSlotId === null) return [];
-    return getAssignedCardsForSlot(
-      deckSlots,
-      sideModal.currentSlotId,
-      deck?.deckType
-    );
+    return getAssignedCardsForSlot(deckSlots, sideModal.currentSlotId, deck?.deckType);
   }, [deckSlots, sideModal.currentSlotId, deck?.deckType]);
 
   const filterForQuery = React.useMemo(() => {
@@ -168,23 +154,26 @@ export const DeckBuilder: React.FC = () => {
     return filter;
   }, [sideModal.currentSlotId, filter]);
 
-  const { cards, loading } = useCards(
-    filterForQuery,
-    sideModal.currentSlotId === null
-  );
+  const { cards, allCards, loading } = useCards(filterForQuery, sideModal.currentSlotId === null);
+
+  const cardsForCharacterFilter = React.useMemo(() => {
+    if (sideModal.currentSlotId === null) {
+      return [];
+    }
+
+    const filterWithoutCharacterNames = filter
+      ? { ...filter, characterNames: undefined }
+      : undefined;
+
+    return filterWithoutCharacterNames
+      ? filterCardsOnClient(allCards, filterWithoutCharacterNames)
+      : allCards;
+  }, [allCards, filter, sideModal.currentSlotId]);
 
   const filteredCards = React.useMemo(() => {
     if (sideModal.currentSlotId === null) return [];
-    const availableCards = filterAvailableCards(
-      cards,
-      currentSlotCard?.id,
-      assignedCardIds
-    );
-    const filtered = filterCardsBySlot(
-      availableCards,
-      sideModal.currentSlotId,
-      deck?.deckType
-    );
+    const availableCards = filterAvailableCards(cards, currentSlotCard?.id, assignedCardIds);
+    const filtered = filterCardsBySlot(availableCards, sideModal.currentSlotId, deck?.deckType);
     return sortCards(filtered, sortBy, order);
   }, [
     cards,
@@ -215,8 +204,7 @@ export const DeckBuilder: React.FC = () => {
     (card: Card): void => {
       if (sideModal.currentSlotId !== null) {
         const assignedSlot = deck?.slots.find(
-          (slot) =>
-            slot.card?.id === card.id && slot.slotId !== sideModal.currentSlotId
+          slot => slot.card?.id === card.id && slot.slotId !== sideModal.currentSlotId
         );
         if (assignedSlot) {
           swapCards(sideModal.currentSlotId, assignedSlot.slotId);
@@ -263,14 +251,12 @@ export const DeckBuilder: React.FC = () => {
   // フレンド枠のフィルタリング
   const filteredDeckFrame = isFriendSlotEnabled
     ? deckFrame
-    : deckFrame.filter((character) => character !== 'フレンド');
+    : deckFrame.filter(character => character !== 'フレンド');
 
   const displayDeckFrame = React.useMemo<CharacterName[]>(() => {
     if (!isSp) return filteredDeckFrame;
 
-    const withoutFriend = filteredDeckFrame.filter(
-      (character) => character !== 'フレンド'
-    );
+    const withoutFriend = filteredDeckFrame.filter(character => character !== 'フレンド');
     return filteredDeckFrame.includes('フレンド')
       ? ([...withoutFriend, 'フレンド'] as CharacterName[])
       : (withoutFriend as CharacterName[]);
@@ -279,21 +265,18 @@ export const DeckBuilder: React.FC = () => {
   // スロット定義をキャラクターごとにコピーして、frameの出現順で消費しながらグループ化
   const slotMappingByCharacter = React.useMemo(() => {
     const mapping = new Map<CharacterName, DeckSlotMapping[]>();
-    deckMapping.forEach((slot) => {
+    deckMapping.forEach(slot => {
       const list = mapping.get(slot.characterName) ?? [];
       list.push(slot);
       mapping.set(slot.characterName, list);
     });
-    mapping.forEach((list) => list.sort((a, b) => a.slotId - b.slotId));
+    mapping.forEach(list => list.sort((a, b) => a.slotId - b.slotId));
     return mapping;
   }, [deckMapping]);
 
   const characterGroups = React.useMemo(() => {
     const mappingCopies = new Map<CharacterName, DeckSlotMapping[]>(
-      Array.from(slotMappingByCharacter.entries()).map(([key, value]) => [
-        key,
-        [...value],
-      ])
+      Array.from(slotMappingByCharacter.entries()).map(([key, value]) => [key, [...value]])
     );
 
     return displayDeckFrame
@@ -302,14 +285,12 @@ export const DeckBuilder: React.FC = () => {
         if (!mappings || mappings.length === 0) return null;
 
         const groupSize =
-          character === 'フリー'
-            ? Math.min(2, mappings.length)
-            : Math.min(3, mappings.length);
+          character === 'フリー' ? Math.min(2, mappings.length) : Math.min(3, mappings.length);
         const groupMappings = mappings.splice(0, groupSize);
         if (groupMappings.length === 0) return null;
 
         const slots = groupMappings
-          .map((mapping) => deckSlots.find((s) => s.slotId === mapping.slotId))
+          .map(mapping => deckSlots.find(s => s.slotId === mapping.slotId))
           .filter((slot): slot is DeckSlot => Boolean(slot));
 
         const key = `${character}-${groupMappings[0]?.slotId ?? idx}`;
@@ -328,17 +309,17 @@ export const DeckBuilder: React.FC = () => {
       );
   }, [deckSlots, displayDeckFrame, slotMappingByCharacter]);
 
-  const topRowGroups = characterGroups.filter((g) => g.row === 0);
-  const middleRowGroups = characterGroups.filter((g) => g.row === 1);
-  const bottomRowGroups = characterGroups.filter((g) => g.row === 2);
-  const extraRowGroups = characterGroups.filter((g) => g.row === 3);
+  const topRowGroups = characterGroups.filter(g => g.row === 0);
+  const middleRowGroups = characterGroups.filter(g => g.row === 1);
+  const bottomRowGroups = characterGroups.filter(g => g.row === 2);
+  const extraRowGroups = characterGroups.filter(g => g.row === 3);
 
   // SP用: フレンドを末尾に移し、ゲーム上の段ごとにセクション分割
   const spRowSections = React.useMemo(() => {
-    const spTop = topRowGroups.filter((g) => g.character !== 'フレンド');
-    const friend = topRowGroups.filter((g) => g.character === 'フレンド');
+    const spTop = topRowGroups.filter(g => g.character !== 'フレンド');
+    const friend = topRowGroups.filter(g => g.character === 'フレンド');
     return [spTop, middleRowGroups, bottomRowGroups, extraRowGroups, friend].filter(
-      (r) => r.length > 0
+      r => r.length > 0
     );
   }, [topRowGroups, middleRowGroups, bottomRowGroups, extraRowGroups]);
 
@@ -424,9 +405,7 @@ export const DeckBuilder: React.FC = () => {
                     aceSlotId={deck.aceSlotId}
                     draggingSlotId={draggingSlotId}
                     isCenter={deck?.centerCharacter === character}
-                    isSinger={
-                      deck?.participations?.includes(character) || false
-                    }
+                    isSinger={deck?.participations?.includes(character) || false}
                     showLimitBreak={showLimitBreak}
                     onSlotClick={handleSlotClick}
                     onRemoveCard={removeCard}
@@ -456,9 +435,7 @@ export const DeckBuilder: React.FC = () => {
                     aceSlotId={deck.aceSlotId}
                     draggingSlotId={draggingSlotId}
                     isCenter={deck?.centerCharacter === character}
-                    isSinger={
-                      deck?.participations?.includes(character) || false
-                    }
+                    isSinger={deck?.participations?.includes(character) || false}
                     showLimitBreak={showLimitBreak}
                     onSlotClick={handleSlotClick}
                     onRemoveCard={removeCard}
@@ -488,9 +465,7 @@ export const DeckBuilder: React.FC = () => {
                     aceSlotId={deck.aceSlotId}
                     draggingSlotId={draggingSlotId}
                     isCenter={deck?.centerCharacter === character}
-                    isSinger={
-                      deck?.participations?.includes(character) || false
-                    }
+                    isSinger={deck?.participations?.includes(character) || false}
                     showLimitBreak={showLimitBreak}
                     onSlotClick={handleSlotClick}
                     onRemoveCard={removeCard}
@@ -521,9 +496,7 @@ export const DeckBuilder: React.FC = () => {
                       aceSlotId={deck.aceSlotId}
                       draggingSlotId={draggingSlotId}
                       isCenter={deck?.centerCharacter === character}
-                      isSinger={
-                        deck?.participations?.includes(character) || false
-                      }
+                      isSinger={deck?.participations?.includes(character) || false}
                       showLimitBreak={showLimitBreak}
                       onSlotClick={handleSlotClick}
                       onRemoveCard={removeCard}
@@ -568,7 +541,6 @@ export const DeckBuilder: React.FC = () => {
               size={4}
             />
           </div>
-
         </div>
       </div>
 
@@ -615,10 +587,7 @@ export const DeckBuilder: React.FC = () => {
               />
             )}
             {assignedCards.length > 0 && (
-              <InProgressCardDisplay
-                cards={assignedCards}
-                onSelectCard={handleSelectCard}
-              />
+              <InProgressCardDisplay cards={assignedCards} onSelectCard={handleSelectCard} />
             )}
             <AvailableCardDisplay
               cards={filteredCards}
@@ -659,6 +628,7 @@ export const DeckBuilder: React.FC = () => {
           updateFilter={updateFilter}
           currentSlotId={sideModal.currentSlotId}
           deckType={deck?.deckType}
+          cardsForCharacterFilter={cardsForCharacterFilter}
           onApply={handleApplyAndCloseFilter}
         />
       </SideModal>
@@ -670,9 +640,7 @@ export const DeckBuilder: React.FC = () => {
         title="カード詳細"
         width="md"
       >
-        {sideModal.selectedCardId && (
-          <CardDetailView cardId={sideModal.selectedCardId} />
-        )}
+        {sideModal.selectedCardId && <CardDetailView cardId={sideModal.selectedCardId} />}
       </SideModal>
     </div>
   );

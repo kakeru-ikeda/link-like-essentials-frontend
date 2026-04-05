@@ -27,10 +27,13 @@ export const DeckPublishModal: React.FC<DeckPublishModalProps> = ({
   const { deck, setFriendSlotEnabled } = useDeck();
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState<boolean>(false);
 
-  const handlePublishSuccess = useCallback((publishedDeck: PublishedDeck): void => {
-    onPublished?.(publishedDeck);
-    onClose();
-  }, [onClose, onPublished]);
+  const handlePublishSuccess = useCallback(
+    (publishedDeck: PublishedDeck): void => {
+      onPublished?.(publishedDeck);
+      onClose();
+    },
+    [onClose, onPublished]
+  );
 
   const {
     displayName,
@@ -48,16 +51,12 @@ export const DeckPublishModal: React.FC<DeckPublishModalProps> = ({
     handlePublishDeck,
     isPublishing,
     publishError,
-  } = useDeckPublish(
-    isOpen,
-    deck,
-    setFriendSlotEnabled,
-    handlePublishSuccess
-  );
+  } = useDeckPublish(isOpen, deck, setFriendSlotEnabled, handlePublishSuccess);
 
   const { isPc } = useResponsiveDevice();
   const shouldShowExportView = isPc;
-  const previewContainerClass = 'flex-shrink-0 overflow-auto max-h-[70vh] relative';
+  const previewContainerClass =
+    'flex-shrink-0 overflow-auto max-h-[70vh] relative';
 
   // ライブグランプリ情報を取得（デッキに設定されている場合）
   const { liveGrandPrix } = useLiveGrandPrixById(
@@ -72,7 +71,7 @@ export const DeckPublishModal: React.FC<DeckPublishModalProps> = ({
   );
 
   const isAceUnset = React.useMemo(() => {
-    if (!deck?.aceSlotId || !deck?.slots) return true;
+    if (deck?.aceSlotId == null || !deck?.slots) return true;
     const aceSlot = deck.slots.find((slot) => slot.slotId === deck.aceSlotId);
     return !aceSlot?.card;
   }, [deck?.aceSlotId, deck?.slots]);
@@ -87,7 +86,9 @@ export const DeckPublishModal: React.FC<DeckPublishModalProps> = ({
   const isFriendUnset = React.useMemo(() => {
     if (!deck?.slots) return false;
     if (deck?.isFriendSlotEnabled === false) return false;
-    const friendSlot = deck.slots.find((slot) => slot.slotId === FRIEND_SLOT_ID);
+    const friendSlot = deck.slots.find(
+      (slot) => slot.slotId === FRIEND_SLOT_ID
+    );
     if (!friendSlot) return false;
     return !friendSlot.card;
   }, [deck?.slots, deck?.isFriendSlotEnabled]);
@@ -164,7 +165,10 @@ export const DeckPublishModal: React.FC<DeckPublishModalProps> = ({
         cancelLabel="戻る"
         processingContent={
           isPublishing && (
-            <div className="flex items-center gap-2 text-sm text-gray-600" aria-live="polite">
+            <div
+              className="flex items-center gap-2 text-sm text-gray-600"
+              aria-live="polite"
+            >
               <span className="inline-flex h-4 w-4 rounded-full border-2 border-blue-500 border-t-transparent animate-spin" />
               <span>公開処理中です...</span>
             </div>
@@ -179,7 +183,8 @@ export const DeckPublishModal: React.FC<DeckPublishModalProps> = ({
           )}
           {isAllLimitBreakDefault && (
             <div className="flex items-center gap-2 text-yellow-600">
-              ⚠ 全スロットの上限解放数が14のままです。設定漏れがないか確認してください。
+              ⚠
+              全スロットの上限解放数が14のままです。設定漏れがないか確認してください。
             </div>
           )}
           {isFriendUnset && (

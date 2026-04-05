@@ -1,8 +1,17 @@
 'use client';
 
 import React from 'react';
+import type { Card } from '@/models/card/Card';
 import type { CardFilter as CardFilterType } from '@/models/shared/Filter';
-import { Rarity, StyleType, LimitedType, FavoriteMode, SkillEffectType, SkillSearchTarget, TraitEffectType } from '@/models/shared/enums';
+import {
+  Rarity,
+  StyleType,
+  LimitedType,
+  FavoriteMode,
+  SkillEffectType,
+  SkillSearchTarget,
+  TraitEffectType,
+} from '@/models/shared/enums';
 import { SearchModeFilter } from '@/components/common/filters/SearchModeFilter';
 import { KeywordSearchInput } from '@/components/common/KeywordSearchInput';
 import { CharacterFilter } from '@/components/cards/filters/CharacterFilter';
@@ -24,6 +33,7 @@ interface CardFilterProps {
   updateFilter: (updates: Partial<CardFilterType>) => void;
   currentSlotId?: number | null;
   deckType?: DeckType;
+  cardsForCharacterFilter?: Card[];
   onApply: () => void;
 }
 
@@ -33,6 +43,7 @@ export const CardFilter: React.FC<CardFilterProps> = ({
   updateFilter,
   currentSlotId,
   deckType,
+  cardsForCharacterFilter,
   onApply,
 }) => {
   const isVisible = (key: keyof CardFilterType): boolean => {
@@ -93,7 +104,7 @@ export const CardFilter: React.FC<CardFilterProps> = ({
         <FilterWrapper>
           <SearchModeFilter
             mode={filter.filterMode}
-            onChange={(mode) => updateFilter({ filterMode: mode })}
+            onChange={mode => updateFilter({ filterMode: mode })}
           />
         </FilterWrapper>
       )}
@@ -102,12 +113,10 @@ export const CardFilter: React.FC<CardFilterProps> = ({
       {isVisible('keyword') && (
         <FilterWrapper>
           <div className="p-4">
-            <label className="block text-sm font-medium text-gray-700 mb-3">
-              キーワード検索
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-3">キーワード検索</label>
             <KeywordSearchInput
               value={filter.keyword || ''}
-              onChange={(value) =>
+              onChange={value =>
                 updateFilter({
                   keyword: value || undefined,
                 })
@@ -127,6 +136,7 @@ export const CardFilter: React.FC<CardFilterProps> = ({
             onToggle={toggleCharacterName}
             currentSlotId={currentSlotId}
             deckType={deckType}
+            cards={cardsForCharacterFilter}
           />
         </FilterWrapper>
       )}
@@ -134,10 +144,7 @@ export const CardFilter: React.FC<CardFilterProps> = ({
       {/* レアリティ */}
       {isVisible('rarities') && (
         <FilterWrapper>
-          <RarityFilter
-            selectedRarities={filter.rarities}
-            onToggle={toggleRarity}
-          />
+          <RarityFilter selectedRarities={filter.rarities} onToggle={toggleRarity} />
         </FilterWrapper>
       )}
 
@@ -149,7 +156,9 @@ export const CardFilter: React.FC<CardFilterProps> = ({
             selectedTargets={filter.skillSearchTargets}
             onToggleEffect={toggleSkillEffect}
             onToggleTarget={toggleSkillSearchTarget}
-            selectedMainEffects={isVisible('skillMainEffects') ? filter.skillMainEffects : undefined}
+            selectedMainEffects={
+              isVisible('skillMainEffects') ? filter.skillMainEffects : undefined
+            }
             onToggleMainEffect={isVisible('skillMainEffects') ? toggleSkillMainEffect : undefined}
           />
         </FilterWrapper>
@@ -166,7 +175,9 @@ export const CardFilter: React.FC<CardFilterProps> = ({
       )}
 
       {/* 除外検索 */}
-      {(isVisible('excludeSkillEffects') || isVisible('excludeSkillMainEffects') || isVisible('excludeTraitEffects')) && (
+      {(isVisible('excludeSkillEffects') ||
+        isVisible('excludeSkillMainEffects') ||
+        isVisible('excludeTraitEffects')) && (
         <FilterWrapper>
           <ExcludeFilters filter={filter} updateFilter={updateFilter} />
         </FilterWrapper>
@@ -177,7 +188,7 @@ export const CardFilter: React.FC<CardFilterProps> = ({
         <FilterWrapper>
           <TokenCardFilter
             hasTokens={filter.hasTokens}
-            onChange={(value) => updateFilter({ hasTokens: value })}
+            onChange={value => updateFilter({ hasTokens: value })}
           />
         </FilterWrapper>
       )}
@@ -195,10 +206,7 @@ export const CardFilter: React.FC<CardFilterProps> = ({
       {/* スタイルタイプ */}
       {isVisible('styleTypes') && (
         <FilterWrapper>
-          <StyleTypeFilter
-            selectedStyleTypes={filter.styleTypes}
-            onToggle={toggleStyleType}
-          />
+          <StyleTypeFilter selectedStyleTypes={filter.styleTypes} onToggle={toggleStyleType} />
         </FilterWrapper>
       )}
 

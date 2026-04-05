@@ -1,7 +1,7 @@
 import type { Card } from '@/models/card/Card';
 import type { Deck } from '@/models/deck/Deck';
 import type {
-  AccessoryCardInfo,
+  TokenCardInfo,
   DeckAnalysis,
   DetectedSkillEffect,
   DetectedTraitEffect,
@@ -13,10 +13,7 @@ import type {
 import type { CardTraitAnalysisData } from '@/models/card/TraitAnalysis';
 import type { SkillEffectType, TraitEffectType } from '@/models/shared/enums';
 import { TraitConditionType, asSkillEffectType } from '@/models/shared/enums';
-import {
-  getSkillEffectKeyword,
-  hasSkillEffect,
-} from '@/services/game/skillEffectService';
+import { getSkillEffectKeyword, hasSkillEffect } from '@/services/game/skillEffectService';
 import { matchesKeywords } from '@/utils/keywordMatcher';
 import {
   analyzeTraitForEffect,
@@ -45,14 +42,12 @@ export function analyzeDeck(
 ): DeckAnalysis | null {
   if (!deck) return null;
 
-  const cards = deck.slots
-    .filter((slot) => slot.card)
-    .map((slot) => slot.card as Card);
+  const cards = deck.slots.filter(slot => slot.card).map(slot => slot.card as Card);
 
-  const accessoryCards: AccessoryCardInfo[] = [];
-  cards.forEach((card) => {
-    card.accessories?.forEach((acc, index) => {
-      accessoryCards.push({ card, accessory: acc, accessoryIndex: index });
+  const tokenCards: TokenCardInfo[] = [];
+  cards.forEach(card => {
+    card.tokens?.forEach((acc, index) => {
+      tokenCards.push({ card, token: acc, tokenIndex: index });
     });
   });
 
@@ -64,14 +59,11 @@ export function analyzeDeck(
   const excludedCount = excludedCards.length;
   const globalExcludedIds = new Set(
     excludedCards
-      .filter((item) => item.reasons.some((reason) => reason !== 'UN_DRAW'))
-      .map((item) => item.card.id)
+      .filter(item => item.reasons.some(reason => reason !== 'UN_DRAW'))
+      .map(item => item.card.id)
   );
   const drawCount = cards.length - excludedCount;
-  const unDrawCountBySection = countUnDrawBySection(
-    unDrawCards,
-    globalExcludedIds
-  );
+  const unDrawCountBySection = countUnDrawBySection(unDrawCards, globalExcludedIds);
   const globalExcludedCount = globalExcludedIds.size;
   const drawCountBySection = {
     section1: cards.length - globalExcludedCount - unDrawCountBySection.section1,
@@ -79,8 +71,7 @@ export function analyzeDeck(
     section3: cards.length - globalExcludedCount - unDrawCountBySection.section3,
     section4: cards.length - globalExcludedCount - unDrawCountBySection.section4,
     section5: cards.length - globalExcludedCount - unDrawCountBySection.section5,
-    sectionFever:
-      cards.length - globalExcludedCount - unDrawCountBySection.sectionFever,
+    sectionFever: cards.length - globalExcludedCount - unDrawCountBySection.sectionFever,
   };
 
   return {
@@ -91,27 +82,24 @@ export function analyzeDeck(
     instanceCount,
     drawCount,
     drawCountBySection,
-    requiredEffects: REQUIRED_EFFECTS.map((req) =>
+    requiredEffects: REQUIRED_EFFECTS.map(req =>
       analyzeRequiredEffect(cards, req.effectType, req.label)
     ),
     unDrawCards,
     excludedCards,
-    accessoryCards,
+    tokenCards,
   };
 }
 
 function countImitationCards(cards: Card[]): number {
-  return cards.filter((card) => hasSkillEffect(card, 'IMITATION' as SkillEffectType)).length;
+  return cards.filter(card => hasSkillEffect(card, 'IMITATION' as SkillEffectType)).length;
 }
 
 function countInstanceCards(cards: Card[]): number {
-  return cards.filter((card) => hasTraitEffect(card, 'INSTANCE' as TraitEffectType)).length;
+  return cards.filter(card => hasTraitEffect(card, 'INSTANCE' as TraitEffectType)).length;
 }
 
-function buildExcludedCards(
-  cards: Card[],
-  unDrawCards: UnDrawCardInfo[]
-): ExcludedCardInfo[] {
+function buildExcludedCards(cards: Card[], unDrawCards: UnDrawCardInfo[]): ExcludedCardInfo[] {
   const reasonMap = new Map<string, { card: Card; reasons: Set<ExcludedReason> }>();
 
   const ensureEntry = (card: Card) => {
@@ -121,7 +109,7 @@ function buildExcludedCards(
     return reasonMap.get(card.id)!;
   };
 
-  cards.forEach((card) => {
+  cards.forEach(card => {
     ensureEntry(card);
     if (hasSkillEffect(card, 'IMITATION' as SkillEffectType)) {
       ensureEntry(card).reasons.add('IMITATION');
@@ -131,22 +119,19 @@ function buildExcludedCards(
     }
   });
 
-  unDrawCards.forEach((info) => {
+  unDrawCards.forEach(info => {
     ensureEntry(info.card).reasons.add('UN_DRAW');
   });
 
   return Array.from(reasonMap.values())
-    .filter((entry) => entry.reasons.size > 0)
-    .map((entry) => ({
+    .filter(entry => entry.reasons.size > 0)
+    .map(entry => ({
       card: entry.card,
       reasons: Array.from(entry.reasons),
     }));
 }
 
-function countUnDrawBySection(
-  unDrawCards: UnDrawCardInfo[],
-  globalExcludedIds: Set<string>
-) {
+function countUnDrawBySection(unDrawCards: UnDrawCardInfo[], globalExcludedIds: Set<string>) {
   const counts = {
     section1: 0,
     section2: 0,
@@ -156,7 +141,7 @@ function countUnDrawBySection(
     sectionFever: 0,
   };
 
-  unDrawCards.forEach((info) => {
+  unDrawCards.forEach(info => {
     if (globalExcludedIds.has(info.card.id)) return;
     const { sections } = info;
 
@@ -186,19 +171,16 @@ function analyzeRequiredEffect(
 
   const keywords = getSkillEffectKeyword(effectType);
 
-  cards.forEach((card) => {
-    if (card.detail?.skill?.effect) {
-      if (matchesKeywords(card.detail.skill.effect, keywords)) {
-        const effectText = findMatchedSentence(
-          card.detail.skill.effect,
-          keywords
-        );
+  cards.forEach(card => {
+    if (card.skill?.effect) {
+      if (matchesKeywords(card.skill.effect, keywords)) {
+        const effectText = findMatchedSentence(card.skill.effect, keywords);
         const key = `${card.id}-skill-main`;
         if (!matchedSkillKeys.has(key)) {
           skillMatches.push({
             card,
             source: 'skill',
-            isAccessory: false,
+            isToken: false,
             effectText,
           });
           matchedSkillKeys.add(key);
@@ -207,7 +189,7 @@ function analyzeRequiredEffect(
       }
     }
 
-    card.accessories?.forEach((acc, index) => {
+    card.tokens?.forEach((acc, index) => {
       if (acc.effect && matchesKeywords(acc.effect, keywords)) {
         const effectText = findMatchedSentence(acc.effect, keywords);
         const key = `${card.id}-skill-acc-${index}`;
@@ -215,8 +197,8 @@ function analyzeRequiredEffect(
           skillMatches.push({
             card,
             source: 'skill',
-            isAccessory: true,
-            accessoryIndex: index,
+            isToken: true,
+            tokenIndex: index,
             effectText,
           });
           matchedSkillKeys.add(key);
@@ -225,16 +207,13 @@ function analyzeRequiredEffect(
       }
     });
 
-    if (card.detail?.trait?.effect) {
-      const traitResults = analyzeTraitForEffect(
-        card.detail.trait.effect,
-        effectType
-      );
-      traitResults.forEach((result) => {
+    if (card.trait?.effect) {
+      const traitResults = analyzeTraitForEffect(card.trait.effect, effectType);
+      traitResults.forEach(result => {
         const traitMatch: DetectedTraitEffect = {
           card,
           source: 'trait',
-          isAccessory: false,
+          isToken: false,
           condition: result.condition,
           conditionText: result.conditionText,
           effectText: result.effectText,
@@ -249,16 +228,16 @@ function analyzeRequiredEffect(
       });
     }
 
-    card.accessories?.forEach((acc, index) => {
+    card.tokens?.forEach((acc, index) => {
       if (!acc.traitEffect) return;
 
       const traitResults = analyzeTraitForEffect(acc.traitEffect, effectType);
-      traitResults.forEach((result) => {
+      traitResults.forEach(result => {
         const traitMatch: DetectedTraitEffect = {
           card,
           source: 'trait',
-          isAccessory: true,
-          accessoryIndex: index,
+          isToken: true,
+          tokenIndex: index,
           condition: result.condition,
           conditionText: result.conditionText,
           effectText: result.effectText,
@@ -274,13 +253,11 @@ function analyzeRequiredEffect(
     });
   });
 
-  const traitMatches = Array.from(traitMatchesMap.entries()).map(
-    ([condition, items]) => ({
-      condition,
-      conditionLabel: getTraitConditionLabel(condition),
-      items,
-    })
-  );
+  const traitMatches = Array.from(traitMatchesMap.entries()).map(([condition, items]) => ({
+    condition,
+    conditionLabel: getTraitConditionLabel(condition),
+    items,
+  }));
 
   const traitTriggerOrder = ['ドロー時', 'ハートコレクト時', '常時'];
   traitMatches.sort((a, b) => {
@@ -301,21 +278,13 @@ function analyzeRequiredEffect(
   };
 }
 
-
-
-function findMatchedSentence(
-  text: string,
-  keywords: string[]
-): string | undefined {
+function findMatchedSentence(text: string, keywords: string[]): string | undefined {
   const sentences = text
     .split('。')
-    .map((sentence) => sentence.trim())
-    .filter((sentence) => sentence.length > 0);
+    .map(sentence => sentence.trim())
+    .filter(sentence => sentence.length > 0);
 
-  return (
-    sentences.find((sentence) => matchesKeywords(sentence, keywords)) ??
-    sentences[0]
-  );
+  return sentences.find(sentence => matchesKeywords(sentence, keywords)) ?? sentences[0];
 }
 
 /**
@@ -331,7 +300,7 @@ function extractUnDrawCards(
 
   const unDrawCards: UnDrawCardInfo[] = [];
 
-  cards.forEach((card) => {
+  cards.forEach(card => {
     const analysis = traitAnalysisMap.get(card.id);
     if (!analysis) return;
 
@@ -339,7 +308,7 @@ function extractUnDrawCards(
     if (analysis.unDraw) {
       unDrawCards.push({
         card,
-        isAccessory: false,
+        isToken: false,
         sections: analysis.unDraw.sections,
         conditionDetail: null,
       });

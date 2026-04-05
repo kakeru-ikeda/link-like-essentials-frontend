@@ -1,4 +1,9 @@
-import { CardTraitAnalysisData } from '@/models/card/TraitAnalysis';
+import {
+  CardTraitAnalysisData,
+  HeartCollectAnalysis,
+  TraitAnalysisSections,
+  UnDrawAnalysis,
+} from '@/models/card/TraitAnalysis';
 
 /**
  * GraphQLクエリのレスポンス型定義（特性分析データ）
@@ -8,14 +13,32 @@ import { CardTraitAnalysisData } from '@/models/card/TraitAnalysis';
  * バッチ取得のレスポンス型
  */
 export interface TraitAnalysisBatchQueryData {
-  traitAnalysisBatch: CardTraitAnalysisData[];
+  traitAnalysisBatch: TraitAnalysisApiData[];
 }
 
 /**
  * 単一カード取得のレスポンス型
  */
 export interface CardTraitAnalysisQueryData {
-  cardTraitAnalysis: CardTraitAnalysisData;
+  cardTraitAnalysis: TraitAnalysisApiData;
+}
+
+export interface HeartCollectAnalysisApiData
+  extends Omit<HeartCollectAnalysis, 'cardId' | 'sections'> {
+  cardId?: number;
+  sections: TraitAnalysisSections;
+}
+
+export interface UnDrawAnalysisApiData extends Omit<UnDrawAnalysis, 'cardId' | 'sections'> {
+  cardId?: number;
+  sections: TraitAnalysisSections;
+}
+
+export interface TraitAnalysisApiData
+  extends Omit<CardTraitAnalysisData, 'cardId' | 'heartCollect' | 'unDraw'> {
+  cardId: number;
+  heartCollect?: HeartCollectAnalysisApiData;
+  unDraw?: UnDrawAnalysisApiData;
 }
 
 /**

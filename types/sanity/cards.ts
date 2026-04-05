@@ -16,7 +16,7 @@ export interface SanityTrait {
   effect?: string;
 }
 
-export interface SanityAccessory {
+export interface SanityToken {
   _key: string;
   parentType?: string;
   name?: string;
@@ -57,6 +57,6 @@ export interface SanityCard {
   specialAppeal?: SanitySkill;
   skill?: SanitySkill;
   trait?: SanityTrait;
-  tokens?: SanityAccessory[];
+  tokens?: SanityToken[];
   sidePlacementRules?: SanitySidePlacementRule[];
 }

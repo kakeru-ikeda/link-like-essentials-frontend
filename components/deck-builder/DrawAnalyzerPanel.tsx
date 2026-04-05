@@ -15,17 +15,11 @@ interface DrawAnalyzerPanelProps {
   analysis: DeckAnalysis;
 }
 
-export const DrawAnalyzerPanel: React.FC<DrawAnalyzerPanelProps> = ({
-  analysis,
-}) => {
-  const [selectedAccessories, setSelectedAccessories] = useState<
-    Map<string, number>
-  >(new Map());
+export const DrawAnalyzerPanel: React.FC<DrawAnalyzerPanelProps> = ({ analysis }) => {
+  const [selectedTokens, setSelectedTokens] = useState<Map<string, number>>(new Map());
   const [handSize, setHandSize] = useState<number>(8);
-  const [imitationOnStage, setImitationOnStage] = useState<
-    Map<string, boolean>
-  >(new Map());
-  
+  const [imitationOnStage, setImitationOnStage] = useState<Map<string, boolean>>(new Map());
+
   const imitationOnStageRef = useRef<Map<string, boolean>>(imitationOnStage);
   useEffect(() => {
     imitationOnStageRef.current = imitationOnStage;
@@ -33,56 +27,49 @@ export const DrawAnalyzerPanel: React.FC<DrawAnalyzerPanelProps> = ({
 
   useEffect(() => {
     const newMap = new Map<string, number>();
-    analysis.accessoryCards.forEach((info) => {
-      const key = `${info.card.id}-${info.accessoryIndex}`;
-      newMap.set(key, selectedAccessories.get(key) ?? 0);
+    analysis.tokenCards.forEach(info => {
+      const key = `${info.card.id}-${info.tokenIndex}`;
+      newMap.set(key, selectedTokens.get(key) ?? 0);
     });
-    setSelectedAccessories(newMap);
+    setSelectedTokens(newMap);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [analysis.accessoryCards]);
+  }, [analysis.tokenCards]);
 
   useEffect(() => {
     const newMap = new Map<string, boolean>();
     analysis.excludedCards
-      .filter((item) => item.reasons.includes('IMITATION'))
-      .forEach((item) => {
+      .filter(item => item.reasons.includes('IMITATION'))
+      .forEach(item => {
         newMap.set(item.card.id, imitationOnStageRef.current.get(item.card.id) ?? true);
       });
     setImitationOnStage(newMap);
   }, [analysis.excludedCards]);
 
-  const accessoryCount = Array.from(selectedAccessories.values()).reduce(
-    (sum, count) => sum + count,
-    0
-  );
+  const tokenCount = Array.from(selectedTokens.values()).reduce((sum, count) => sum + count, 0);
 
-  const imitationCards = analysis.excludedCards.filter((item) =>
-    item.reasons.includes('IMITATION')
-  );
+  const imitationCards = analysis.excludedCards.filter(item => item.reasons.includes('IMITATION'));
   // UN_DRAW・INSTANCE も持つカードはすでに別の理由で除外済みのため、
   // ステージセット解除してもドロー枠は増えない
-  const imitationOffStageCount = imitationCards.filter((item) => {
+  const imitationOffStageCount = imitationCards.filter(item => {
     const onStage = imitationOnStage.get(item.card.id) ?? true;
     if (onStage) return false;
-    const hasStrongerExclusion = item.reasons.some(
-      (r) => r === 'UN_DRAW' || r === 'INSTANCE'
-    );
+    const hasStrongerExclusion = item.reasons.some(r => r === 'UN_DRAW' || r === 'INSTANCE');
     return !hasStrongerExclusion;
   }).length;
   const effectiveDrawCount = analysis.drawCount + imitationOffStageCount;
 
   // イミテーション以外の理由で除外されているカード + ステージにセット中のイミテーションカードを表示
   const displayedExcludedCards = analysis.excludedCards
-    .map((item) => ({
+    .map(item => ({
       ...item,
       reasons: item.reasons.filter(
-        (r) => r !== 'IMITATION' || (imitationOnStage.get(item.card.id) ?? true)
+        r => r !== 'IMITATION' || (imitationOnStage.get(item.card.id) ?? true)
       ),
     }))
-    .filter((item) => item.reasons.length > 0);
+    .filter(item => item.reasons.length > 0);
 
-  const setAccessoryCount = (key: string, count: number): void => {
-    setSelectedAccessories((prev) => {
+  const setTokenCount = (key: string, count: number): void => {
+    setSelectedTokens(prev => {
       const newMap = new Map(prev);
       newMap.set(key, Math.max(0, count));
       return newMap;
@@ -125,16 +112,11 @@ export const DrawAnalyzerPanel: React.FC<DrawAnalyzerPanelProps> = ({
   ] satisfies Array<{ label: string; key: SectionKey; drawCount: number }>;
 
   const useCardCount = 1;
-  const mainFormula = getDrawFormula(
-    effectiveDrawCount,
-    handSize,
-    useCardCount,
-    accessoryCount
-  );
+  const mainFormula = getDrawFormula(effectiveDrawCount, handSize, useCardCount, tokenCount);
 
   const undrawCards = analysis.excludedCards
-    .filter((item) => item.reasons.includes('UN_DRAW'))
-    .map((item) => item.card);
+    .filter(item => item.reasons.includes('UN_DRAW'))
+    .map(item => item.card);
 
   return (
     <div className="pb-3">
@@ -157,13 +139,13 @@ export const DrawAnalyzerPanel: React.FC<DrawAnalyzerPanelProps> = ({
               <span className="text-sm">枚</span>
             </div>
           </div>
-          {accessoryCount > 0 && (
+          {tokenCount > 0 && (
             <>
               <div className="pb-0.5 text-gray-400 text-lg font-bold">+</div>
               <div>
                 <div className="text-[9px] text-green-700 mb-1">トークン</div>
                 <div className="text-xl font-bold leading-none text-green-700">
-                  {accessoryCount}
+                  {tokenCount}
                   <span className="text-sm">枚</span>
                 </div>
               </div>
@@ -193,9 +175,7 @@ export const DrawAnalyzerPanel: React.FC<DrawAnalyzerPanelProps> = ({
                           ドロー枠が手札上限に満たない場合はアンドロー特性を持つカードでもドローされます。
                         </div>
                         <div>
-                          <div className="font-semibold mb-1">
-                            【アンドロー枠対象カード】
-                          </div>
+                          <div className="font-semibold mb-1">【アンドロー枠対象カード】</div>
                           <div className="space-y-0.5">
                             {undrawCards.map((c, idx) => (
                               <div key={idx}>
@@ -226,17 +206,15 @@ export const DrawAnalyzerPanel: React.FC<DrawAnalyzerPanelProps> = ({
           <span className="text-gray-700 font-medium">手札上限枚数</span>
           <div className="flex items-center gap-1">
             <button
-              onClick={() => setHandSize((s) => Math.max(1, s - 1))}
+              onClick={() => setHandSize(s => Math.max(1, s - 1))}
               disabled={handSize <= 1}
               className="w-5 h-5 flex items-center justify-center rounded border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed text-xs font-bold"
             >
               −
             </button>
-            <span className="text-xs font-bold text-gray-700 w-5 text-center">
-              {handSize}
-            </span>
+            <span className="text-xs font-bold text-gray-700 w-5 text-center">{handSize}</span>
             <button
-              onClick={() => setHandSize((s) => Math.min(8, s + 1))}
+              onClick={() => setHandSize(s => Math.min(8, s + 1))}
               disabled={handSize >= 8}
               className="w-5 h-5 flex items-center justify-center rounded border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed text-xs font-bold"
             >
@@ -256,7 +234,7 @@ export const DrawAnalyzerPanel: React.FC<DrawAnalyzerPanelProps> = ({
             </span>
           </div>
           <div className="space-y-1">
-            {imitationCards.map((item) => {
+            {imitationCards.map(item => {
               const onStage = imitationOnStage.get(item.card.id) ?? true;
               return (
                 <div
@@ -265,12 +243,12 @@ export const DrawAnalyzerPanel: React.FC<DrawAnalyzerPanelProps> = ({
                 >
                   <div className="flex flex-col min-w-0 flex-1">
                     <div className="text-[11px] font-medium text-gray-800 truncate">
-                      [{item.card.cardName}] {item.card.characterName}
+                      [{item.card.cardName}] {item.card.characterName.join('＆')}
                     </div>
                   </div>
                   <button
                     onClick={() =>
-                      setImitationOnStage((prev) => {
+                      setImitationOnStage(prev => {
                         const newMap = new Map(prev);
                         newMap.set(item.card.id, !onStage);
                         return newMap;
@@ -296,16 +274,16 @@ export const DrawAnalyzerPanel: React.FC<DrawAnalyzerPanelProps> = ({
         </div>
       )}
 
-      {analysis.accessoryCards.length > 0 && (
+      {analysis.tokenCards.length > 0 && (
         <div className="text-[11px] leading-tight text-gray-600 py-2 space-y-1">
           <div className="flex items-center gap-1">
             <span className="text-green-700 font-medium">トークンカード</span>
-            <span className="text-gray-500">({accessoryCount}枚)</span>
+            <span className="text-gray-500">({tokenCount}枚)</span>
           </div>
           <div className="space-y-1">
-            {analysis.accessoryCards.map((info) => {
-              const key = `${info.card.id}-${info.accessoryIndex}`;
-              const count = selectedAccessories.get(key) ?? 1;
+            {analysis.tokenCards.map(info => {
+              const key = `${info.card.id}-${info.tokenIndex}`;
+              const count = selectedTokens.get(key) ?? 1;
               return (
                 <div
                   key={key}
@@ -313,15 +291,15 @@ export const DrawAnalyzerPanel: React.FC<DrawAnalyzerPanelProps> = ({
                 >
                   <div className="flex flex-col min-w-0 flex-1">
                     <div className="text-[11px] font-medium text-gray-800 truncate">
-                      {info.accessory.name}
+                      {info.token.name}
                     </div>
                     <div className="text-[10px] text-gray-500 truncate">
-                      [{info.card.cardName}] {info.card.characterName}
+                      [{info.card.cardName}] {info.card.characterName.join('＆')}
                     </div>
                   </div>
                   <div className="flex items-center gap-1.5 ml-2">
                     <button
-                      onClick={() => setAccessoryCount(key, count - 1)}
+                      onClick={() => setTokenCount(key, count - 1)}
                       disabled={count <= 0}
                       className="w-5 h-5 flex items-center justify-center rounded border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed text-xs font-bold"
                     >
@@ -331,7 +309,7 @@ export const DrawAnalyzerPanel: React.FC<DrawAnalyzerPanelProps> = ({
                       {count}
                     </span>
                     <button
-                      onClick={() => setAccessoryCount(key, count + 1)}
+                      onClick={() => setTokenCount(key, count + 1)}
                       className="w-5 h-5 flex items-center justify-center rounded border border-gray-300 text-gray-600 hover:bg-gray-100 text-xs font-bold"
                     >
                       +
@@ -351,12 +329,12 @@ export const DrawAnalyzerPanel: React.FC<DrawAnalyzerPanelProps> = ({
           ) : (
             <div>
               <div>除外枠</div>
-              {displayedExcludedCards.map((item) => (
+              {displayedExcludedCards.map(item => (
                 <span
                   key={item.card.id}
                   className="inline-flex items-center rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 text-[10px] text-gray-700"
                 >
-                  [{item.card.cardName}] {item.card.characterName}（
+                  [{item.card.cardName}] {item.card.characterName.join('＆')}（
                   {formatExcludedReasons(item.reasons)}）
                 </span>
               ))}
@@ -370,28 +348,22 @@ export const DrawAnalyzerPanel: React.FC<DrawAnalyzerPanelProps> = ({
           セクション別詳細
         </SectionHeading>
         <div className="space-y-1">
-          {sections.map((section) => {
-            const effectiveSectionDrawCount =
-              section.drawCount + imitationOffStageCount;
+          {sections.map(section => {
+            const effectiveSectionDrawCount = section.drawCount + imitationOffStageCount;
             const sectionFormula = getDrawFormula(
               effectiveSectionDrawCount,
               handSize,
               useCardCount,
-              accessoryCount
+              tokenCount
             );
-            const sectionSpecificDrawCards = getSectionSpecificDrawCards(
-              analysis,
-              section.key
-            );
+            const sectionSpecificDrawCards = getSectionSpecificDrawCards(analysis, section.key);
             return (
               <div
                 key={section.label}
                 className="rounded-md border border-purple-100 bg-white px-2.5 py-1"
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] text-gray-600">
-                    {section.label}
-                  </span>
+                  <span className="text-[11px] text-gray-600">{section.label}</span>
                   <span className="text-[11px] font-medium text-purple-700">
                     (
                     <span
@@ -403,30 +375,26 @@ export const DrawAnalyzerPanel: React.FC<DrawAnalyzerPanelProps> = ({
                     >
                       {effectiveSectionDrawCount}枚
                     </span>
-                    {accessoryCount > 0 && (
+                    {tokenCount > 0 && (
                       <>
                         <span className="text-gray-400"> + </span>
-                        <span className="text-green-700">
-                          {accessoryCount}枚
-                        </span>
+                        <span className="text-green-700">{tokenCount}枚</span>
                       </>
                     )}
                     <span className="text-gray-400"> - </span>
                     <span className="text-orange-800">{useCardCount}枚</span>
                     <span className="text-gray-400">) + </span>
-                    <span className="text-blue-700">
-                      {sectionFormula.uncertainSlots}枚
-                    </span>
+                    <span className="text-blue-700">{sectionFormula.uncertainSlots}枚</span>
                   </span>
                 </div>
                 {sectionSpecificDrawCards.length > 0 && (
                   <div className="mt-1 flex flex-wrap gap-1">
-                    {sectionSpecificDrawCards.map((card) => (
+                    {sectionSpecificDrawCards.map(card => (
                       <span
                         key={card.id}
                         className="inline-flex items-center rounded-full border border-orange-200 bg-orange-50 px-2 py-0.5 text-[10px] text-orange-700"
                       >
-                        [{card.cardName}] {card.characterName}
+                        [{card.cardName}] {card.characterName.join('＆')}
                       </span>
                     ))}
                   </div>

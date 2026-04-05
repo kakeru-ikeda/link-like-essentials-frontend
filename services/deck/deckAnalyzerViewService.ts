@@ -6,17 +6,15 @@ export const getDrawFormula = (
   drawCount: number,
   handSize: number,
   useCardCount: number,
-  accessoryCount: number = 0
+  tokenCount: number = 0
 ) => {
-  const uncertainSlots = Math.max(0, handSize - drawCount - accessoryCount + useCardCount);
+  const uncertainSlots = Math.max(0, handSize - drawCount - tokenCount + useCardCount);
   return { uncertainSlots };
 };
 
-export const formatExcludedReasons = (
-  reasons: DeckAnalysis['excludedCards'][number]['reasons']
-) =>
+export const formatExcludedReasons = (reasons: DeckAnalysis['excludedCards'][number]['reasons']) =>
   reasons
-    .map((reason) => {
+    .map(reason => {
       switch (reason) {
         case 'UN_DRAW':
           return 'アンドロー';
@@ -30,13 +28,10 @@ export const formatExcludedReasons = (
     })
     .join('・');
 
-export const getSectionSpecificDrawCards = (
-  analysis: DeckAnalysis,
-  sectionKey: SectionKey
-) => {
+export const getSectionSpecificDrawCards = (analysis: DeckAnalysis, sectionKey: SectionKey) => {
   const unique = new Map<string, (typeof analysis.unDrawCards)[number]['card']>();
 
-  analysis.unDrawCards.forEach((info) => {
+  analysis.unDrawCards.forEach(info => {
     const sections = info.sections;
     if (!sections) return;
 

@@ -32,8 +32,8 @@ export const CardDetailView: React.FC<CardDetailViewProps> = ({ cardId }) => {
       // 既に同じ状態なら何もしない
       if (isAwakeAfter === targetIsAfter) return;
 
-      const beforeUrl = card?.detail?.awakeBeforeImage;
-      const afterUrl = card?.detail?.awakeAfterImage;
+      const beforeUrl = card?.awakeBeforeImage;
+      const afterUrl = card?.awakeAfterImage;
 
       // URLが同じ場合はローディングを表示しない
       if (beforeUrl !== afterUrl) {
@@ -44,12 +44,7 @@ export const CardDetailView: React.FC<CardDetailViewProps> = ({ cardId }) => {
 
       setAwakeState(targetIsAfter);
     },
-    [
-      isAwakeAfter,
-      setAwakeState,
-      card?.detail?.awakeBeforeImage,
-      card?.detail?.awakeAfterImage,
-    ]
+    [isAwakeAfter, setAwakeState, card?.awakeBeforeImage, card?.awakeAfterImage]
   );
 
   if (loading) {
@@ -81,10 +76,8 @@ export const CardDetailView: React.FC<CardDetailViewProps> = ({ cardId }) => {
     );
   }
 
-  const characterColor = getCharacterColor(card.characterName);
-  const currentImageUrl = isAwakeAfter
-    ? card.detail?.awakeAfterImage
-    : card.detail?.awakeBeforeImage;
+  const characterColor = getCharacterColor(card.characterName.join('＆'));
+  const currentImageUrl = isAwakeAfter ? card.awakeAfterImage : card.awakeBeforeImage;
 
   return (
     <div className="p-6 space-y-6">
@@ -94,15 +87,13 @@ export const CardDetailView: React.FC<CardDetailViewProps> = ({ cardId }) => {
         style={{ borderColor: characterColor }}
       >
         {/* 覚醒切り替えボタン */}
-        {card.detail?.awakeBeforeImage && card.detail?.awakeAfterImage && (
+        {card.awakeBeforeImage && card.awakeAfterImage && (
           <div className="absolute top-2 right-2 z-10 flex gap-1 bg-black/50 rounded-lg p-1">
             <button
               onClick={() => switchAwake(false)}
               disabled={!isAwakeAfter}
               className={`px-3 py-1 text-xs font-medium rounded transition-colors ${
-                !isAwakeAfter
-                  ? 'bg-white text-gray-900'
-                  : 'text-white hover:bg-white/20'
+                !isAwakeAfter ? 'bg-white text-gray-900' : 'text-white hover:bg-white/20'
               }`}
             >
               覚醒前
@@ -111,9 +102,7 @@ export const CardDetailView: React.FC<CardDetailViewProps> = ({ cardId }) => {
               onClick={() => switchAwake(true)}
               disabled={isAwakeAfter}
               className={`px-3 py-1 text-xs font-medium rounded transition-colors ${
-                isAwakeAfter
-                  ? 'bg-white text-gray-900'
-                  : 'text-white hover:bg-white/20'
+                isAwakeAfter ? 'bg-white text-gray-900' : 'text-white hover:bg-white/20'
               }`}
             >
               覚醒後
@@ -162,36 +151,22 @@ export const CardDetailView: React.FC<CardDetailViewProps> = ({ cardId }) => {
       {/* カード名 */}
       <div>
         <h3 className="text-2xl font-bold text-gray-900">{card.cardName}</h3>
-        <p className="text-sm text-gray-600 mt-1">{card.characterName}</p>
+        <p className="text-sm text-gray-600 mt-1">{card.characterName.join('＆')}</p>
       </div>
 
       {/* バッジ群 */}
       <div className="flex flex-wrap gap-2">
         <RarityBadge rarity={card.rarity} size="large" position="inline" />
         <StyleTypeBadge styleType={card.styleType} size="large" />
-        {card.detail?.favoriteMode && (
-          <FavoriteModeBadge
-            favoriteMode={card.detail.favoriteMode}
-            size="large"
-          />
-        )}
-        {card.limited && (
-          <LimitedTypeBadge limitedType={card.limited} size="large" />
-        )}
+        {card.favoriteMode && <FavoriteModeBadge favoriteMode={card.favoriteMode} size="large" />}
+        {card.limited && <LimitedTypeBadge limitedType={card.limited} size="large" />}
       </div>
 
       {/* 注意書き */}
-      <div className="text-xs text-gray-500">
-        ※ 性能とステータスは最大育成時の値です
-      </div>
+      <div className="text-xs text-gray-500">※ 性能とステータスは最大育成時の値です</div>
 
       {/* カード詳細セクション */}
-      <CardDetailSections
-        card={card}
-        variant="full"
-        showStats={true}
-        showAcquisition={true}
-      />
+      <CardDetailSections card={card} variant="full" showStats={true} showAcquisition={true} />
     </div>
   );
 };

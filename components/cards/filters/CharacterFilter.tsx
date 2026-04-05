@@ -2,15 +2,17 @@
 
 import React from 'react';
 import { MultiSelectFilter } from '@/components/common/filters/MultiSelectFilter';
-import { getSelectableCharactersForSlot } from '@/services/card/characterFilterService';
+import { getSelectableCharactersForSlot } from '@/services/deck/deckFilterService';
 import { getCharacterColor } from '@/utils/colorUtils';
 import type { DeckType } from '@/models/shared/enums';
+import type { Card } from '@/models/card/Card';
 
 interface CharacterFilterProps {
   selectedCharacters: string[] | undefined;
   onToggle: (characterName: string) => void;
   currentSlotId?: number | null;
   deckType?: DeckType;
+  cards?: Card[];
   isLabelHidden?: boolean;
   paddingDisabled?: boolean;
 }
@@ -20,12 +22,13 @@ export const CharacterFilter: React.FC<CharacterFilterProps> = ({
   onToggle,
   currentSlotId,
   deckType,
+  cards,
   isLabelHidden = false,
   paddingDisabled = false,
 }) => {
   const selectableCharacters = React.useMemo(
-    () => getSelectableCharactersForSlot(currentSlotId ?? null, deckType),
-    [currentSlotId, deckType]
+    () => getSelectableCharactersForSlot(currentSlotId ?? null, deckType, cards),
+    [currentSlotId, deckType, cards]
   );
 
   const characterLabel = (character: string) => character;
@@ -34,9 +37,7 @@ export const CharacterFilter: React.FC<CharacterFilterProps> = ({
   return (
     <div className={paddingDisabled ? '' : 'p-4'}>
       {!isLabelHidden && (
-        <label className="block text-sm font-medium text-gray-700 mb-3">
-          キャラクター
-        </label>
+        <label className="block text-sm font-medium text-gray-700 mb-3">キャラクター</label>
       )}
       <MultiSelectFilter
         values={selectableCharacters}

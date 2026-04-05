@@ -19,14 +19,14 @@ export function getCenterCard(deck: Deck | null): Card | null {
 
   // centerCharacterのmainスロットを特定
   const centerSlotMapping = mapping.find(
-    (m) => m.characterName === deck.centerCharacter && m.slotType === 'main'
+    m => m.characterName === deck.centerCharacter && m.slotType === 'main'
   );
 
   if (!centerSlotMapping) return null;
 
   // 該当するスロットからカードを取得
   const centerSlot = deck.slots.find(
-    (slot) => slot.slotId === centerSlotMapping.slotId && slot.card !== null
+    slot => slot.slotId === centerSlotMapping.slotId && slot.card !== null
   );
 
   return centerSlot?.card || null;
@@ -41,15 +41,10 @@ export function getOtherLRCards(deck: Deck | null, centerCard: Card | null): Car
 
   const lrCards: Card[] = [];
 
-  deck.slots.forEach((slot) => {
+  deck.slots.forEach(slot => {
     const card = slot.card;
     // センターカードは除外、LRでスペシャルアピール持ちのみ
-    if (
-      card &&
-      card.rarity === 'LR' &&
-      card.detail?.specialAppeal &&
-      card.id !== centerCard?.id
-    ) {
+    if (card && card.rarity === 'LR' && card.specialAppeal && card.id !== centerCard?.id) {
       lrCards.push(card);
     }
   });

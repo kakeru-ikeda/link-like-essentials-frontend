@@ -13,22 +13,18 @@ interface CardGridItemProps {
   onClick: (card: Card) => void;
 }
 
-export const CardGridItem: React.FC<CardGridItemProps> = ({
-  card,
-  highlightKeywords,
-  onClick,
-}) => {
-  const characterColor = getCharacterColor(card.characterName);
+export const CardGridItem: React.FC<CardGridItemProps> = ({ card, highlightKeywords, onClick }) => {
+  const characterColor = getCharacterColor(card.characterName.join('＆'));
   const { isAwakeAfter } = useAwakeState(card.id);
 
   const hasAwakeToggle =
-    !!card.detail?.awakeBeforeImage &&
-    !!card.detail?.awakeAfterImage &&
-    card.detail.awakeBeforeImage !== card.detail.awakeAfterImage;
+    !!card.awakeBeforeImage &&
+    !!card.awakeAfterImage &&
+    card.awakeBeforeImage !== card.awakeAfterImage;
 
   const imageUrl = isAwakeAfter
-    ? card.detail?.awakeAfterImage
-    : (card.detail?.awakeBeforeImage ?? card.detail?.awakeAfterImage);
+    ? card.awakeAfterImage
+    : (card.awakeBeforeImage ?? card.awakeAfterImage);
 
   return (
     <button
@@ -74,10 +70,7 @@ export const CardGridItem: React.FC<CardGridItemProps> = ({
             <HighlightText text={card.cardName} keywords={highlightKeywords} />
           </p>
           <p className="text-xs text-white/90">
-            <HighlightText
-              text={card.characterName}
-              keywords={highlightKeywords}
-            />
+            <HighlightText text={card.characterName.join('＆')} keywords={highlightKeywords} />
           </p>
         </div>
       </div>

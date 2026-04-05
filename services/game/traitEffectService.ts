@@ -18,7 +18,7 @@ export function getTraitEffectKeyword(effectType: TraitEffectType): string[] {
  * @returns 検索キーワードの配列（フラット化）
  */
 export function getTraitEffectKeywords(effectTypes: TraitEffectType[]): string[] {
-  return effectTypes.flatMap((type) => useEffectKeywordsStore.getState().getTraitKeywords(type));
+  return effectTypes.flatMap(type => useEffectKeywordsStore.getState().getTraitKeywords(type));
 }
 
 /**
@@ -29,8 +29,8 @@ export function getTraitEffectKeywords(effectTypes: TraitEffectType[]): string[]
  */
 export function hasTraitEffect(card: Card, effectType: TraitEffectType): boolean {
   const keywords = getTraitEffectKeyword(effectType);
-  const traitEffect = card.detail?.trait?.effect;
-  
+  const traitEffect = card.trait?.effect;
+
   if (!traitEffect) return false;
 
   return matchesKeywords(traitEffect, keywords);

@@ -10,24 +10,43 @@ import { DeckType } from '@/models/shared/enums';
 import { getDeckSlotMapping } from '@/services/deck/deckConfigService';
 import { GENERATION_MEMBERS, GENERATION } from '@/config/generations';
 import { UNIT_MEMBERS } from '@/config/characters';
+import { SidePlacementRule } from '@/models/card/Card';
+
+interface CardPlacementInfo {
+  characterName: string | string[];
+  rarity?: string;
+  cardName?: string;
+  sidePlacementRules?: SidePlacementRule[];
+}
+
+function normalizeCharacterNames(characterName: string | string[]): string[] {
+  return Array.isArray(characterName) ? characterName : [characterName];
+}
 
 /**
  * キャラクター名から所属期を取得
- * ＆が含まれる複合カードの場合は、含まれるキャラクターから判定
+ * 配列で渡された複数キャラクターカードの場合は、含まれるキャラクターから判定
  */
-export function getCharacterGeneration(characterName: string): number | null {
+export function getCharacterGeneration(
+  characterName: string | string[]
+): number | null {
+  const characterNames = normalizeCharacterNames(characterName);
+
   // 完全一致チェック
   for (const [gen, members] of Object.entries(GENERATION_MEMBERS)) {
-    if ((members as readonly string[]).includes(characterName)) {
+    if (
+      characterNames.length === 1 &&
+      (members as readonly string[]).includes(characterNames[0])
+    ) {
       return parseInt(gen);
     }
   }
 
-  // ＆が含まれる複合カードの場合、各期のメンバーが含まれているかチェック
-  if (characterName.includes('＆')) {
+  // 複数キャラクターカードの場合、各期のメンバーがすべて含まれているかチェック
+  if (characterNames.length > 1) {
     for (const [gen, members] of Object.entries(GENERATION_MEMBERS)) {
-      const allMembersIncluded = (members as readonly string[]).every((member) =>
-        characterName.includes(member)
+      const allMembersIncluded = (members as readonly string[]).every(
+        (member) => characterNames.includes(member)
       );
       if (allMembersIncluded) {
         return parseInt(gen);
@@ -40,23 +59,28 @@ export function getCharacterGeneration(characterName: string): number | null {
 
 /**
  * キャラクター名から所属ユニットを取得
- * ＆が含まれる複合カードの場合は、含まれるキャラクターから判定
+ * 配列で渡された複数キャラクターカードの場合は、含まれるキャラクターから判定
  */
 export function getCharacterUnit(
-  characterName: string
+  characterName: string | string[]
 ): keyof typeof UNIT_MEMBERS | null {
+  const characterNames = normalizeCharacterNames(characterName);
+
   // 完全一致チェック
   for (const [unit, members] of Object.entries(UNIT_MEMBERS)) {
-    if ((members as readonly string[]).includes(characterName)) {
+    if (
+      characterNames.length === 1 &&
+      (members as readonly string[]).includes(characterNames[0])
+    ) {
       return unit as keyof typeof UNIT_MEMBERS;
     }
   }
 
-  // ＆が含まれる複合カードの場合、各ユニットのメンバーが含まれているかチェック
-  if (characterName.includes('＆')) {
+  // 複数キャラクターカードの場合、各ユニットのメンバーがすべて含まれているかチェック
+  if (characterNames.length > 1) {
     for (const [unit, members] of Object.entries(UNIT_MEMBERS)) {
-      const allMembersIncluded = (members as readonly string[]).every((member) =>
-        characterName.includes(member)
+      const allMembersIncluded = (members as readonly string[]).every(
+        (member) => characterNames.includes(member)
       );
       if (allMembersIncluded) {
         return unit as keyof typeof UNIT_MEMBERS;
@@ -76,7 +100,7 @@ export function getCharacterUnit(
  * @returns 配置可否と理由
  */
 export function canPlaceCardInSlot(
-  cardInfo: { characterName: string; rarity?: string; cardName?: string },
+  cardInfo: CardPlacementInfo,
   slotId: number,
   deckType?: DeckType
 ): { allowed: boolean; reason?: string } {
@@ -89,7 +113,9 @@ export function canPlaceCardInSlot(
 
   const slotCharacter = slotMapping.characterName;
   const slotType = slotMapping.slotType;
-  const cardGeneration = getCharacterGeneration(cardInfo.characterName);
+  const characterNames = normalizeCharacterNames(cardInfo.characterName);
+  const normalizedDeckType = deckType ?? DeckType.TERM_105;
+  const sidePlacementRules = cardInfo.sidePlacementRules ?? [];
 
   // フリー枠はすべてのカードが配置可能
   if (slotCharacter === 'フリー') {
@@ -101,113 +127,38 @@ export function canPlaceCardInSlot(
     return { allowed: true };
   }
 
-  // 基本ルール: 同じキャラクターのカードは配置可能
-  if (cardInfo.characterName === slotCharacter) {
+  // 複数キャラクターカードはメインに配置不可
+  if (slotType === 'main' && characterNames.length > 1) {
+    return {
+      allowed: false,
+      reason: '複数キャラクターのカードはメインスロットに配置できません',
+    };
+  }
+
+  // 基本ルール: 単一キャラクターのカードは同じキャラクターのスロットに配置可能
+  if (characterNames.length === 1 && characterNames[0] === slotCharacter) {
     return { allowed: true };
   }
 
-  // --- 以下、例外ルール ---
+  // sidePlacementRules があるカードは、指定されたサイドスロットに追加で例外配置可能
+  if (slotType === 'side' && sidePlacementRules.length > 0) {
+    const matchedSidePlacementRule = sidePlacementRules.some((rule) => {
+      const matchesDeckType =
+        !rule.deckTypes || rule.deckTypes === normalizedDeckType;
+      const matchesCharacter = rule.characters.includes(slotCharacter);
+      return matchesDeckType && matchesCharacter;
+    });
 
-  // 102期生LRカードの特殊ルール
-  if (cardGeneration === GENERATION.TERM_102 && cardInfo.rarity === 'LR') {
-    const slotGeneration = getCharacterGeneration(slotCharacter);
-
-    // 102期・103期・104期のサイドに配置可能
-    const allowedGenerations: number[] = [GENERATION.TERM_102, GENERATION.TERM_103, GENERATION.TERM_104];
-    if (slotGeneration && allowedGenerations.includes(slotGeneration) && slotType === 'side') {
-      return { allowed: true };
-    }
-  }
-
-  // 大賀美沙知のカード（101期生）
-  if (cardInfo.characterName === '大賀美沙知') {
-    const slotGeneration = getCharacterGeneration(slotCharacter);
-    
-    // 102期・103期のサイドのみ配置可能
-    const allowedGenerations: number[] = [GENERATION.TERM_102, GENERATION.TERM_103];
-    if (slotGeneration && allowedGenerations.includes(slotGeneration) && slotType === 'side') {
-      return { allowed: true };
-    }
-    
-    return {
-      allowed: false,
-      reason: '大賀美沙知は102期・103期のサイドカードにのみ配置できます',
-    };
-  }
-
-  // 102期生＆カード（乙宗梢＆夕霧綴理＆藤島慈）
-  if (cardGeneration === GENERATION.TERM_102 && cardInfo.characterName.includes('＆')) {
-    const slotGeneration = getCharacterGeneration(slotCharacter);
-    
-    // 102期・103期・104期のサイドのみ配置可能
-    const allowedGenerations: number[] = [GENERATION.TERM_102, GENERATION.TERM_103, GENERATION.TERM_104];
-    if (slotGeneration && allowedGenerations.includes(slotGeneration) && slotType === 'side') {
-      return { allowed: true };
-    }
-    
-    return {
-      allowed: false,
-      reason: '蓮ノ大三角は102〜104期のサイドカードにのみ配置できます',
-    };
-  }
-
-  // Edel Note＆カード（桂城泉＆セラス）
-  const cardUnit = getCharacterUnit(cardInfo.characterName);
-  if (cardUnit === 'Edel Note' && cardInfo.characterName.includes('＆')) {
-    const slotUnit = getCharacterUnit(slotCharacter);
-
-    // Edel Noteスロットのサイドは配置可能（105期のEdel Note枠）
-    if (slotUnit === 'Edel Note' && slotType === 'side') {
-      return { allowed: true };
-    }
-
-    // デッキタイプが102期・103期・104期のサイドに配置可能
-    const allowedDeckTypes = [DeckType.TERM_102, DeckType.TERM_103, DeckType.TERM_104];
-    if (deckType && allowedDeckTypes.includes(deckType) && slotType === 'side') {
+    if (matchedSidePlacementRule) {
       return { allowed: true };
     }
 
     return {
       allowed: false,
-      reason: 'Edeliedは102〜104期またはEdel Noteのサイドカードにのみ配置できます',
+      reason: 'このカードは指定されたサイドスロットにのみ配置できます',
     };
   }
 
-  // Ruri&To 平成ギャルズ!!!!
-  if (cardInfo.characterName === '大沢瑠璃乃' && cardInfo.cardName === '平成ギャルズ!!!!') {
-    // スロットキャラクターがRuri&Toメンバー（大沢瑠璃乃、村野さやか、徒町小鈴、セラス）かチェック
-    const ruriAndToMembers = UNIT_MEMBERS['Ruri&To'];
-    const isRuriAndToSlot = (ruriAndToMembers as readonly string[]).includes(slotCharacter);
-    
-    // Ruri&Toのサイドのみ配置可能
-    if (isRuriAndToSlot && slotType === 'side') {
-      return { allowed: true };
-    }
-    
-    return {
-      allowed: false,
-      reason: '平成ギャルズ!!!!はRuri&Toのサイドカードにのみ配置できます',
-    };
-  }
-
-  // PRINCEε>ε> IcHiGo milK love
-  if (cardInfo.characterName === '安養寺姫芽' && cardInfo.cardName === 'IcHiGo milK love') {
-    // スロットキャラクターがPRINCEε>ε>メンバー（安養寺姫芽、日野下花帆、百生吟子、桂城泉）かチェック
-    const princeMembers = UNIT_MEMBERS['PRINCEε>ε>'];
-    const isPrinceSlot = (princeMembers as readonly string[]).includes(slotCharacter);
-    
-    // PRINCEε>ε>のサイドのみ配置可能
-    if (isPrinceSlot && slotType === 'side') {
-      return { allowed: true };
-    }
-    
-    return {
-      allowed: false,
-      reason: 'IcHiGo milK loveはPRINCEε>ε>のサイドカードにのみ配置できます',
-    };
-  }
-
-  // どの例外ルールにも該当しない
   return {
     allowed: false,
     reason: `${slotCharacter}のスロットには${slotCharacter}のカードのみ配置できます`,

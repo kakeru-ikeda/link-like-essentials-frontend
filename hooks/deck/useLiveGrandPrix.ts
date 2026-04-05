@@ -6,7 +6,10 @@ import {
   GET_LIVE_GRAND_PRIX_BY_EVENT_NAME,
   GET_LIVE_GRAND_PRIX_STATS,
 } from '@/repositories/graphql/queries/liveGrandPrix';
-import { LiveGrandPrix, LiveGrandPrixStats } from '@/models/live-grand-prix/LiveGrandPrix';
+import {
+  LiveGrandPrix,
+  LiveGrandPrixStats,
+} from '@/models/live-grand-prix/LiveGrandPrix';
 
 /**
  * ライブグランプリフィルター
@@ -37,7 +40,7 @@ interface LiveGrandPrixStatsQueryData {
 
 /**
  * ライブグランプリ一覧を取得するフック
- * 
+ *
  * @param filter ライブグランプリフィルター（省略時は全件取得）
  * @param skip クエリをスキップするかどうか
  * @returns ライブグランプリ配列、ローディング状態、エラーメッセージ
@@ -67,7 +70,7 @@ export const useLiveGrandPrix = (
 
 /**
  * 単一ライブグランプリをIDで取得するフック
- * 
+ *
  * @param id ライブグランプリID
  * @param skip クエリをスキップするかどうか
  * @returns ライブグランプリオブジェクト、ローディング状態、エラーメッセージ
@@ -97,7 +100,7 @@ export const useLiveGrandPrixById = (
 
 /**
  * 単一ライブグランプリをイベント名で取得するフック
- * 
+ *
  * @param eventName イベント名
  * @param skip クエリをスキップするかどうか
  * @returns ライブグランプリオブジェクト、ローディング状態、エラーメッセージ
@@ -127,11 +130,13 @@ export const useLiveGrandPrixByEventName = (
 
 /**
  * ライブグランプリ統計を取得するフック
- * 
+ *
  * @param skip クエリをスキップするかどうか
  * @returns 統計オブジェクト、ローディング状態、エラーメッセージ
  */
-export const useLiveGrandPrixStats = (skip?: boolean): {
+export const useLiveGrandPrixStats = (
+  skip?: boolean
+): {
   stats: LiveGrandPrixStats | null;
   loading: boolean;
   error: string | undefined;
@@ -161,7 +166,7 @@ interface ActiveLiveGrandPrixCache {
 /**
  * 開催中のライブグランプリを取得するフック
  * endDateをlocalStorageにキャッシュし、期限内はGraphQLクエリを実行しない
- * 
+ *
  * @returns 開催中のライブグランプリ、ローディング状態、エラーメッセージ
  */
 export const useActiveLiveGrandPrix = (): {
@@ -181,7 +186,7 @@ export const useActiveLiveGrandPrix = (): {
         const data: ActiveLiveGrandPrixCache = JSON.parse(cached);
         const endDate = new Date(data.endDate);
         const now = new Date();
-        
+
         // キャッシュが有効期限内であればGraphQLクエリをスキップ
         if (now < endDate && data.event) {
           setCachedEvent(data.event);
@@ -206,7 +211,7 @@ export const useActiveLiveGrandPrix = (): {
   >(GET_LIVE_GRAND_PRIX, {
     variables: {
       filter: {
-        startDateTo: queryDate,    // 開始日が現在より前のイベントを取得
+        startDateTo: queryDate, // 開始日が現在より前のイベントを取得
       },
     },
     skip: !shouldFetch, // キャッシュが有効な場合はスキップ
@@ -217,11 +222,11 @@ export const useActiveLiveGrandPrix = (): {
     if (data?.liveGrandPrix && data.liveGrandPrix.length > 0) {
       // クライアント側でendDateをチェックして開催中イベントを抽出
       const nowDate = new Date();
-      const activeEvent = data.liveGrandPrix.find(event => {
+      const activeEvent = data.liveGrandPrix.find((event) => {
         const endDate = new Date(event.endDate);
         return endDate > nowDate;
       });
-      
+
       if (activeEvent) {
         const cache: ActiveLiveGrandPrixCache = {
           event: activeEvent,
@@ -243,10 +248,11 @@ export const useActiveLiveGrandPrix = (): {
   }, [data]);
 
   // クライアント側で開催中イベントを抽出して返す
-  const activeFromQuery = data?.liveGrandPrix?.find(event => {
-    const endDate = new Date(event.endDate);
-    return endDate > new Date();
-  }) || null;
+  const activeFromQuery =
+    data?.liveGrandPrix?.find((event) => {
+      const endDate = new Date(event.endDate);
+      return endDate > new Date();
+    }) || null;
 
   return {
     activeLiveGrandPrix: cachedEvent || activeFromQuery,

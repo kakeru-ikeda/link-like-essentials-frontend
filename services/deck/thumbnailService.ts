@@ -13,7 +13,7 @@ function buildThumbnailDeckPayload(
   return {
     id: deck.id,
     name: deck.name,
-    slots: deck.slots.map((slot) => ({
+    slots: deck.slots.map(slot => ({
       slotId: slot.slotId,
       cardId: slot.cardId,
       ...(slot.limitBreak !== undefined && { limitBreak: slot.limitBreak }),
@@ -34,13 +34,11 @@ function buildThumbnailDeckPayload(
 function buildThumbnailCardsPayload(deck: Deck): ThumbnailCardPayload[] {
   const cardMap = new Map<string, ThumbnailCardPayload>();
 
-  deck.slots.forEach((slot) => {
+  deck.slots.forEach(slot => {
     if (!slot.cardId) return;
 
     if (!slot.card) {
-      throw new Error(
-        `カード情報が不足しています: slotId=${slot.slotId}, cardId=${slot.cardId}`
-      );
+      throw new Error(`カード情報が不足しています: slotId=${slot.slotId}, cardId=${slot.cardId}`);
     }
 
     if (cardMap.has(slot.card.id)) return;
@@ -48,14 +46,15 @@ function buildThumbnailCardsPayload(deck: Deck): ThumbnailCardPayload[] {
     cardMap.set(slot.card.id, {
       id: slot.card.id,
       cardName: slot.card.cardName,
-      characterName: slot.card.characterName,
+      characterName: slot.card.characterName.join('＆'),
       rarity: slot.card.rarity,
-      detail: slot.card.detail
-        ? {
-            awakeBeforeImage: slot.card.detail.awakeBeforeImage,
-            awakeAfterImage: slot.card.detail.awakeAfterImage,
-          }
-        : undefined,
+      detail:
+        slot.card.awakeBeforeImage || slot.card.awakeAfterImage
+          ? {
+              awakeBeforeImage: slot.card.awakeBeforeImage,
+              awakeAfterImage: slot.card.awakeAfterImage,
+            }
+          : undefined,
     });
   });
 
@@ -63,10 +62,7 @@ function buildThumbnailCardsPayload(deck: Deck): ThumbnailCardPayload[] {
 }
 
 export const thumbnailService = {
-  async generateThumbnail(
-    deck: Deck,
-    awakeStates: Record<string, boolean>
-  ): Promise<string> {
+  async generateThumbnail(deck: Deck, awakeStates: Record<string, boolean>): Promise<string> {
     const request: GenerateThumbnailRequest = {
       deck: buildThumbnailDeckPayload(deck, awakeStates),
       cards: buildThumbnailCardsPayload(deck),

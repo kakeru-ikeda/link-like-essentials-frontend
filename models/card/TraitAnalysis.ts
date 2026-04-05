@@ -15,7 +15,7 @@ export interface TraitAnalysisSections {
  */
 export interface HeartCollectAnalysis {
   id: string;
-  cardId?: number;
+  cardId?: string;
   accessoryId?: string;
   sections: TraitAnalysisSections;
   conditionDetail:
@@ -38,7 +38,7 @@ export interface HeartCollectAnalysis {
  */
 export interface UnDrawAnalysis {
   id: string;
-  cardId?: number;
+  cardId?: string;
   accessoryId?: string;
   sections: TraitAnalysisSections;
   conditionDetail:

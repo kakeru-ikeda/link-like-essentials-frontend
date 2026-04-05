@@ -2,14 +2,8 @@
 
 import React from 'react';
 import { useDeck } from '@/hooks/deck/useDeck';
-import {
-  getDeckSlotMapping,
-  getDeckFrame,
-} from '@/services/deck/deckConfigService';
-import {
-  getCharacterBackgroundColor,
-  getCharacterColor,
-} from '@/utils/colorUtils';
+import { getDeckSlotMapping, getDeckFrame } from '@/services/deck/deckConfigService';
+import { getCharacterBackgroundColor, getCharacterColor } from '@/utils/colorUtils';
 import { VerticalBadge } from '@/components/shared/VerticalBadge';
 import { AceBadge } from '@/components/shared/AceBadge';
 import { LimitBreakBadge } from '@/components/deck-builder/LimitBreakBadge';
@@ -32,21 +26,12 @@ interface ExportCardSlotProps {
 
 // 画像表示専用のカードスロットコンポーネント(メモ化)
 const ExportCardSlot = React.memo<ExportCardSlotProps>(
-  ({
-    slot,
-    isMain = false,
-    characterColor,
-    isAce = false,
-    onLimitBreakChange,
-    onToggleAce,
-  }) => {
+  ({ slot, isMain = false, characterColor, isAce = false, onLimitBreakChange, onToggleAce }) => {
     const limitBreakValue = slot.limitBreak ?? 14;
     const [isHovered, setIsHovered] = React.useState(false);
     const { isAwakeAfter } = useAwakeState(slot.card?.id);
 
-    const handleLimitIncrease = (
-      e: React.MouseEvent<HTMLButtonElement>
-    ): void => {
+    const handleLimitIncrease = (e: React.MouseEvent<HTMLButtonElement>): void => {
       e.preventDefault();
       e.stopPropagation();
       if (!onLimitBreakChange) return;
@@ -54,9 +39,7 @@ const ExportCardSlot = React.memo<ExportCardSlotProps>(
       onLimitBreakChange(slot.slotId, next);
     };
 
-    const handleLimitDecrease = (
-      e: React.MouseEvent<HTMLButtonElement>
-    ): void => {
+    const handleLimitDecrease = (e: React.MouseEvent<HTMLButtonElement>): void => {
       e.preventDefault();
       e.stopPropagation();
       if (!onLimitBreakChange) return;
@@ -96,9 +79,8 @@ const ExportCardSlot = React.memo<ExportCardSlotProps>(
         {/* カード画像 */}
         {(() => {
           const imageUrl = isAwakeAfter
-            ? slot.card.detail?.awakeAfterImage
-            : (slot.card.detail?.awakeBeforeImage ??
-              slot.card.detail?.awakeAfterImage);
+            ? slot.card.awakeAfterImage
+            : (slot.card.awakeBeforeImage ?? slot.card.awakeAfterImage);
           return imageUrl ? (
             <img
               src={imageUrl}
@@ -126,9 +108,7 @@ const ExportCardSlot = React.memo<ExportCardSlotProps>(
 
         {/* カード名 */}
         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3">
-          <p
-            className={`text-white ${isMain ? 'text-3xl' : 'text-xl'} font-bold truncate`}
-          >
+          <p className={`text-white ${isMain ? 'text-3xl' : 'text-xl'} font-bold truncate`}>
             {slot.card.cardName}
           </p>
         </div>
@@ -140,8 +120,7 @@ const ExportCardSlot = React.memo<ExportCardSlotProps>(
 ExportCardSlot.displayName = 'ExportCardSlot';
 
 export const ExportDeckBuilder: React.FC<ExportDeckBuilderProps> = () => {
-  const { deck, isFriendSlotEnabled, updateLimitBreakCount, toggleAceCard } =
-    useDeck();
+  const { deck, isFriendSlotEnabled, updateLimitBreakCount, toggleAceCard } = useDeck();
   const deckSlots = deck?.slots ?? [];
 
   // デッキタイプに応じたスロットマッピングとキャラクターフレームを取得
@@ -149,12 +128,12 @@ export const ExportDeckBuilder: React.FC<ExportDeckBuilderProps> = () => {
   const characterFrame = getDeckFrame(deck?.deckType);
   const slotMappingByCharacter = React.useMemo(() => {
     const mapping = new Map<CharacterName, DeckSlotMapping[]>();
-    slotMapping.forEach((slot) => {
+    slotMapping.forEach(slot => {
       const list = mapping.get(slot.characterName) ?? [];
       list.push(slot);
       mapping.set(slot.characterName, list);
     });
-    mapping.forEach((list) => list.sort((a, b) => a.slotId - b.slotId));
+    mapping.forEach(list => list.sort((a, b) => a.slotId - b.slotId));
     return mapping;
   }, [slotMapping]);
 
@@ -162,14 +141,14 @@ export const ExportDeckBuilder: React.FC<ExportDeckBuilderProps> = () => {
   // 画像生成時はフレンド枠を最後に移動
   let filteredCharacterFrame = isFriendSlotEnabled
     ? characterFrame
-    : characterFrame.filter((char) => char !== 'フレンド');
+    : characterFrame.filter(char => char !== 'フレンド');
 
   // フレンド枠を配列の最後に移動
   if (isFriendSlotEnabled) {
     const friendIndex = filteredCharacterFrame.indexOf('フレンド');
     if (friendIndex !== -1) {
       filteredCharacterFrame = [
-        ...filteredCharacterFrame.filter((char) => char !== 'フレンド'),
+        ...filteredCharacterFrame.filter(char => char !== 'フレンド'),
         'フレンド',
       ];
     }
@@ -178,10 +157,7 @@ export const ExportDeckBuilder: React.FC<ExportDeckBuilderProps> = () => {
   // キャラクターごとのスロットをフレーム順で消費しつつグループ化
   const characterSlots = React.useMemo(() => {
     const mappingCopies = new Map<CharacterName, DeckSlotMapping[]>(
-      Array.from(slotMappingByCharacter.entries()).map(([key, value]) => [
-        key,
-        [...value],
-      ])
+      Array.from(slotMappingByCharacter.entries()).map(([key, value]) => [key, [...value]])
     );
 
     return filteredCharacterFrame
@@ -190,16 +166,12 @@ export const ExportDeckBuilder: React.FC<ExportDeckBuilderProps> = () => {
         if (!mappings || mappings.length === 0) return null;
 
         const groupSize =
-          character === 'フリー'
-            ? Math.min(2, mappings.length)
-            : Math.min(3, mappings.length);
+          character === 'フリー' ? Math.min(2, mappings.length) : Math.min(3, mappings.length);
         const groupMappings = mappings.splice(0, groupSize);
         if (groupMappings.length === 0) return null;
 
         const slots = groupMappings
-          .map((mapping) =>
-            deckSlots.find((slot) => slot.slotId === mapping.slotId)
-          )
+          .map(mapping => deckSlots.find(slot => slot.slotId === mapping.slotId))
           .filter((slot): slot is DeckSlot => Boolean(slot));
 
         const key = `${character}-${groupMappings[0]?.slotId ?? idx}`;
@@ -242,9 +214,7 @@ export const ExportDeckBuilder: React.FC<ExportDeckBuilderProps> = () => {
                       size="large"
                     />
                   )}
-                  {isSinger && !isCenter && (
-                    <VerticalBadge text="歌唱" className="" size="large" />
-                  )}
+                  {isSinger && !isCenter && <VerticalBadge text="歌唱" className="" size="large" />}
                 </div>
               )}
 
@@ -253,15 +223,12 @@ export const ExportDeckBuilder: React.FC<ExportDeckBuilderProps> = () => {
                 className="flex flex-col gap-6 p-4 rounded-3xl backdrop-blur-sm"
                 style={{
                   backgroundColor,
-                  boxShadow:
-                    '0 12px 18px -3px rgba(0,0,0,0.1), 0 6px 12px -3px rgba(0,0,0,0.06)',
+                  boxShadow: '0 12px 18px -3px rgba(0,0,0,0.1), 0 6px 12px -3px rgba(0,0,0,0.06)',
                 }}
               >
                 {/* Character name header */}
                 <div className="text-center flex-shrink-0 pt-4">
-                  <h3 className="text-3xl font-bold text-gray-700">
-                    {character}
-                  </h3>
+                  <h3 className="text-3xl font-bold text-gray-700">{character}</h3>
                 </div>
 
                 {/* Main slot */}

@@ -1,7 +1,16 @@
 import { Card } from '@/models/card/Card';
 import { CardFilter, FilterMode } from '@/models/shared/Filter';
-import { FavoriteMode, SkillEffectType, SkillSearchTarget, TraitEffectType } from '@/models/shared/enums';
-import { getSkillEffectKeyword, getSkillEffectKeywords, getMainSkillEffect } from '@/services/game/skillEffectService';
+import {
+  FavoriteMode,
+  SkillEffectType,
+  SkillSearchTarget,
+  TraitEffectType,
+} from '@/models/shared/enums';
+import {
+  getSkillEffectKeyword,
+  getSkillEffectKeywords,
+  getMainSkillEffect,
+} from '@/services/game/skillEffectService';
 import { getTraitEffectKeyword, getTraitEffectKeywords } from '@/services/game/traitEffectService';
 
 /**
@@ -29,10 +38,10 @@ function cardHasSkillEffect(
   targets: SkillSearchTarget[]
 ): boolean {
   const keywords = getSkillEffectKeyword(effectType);
-  return keywords.some((keyword) =>
-    targets.some((target) => {
+  return keywords.some(keyword =>
+    targets.some(target => {
       const texts = getSkillTextsForTarget(card, target);
-      return texts.some((text) => matchKeyword(text, keyword));
+      return texts.some(text => matchKeyword(text, keyword));
     })
   );
 }
@@ -42,52 +51,52 @@ function cardHasSkillEffect(
  */
 function cardHasTraitEffect(card: Card, effectType: TraitEffectType): boolean {
   const keywords = getTraitEffectKeyword(effectType);
-  const texts: (string | undefined)[] = [
-    card.detail?.trait?.name,
-    card.detail?.trait?.effect,
-  ];
-  card.accessories?.forEach((acc) => {
+  const texts: (string | undefined)[] = [card.trait?.name, card.trait?.effect];
+  card.tokens?.forEach(acc => {
     texts.push(acc.traitName, acc.traitEffect);
   });
-  return keywords.some((keyword) => texts.some((text) => matchKeyword(text, keyword)));
+  return keywords.some(keyword => texts.some(text => matchKeyword(text, keyword)));
 }
 
 /**
  * クライアントサイドでカードをフィルタリング
- * 
+ *
  * @param cards カード配列
  * @param filter カードフィルター
  * @returns フィルタリング後のカード配列
  */
 export function filterCardsOnClient(cards: Card[], filter: CardFilter): Card[] {
-  return cards.filter((card) => {
+  return cards.filter(card => {
     // キーワード検索
     if (filter.keyword) {
       const keyword = filter.keyword.toLowerCase();
-      
+      const normalizedKeyword = keyword.replaceAll('&', '＆');
+
       // 検索対象フィールドを配列にまとめる
       const searchFields: (string | undefined)[] = [
         card.cardName,
-        card.characterName,
+        ...card.characterName,
+        card.characterName.join('＆'),
+        card.characterName.join('&'),
         // スキル名・効果
-        card.detail?.skill?.name,
-        card.detail?.skill?.effect,
-        card.detail?.specialAppeal?.name,
-        card.detail?.specialAppeal?.effect,
-        card.detail?.trait?.name,
-        card.detail?.trait?.effect,
+        card.skill?.name,
+        card.skill?.effect,
+        card.specialAppeal?.name,
+        card.specialAppeal?.effect,
+        card.trait?.name,
+        card.trait?.effect,
       ];
-      
+
       // アクセサリーのスキル名・効果・特性名・特性効果も追加
-      card.accessories?.forEach(acc => {
+      card.tokens?.forEach(acc => {
         searchFields.push(acc.name, acc.effect, acc.traitName, acc.traitEffect);
       });
-      
+
       // いずれかのフィールドにキーワードが含まれているかチェック
-      const hasMatch = searchFields.some(field => 
-        field?.toLowerCase().includes(keyword)
+      const hasMatch = searchFields.some(field =>
+        field?.toLowerCase().replaceAll('&', '＆').includes(normalizedKeyword)
       );
-      
+
       if (!hasMatch) {
         return false;
       }
@@ -115,18 +124,14 @@ export function filterCardsOnClient(cards: Card[], filter: CardFilter): Card[] {
       if (mode === FilterMode.OR) {
         // OR検索: いずれかのキャラクター名が部分一致
         // 例：「桂城泉＆セラス」は「桂城泉」でも「セラス」でもマッチ
-        const hasMatch = filter.characterNames.some(name => 
-          card.characterName.includes(name)
-        );
+        const hasMatch = filter.characterNames.some(name => card.characterName.includes(name));
         if (!hasMatch) {
           return false;
         }
       } else {
         // AND検索: すべてのキャラクター名が部分一致
         // 例：「桂城泉」AND「セラス」を選択 → 「桂城泉＆セラス」がマッチ
-        const allMatch = filter.characterNames.every(name => 
-          card.characterName.includes(name)
-        );
+        const allMatch = filter.characterNames.every(name => card.characterName.includes(name));
         if (!allMatch) {
           return false;
         }
@@ -151,19 +156,19 @@ export function filterCardsOnClient(cards: Card[], filter: CardFilter): Card[] {
 
     // 得意ムード（Enum値で比較）
     if (filter.favoriteModes && filter.favoriteModes.length > 0) {
-      if (!card.detail?.favoriteMode) {
+      if (!card.favoriteMode) {
         return false;
       }
-      
+
       const mode = filter.filterMode ?? FilterMode.OR;
       if (mode === FilterMode.OR) {
         // OR検索: いずれかの得意ムードに一致
-        if (!filter.favoriteModes.includes(card.detail.favoriteMode as FavoriteMode)) {
+        if (!filter.favoriteModes.includes(card.favoriteMode as FavoriteMode)) {
           return false;
         }
       } else {
         // AND検索: 単一カードは1得意ムードのみなので実質OR検索と同じ
-        if (!filter.favoriteModes.includes(card.detail.favoriteMode as FavoriteMode)) {
+        if (!filter.favoriteModes.includes(card.favoriteMode as FavoriteMode)) {
           return false;
         }
       }
@@ -202,8 +207,9 @@ export function filterCardsOnClient(cards: Card[], filter: CardFilter): Card[] {
       if (
         mode === FilterMode.AND &&
         targets.length > 0 &&
-        targets.every((t) => t === SkillSearchTarget.TRAIT) &&
-        filter.traitEffects && filter.traitEffects.length > 0
+        targets.every(t => t === SkillSearchTarget.TRAIT) &&
+        filter.traitEffects &&
+        filter.traitEffects.length > 0
       ) {
         // ANDモードでTRAITのみをターゲットとし、traitEffectsも指定されている場合：
         // 本体とトークンを独立したエンティティとして扱い、
@@ -212,23 +218,24 @@ export function filterCardsOnClient(cards: Card[], filter: CardFilter): Card[] {
         const traitEffects = filter.traitEffects;
 
         const traitEntities = [
-          { name: card.detail?.trait?.name, effect: card.detail?.trait?.effect },
-          ...(card.accessories?.map((acc) => ({
+          {
+            name: card.trait?.name,
+            effect: card.trait?.effect,
+          },
+          ...(card.tokens?.map(acc => ({
             name: acc.traitName,
             effect: acc.traitEffect,
           })) ?? []),
         ];
 
-        const hasJointMatch = traitEntities.some((entity) => {
-          const skillMet = skillEffects.every((effectType) => {
+        const hasJointMatch = traitEntities.some(entity => {
+          const skillMet = skillEffects.every(effectType => {
             const kws = getSkillEffectKeyword(effectType);
-            return kws.some((kw) => matchKeyword(entity.effect, kw));
+            return kws.some(kw => matchKeyword(entity.effect, kw));
           });
-          const traitMet = traitEffects.every((effectType) => {
+          const traitMet = traitEffects.every(effectType => {
             const kws = getTraitEffectKeyword(effectType);
-            return kws.some(
-              (kw) => matchKeyword(entity.name, kw) || matchKeyword(entity.effect, kw)
-            );
+            return kws.some(kw => matchKeyword(entity.name, kw) || matchKeyword(entity.effect, kw));
           });
           return skillMet && traitMet;
         });
@@ -244,26 +251,26 @@ export function filterCardsOnClient(cards: Card[], filter: CardFilter): Card[] {
 
           // 1つのスキル効果タイプ内の複数キーワードは常にOR検索
           // （例：RESHUFFLE = ['シャッフル' OR '手札をすべて捨てて' OR '手札を全て捨てて']）
-          return keywords.some((keyword) => {
+          return keywords.some(keyword => {
             // 検索対象（スキル、スペシャルアピール、特性）はOR検索
             // 「スキル」「特性」を選択 → スキル OR 特性のいずれかにマッチすればOK
-            return targets.some((target) => {
+            return targets.some(target => {
               const texts: (string | undefined)[] = [];
 
               switch (target) {
                 case SkillSearchTarget.SKILL:
                   // カード本体のスキルとトークンのスキル
-                  texts.push(card.detail?.skill?.effect);
-                  card.accessories?.forEach((acc) => texts.push(acc.effect));
+                  texts.push(card.skill?.effect);
+                  card.tokens?.forEach(acc => texts.push(acc.effect));
                   break;
                 case SkillSearchTarget.SPECIAL_APPEAL:
                   // カード本体のスペシャルアピールのみ（アクセサリーにはない）
-                  texts.push(card.detail?.specialAppeal?.effect);
+                  texts.push(card.specialAppeal?.effect);
                   break;
                 case SkillSearchTarget.TRAIT:
                   // カード本体の特性とトークンの特性
-                  texts.push(card.detail?.trait?.effect);
-                  card.accessories?.forEach((acc) => texts.push(acc.traitEffect));
+                  texts.push(card.trait?.effect);
+                  card.tokens?.forEach(acc => texts.push(acc.traitEffect));
                   break;
               }
 
@@ -292,7 +299,7 @@ export function filterCardsOnClient(cards: Card[], filter: CardFilter): Card[] {
 
     // トークンカードの有無
     if (filter.hasTokens !== undefined) {
-      const hasTokens = card.accessories && card.accessories.length > 0;
+      const hasTokens = card.tokens && card.tokens.length > 0;
       if (filter.hasTokens !== hasTokens) {
         return false;
       }
@@ -301,12 +308,12 @@ export function filterCardsOnClient(cards: Card[], filter: CardFilter): Card[] {
     // メイン効果検索（スキル文言のみを対象）
     if (filter.skillMainEffects && filter.skillMainEffects.length > 0) {
       const skillTexts: (string | undefined)[] = [
-        card.detail?.skill?.effect,
-        ...(card.accessories?.map((acc) => acc.effect) ?? []),
+        card.skill?.effect,
+        ...(card.tokens?.map(acc => acc.effect) ?? []),
       ];
 
       const checkMainEffect = (effectType: SkillEffectType): boolean =>
-        skillTexts.some((text) => getMainSkillEffect(text) === effectType);
+        skillTexts.some(text => getMainSkillEffect(text) === effectType);
 
       const mode = filter.filterMode ?? FilterMode.OR;
       const hasMainEffect =
@@ -325,17 +332,12 @@ export function filterCardsOnClient(cards: Card[], filter: CardFilter): Card[] {
 
       const checkTraitEffect = (effectType: TraitEffectType): boolean => {
         const keywords = getTraitEffectKeyword(effectType);
-        const texts: (string | undefined)[] = [
-          card.detail?.trait?.name,
-          card.detail?.trait?.effect,
-        ];
-        card.accessories?.forEach((acc) => {
+        const texts: (string | undefined)[] = [card.trait?.name, card.trait?.effect];
+        card.tokens?.forEach(acc => {
           texts.push(acc.traitName, acc.traitEffect);
         });
 
-        return keywords.some((keyword) =>
-          texts.some((text) => matchKeyword(text, keyword))
-        );
+        return keywords.some(keyword => texts.some(text => matchKeyword(text, keyword)));
       };
 
       const hasTraitEffect =
@@ -358,7 +360,7 @@ export function filterCardsOnClient(cards: Card[], filter: CardFilter): Card[] {
     // 除外：スキル効果（いずれかの除外効果に一致したら除外）
     if (filter.excludeSkillEffects && filter.excludeSkillEffects.length > 0) {
       const targets = filter.excludeSkillSearchTargets ?? defaultExcludeTargets;
-      const isExcluded = filter.excludeSkillEffects.some((effectType) =>
+      const isExcluded = filter.excludeSkillEffects.some(effectType =>
         cardHasSkillEffect(card, effectType, targets)
       );
       if (isExcluded) return false;
@@ -367,18 +369,18 @@ export function filterCardsOnClient(cards: Card[], filter: CardFilter): Card[] {
     // 除外：メイン効果（いずれかの除外メイン効果に一致したら除外）
     if (filter.excludeSkillMainEffects && filter.excludeSkillMainEffects.length > 0) {
       const skillTexts: (string | undefined)[] = [
-        card.detail?.skill?.effect,
-        ...(card.accessories?.map((acc) => acc.effect) ?? []),
+        card.skill?.effect,
+        ...(card.tokens?.map(acc => acc.effect) ?? []),
       ];
-      const isExcluded = filter.excludeSkillMainEffects.some((effectType) =>
-        skillTexts.some((text) => getMainSkillEffect(text) === effectType)
+      const isExcluded = filter.excludeSkillMainEffects.some(effectType =>
+        skillTexts.some(text => getMainSkillEffect(text) === effectType)
       );
       if (isExcluded) return false;
     }
 
     // 除外：特性効果（いずれかの除外特性効果に一致したら除外）
     if (filter.excludeTraitEffects && filter.excludeTraitEffects.length > 0) {
-      const isExcluded = filter.excludeTraitEffects.some((effectType) =>
+      const isExcluded = filter.excludeTraitEffects.some(effectType =>
         cardHasTraitEffect(card, effectType)
       );
       if (isExcluded) return false;
@@ -390,7 +392,7 @@ export function filterCardsOnClient(cards: Card[], filter: CardFilter): Card[] {
 
 /**
  * カードフィルターからGraphQLクエリ用のフィルターパラメータを生成
- * 
+ *
  * @deprecated クライアントサイドフィルタリングを使用するため、現在は使用していません
  * @param filter カードフィルター
  * @returns GraphQLクエリ用のフィルターオブジェクト
@@ -407,7 +409,7 @@ export function buildGraphQLFilter(filter: CardFilter): Record<string, any> {
   // 選択されたスキル効果のキーワードをキーワード検索に追加
   if (filter.skillEffects && filter.skillEffects.length > 0) {
     const skillKeywords = getSkillEffectKeywords(filter.skillEffects);
-    
+
     // 検索対象が指定されている場合は、対象ごとにキーワード検索を実行
     if (filter.skillSearchTargets && filter.skillSearchTargets.length > 0) {
       // TODO: 実装時に検索対象に応じたフィールド指定を行う
@@ -455,7 +457,7 @@ export function buildGraphQLFilter(filter: CardFilter): Record<string, any> {
 /**
  * スキル効果フィルターの検索クエリを生成
  * 将来的な実装で使用
- * 
+ *
  * @param filter カードフィルター
  * @returns 検索クエリ文字列（キーワード検索用）
  */
@@ -465,7 +467,7 @@ export function buildSkillEffectSearchQuery(filter: CardFilter): string | undefi
   }
 
   const keywords = getSkillEffectKeywords(filter.skillEffects);
-  
+
   // 複数のスキル効果が選択されている場合はOR検索
   // 例: "スキルハートを獲得" OR "ハート上限を"
   return keywords.join(' OR ');
@@ -491,17 +493,11 @@ export function buildTraitEffectSearchQuery(filter: CardFilter): string | undefi
 function getSkillTextsForTarget(card: Card, target: SkillSearchTarget): (string | undefined)[] {
   switch (target) {
     case SkillSearchTarget.SKILL:
-      return [
-        card.detail?.skill?.effect,
-        ...(card.accessories?.map((acc) => acc.effect) ?? []),
-      ];
+      return [card.skill?.effect, ...(card.tokens?.map(acc => acc.effect) ?? [])];
     case SkillSearchTarget.SPECIAL_APPEAL:
-      return [card.detail?.specialAppeal?.effect];
+      return [card.specialAppeal?.effect];
     case SkillSearchTarget.TRAIT:
-      return [
-        card.detail?.trait?.effect,
-        ...(card.accessories?.map((acc) => acc.traitEffect) ?? []),
-      ];
+      return [card.trait?.effect, ...(card.tokens?.map(acc => acc.traitEffect) ?? [])];
     default:
       return [];
   }
@@ -509,17 +505,17 @@ function getSkillTextsForTarget(card: Card, target: SkillSearchTarget): (string 
 
 /**
  * 配列型フィルターの値をトグル（追加/削除）するユーティリティ関数
- * 
+ *
  * @param currentList 現在の配列（undefined も可）
  * @param value トグル対象の値
  * @returns 更新後の配列、または undefined（空の場合）
  */
 function toggleArrayValue<T>(currentList: T[] | undefined, value: T): T[] | undefined {
   const list = currentList ?? []; // undefined の場合は空配列として扱う
-  
+
   if (list.includes(value)) {
     // 値が含まれている → 削除
-    const filtered = list.filter((item) => item !== value);
+    const filtered = list.filter(item => item !== value);
     return filtered.length > 0 ? filtered : undefined;
   } else {
     // 値が含まれていない → 追加
@@ -529,7 +525,7 @@ function toggleArrayValue<T>(currentList: T[] | undefined, value: T): T[] | unde
 
 /**
  * 配列型フィルターの値をトグルする部分フィルターオブジェクトを生成
- * 
+ *
  * @param filter 現在のカードフィルター
  * @param key フィルターのキー（配列型のプロパティ）
  * @param value トグル対象の値
@@ -541,18 +537,20 @@ export function toggleFilterList<T extends keyof CardFilter>(
   value: NonNullable<CardFilter[T]> extends Array<infer U> ? U : never
 ): Partial<CardFilter> {
   // 現在選択されている値の配列を取得
-  const currentList = filter[key] as NonNullable<CardFilter[T]> extends Array<infer U> ? U[] | undefined : never;
-  
+  const currentList = filter[key] as NonNullable<CardFilter[T]> extends Array<infer U>
+    ? U[] | undefined
+    : never;
+
   // トグル処理（追加 or 削除）
   const updatedList = toggleArrayValue(currentList, value);
-  
+
   // { rarities: [...] } のような形式で返す
   return { [key]: updatedList } as Partial<CardFilter>;
 }
 
 /**
  * 配列型フィルターから特定の値を削除する部分フィルターオブジェクトを生成
- * 
+ *
  * @param filter 現在のカードフィルター
  * @param key フィルターのキー（配列型のプロパティ）
  * @param value 削除対象の値
@@ -564,19 +562,21 @@ export function removeFromFilterList<T extends keyof CardFilter>(
   value: NonNullable<CardFilter[T]> extends Array<infer U> ? U : never
 ): Partial<CardFilter> {
   // 現在選択されている値の配列を取得
-  const currentList = filter[key] as NonNullable<CardFilter[T]> extends Array<infer U> ? U[] | undefined : never;
-  
+  const currentList = filter[key] as NonNullable<CardFilter[T]> extends Array<infer U>
+    ? U[] | undefined
+    : never;
+
   if (!currentList) {
     // 配列が存在しない場合は何もしない
     return {};
   }
-  
+
   // 指定された値を除外
-  const updatedList = currentList.filter((item) => item !== value);
-  
+  const updatedList = currentList.filter(item => item !== value);
+
   // 空配列になった場合は undefined を設定（フィルターをクリア）
   // { rarities: [...] } のような形式で返す
-  return { [key]: updatedList.length > 0 ? updatedList : undefined } as Partial<CardFilter>;
+  return {
+    [key]: updatedList.length > 0 ? updatedList : undefined,
+  } as Partial<CardFilter>;
 }
-
-

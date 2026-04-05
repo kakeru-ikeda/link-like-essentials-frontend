@@ -27,11 +27,11 @@ export const ExportDashboard: React.FC<ExportDashboardProps> = ({
   const chartTextSize = isCompact ? 'text-[11px]' : 'text-3xl';
 
   const aceInfo = React.useMemo(() => {
-    if (!deck?.aceSlotId || !deck?.slots) return null;
+    if (deck?.aceSlotId == null || !deck?.slots) return null;
     const aceSlot = deck.slots.find((slot) => slot.slotId === deck.aceSlotId);
     if (!aceSlot || !aceSlot.card) return null;
     return {
-      characterName: aceSlot.card.characterName,
+      characterName: aceSlot.card.characterName.join('＆'),
       cardName: aceSlot.card.cardName,
     };
   }, [deck?.aceSlotId, deck?.slots]);
@@ -173,19 +173,21 @@ export const ExportDashboard: React.FC<ExportDashboardProps> = ({
                       セクション効果:
                     </div>
                     <div className="flex flex-wrap gap-2">
-                      {selectedGradeChallengeDetail.sectionEffects.map((section) => (
-                        <div
-                          key={section.id}
-                          className={`bg-white border border-blue-300 rounded px-2 py-1 ${badgeTextSize}`}
-                        >
-                          <span className="font-medium text-blue-900">
-                            {section.sectionName}:{' '}
-                          </span>
-                          <span className="text-blue-700">
-                            {section.effect}
-                          </span>
-                        </div>
-                      ))}
+                      {selectedGradeChallengeDetail.sectionEffects.map(
+                        (section) => (
+                          <div
+                            key={section.id}
+                            className={`bg-white border border-blue-300 rounded px-2 py-1 ${badgeTextSize}`}
+                          >
+                            <span className="font-medium text-blue-900">
+                              {section.sectionName}:{' '}
+                            </span>
+                            <span className="text-blue-700">
+                              {section.effect}
+                            </span>
+                          </div>
+                        )
+                      )}
                     </div>
                   </div>
                 )}
@@ -209,7 +211,8 @@ export const ExportDashboard: React.FC<ExportDashboardProps> = ({
               参考スコア:
             </span>
             <span className={`${headingSize} text-slate-600`}>
-              {formatScore(deck.score)} <span className="text-[0.85em]">LOVE</span>
+              {formatScore(deck.score)}{' '}
+              <span className="text-[0.85em]">LOVE</span>
             </span>
           </div>
         )}

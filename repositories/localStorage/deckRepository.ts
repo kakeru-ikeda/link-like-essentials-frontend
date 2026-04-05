@@ -1,4 +1,8 @@
 import { Deck } from '@/models/deck/Deck';
+import {
+  normalizePersistedDeck,
+  PersistedDeck,
+} from '@/repositories/localStorage/deckIdNormalizer';
 
 const STORAGE_KEY_DECK = 'deck';
 
@@ -11,7 +15,7 @@ export class DeckRepository {
    */
   static saveDeck(deck: Deck): void {
     if (typeof window === 'undefined') return;
-    
+
     try {
       localStorage.setItem(STORAGE_KEY_DECK, JSON.stringify(deck));
     } catch (error) {
@@ -28,7 +32,7 @@ export class DeckRepository {
     try {
       const saved = localStorage.getItem(STORAGE_KEY_DECK);
       if (saved) {
-        return JSON.parse(saved);
+        return normalizePersistedDeck(JSON.parse(saved) as PersistedDeck);
       }
       return null;
     } catch (error) {
