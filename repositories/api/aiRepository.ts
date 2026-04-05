@@ -23,7 +23,7 @@ export const aiRepository = {
 
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));
-      throw new Error(error.message || 'AI検索に失敗しました');
+      throw new Error(error.error?.message || 'AI検索に失敗しました');
     }
 
     const data = await response.json();
@@ -49,7 +49,7 @@ export const aiRepository = {
 
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));
-      throw new Error(error.message || 'フィードバックの送信に失敗しました');
+      throw new Error(error.error?.message || 'フィードバックの送信に失敗しました');
     }
 
     return response.json() as Promise<AiFeedbackResponse>;
