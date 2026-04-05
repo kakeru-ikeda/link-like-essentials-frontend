@@ -18,6 +18,7 @@ import { AvailableCardDisplay } from '@/components/deck-builder/AvailableCardDis
 import { CardDetailView } from '@/components/deck-builder/CardDetailView';
 import { CardFilter } from '@/components/common/CardFilter';
 import { FilterButton } from '@/components/common/FilterButton';
+import { AiSearchInput } from '@/components/common/AiSearchInput';
 import { ActiveFilters } from '@/components/common/ActiveFilters';
 import { SortControls } from '@/components/common/SortControls';
 import { CARD_SORT_OPTIONS, ORDER_OPTIONS } from '@/config/sortOptions';
@@ -25,6 +26,7 @@ import { useCards } from '@/hooks/card/useCards';
 import { useCardStore } from '@/store/cardStore';
 import { useSideModal } from '@/hooks/ui/useSideModal';
 import { useFilter } from '@/hooks/ui/useFilter';
+import type { CardFilter as CardFilterType } from '@/models/shared/Filter';
 import type { Card } from '@/models/card/Card';
 import type { DeckSlot } from '@/models/deck/Deck';
 import {
@@ -249,6 +251,15 @@ export const DeckBuilder: React.FC = () => {
   const handleApplyAndCloseFilter = useCallback((): void => {
     sideModal.closeFilter();
   }, [sideModal]);
+
+  const handleAiFilter = useCallback(
+    (aiFilter: CardFilterType): void => {
+      // characterNames はスロット制約があるため AI 結果から除外してマージ
+      const { characterNames: _ignored, ...rest } = aiFilter;
+      updateFilter(rest);
+    },
+    [updateFilter]
+  );
 
   const handleKeywordChange = useCallback(
     (value: string): void => {
@@ -601,6 +612,9 @@ export const DeckBuilder: React.FC = () => {
         }
       >
         <div className="flex flex-col h-full">
+          <div className="px-4 pt-3 pb-2 flex-shrink-0">
+            <AiSearchInput onFilter={handleAiFilter} />
+          </div>
           <ActiveFilters
             filter={filter}
             clearFilterKey={clearFilterKey}
