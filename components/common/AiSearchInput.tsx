@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Sparkles, Loader2 } from 'lucide-react';
 import type { CardFilter } from '@/models/shared/Filter';
 import { useCardAiFilter } from '@/hooks/card/useCardAiFilter';
@@ -12,8 +12,30 @@ interface AiSearchInputProps {
 
 export const AiSearchInput: React.FC<AiSearchInputProps> = ({ onFilter }) => {
   const [query, setQuery] = useState('');
+  const [showSlowMessage, setShowSlowMessage] = useState(false);
+  const slowTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { loading, error, aiSearchResult, feedbackSubmitted, applyAiFilter, submitFeedback } =
     useCardAiFilter();
+
+  useEffect(() => {
+    if (loading) {
+      slowTimerRef.current = setTimeout(() => {
+        setShowSlowMessage(true);
+      }, 8000);
+    } else {
+      if (slowTimerRef.current) {
+        clearTimeout(slowTimerRef.current);
+        slowTimerRef.current = null;
+      }
+      setShowSlowMessage(false);
+    }
+    return () => {
+      if (slowTimerRef.current) {
+        clearTimeout(slowTimerRef.current);
+        slowTimerRef.current = null;
+      }
+    };
+  }, [loading]);
 
   const handleSubmit = async (): Promise<void> => {
     const filter = await applyAiFilter(query);
@@ -60,6 +82,9 @@ export const AiSearchInput: React.FC<AiSearchInputProps> = ({ onFilter }) => {
       </div>
       {error && (
         <p className="text-xs text-red-500">{error}</p>
+      )}
+      {showSlowMessage && (
+        <p className="text-xs text-purple-600 animate-pulse">AIサーバー起動中です。そのままお待ちください</p>
       )}
       {aiSearchResult && (
         <AiFeedbackButtons submitted={feedbackSubmitted} onSubmit={submitFeedback} />
