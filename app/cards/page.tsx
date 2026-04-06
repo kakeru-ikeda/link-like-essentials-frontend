@@ -24,6 +24,7 @@ export default function CardsPage(): JSX.Element {
   const {
     filter,
     updateFilter,
+    setFilter,
     resetFilter,
     clearFilterKey,
     countActiveFilters,
@@ -99,6 +100,7 @@ export default function CardsPage(): JSX.Element {
         activeFilterCount={countActiveFilters()}
         filter={filter}
         updateFilter={updateFilter}
+        setFilter={setFilter}
         clearFilterKey={clearFilterKey}
         onFilterClear={resetFilter}
       />
