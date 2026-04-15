@@ -22,6 +22,8 @@ export interface UseHashtagReturn {
   setInputValue: (value: string) => void;
   /** カスタムタグを追加 */
   handleAddCustomHashtag: () => void;
+  /** おすすめタグを追加（重複スキップ） */
+  handleAddRecommendedTag: (tag: string) => void;
   /** カスタムタグを削除 */
   handleRemoveCustomHashtag: (index: number) => void;
   /** Enterキー処理 */
@@ -83,6 +85,16 @@ export const useHashtag = (
     [handleAddCustomHashtag]
   );
 
+  const handleAddRecommendedTag = useCallback(
+    (tag: string): void => {
+      const result = addCustomHashtag(tag, autoHashtags, customHashtags);
+      if (result.success && result.customTags) {
+        setCustomHashtags(result.customTags);
+      }
+    },
+    [autoHashtags, customHashtags]
+  );
+
   // カスタムタグの削除
   const handleRemoveCustomHashtag = useCallback((index: number): void => {
     setCustomHashtags((prev) => removeCustomHashtag(index, prev));
@@ -94,6 +106,7 @@ export const useHashtag = (
     inputValue,
     setInputValue,
     handleAddCustomHashtag,
+    handleAddRecommendedTag,
     handleRemoveCustomHashtag,
     handleKeyDown,
   };

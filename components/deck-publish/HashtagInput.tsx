@@ -26,9 +26,18 @@ export const HashtagInput: React.FC<HashtagInputProps> = ({
     inputValue,
     setInputValue,
     handleAddCustomHashtag,
+    handleAddRecommendedTag,
     handleRemoveCustomHashtag,
     handleKeyDown,
   } = useHashtag(deck, liveGrandPrix, gradeChallenge, onChange);
+
+  const RECOMMENDED_TAGS = [
+    '#リンクラ思い出の編成',
+    '#好き好きクラブのみなさんのBGP',
+  ] as const;
+
+  const allTags = [...autoHashtags, ...customHashtags];
+  const isTagAdded = (tag: string) => allTags.includes(tag);
 
   return (
     <div className="space-y-3">
@@ -80,6 +89,32 @@ export const HashtagInput: React.FC<HashtagInputProps> = ({
           </div>
         </div>
       )}
+
+      {/* おすすめタグ */}
+      <div>
+        <p className="text-xs text-gray-500 mb-1.5">おすすめタグ</p>
+        <div className="flex flex-wrap gap-2">
+          {RECOMMENDED_TAGS.map((tag) => {
+            const added = isTagAdded(tag);
+            return (
+              <button
+                key={tag}
+                type="button"
+                onClick={() => handleAddRecommendedTag(tag)}
+                disabled={added}
+                className={`inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                  added
+                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                    : 'bg-gradient-to-r from-pink-500 to-orange-400 text-white shadow-sm hover:from-pink-600 hover:to-orange-500 hover:shadow-md'
+                }`}
+              >
+                {added ? '✓ ' : '+ '}
+                {tag}
+              </button>
+            );
+          })}
+        </div>
+      </div>
 
       {/* タグ追加用の入力欄 */}
       <div className="flex gap-2">
