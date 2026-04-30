@@ -44,11 +44,13 @@ export const ORDER_OPTIONS: DropdownOption<SortOrder>[] = [
 
 /**
  * レアリティの優先順位（降順用）
- * LR > UR > SR > R > BR > DR
+ * LR > mUR > UR > mSR > SR > R > BR > DR
  */
 export const RARITY_ORDER: Record<Rarity, number> = {
-  [Rarity.LR]: 6,
-  [Rarity.UR]: 5,
+  [Rarity.LR]: 8,
+  [Rarity.mUR]: 7,
+  [Rarity.UR]: 6,
+  [Rarity.mSR]: 5,
   [Rarity.SR]: 4,
   [Rarity.R]: 3,
   [Rarity.BR]: 2,

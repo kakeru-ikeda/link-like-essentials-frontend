@@ -17,8 +17,12 @@ export const RarityBadge: React.FC<RarityBadgeProps> = ({
   // レアリティに応じた背景色とグラデーションを取得
   const getRarityStyle = (rarity: Rarity): string => {
     switch (rarity) {
+      case Rarity.mUR:
+        return 'bg-gradient-to-r from-amber-300 via-yellow-400 to-orange-500 text-yellow-950';
       case Rarity.UR:
         return 'bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 text-yellow-900';
+      case Rarity.mSR:
+        return 'bg-gradient-to-r from-fuchsia-300 via-purple-400 to-purple-600 text-white';
       case Rarity.SR:
         return 'bg-gradient-to-r from-purple-400 via-purple-500 to-purple-600 text-white';
       case Rarity.R:
