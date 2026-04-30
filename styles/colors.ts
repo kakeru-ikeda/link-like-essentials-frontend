@@ -22,7 +22,9 @@ export const CHARACTER_COLORS: Record<string, string> = {
  * レアリティの色定義
  */
 export const RARITY_COLORS: Record<Rarity, string> = {
+  [Rarity.mUR]: '#fbbf24',
   [Rarity.UR]: '#f59e0b',
+  [Rarity.mSR]: '#c084fc',
   [Rarity.SR]: '#8b5cf6',
   [Rarity.R]: '#3b82f6',
   [Rarity.DR]: '#ec4899',

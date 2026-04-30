@@ -12,7 +12,9 @@ import { SortField } from '@/models/shared/Filter';
  * レアリティのラベル定義
  */
 export const RARITY_LABELS: Record<Rarity, string> = {
+  [Rarity.mUR]: 'mUR',
   [Rarity.UR]: 'UR',
+  [Rarity.mSR]: 'mSR',
   [Rarity.SR]: 'SR',
   [Rarity.R]: 'R',
   [Rarity.DR]: 'DR',
