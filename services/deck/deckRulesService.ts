@@ -236,6 +236,26 @@ export function canPlaceCardInSlot(
     };
   }
 
+  // 106期生＆カード（錦上マイカ＆令沢葵）
+  if (cardInfo.characterName === '錦上マイカ＆令沢葵') {
+    const slotGeneration = getCharacterGeneration(slotCharacter);
+
+    // 104期・105期のサイドのみ配置可能
+    const allowedGenerations: number[] = [GENERATION.TERM_104, GENERATION.TERM_105];
+    if (
+      slotGeneration &&
+      allowedGenerations.includes(slotGeneration) &&
+      slotType === 'side'
+    ) {
+      return { allowed: true };
+    }
+
+    return {
+      allowed: false,
+      reason: '錦上マイカ＆令沢葵は104期・105期のサイドカードにのみ配置できます',
+    };
+  }
+
   // Ruri&To 平成ギャルズ!!!!
   if (
     cardInfo.characterName === '大沢瑠璃乃' &&
